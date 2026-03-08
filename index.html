@@ -15,6 +15,12 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --nav-height: 70px;
         }
+    @font-face {
+        font-family: 'Minecraft';
+        src: url('minecraft.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
 
         html { scroll-behavior: smooth; }
         section, main, div { scroll-margin-top: calc(var(--nav-height) + 20px); }
@@ -46,17 +52,17 @@
             backdrop-filter: blur(10px);
             border-bottom: 1.5px solid #1a1a1a;
         }
-        .nav-logo { font-family: 'Press Start 2P'; font-size: 0.8rem; color: var(--accent); text-decoration: none; }
+        .nav-logo { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--accent); text-decoration: none; }
         .nav-links { display: flex; gap: 15px; }
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
         .nav-links a:hover { color: var(--accent); }
 
         header { padding: 140px 20px 50px; text-align: center; }
-        h1 { font-family: 'Press Start 2P', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
+        h1 { font-family: 'Minecraft', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
         /* --- WHY US (INFINITE VERSION) --- */
-        .section-title { font-family: 'Press Start 2P'; font-size: 0.9rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
+        .section-title { font-family: 'Minecraft'; font-size: 0.9rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
         .why-us-container { 
             width: 100%; 
             overflow-x: auto; 
@@ -79,16 +85,16 @@
 
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
-        .section-header { font-family: 'Press Start 2P'; font-size: 0.8rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
+        .section-header { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
-        .server-card h3 { font-family: 'Press Start 2P'; font-size: 1.1rem; margin: 0 0 15px; color: var(--accent); }
+        .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; margin: 0 0 15px; color: var(--accent); }
         .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
-        .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Press Start 2P'; font-size: 0.55rem; margin-top: 15px; }
+        .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.55rem; margin-top: 15px; }
         .badge-dev span { opacity: 0.8; font-size: 0.5rem; background: var(--accent); color: #000; padding: 2px 4px; }
 
         /* --- PROGRESS --- */
-        .dev-label { font-family: 'Press Start 2P'; font-size: 0.6rem; color: var(--accent); margin-bottom: 10px; display: block; }
+        .dev-label { font-family: 'Minecraft'; font-size: 0.6rem; color: var(--accent); margin-bottom: 10px; display: block; }
         .progress-container { width: 100%; height: 12px; background: #1a1a1a; border: 1px solid #333; margin: 20px 0; }
         .progress-bar { height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
@@ -102,28 +108,28 @@
         .modal-overlay.active { opacity: 1; }
         .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 900px; padding: 40px 30px; position: relative; margin: auto; transform: translateY(20px); transition: 0.3s; }
         .modal-overlay.active .modal-window { transform: translateY(0); }
-        .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Press Start 2P'; font-size: 0.7rem; cursor: pointer; z-index: 100; }
+        .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: pointer; z-index: 100; }
         .modal-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-top: 30px; }
         @media (min-width: 850px) { .modal-grid { grid-template-columns: 1.7fr 1fr; } }
 
         .dropdown { margin-bottom: 5px; background: #141414; }
-        .dropdown-btn { width: 100%; background: none; padding: 18px 20px; border: none; color: #fff; text-align: left; cursor: pointer; display: flex; justify-content: space-between; font-family: 'Press Start 2P'; font-size: 0.7rem; }
+        .dropdown-btn { width: 100%; background: none; padding: 18px 20px; border: none; color: #fff; text-align: left; cursor: pointer; display: flex; justify-content: space-between; font-family: 'Minecraft'; font-size: 0.7rem; }
         .dropdown-content { display: none; padding: 15px 20px; font-size: 0.7rem; color: var(--text-dim); line-height: 1.8; border-top: 1px solid #222; }
         .dropdown.active .dropdown-content { display: block; }
-        .btn-apply { background: var(--accent); color: #000; padding: 20px; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem; display: block; text-align: center; margin-top: 20px; transition: 0.3s; }
+        .btn-apply { background: var(--accent); color: #000; padding: 20px; text-decoration: none; font-family: 'Minecraft'; font-size: 0.8rem; display: block; text-align: center; margin-top: 20px; transition: 0.3s; }
         .btn-apply:hover { background: #fff; color: var(--accent); box-shadow: 0 0 20px var(--accent); }
         .tech-box { background: #050505; padding: 20px; border: 1px solid #222; font-size: 0.9rem; line-height: 2.2; }
         .tech-box span { color: var(--accent); }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .footer-section h4 { font-family: 'Press Start 2P'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
+        .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
         .footer-links { list-style: none; padding: 0; margin: 0; }
         .footer-links li { margin-bottom: 10px; }
         .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--accent); }
         .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
-        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Press Start 2P'; }
+        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
         @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
     </style>
@@ -186,7 +192,7 @@
     <div class="modal-overlay" id="modal-survival">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">KAERONT: SURVIVAL</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">KAERONT: SURVIVAL</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха. Готов к долгому пути?</p>            
             <div class="modal-grid">
                 <div class="modal-left">
@@ -210,7 +216,7 @@
     <div class="modal-overlay" id="modal-hub">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">KAERONT: HUB</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">KAERONT: HUB</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Главная площадка для общения и старта. Здесь ты найдешь свежие новости, топ-игроков и прямой доступ ко всей экосистеме Kaeront. Залетай на Survival, если готов к долгому пути, или ворвись в Мини-игры для быстрого фана!</p>            
             <span class="dev-label">РАЗРАБОТКА (20%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 20%;"></div></div>
@@ -220,7 +226,7 @@
     <div class="modal-overlay" id="modal-payload">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">PAYLOAD: BACKYARD</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">PAYLOAD: BACKYARD</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Сопровождай ценный груз через задний двор, полный опасностей и тактических позиций. Слаженная работа, уникальные способности и динамичный геймплей. Доставь груз любой ценой или останови врага!</p>            
             <span class="dev-label">РАЗРАБОТКА (70%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
@@ -230,7 +236,7 @@
     <div class="modal-overlay" id="modal-trident">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-trident')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">TRIDENT BALL</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">TRIDENT BALL</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Представь обычный гандбол, но вместо мяча у тебя в руках — спортивный трезубец. Твоя задача проста: забросить его в ворота противника больше раз, чем это сделает другая команда!</p>            
             <span class="dev-label">РАЗРАБОТКА (50%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 50%;"></div></div>
