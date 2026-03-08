@@ -39,146 +39,93 @@
             min-height: 100vh;
         }
 
-        /* --- DONATION BANNER WITH ANIMATION ---*/
+        /* --- ОБНОВЛЕННАЯ ПЛАШКА С ТЕМНО-ОРНАНЖЕВЫМ ФОНОМ --- */
         .donate-banner {
-            /* Темно-оранжевые линии */
-            background: linear-gradient(
+            /* Базовый темно-оранжевый цвет */
+            background-color: #8B4500; 
+            /* Светло-оранжевые линии поверх фона */
+            background-image: linear-gradient(
                 45deg, 
-                rgba(255, 170, 0, 0.1) 25%, 
+                rgba(255, 170, 0, 0.2) 25%, 
                 transparent 25%, 
                 transparent 50%, 
-                rgba(255, 170, 0, 0.1) 50%, 
-                rgba(255, 170, 0, 0.1) 75%, 
+                rgba(255, 170, 0, 0.2) 50%, 
+                rgba(255, 170, 0, 0.2) 75%, 
                 transparent 75%, 
                 transparent
             );
-            background-size: 40px 40px; /* Размер шага линий */
-            animation: move-stripes 2s linear infinite; /* Движение */
+            background-size: 40px 40px;
+            animation: move-stripes 2s linear infinite;
             
-            border: 1px solid rgba(255, 170, 0, 0.4);
+            /* Делаем рамку чуть ярче, чтобы она "светилась" */
+            border: 2px solid var(--accent);
             margin: calc(var(--nav-height) + 20px) auto 0;
             max-width: 1160px;
-            width: 90%;
-            padding: 20px 30px;
+            width: 95%; /* Чуть шире для акцента */
+            padding: 25px 35px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
-            backdrop-filter: blur(5px);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.2); /* Мягкое свечение всей плашки */
         }
 
-        /* Анимация движения линий вправо-вниз */
-        @keyframes move-stripes {
-            0% { background-position: 0 0; }
-            100% { background-position: 40px 0; }
-        }
-
-        .donate-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 2; /* Чтобы текст был поверх линий */
-        }
-
+        /* Текст внутри плашки делаем более читаемым на темном фоне */
         .donate-title {
             font-family: 'MinecraftCustom', sans-serif;
-            font-size: 1rem;
-            color: var(--accent);
+            font-size: 1.1rem;
+            color: #ffffff; /* Белый заголовок на оранжевом фоне лучше читается */
             text-transform: uppercase;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+            margin-bottom: 5px;
         }
 
         .donate-goal {
-            font-size: 0.85rem;
-            color: var(--text-main);
-            max-width: 750px;
+            font-size: 0.9rem;
+            color: #f0f0f0;
+            max-width: 800px;
             line-height: 1.5;
+            font-weight: 500;
         }
 
+        /* Выделение суммы сделаем максимально ярким */
         .donate-goal b {
-            color: var(--accent);
-            font-weight: 600;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
+        /* Кнопка на таком фоне должна быть контрастной */
         .donate-btn-small {
-            background: var(--accent);
-            color: #000;
+            background: #ffffff; /* Белая кнопка на оранжевом — классика */
+            color: #8B4500; /* Цвет текста как у фона плашки */
             text-decoration: none;
             font-family: 'MinecraftCustom', sans-serif;
-            font-size: 0.9rem;
-            padding: 12px 25px;
+            font-size: 1rem;
+            padding: 14px 28px;
             transition: var(--transition);
             border: none;
             cursor: pointer;
             z-index: 2;
             flex-shrink: 0;
+            box-shadow: 0 4px 0px #d9d9d9; /* Эффект объема */
         }
 
         .donate-btn-small:hover {
-            background: #ffffff;
-            box-shadow: 0 0 20px var(--accent);
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 850px) {
-            .donate-banner {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-                padding: 25px;
-            }
-        }
-
-
-        .donate-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .donate-title {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.9rem;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-
-        .donate-goal {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-
-        .donate-goal span {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .donate-btn-small {
             background: var(--accent);
             color: #000;
-            text-decoration: none;
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.7rem;
-            padding: 10px 20px;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0px #b37700;
         }
 
-        .donate-btn-small:hover {
-            background: #ffffff;
-            color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
+        .donate-btn-small:active {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0px #b37700;
         }
 
-        @media (max-width: 600px) {
-            .donate-banner {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-        }
 
         /* --- NAVIGATION --- */
         nav {
