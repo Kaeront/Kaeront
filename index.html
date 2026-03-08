@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kaeront — Уникальные Minecraft сервера</title>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -17,6 +17,8 @@
         }
 
         html { scroll-behavior: smooth; }
+        section, main, div { scroll-margin-top: calc(var(--nav-height) + 20px); }
+
         body {
             background-color: var(--bg);
             background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
@@ -33,13 +35,14 @@
         /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-            background: transparent; border-bottom: 1.5px solid transparent; 
+            background: transparent; backdrop-filter: blur(0px);
+            border-bottom: 1.5px solid transparent; 
             display: flex; justify-content: space-between;
             align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
             transition: var(--transition);
         }
         nav.scrolled {
-            background: rgba(10, 10, 10, 0.8); 
+            background: rgba(10, 10, 10, 0.7); 
             backdrop-filter: blur(10px);
             border-bottom: 1.5px solid #1a1a1a;
         }
@@ -52,155 +55,296 @@
         h1 { font-family: 'Press Start 2P', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
-        /* --- WHY US (DRAGGABLE) --- */
+        /* --- WHY US (INFINITE VERSION) --- */
         .section-title { font-family: 'Press Start 2P'; font-size: 0.9rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
-        
         .why-us-container { 
             width: 100%; 
-            overflow-x: hidden; /* Скрываем стандартный скролл */
+            overflow-x: auto; 
             padding: 20px 0; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
             cursor: grab;
             user-select: none;
-            touch-action: pan-y;
-            will-change: scroll-position;
         }
-        .why-us-container:active { cursor: grabbing; }
-
+        .why-us-container::-webkit-scrollbar { display: none; }
         .why-us-track { 
             display: flex; 
             gap: 20px; 
             padding: 0 5%; 
             width: max-content; 
+            transition: transform 0.5s ease;
         }
-        .why-card { 
-            background: rgba(20, 20, 20, 0.5); 
-            border-left: 3px solid var(--accent); 
-            padding: 25px; 
-            width: 280px; 
-            flex-shrink: 0; 
-            transition: background 0.3s; 
-            pointer-events: none; /* Чтобы карточки не мешали драгу */
-        }
-        .why-us-container:active .why-card { transition: none; }
-        
+        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: var(--transition); }
+        .why-card:hover { background: rgba(25, 25, 25, 1); box-shadow: 0 5px 15px rgba(0, 0, 0, 1); }
         .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin: 0 0 10px; }
         .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
 
-        /* --- CONTENT --- */
-        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-        .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; transition: var(--transition); }
-        .server-card:hover { transform: translateY(-5px); background: #151515; }
-        .server-card h3 { font-family: 'Press Start 2P'; font-size: 1.1rem; color: var(--accent); margin-bottom: 15px; }
+        /* --- SERVER CARDS --- */
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
+        .section-header { font-family: 'Press Start 2P'; font-size: 0.8rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
+        .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
+        .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
+        .server-card h3 { font-family: 'Press Start 2P'; font-size: 1.1rem; margin: 0 0 15px; color: var(--accent); }
+        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
+        .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Press Start 2P'; font-size: 0.55rem; margin-top: 15px; }
+        .badge-dev span { opacity: 0.8; font-size: 0.5rem; background: var(--accent); color: #000; padding: 2px 4px; }
 
-        footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; text-align: center; color: var(--text-dim); font-size: 0.8rem; }
+        /* --- PROGRESS --- */
+        .dev-label { font-family: 'Press Start 2P'; font-size: 0.6rem; color: var(--accent); margin-bottom: 10px; display: block; }
+        .progress-container { width: 100%; height: 12px; background: #1a1a1a; border: 1px solid #333; margin: 20px 0; }
+        .progress-bar { height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; 
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); align-items: flex-start; justify-content: center;
+            overflow-y: auto; opacity: 0; transition: opacity 0.3s ease; padding: 40px 0;
+        }
+        .modal-overlay.show-flex { display: flex; }
+        .modal-overlay.active { opacity: 1; }
+        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 900px; padding: 40px 30px; position: relative; margin: auto; transform: translateY(20px); transition: 0.3s; }
+        .modal-overlay.active .modal-window { transform: translateY(0); }
+        .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Press Start 2P'; font-size: 0.7rem; cursor: pointer; z-index: 100; }
+        .modal-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-top: 30px; }
+        @media (min-width: 850px) { .modal-grid { grid-template-columns: 1.7fr 1fr; } }
+
+        .dropdown { margin-bottom: 5px; background: #141414; }
+        .dropdown-btn { width: 100%; background: none; padding: 18px 20px; border: none; color: #fff; text-align: left; cursor: pointer; display: flex; justify-content: space-between; font-family: 'Press Start 2P'; font-size: 0.7rem; }
+        .dropdown-content { display: none; padding: 15px 20px; font-size: 0.7rem; color: var(--text-dim); line-height: 1.8; border-top: 1px solid #222; }
+        .dropdown.active .dropdown-content { display: block; }
+        .btn-apply { background: var(--accent); color: #000; padding: 20px; text-decoration: none; font-family: 'Press Start 2P'; font-size: 0.8rem; display: block; text-align: center; margin-top: 20px; transition: 0.3s; }
+        .btn-apply:hover { background: #fff; box-shadow: 0 0 20px var(--accent); }
+        .tech-box { background: #050505; padding: 20px; border: 1px solid #222; font-size: 0.9rem; line-height: 2.2; }
+        .tech-box span { color: var(--accent); }
+
+        footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .footer-section h4 { font-family: 'Press Start 2P'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
+        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Press Start 2P'; }
+
+        @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <nav id="navbar">
+    <nav id="smart-nav">
         <a href="#" class="nav-logo">KAERONT</a>
         <div class="nav-links">
             <a href="#servers">Сервера</a>
-            <a href="#why">О нас</a>
-            <a href="#">Wiki</a>
+            <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
+            <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" style="color: var(--accent);">Донат</a>
         </div>
     </nav>
 
-    <header>
+    <header id="hero-header">
         <h1>KAERONT</h1>
-        <p class="hero-desc">Уникальные механики, живое сообщество и атмосфера, которую ты не забудешь. Твое приключение начинается здесь.</p>
+        <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.</div>
     </header>
 
-    <div class="section-title" id="why">Почему мы?</div>
-    <div class="why-us-container" id="slider">
-        <div class="why-us-track">
-            <div class="why-card">
-                <h4>Стабильность</h4>
-                <p>Uptime 99.9%. Мощное железо в Европе и СНГ для минимального пинга.</p>
+    <div class="section-title">Почему мы?</div>
+    <section class="why-us-container" id="whyUsScroll">
+        <div class="why-us-track" id="whyUsTrack">
+            <div class="why-card"><h4>Комьюнити</h4><p>Адекватная, дружелюбная среда и строгий отбор игроков.</p></div>
+            <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
+            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
+            <div class="why-card"><h4>Доступность</h4><p>Наши сервера предоставляют бесплатную игру.</p></div>
+            <div class="why-card"><h4>Администрация</h4><p>Быстрая и вежливая Администрация проекта.</p></div>
+        </div>
+    </section>
+
+    <main class="content-grid" id="servers">
+        <div>
+            <div class="section-header">СЕРВЕРА</div>
+            <div class="server-card" onclick="openModal('modal-survival')">
+                <h3>Kaeront: Survival</h3>
+                <p>Основной сервер. Спокойно строй, исследуй и заводи друзей без угрозы гриферства. Атмосфера взаимопомощи.</p>
             </div>
-            <div class="why-card">
-                <h4>Без вайпов</h4>
-                <p>Ваши постройки и прогресс сохраняются годами. Мы ценим ваше время.</p>
+            <div class="server-card" onclick="openModal('modal-hub')">
+                <h3>Kaeront: Hub</h3>
+                <p>Единая точка входа для всей экосистемы проекта. Центр навигации.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>20%</span></div>
             </div>
-            <div class="why-card">
-                <h4>Комьюнити</h4>
-                <p>Строгая модерация и адекватные игроки. Никакого токсика.</p>
+        </div>
+        <div>
+            <div class="section-header">МИНИ-ИГРЫ</div>
+            <div class="server-card" onclick="openModal('modal-payload')">
+                <h3>Payload: Backyard</h3>
+                <p>Динамичный режим сопровождения вагонетки на авторской карте Backyard.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
             </div>
-            <div class="why-card">
-                <h4>Свои плагины</h4>
-                <p>Уникальные самописные системы, которых нет на других проектах.</p>
+            <div class="server-card" onclick="openModal('modal-trident')">
+                <h3>Trident Ball</h3>
+                <p>Спортивный гандбол на трезубцах. Уникальная физика и командный геймплей.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>50%</span></div>
             </div>
-            <div class="why-card">
-                <h4>Экономика</h4>
-                <p>Продуманный баланс ресурсов и рыночных отношений между игроками.</p>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modal-survival">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">KAERONT: SURVIVAL</h2>
+            <div class="modal-grid">
+                <div class="modal-left">
+                    <div class="dropdown" id="r1"><button class="dropdown-btn" onclick="toggleDropdown('r1')">1. Общие положения <span>+</span></button><div class="dropdown-content">1.1. Сервер «Kaeront: Survival» предоставляет возможность игры в Minecraft<br>1.2. Администрация оставляет за собой право изменять правила<br>1.3. Игрок обязан ознакомиться с правилами до начала игры<br>1.4. Незнание правил не освобождает от ответственности</div></div>
+                    <div class="dropdown" id="r2"><button class="dropdown-btn" onclick="toggleDropdown('r2')">2. Поведение игроков <span>+</span></button><div class="dropdown-content">2.1. Уважайте других игроков и администрацию<br>2.2. Запрещены оскорбления, унижения, дискриминация<br>2.3. Запрещен троллинг и целенаправленное раздражение игроков<br>2.4. Запрещена порча чужого игрового опыта<br>2.5. Сохраняйте дружелюбную атмосферу</div></div>
+                    <div class="dropdown" id="r3"><button class="dropdown-btn" onclick="toggleDropdown('r3')">3. Запрещенные действия <span>+</span></button><div class="dropdown-content">3.1. Читы и нечестная игра<br>3.2. Гриферство и порча чужих построек<br>3.3. Кража предметов<br>3.4. Использование багов и дюпов<br>3.5. Создание ловушек для убийства игроков<br>3.6. Употребление нецензурной лексики</div></div>
+                    <div class="dropdown" id="r4"><button class="dropdown-btn" onclick="toggleDropdown('r4')">4. Чат и общение <span>+</span></button><div class="dropdown-content">4.1. Запрещен флуд и спам в чате<br>4.2. Запрещена реклама<br>4.3. Запрещено злоупотребление Caps Lock<br>4.4. Разрешены русский и английский языки<br>4.5. Запрещены политические и религиозные темы</div></div>
+                    <div class="dropdown" id="r5"><button class="dropdown-btn" onclick="toggleDropdown('r5')">5. Постройки и территория <span>+</span></button><div class="dropdown-content">5.1. Запрещено строительство непристойных или оскорбительных построек<br>5.2. Убирайте за собой временные постройки<br>5.3. Запрещены лаг-машины, дюп-машины и постройки вызывающие лаги<br>5.4. Любые строительные работы или снос на территории другого игрока разрешены только при наличии официального «Разрешения на строительство», выданной администрацией. Работа без данного документа приравнивается к гриферству.</div></div>
+                    <div class="dropdown" id="r6"><button class="dropdown-btn" onclick="toggleDropdown('r6')">6. Безопасность <span>+</span></button><div class="dropdown-content">6.1. Запрещена передача данных своего аккаунт другим лицам<br>6.2. Не распространяйте личную информацию<br>6.3. Сообщайте о багах и проблемах Telegram аккаунту поддержки — @KaerontMC</div></div>
+                    <div class="dropdown" id="r7"><button class="dropdown-btn" onclick="toggleDropdown('r7')">7. Возрастные ограничения <span>+</span></button><div class="dropdown-content">7.1. Игра лицам младше 14 лет разрешена только при наличии письменного разрешения от родителя или законного опекуна, отправленного Telegram аккаунту поддержки — @KaerontMC<br>7.2. Если вам стало известно, что кому-то меньше 14 лет - немедленно сообщите Telegram аккаунту поддержки — @KaerontMC<br>7.3. Возраст проверяется через звонок в Discord</div></div>
+                    <div class="dropdown" id="r8"><button class="dropdown-btn" onclick="toggleDropdown('r8')">8. Правила подачи жалоб <span>+</span></button><div class="dropdown-content">8.1. Жалобы принимаются только от Telegram аккаунта поддержки — @KaerontMC<br>8.2. Жалобы принимаются только в текстовом формате с четким описанием нарушения и никнеймом нарушителя<br>8.3. Если есть, прилагайте файлы-доказательства<br>8.4. Укажите никнейм нарушителя, время и координаты события<br>8.5. За ложные жалобы — предупреждение или блокировка<br>8.6. Администрация оставляет за собой право отказать в рассмотрении без объяснения причин<br>8.7. Решение администрации окончательно</div></div>
+                </div>
+                <div class="modal-right">
+                    <div class="tech-box">Версия: <span>Java 1.21.8</span><br>IP: <span>set-f.gl.joinmc.link</span><br>Лицензия: <span>Не обязательно</span></div>
+                    <a href="https://forms.gle/dvJ5BhnUyCgRBxoy5" class="btn-apply" target="_blank">ПОДАТЬ ЗАЯВКУ</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <main class="content-grid" id="servers">
-        <div class="server-card">
-            <h3>VANILLA+</h3>
-            <p>Классическое выживание с легкими улучшениями, не портящими атмосферу оригинала.</p>
+    <div class="modal-overlay" id="modal-hub">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">KAERONT: HUB</h2>
+            <span class="dev-label">РАЗРАБОТКА (20%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 20%;"></div></div>
+            <p style="color: var(--text-dim); line-height: 1.6;">Центральный узел навигации и первый взгляд на архитектуру проекта.</p>
         </div>
-        <div class="server-card">
-            <h3>HARDCORE</h3>
-            <p>Для тех, кто ищет настоящий вызов. Одна жизнь, сложные мобы и редкие ресурсы.</p>
+    </div>
+
+    <div class="modal-overlay" id="modal-payload">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">PAYLOAD: BACKYARD</h2>
+            <span class="dev-label">РАЗРАБОТКА (70%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
+            <p style="color: var(--text-dim); line-height: 1.6;">Динамичный режим сопровождения. Ведется работа над балансом карты Backyard.</p>
         </div>
-    </main>
+    </div>
+
+    <div class="modal-overlay" id="modal-trident">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-trident')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Press Start 2P'; color: var(--accent);">TRIDENT BALL</h2>
+            <span class="dev-label">РАЗРАБОТКА (50%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 50%;"></div></div>
+            <p style="color: var(--text-dim); line-height: 1.6;">Спортивная мини-игра. Настраиваем физику трезубцев и систему очков.</p>
+        </div>
+    </div>
 
     <footer>
-        &copy; 2024 Kaeront Project. Все права защищены.
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h4>KAERONT</h4>
+                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
+            </div>
+            <div class="footer-section">
+                <h4>ДОКУМЕНТЫ</h4>
+                <ul class="footer-links"><li><a href="privacy.html">Политика конфиденциальности и обработки персональных данных</a></li></ul>
+            </div>
+            <div class="footer-section">
+                <h4>ПРОЕКТ</h4>
+                <ul class="footer-links">
+                    <li><a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank">Пожертвовать</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">Техподдержка (Telegram)</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>Проект разработчика KAmir.</div>
     </footer>
 
     <script>
-        // Скролл навигации
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        // --- MODAL LOGIC ---
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if(modal) {
+                modal.classList.add('show-flex');
+                setTimeout(() => modal.classList.add('active'), 10);
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if(modal) {
+                modal.classList.remove('active');
+                setTimeout(() => modal.classList.remove('show-flex'), 300);
+                document.body.style.overflow = 'auto';
+            }
+        }
+        function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
+
+        // --- SCROLL NAV ---
+        window.onscroll = function() {
+            const nav = document.getElementById('smart-nav');
+            if (window.pageYOffset > 120) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        };
+
+        // --- INFINITE AUTO-SCROLL "WHY US" ---
+        const scrollContainer = document.getElementById('whyUsScroll');
+        const track = document.getElementById('whyUsTrack');
+        let cards = Array.from(track.children);
+        
+        // Клонируем элементы для создания иллюзии бесконечности
+        cards.forEach(card => {
+            const clone = card.cloneNode(true);
+            track.appendChild(clone);
+        });
+        cards.forEach(card => {
+            const clone = card.cloneNode(true);
+            track.insertBefore(clone, track.firstChild);
         });
 
-        // Оптимизированный Drag-to-Scroll
-        const slider = document.getElementById('slider');
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        let velX = 0;
-        let momentumID;
+        let isPaused = false;
+        const step = 1; // Прыжок в пикселях
 
-        const startDrag = (e) => {
-            isDown = true;
-            startX = (e.pageX || e.touches[0].pageX) - slider.offsetLeft;
-            scrollLeft = slider.scrollLeft;
-            cancelAnimationFrame(momentumID);
-        };
+        // Устанавливаем начальную позицию в центр (на оригинальные карточки)
+        scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
 
-        const stopDrag = () => {
-            isDown = false;
-            beginMomentum();
-        };
-
-        const move = (e) => {
-            if (!isDown) return;
-            const x = (e.pageX || e.touches[0].pageX) - slider.offsetLeft;
-            const walk = (x - startX) * 1.5; 
-            const prevScroll = slider.scrollLeft;
-            slider.scrollLeft = scrollLeft - walk;
-            velX = slider.scrollLeft - prevScroll;
-        };
-
-        const beginMomentum = () => {
-            if (Math.abs(velX) > 0.5) {
-                slider.scrollLeft += velX;
-                velX *= 0.95; 
-                momentumID = requestAnimationFrame(beginMomentum);
+        function autoScroll() {
+            if (!isPaused) {
+                let target = scrollContainer.scrollLeft + step;
+                scrollContainer.scrollTo({
+                    left: target,
+                    behavior: 'smooth'
+                });
             }
-        };
+        }
 
-        slider.addEventListener('mousedown', startDrag);
-        slider.addEventListener('touchstart', startDrag, {passive: true});
-        window.addEventListener('mouseup', stopDrag);
-        window.addEventListener('touchend', stopDrag);
-        window.addEventListener('mousemove', move);
-        slider.addEventListener('touchmove', move, {passive: false});
+        // Проверка границ для мгновенного перемещения (зацикливание)
+        scrollContainer.addEventListener('scroll', () => {
+            const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            if (scrollContainer.scrollLeft <= 0) {
+                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
+            } else if (scrollContainer.scrollLeft >= maxScroll - 1) {
+                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
+            }
+        });
+
+        // Пауза при наведении или касании
+        scrollContainer.addEventListener('mouseenter', () => isPaused = true);
+        scrollContainer.addEventListener('mouseleave', () => isPaused = false);
+        scrollContainer.addEventListener('touchstart', () => isPaused = true);
+        scrollContainer.addEventListener('touchend', () => {
+            // Возобновляем через 2 секунды после того, как пользователь отпустил ленту
+            setTimeout(() => isPaused = false, 1000); 
+        });
+
+        // Запуск интервала авто-скролла (раз в 3 секунды)
+        setInterval(autoScroll, 0);
+
+        // Закрытие модалок по клику на затемненный фон (overlay)
+        window.onclick = function(e) { 
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal(e.target.id);
+            } 
+        }
     </script>
 </body>
 </html>
