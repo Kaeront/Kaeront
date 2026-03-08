@@ -32,15 +32,24 @@
             min-height: 100vh;
         }
 
-        /* --- NAVIGATION --- */
+        /* --- FIXED NAVIGATION LOGIC --- */
         nav {
-            position: fixed; top: -100px; left: 0; width: 100%; height: var(--nav-height);
-            background: rgba(10, 10, 10, 0.5); backdrop-filter: blur(15px);
-            border-bottom: 1.5px solid #1a1a1a; display: flex; justify-content: space-between;
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            background: transparent;
+            backdrop-filter: blur(0px);
+            border-bottom: 1.5px solid transparent; 
+            display: flex; justify-content: space-between;
             align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
             transition: var(--transition);
         }
-        nav.visible { top: 0; }
+        
+        /* Класс для состояния после прокрутки заголовка */
+        nav.scrolled {
+            background: rgba(10, 10, 10, 0.7); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1.5px solid #1a1a1a;
+        }
+
         .nav-logo { font-family: 'Press Start 2P'; font-size: 0.8rem; color: var(--accent); text-decoration: none; }
         .nav-links { display: flex; gap: 15px; }
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
@@ -117,7 +126,7 @@
         </div>
     </nav>
 
-    <header>
+    <header id="hero-header">
         <h1>KAERONT</h1>
         <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.</div>
     </header>
@@ -202,7 +211,7 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy.html">Политика конфиденциальности и обработки персональных данных (ПКОПД)</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных (ПКОПД)</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -234,11 +243,19 @@
             }
         }
         function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
+
+        /* --- СКРИПТ ПРОЯВЛЕНИЯ НАВИГАЦИИ --- */
         window.onscroll = function() {
             const nav = document.getElementById('smart-nav');
-            if (window.pageYOffset > 100) nav.classList.add('visible');
-            else nav.classList.remove('visible');
+            const headerHeight = document.getElementById('hero-header').offsetHeight;
+            // Как только прокрутили за пределы хедера (примерно 180-200px)
+            if (window.pageYOffset > 120) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
         };
+
         window.onclick = function(e) { if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id); }
     </script>
 </body>
