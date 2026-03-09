@@ -18,20 +18,13 @@
         @font-face {
             font-family: 'Minecraft';
             src: url('minecraft.ttf') format('truetype');
-            font-weight: 200;
-            font-style: normal;
-            font-display: swap;
+            font-weight: 200; font-style: normal; font-display: swap;
         }
         body {
             background-color: var(--bg);
             background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
-            background-size: 12px 12px;
-            color: var(--text-main);
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background-size: 12px 12px; color: var(--text-main); font-family: 'Montserrat', sans-serif;
+            margin: 0; display: flex; flex-direction: column; min-height: 100vh;
         }
 
         nav {
@@ -47,11 +40,7 @@
 
         .content-wrapper {
             padding-top: calc(var(--nav-height) + 40px);
-            max-width: 900px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-            flex-grow: 1;
+            max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex-grow: 1;
         }
 
         .header-section { margin: 20px; }
@@ -59,46 +48,30 @@
         .btn-back:hover { color: var(--accent); }
         h1 { font-family: 'Minecraft'; font-size: 1.5rem; color: var(--accent); margin-bottom: 30px; }
 
-        /* --- НОВОСТНЫЕ КАРТОЧКИ --- */
         .news-list { display: flex; flex-direction: column; gap: 30px; margin: 20px; }
         
         .news-card {
-            background: var(--card-bg);
-            border: 1px solid #1a1a1a;
-            padding: 30px;
-            position: relative;
-            transition: 0.3s;
-            scroll-margin-top: 100px; /* Отступ при переходе по ссылке #дата */
+            background: var(--card-bg); border: 1px solid #1a1a1a; padding: 30px;
+            position: relative; transition: 0.3s; scroll-margin-top: 100px;
         }
         
-        /* Эффект подсветки при переходе по якорю */
-        .news-card:target {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(255, 170, 0, 0.1);
-            background: rgba(40, 30, 0, 0.2);
-        }
+        /* Скрываем архивные новости */
+        .news-card.hidden { display: none; }
 
+        .news-card:target { border-color: var(--accent); background: rgba(40, 30, 0, 0.2); }
         .news-card h2 { font-family: 'Minecraft'; font-size: 1rem; color: var(--accent); margin: 0 0 15px 0; }
         .news-meta { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; display: block; font-family: 'Minecraft'; }
         .news-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin-bottom: 0; }
 
-        /* Оптимизация: скрываем старые новости по умолчанию */
-        .news-card.old { display: none; }
         .show-more-btn {
-            background: none; border: 1px dashed var(--text-dim); color: var(--text-dim);
+            background: rgba(20,20,20,0.8); border: 1px dashed var(--text-dim); color: var(--text-dim);
             padding: 15px; width: 100%; font-family: 'Minecraft'; font-size: 0.7rem;
             cursor: pointer; margin-top: 20px; transition: 0.3s;
         }
-        .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .show-more-btn:hover { border-color: var(--accent); color: var(--accent); background: #111; }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: 80px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
-        .footer-links { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 10px; }
-        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
-        .footer-links a:hover { color: var(--accent); }
-        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
+        .copyright-bar { text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; padding-top: 20px; }
     </style>
 </head>
 <body>
@@ -108,7 +81,6 @@
         <div class="nav-links">
             <a href="./#servers">Сервера</a>
             <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
-            <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" style="color: var(--accent);">Донат</a>
         </div>
     </nav>
 
@@ -118,61 +90,73 @@
             <h1>Лента новостей</h1>
         </div>
 
-        <div class="news-list" id="newsList">
+        <div class="news-list" id="newsContainer">
             
-            <div class="news-card" id="09-03-2026">
-                <span class="news-meta">09 марта 2026</span>
+            <div class="news-card" id="08-03-2026">
+                <span class="news-meta">08 марта 2026</span>
+                <h2>Официальный запуск сайта</h2>
+                <p>Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом разработки, подавать заявки на Survival и поддерживать проект можно в одном месте.</p>
+            </div>
+
+            <div class="news-card hidden" id="04-03-2026">
+                <span class="news-meta">04 марта 2026</span>
                 <h2>Мы переименовались в Kaeront</h2>
-                <p>Проект KAmir Group официально меняет название на <b>Kaeront</b>. Это решение связано с расширением нашей инфраструктуры и подготовкой к запуску глобальной сети серверов. Мы сохраняем все ваши достижения, но меняем обёртку на более качественную.</p>
+                <p>Проект KAmir Group официально меняет название на <b>Kaeront</b>. Это решение связано с расширением нашей инфраструктуры и подготовкой к запуску глобальной сети серверов.</p>
             </div>
 
-            <div class="news-card old" id="01-03-2026">
-                <span class="news-meta">01 марта 2026</span>
-                <h2>Открытие официального сайта</h2>
-                <p>Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом разработки, подавать заявки на Survival и поддерживать проект можно в одном месте. Сайт будет дополняться новыми функциями по мере развития Хаба.</p>
-            </div>
-
-            <button class="show-more-btn" id="loadMore">ПОКАЗАТЬ ПРЕДЫДУЩИЕ НОВОСТИ</button>
+            <button class="show-more-btn" id="loadMoreBtn">ПОКАЗАТЬ ПРЕДЫДУЩИЕ НОВОСТИ</button>
         </div>
     </div>
 
     <footer>
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h4>KAERONT</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim);">Развиваем проект с 2018 года. От личного ника до игровой сети.</p>
-            </div>
-            <div class="footer-section">
-                <h4>ДОКУМЕНТЫ</h4>
-                <ul class="footer-links"><li><a href="privacy">Политика конфиденциальности</a></li></ul>
-            </div>
-        </div>
         <div class="copyright-bar">Copyright © Kaeront 2026.</div>
     </footer>
 
     <script>
-        // Функция для раскрытия скрытых новостей
-        document.getElementById('loadMore').addEventListener('click', function() {
-            const oldNews = document.querySelectorAll('.news-card.old');
-            oldNews.forEach(news => news.style.display = 'block');
-            this.style.display = 'none'; // Скрываем кнопку после нажатия
+        const newsPerPage = 3; // Сколько новостей раскрывать за один раз
+        const btn = document.getElementById('loadMoreBtn');
+
+        btn.addEventListener('click', function() {
+            const hiddenNews = document.querySelectorAll('.news-card.hidden');
+            
+            // Раскрываем только определенное количество
+            for(let i = 0; i < newsPerPage && i < hiddenNews.length; i++) {
+                hiddenNews[i].classList.remove('hidden');
+            }
+
+            // Если скрытых новостей больше нет — убираем кнопку
+            if (document.querySelectorAll('.news-card.hidden').length === 0) {
+                btn.style.display = 'none';
+            }
         });
 
-        // Если в URL есть хэш (например #01-03-2026), 
-        // автоматически открываем скрытые новости, чтобы скролл сработал
-        window.addEventListener('load', () => {
+        // Функция обработки хэша в URL (якорь по дате)
+        function checkHash() {
             if(window.location.hash) {
                 const targetId = window.location.hash.substring(1);
                 const targetElement = document.getElementById(targetId);
-                if(targetElement && targetElement.classList.contains('old')) {
-                    const oldNews = document.querySelectorAll('.news-card.old');
-                    oldNews.forEach(news => news.style.display = 'block');
-                    document.getElementById('loadMore').style.display = 'none';
-                    // Небольшая задержка, чтобы браузер успел отрисовать и проскроллить
-                    setTimeout(() => targetElement.scrollIntoView({ behavior: 'smooth' }), 100);
+                
+                if(targetElement) {
+                    // Раскрываем все новости до целевой, если она скрыта
+                    let parent = targetElement;
+                    if (parent.classList.contains('hidden')) {
+                        const allHiddenBefore = [];
+                        let current = parent;
+                        // Находим все скрытые элементы в контейнере
+                        const allHidden = document.querySelectorAll('.news-card.hidden');
+                        allHidden.forEach(el => el.classList.remove('hidden'));
+                        btn.style.display = 'none';
+                    }
+                    
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }, 200);
                 }
             }
-        });
+        }
+
+        window.addEventListener('load', checkHash);
+        window.addEventListener('hashchange', checkHash);
     </script>
 </body>
 </html>
