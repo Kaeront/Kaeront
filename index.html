@@ -64,7 +64,7 @@
             justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(2px);
             position: relative;
             overflow: hidden;
         }
@@ -90,7 +90,7 @@
         }
 
         .donate-goal {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--text-main);
             max-width: 760px;
             line-height: 1.5;
@@ -105,7 +105,7 @@
             background: var(--accent);
             color: #000;
             text-decoration: none;
-            font-family: 'MinecraftCustom', sans-serif;
+            font-family: 'Minecraft', sans-serif;
             font-size: 0.9rem;
             padding: 12px 25px;
             transition: var(--transition);
@@ -220,7 +220,7 @@
             width: max-content; 
             transition: transform 0.5s ease;
         }
-        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: var(--transition); }
+        .why-card { background: rgba(20, 20, 20, 0.5); backdrop-filter: blur(2px); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: var(--transition); }
         .why-card:hover { background: rgba(25, 25, 25, 1); box-shadow: 0 5px 15px rgba(0, 0, 0, 1); }
         .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin: 0 0 10px; }
         .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
@@ -228,7 +228,7 @@
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
         .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
-        .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
+        .server-card { background: rgba(17,17,17,0.5); backdrop-filter: blur(2px); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
         .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; margin: 0 0 15px; color: var(--accent); }
         .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
