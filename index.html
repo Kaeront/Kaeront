@@ -302,7 +302,7 @@
 
         .news-card h3 {
             font-family: 'Minecraft', sans-serif;
-            color: #fff;
+            color: var(--accent);
             margin: 0 0 10px 0;
             font-size: 1.2rem;
         }
@@ -332,7 +332,28 @@
             background: var(--accent);
             color: #000;
         }
+        
+        /* --- ТЕГИ (МЕТКИ) --- */
+        .news-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px; /* Отступ под заголовком */
+        }
 
+        .tag {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.65rem;
+            padding: 3px 3px;
+        }
+
+        /* Цветовые схемы в стиле Minecraft */
+        .tag-misc     { background: #FA0; color: #000; } /* Прочее (Желтый) */
+        .tag-server  { background: #55F; color: #fff; } /* Сервер (Синий) */
+        .tag-site    { background: #00A; color: #fff; } /* Сайт (Темно-синий) */
+        .tag-event   { background: #F5F; color: #000; } /* Событие (Пурпурный) */
+        .tag-major     { background: #F55; color: #fff; } /* Важное (Красный) */
+        .tag-fix     { background: #A00; color: #fff; } /* Исправление (Темно-красный) */
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
@@ -473,6 +494,10 @@
             <span class="news-date">08.03.2026</span>
             <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
             <h3>Открытие официального сайта</h3>
+                <div class="news-tags">
+        <span class="tag tag-major">Важное</span>
+        <span class="tag tag-site">Сайт</span>
+                </div>
             <p>
                 Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом разработки, подавать заявки на Survival и поддерживать проект можно в одном месте. Сайт будет дополняться новыми функциями по мере развития Хаба.
             </p>
