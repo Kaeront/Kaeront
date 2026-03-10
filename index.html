@@ -458,11 +458,16 @@
             <div class="server-card" onclick="openModal('modal-bedrock')">
                 <h3>Kaeront: Bedrock</h3>
                 <p>Выживание на Minecraft Bedrock Edition. Описание не готово.</p>
-                <div class="badge-dev">ПЛАНИРУЕТСЯ</div>
+                <div class="badge-dev">НА ЗАДНЕМ ПЛАНЕ</div>
             </div>
         </div>
         <div>
             <div class="section-header">Игры</div>
+            <div class="server-card" onclick="openModal('modal-cc')">
+                <h3>Crystal Clash</h3>
+                <p>Защити Аметистовое Ядро! Выбери свой кристалл силы, используй уникальные классы и разбей базу противника в динамичной магической битве.</p>
+                <div class="badge-dev">Планируется</div>
+            </div>
             <div class="server-card" onclick="openModal('modal-payload')">
                 <h3>Payload: Backyard</h3>
                 <p>Командная гонка вагонеток на динамичной карте Backyard.</p>
@@ -521,8 +526,17 @@
 
     <div class="modal-overlay" id="modal-payload">
         <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-cc')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">CRYSTAL CLASH</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Масштабная командная тактическая арена, где исход сражения определяет не только скорость клика, но и выверенная командная стратегия. Вместо привычных баз здесь в центре каждой крепости сияют Аметистовые Ядра — священные источники силы вашей команды, которые нужно защищать любой ценой.»</p>            
+            <span class="dev-label">ПЛАНИРУЕТСЯ</span>
+        </div>
+
+    </div>
+    <div class="modal-overlay" id="modal-payload">
+        <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">PAYLOAD: BACKYARD</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Payload: Backyard</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Сопровождай ценный груз через задний двор, полный опасностей и тактических позиций. Слаженная работа, уникальные способности и динамичный геймплей. Доставь груз любой ценой или останови врага!</p>            
             <span class="dev-label">РАЗРАБОТКА (70%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
