@@ -72,19 +72,19 @@
         @keyframes move-stripes { 0% { background-position: 0 0; } 100% { background-position: -40px 0; } }
         .donate-progress { width: 100%; height: 22px; background: rgba(0, 0, 0, 0.2); margin-top: 10px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;}
         .donate-progress-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .donate-progress-text { position: relative; z-index: 3; font-family: 'Minecraft'; font-size: 0.65rem; }
+        .donate-progress-text { position: relative; z-index: 3; font-family: 'Minecraft'; font-size: 0.65rem; color: #fff; text-shadow: 1px 1px 2px #000;}
         .donate-btn-small { background: var(--accent); color: #000; text-decoration: none; font-family: 'Minecraft'; font-size: 0.9rem; padding: 12px 25px; transition: var(--transition); border: none; cursor: pointer; }
 
-        header { padding: 140px 20px 50px; text-align: center; }
-        h1 { font-family: 'Minecraft', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
+        header { padding: 100px 20px 50px; text-align: center; }
+        h1 { font-family: 'Minecraft', cursive; font-size: clamp(2.5rem, 8vw, 4rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
         /* --- WHY US (ИНТЕРАКТИВНАЯ ЛЕНТА) --- */
-        .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 60px 0 20px; text-transform: uppercase; }
+        .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
         
         .why-us-container { 
             width: 100%; 
-            overflow-x: hidden; 
+            overflow: hidden; 
             cursor: grab;
             padding: 20px 0;
             position: relative;
@@ -96,8 +96,7 @@
             display: flex; 
             gap: 20px; 
             width: max-content; 
-            padding: 0 50px;
-            scroll-behavior: smooth;
+            will-change: transform;
         }
 
         .why-card { 
@@ -106,21 +105,20 @@
             padding: 25px; 
             width: 280px; 
             flex-shrink: 0; 
-            transition: var(--transition);
+            transition: background 0.3s;
         }
-        .why-card:hover { background: rgba(25, 25, 25, 1); }
         .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--accent); margin: 0 0 10px; }
         .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
 
         /* --- CONTENT GRID --- */
-        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box;}
         .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); position: relative; margin-bottom: 20px;}
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
         .server-card h3 { font-family: 'Minecraft'; color: var(--accent); margin: 0 0 15px; }
         .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
         .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
-        .badge-dev span { background: var(--accent); color: #000; padding: 2px 4px; }
+        .badge-dev span { background: var(--accent); color: #000; padding: 2px 4px; margin-left: 5px;}
 
         /* --- NEWS --- */
         .news-container { max-width: 1160px; width: 95%; margin: 20px auto 40px; display: flex; flex-direction: column; }
@@ -134,8 +132,7 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show-flex { display: flex; }
         .modal-overlay.active { opacity: 1; }
-        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 700px; padding: 40px 30px; position: relative; transform: translateY(20px); transition: 0.3s; }
-        .modal-overlay.active .modal-window { transform: translateY(0); }
+        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 700px; padding: 40px 30px; position: relative; }
         .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: pointer; }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
@@ -162,7 +159,7 @@
 
     <div class="donate-banner">
         <div style="flex-grow: 1;">
-            <div style="font-family: 'Minecraft'; color: var(--accent);">Сбор на мощное железо</div>
+            <div style="font-family: 'Minecraft'; color: var(--accent); font-size: 0.9rem;">Сбор на мощное железо</div>
             <div class="donate-progress">
                 <div class="donate-progress-bar" style="width: 7.167%;"></div>
                 <div class="donate-progress-text">2150 из 30000 собрано</div>
@@ -177,8 +174,8 @@
     </header>
 
     <div class="section-title">Почему мы?</div>
-    <div class="why-us-container" id="whyUsScroll">
-        <div class="why-us-track" id="whyUsTrack">
+    <div class="why-us-container" id="sliderContainer">
+        <div class="why-us-track" id="sliderTrack">
             <div class="why-card"><h4>Комьюнити</h4><p>Адекватная среда и строгий отбор игроков.</p></div>
             <div class="why-card"><h4>Нет вайпов</h4><p>Ваши постройки сохранятся навсегда.</p></div>
             <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
@@ -226,27 +223,21 @@
         <a href="news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
     </div>
 
-    <div class="modal-overlay" id="modal-survival">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2>
-            <p style="color: var(--text-dim);">Основной сервер для выживания.</p>
-        </div>
-    </div>
+    <div class="modal-overlay" id="modal-survival"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Survival</h2><p>Основной сервер выживания.</p></div></div>
     <div class="modal-overlay" id="modal-hub"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Hub</h2><p>В разработке...</p></div></div>
     <div class="modal-overlay" id="modal-payload"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Payload</h2><p>В разработке...</p></div></div>
     <div class="modal-overlay" id="modal-trident"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-trident')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Tridentball</h2><p>В разработке...</p></div></div>
 
     <footer>
         <div class="footer-grid">
-            <div class="footer-section"><h4>KAERONT</h4><p style="font-size: 0.8rem; color: var(--text-dim);">Minecraft как искусство.</p></div>
+            <div class="footer-section"><h4>KAERONT</h4><p style="color: var(--text-dim); font-size: 0.8rem;">Minecraft как искусство.</p></div>
             <div class="footer-section"><h4>КОНТАКТЫ</h4><ul class="footer-links"><li><a href="mailto:admin@kaeront.ru">admin@kaeront.ru</a></li></ul></div>
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.</div>
     </footer>
 
     <script>
-        // --- МОДАЛКИ ---
+        // --- MODALS ---
         function openModal(id) {
             const m = document.getElementById(id);
             m.classList.add('show-flex');
@@ -266,85 +257,104 @@
             else n.classList.remove('scrolled');
         };
 
-        // --- ЛЕНТА "ПОЧЕМУ МЫ" ---
-        const scrollContainer = document.getElementById('whyUsScroll');
-        const track = document.getElementById('whyUsTrack');
+        // --- INFINITE DRAGGABLE SLIDER ---
+        const container = document.getElementById('sliderContainer');
+        const track = document.getElementById('sliderTrack');
+        const cards = Array.from(track.children);
         
-        // Клонирование для бесконечности
-        const originalCards = Array.from(track.children);
-        originalCards.forEach(c => track.appendChild(c.cloneNode(true)));
-        originalCards.forEach(c => track.insertBefore(c.cloneNode(true), track.firstChild));
+        // Клонируем карточки для бесконечности (в начало и в конец)
+        cards.forEach(card => {
+            const cloneAfter = card.cloneNode(true);
+            const cloneBefore = card.cloneNode(true);
+            track.appendChild(cloneAfter);
+            track.insertBefore(cloneBefore, track.firstChild);
+        });
 
-        let isDown = false;
-        let startX;
-        let scrollLeft;
+        let isDragging = false;
+        let startX, scrollLeft;
+        let xProgress = 0; // Текущая позиция смещения
+        let autoSpeed = 0.5; // Скорость автопрокрутки
+        let animationId;
         let isPaused = false;
-        let autoScrollInterval;
-        const cardWidth = originalCards[0].offsetWidth + 20;
 
-        // Центрируем
-        scrollContainer.scrollLeft = cardWidth * originalCards.length;
+        const cardTotalWidth = cards[0].offsetWidth + 20; // ширина + gap
+        const originalWidth = cardTotalWidth * cards.length;
+        
+        // Устанавливаем начальную позицию на оригинальные карточки (пропуская клоны в начале)
+        xProgress = -originalWidth;
+        track.style.transform = `translateX(${xProgress}px)`;
 
-        // Авто-скролл с доводкой (Snap)
-        function startAutoScroll() {
-            autoScrollInterval = setInterval(() => {
-                if (!isPaused && !isDown) {
-                    let target = scrollContainer.scrollLeft + cardWidth;
-                    scrollContainer.scrollTo({ left: target, behavior: 'smooth' });
+        function update() {
+            if (!isDragging && !isPaused) {
+                xProgress -= autoSpeed;
+                
+                // Бесшовное зацикливание
+                if (xProgress <= -(originalWidth * 2)) {
+                    xProgress = -originalWidth;
                 }
-            }, 3000);
+                if (xProgress >= 0) {
+                    xProgress = -originalWidth;
+                }
+                
+                track.style.transform = `translateX(${xProgress}px)`;
+            }
+            animationId = requestAnimationFrame(update);
         }
 
-        // Зацикливание при скролле
-        scrollContainer.addEventListener('scroll', () => {
-            const segment = cardWidth * originalCards.length;
-            if (scrollContainer.scrollLeft <= 0) {
-                scrollContainer.scrollLeft = segment;
-            } else if (scrollContainer.scrollLeft >= segment * 2) {
-                scrollContainer.scrollLeft = segment;
-            }
+        // Drag events (Mouse)
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX - track.offsetLeft;
+            container.style.cursor = 'grabbing';
         });
 
-        // Drag-and-Drop
-        scrollContainer.addEventListener('mousedown', (e) => {
-            isDown = true;
+        window.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            container.style.cursor = 'grab';
+            
+            // Легкий "Snap" до ближайшей карточки после отпускания
+            const remainder = xProgress % cardTotalWidth;
+            xProgress = xProgress - remainder;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const x = e.pageX - container.offsetLeft;
+            const move = (e.movementX);
+            xProgress += move;
+            track.style.transform = `translateX(${xProgress}px)`;
+        });
+
+        // Touch events (Mobile)
+        container.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].pageX;
             isPaused = true;
-            startX = e.pageX - scrollContainer.offsetLeft;
-            scrollLeft = scrollContainer.scrollLeft;
-            scrollContainer.style.scrollBehavior = 'auto';
         });
 
-        const endDrag = () => {
-            if (!isDown) return;
-            isDown = false;
-            scrollContainer.style.scrollBehavior = 'smooth';
-            // Snap доводка
-            const nearest = Math.round(scrollContainer.scrollLeft / cardWidth) * cardWidth;
-            scrollContainer.scrollTo({ left: nearest, behavior: 'smooth' });
-            setTimeout(() => { isPaused = false; }, 2000);
-        };
-
-        window.addEventListener('mouseup', endDrag);
-        scrollContainer.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            scrollContainer.scrollLeft = scrollLeft - walk;
+        container.addEventListener('touchend', () => {
+            isDragging = false;
+            isPaused = false;
         });
 
-        // Touch (Mobile)
-        scrollContainer.addEventListener('touchstart', () => { isPaused = true; scrollContainer.style.scrollBehavior = 'auto'; });
-        scrollContainer.addEventListener('touchend', () => {
-            scrollContainer.style.scrollBehavior = 'smooth';
-            const nearest = Math.round(scrollContainer.scrollLeft / cardWidth) * cardWidth;
-            scrollContainer.scrollTo({ left: nearest, behavior: 'smooth' });
-            setTimeout(() => { isPaused = false; }, 2000);
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const x = e.touches[0].pageX;
+            const move = x - startX;
+            startX = x;
+            xProgress += move;
+            track.style.transform = `translateX(${xProgress}px)`;
         });
 
-        startAutoScroll();
+        // Пауза при наведении
+        container.addEventListener('mouseenter', () => isPaused = true);
+        container.addEventListener('mouseleave', () => isPaused = false);
 
-        // Overlay close
+        // Запуск
+        update();
+
+        // Close on overlay click
         window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id); }
     </script>
 </body>
