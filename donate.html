@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <meta property="og:title" content="Kaeront — Поддержка проекта">
-    <meta property="og:description" content="Поддержи любимый сервер и помоги нам стать лучше.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
-    <meta property="og:url" content="https://kaeront.ru/pay">
+    <meta property="og:title" content="Kaeront — Уникальные Minecraft сервер">
+    <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
+    <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
 
+    <meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Поддержка проекта Kaeront</title>
+    <title>Поддержка проекта «Kaeront»</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -42,6 +43,7 @@
             min-height: 100vh;
         }
 
+        /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
             background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(10px);
@@ -53,6 +55,7 @@
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; transition: 0.3s; }
         .nav-links a:hover { color: var(--accent); }
 
+        /* --- CONTENT --- */
         .legal-wrapper {
             padding-top: calc(var(--nav-height) + 40px);
             max-width: 900px;
@@ -60,9 +63,6 @@
             width: 100%;
             box-sizing: border-box;
             flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         .legal-card {
@@ -72,58 +72,61 @@
             padding: 50px 40px;
             margin: 20px;
             text-align: center;
-            width: 100%;
         }
 
-        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); margin-bottom: 30px; }
-        
-        .donation-box {
-            margin-top: 20px;
+        .btn-back {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: 'Minecraft';
+            font-size: 0.7rem;
+            transition: 0.3s;
+        }
+        .btn-back:hover { color: var(--accent); }
+
+        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.2; margin-bottom: 20px; }
+        p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.3; margin-bottom: 30px; }
+
+        /* Элементы управления донатом */
+        .donation-controls {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
-        /* Чекбокс оферты */
-        .checkbox-container {
+        .checkbox-label {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-            margin-bottom: 30px;
-            font-size: 0.85rem;
             color: var(--text-dim);
+            font-size: 0.85rem;
             cursor: pointer;
-        }
-        .checkbox-container input {
-            cursor: pointer;
-            accent-color: var(--accent);
-        }
-        .checkbox-container a {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px dashed;
         }
 
-        /* Кнопка оплаты */
-        .btn-pay {
+        .checkbox-label input { accent-color: var(--accent); cursor: pointer; }
+        .checkbox-label a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+
+        .btn-pay-action {
+            display: inline-block;
             background: var(--accent);
             color: #000;
-            border: none;
             padding: 15px 40px;
             font-family: 'Minecraft';
-            font-size: 0.9rem;
-            cursor: not-allowed;
-            transition: 0.3s;
-            opacity: 0.4;
-            text-transform: uppercase;
+            font-size: 0.8rem;
             text-decoration: none;
-            display: inline-block;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border: none;
+            opacity: 0.4;
+            cursor: not-allowed;
         }
-        .btn-pay.active {
+
+        .btn-pay-action.active {
             opacity: 1;
             cursor: pointer;
-        }
-        .btn-pay.active:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
         }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
@@ -133,12 +136,12 @@
         .footer-links li { margin-bottom: 10px; }
         .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--accent); }
+        .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
         .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
         @media (max-width: 600px) {
-            .legal-card { padding: 40px 20px; }
+            .legal-card { padding: 30px 20px; }
             h1 { font-size: 0.9rem; }
-            .checkbox-container { font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -150,22 +153,24 @@
             <a href="./#servers">Сервера</a>
             <a href="news">Новости</a>
             <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
-            <a href="pay" style="color: var(--accent);">Пожертвовать</a>
+            <a href="donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>
 
     <div class="legal-wrapper">
         <div class="legal-card">
-            <h1>ПОДДЕРЖКА ПРОЕКТА KAERONT</h1>
-            <p style="margin-bottom: 40px;">Ваше добровольное пожертвование помогает нам оплачивать хостинг и делать контент лучше.</p>
+            <a href="./" class="btn-back">< НА ГЛАВНУЮ</a>
+            
+            <h1>ПОДДЕРЖКА ПРОЕКТА «KAERONT»</h1>
+            <p>Вы собираетесь совершить добровольное пожертвование. Все средства идут на развитие игровых серверов и оплату инфраструктуры.</p>
 
-            <div class="donation-box">
-                <label class="checkbox-container">
+            <div class="donation-controls">
+                <label class="checkbox-label">
                     <input type="checkbox" id="offer-check">
-                    <span>Я согласен с <a href="offer">публичной офертой</a></span>
+                    <span>Я согласен с <a href="offer" target="_blank">публичной офертой</a></span>
                 </label>
 
-                <a id="pay-button" class="btn-pay">Поддержать проект</a>
+                <button id="pay-button" class="btn-pay-action">Поддержать проект</button>
             </div>
         </div>
     </div>
@@ -174,12 +179,12 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h4>KAERONT</h4>
-                <p style="color: var(--text-dim); font-size: 0.8rem; line-height: 1.6;">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
+                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
             </div>
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
                 </ul>
             </div>
@@ -193,12 +198,13 @@
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
-                    <li><a href="mailto:support@kaeront.ru">support@kaeront.ru</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
+                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
+                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
     <script>
@@ -214,15 +220,15 @@
             }
         });
 
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function() {
             if(check.checked) {
-                // 1. Открываем CloudTips в новой вкладке
+                // Открываем донат в новой вкладке
                 window.open(cloudTipsUrl, '_blank');
                 
-                // 2. Текущую вкладку редиректим на главную через небольшую паузу
+                // Эту вкладку редиректим на главную
                 setTimeout(() => {
                     window.location.href = './';
-                }, 500);
+                }, 400);
             }
         });
     </script>
