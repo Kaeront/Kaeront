@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
-<link rel="icon" type="image/png" href="favicon.png">
+    <meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
+    <link rel="icon" type="image/png" href="favicon.png">
 
     <meta property="og:title" content="Kaeront — Уникальные Minecraft сервера">
     <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
     <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
@@ -25,17 +25,15 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --nav-height: 70px;
         }
-    @font-face {
-        font-family: 'Minecraft';
-        src: url('minecraft.ttf') format('truetype');
-        font-weight: 0;
-        font-style: normal;
-        font-display: swap;
-    }
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('minecraft.ttf') format('truetype');
+            font-weight: 200;
+            font-style: normal;
+            font-display: swap;
+        }
 
         html { scroll-behavior: smooth; }
-        section, main, div { scroll-margin-top: calc(var(--nav-height) + 20px); }
-
         body {
             background-color: var(--bg);
             background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
@@ -49,178 +47,6 @@
             min-height: 100vh;
         }
 
-        /* --- DONATION BANNER WITH ANIMATION ---*/
-        .donate-banner {
-            /* Темно-оранжевые линии */
-            background: linear-gradient(
-                135deg, 
-                rgba(255, 170, 0, 0.1) 25%, 
-                transparent 25%, 
-                transparent 50%, 
-                rgba(255, 170, 0, 0.1) 50%, 
-                rgba(255, 170, 0, 0.1) 75%, 
-                transparent 75%, 
-                transparent
-            );
-            background-size: 20px 20px; /* Размер шага линий */
-            animation: move-stripes 2.5s linear infinite; /* Движение */
-            
-            border: 1px solid rgba(255, 170, 0, 0.4);
-            margin: calc(var(--nav-height) + 20px) auto 0;
-            max-width: 850px;
-            width: 90%;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Анимация движения линий влево-вверх */
-        @keyframes move-stripes {
-            0% { background-position: 0 0; }
-            100% { background-position: -40px 0; }
-        }
-
-        .donate-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 2; /* Чтобы текст был поверх линий */
-        }
-
-        .donate-title {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 1rem;
-            color: var(--accent);
-        }
-
-        .donate-goal {
-            font-size: 0.5rem;
-            color: var(--text-main);
-            max-width: 700px;
-            line-height: 1.2;
-        }
-
-        .donate-goal b {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .donate-btn-small {
-            background: var(--accent);
-            color: #000;
-            text-decoration: none;
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.9rem;
-            padding: 12px 25px;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            z-index: 2;
-            flex-shrink: 0;
-        }
-
-        .donate-btn-small:hover {
-            background: #ffffff;
-            box-shadow: 0 0 20px var(--accent);
-        }
-
-        @media (max-width: 850px) {
-            .donate-banner {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-                padding: 25px;
-            }
-        }
-
-
-        .donate-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .donate-title {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.9rem;
-            color: var(--accent);
-        }
-
-        .donate-goal {
-            font-size: 0.7rem;
-            color: var(--text-main);
-        }
-
-        .donate-goal span {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .donate-btn-small {
-            background: var(--accent);
-            color: #000;
-            text-decoration: none;
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.7rem;
-            padding: 10px 20px;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .donate-btn-small:hover {
-            background: #fff;
-            color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        @media (max-width: 600px) {
-            .donate-banner {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-        }
-
-/* Контейнер для прогресс-бара */
-.donate-progress {
-    width: 100%;
-    height: 22px;
-    background: rgba(0, 0, 0, 0.2);
-    margin-top: 5px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-/* Сама полоска загрузки */
-.donate-progress-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background: var(--accent);
-    width: 7.167%; 
-    transition: width 1s ease-in-out;
-    box-shadow: 0 0 25px var(--accent);
-}
-
-/* Текст поверх шкалы */
-.donate-progress-text {
-    position: relative;
-    z-index: 3;
-    font-family: 'Minecraft', sans-serif;
-    font-size: 0.65rem;
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
-    pointer-events: none; /* Чтобы не мешал кликам */
-}
-
         /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
@@ -230,11 +56,7 @@
             align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
             transition: var(--transition);
         }
-        nav.scrolled {
-            background: rgba(10, 10, 10, 0.7); 
-            backdrop-filter: blur(5px);
-            border-bottom: 1.5px solid #1a1a1a;
-        }
+        nav.scrolled { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px); border-bottom: 1.5px solid #1a1a1a; }
         .nav-logo { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--accent); text-decoration: none; }
         .nav-links { display: flex; gap: 10px; }
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
@@ -244,169 +66,62 @@
         h1 { font-family: 'Minecraft', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
-        /* --- WHY US (INFINITE VERSION) --- */
-        .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
+        /* --- DONATE BANNER --- */
+        .donate-banner {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 170, 0, 0.1) 50%, rgba(255, 170, 0, 0.1) 75%, transparent 75%, transparent);
+            background-size: 20px 20px; animation: move-stripes 2.5s linear infinite;
+            border: 1px solid rgba(255, 170, 0, 0.4); margin: 20px auto 0;
+            max-width: 850px; width: 90%; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
+        @keyframes move-stripes { 0% { background-position: 0 0; } 100% { background-position: -40px 0; } }
+        .donate-btn-small { background: var(--accent); color: #000; text-decoration: none; font-family: 'Minecraft'; font-size: 0.9rem; padding: 12px 25px; transition: var(--transition); }
+
+        /* --- WHY US (ИНТЕРАКТИВНАЯ ЛЕНТА) --- */
+        .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 60px 0 20px; text-transform: uppercase; }
+        
         .why-us-container { 
             width: 100%; 
             overflow-x: auto; 
-            padding: 20px 0; 
+            overflow-y: hidden;
+            cursor: grab;
+            padding-bottom: 20px;
+            /* Скрываем скроллбар */
             scrollbar-width: none; 
             -ms-overflow-style: none;
+            scroll-snap-type: x mandatory; /* Магнит карточек */
         }
         .why-us-container::-webkit-scrollbar { display: none; }
+        .why-us-container:active { cursor: grabbing; }
+
         .why-us-track { 
             display: flex; 
             gap: 20px; 
             padding: 0 5%; 
             width: max-content; 
-            transition: transform 0.5s ease;
         }
-        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: var(--transition); }
-        .why-card:hover { background: rgba(25, 25, 25, 1); box-shadow: 0 5px 15px rgba(0, 0, 0, 1); }
-        .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin: 0 0 10px; }
+
+        .why-card { 
+            background: rgba(20, 20, 20, 0.5); 
+            border-left: 3px solid var(--accent); 
+            padding: 25px; 
+            width: 280px; 
+            flex-shrink: 0; 
+            transition: var(--transition);
+            scroll-snap-align: start; /* Привязка */
+            user-select: none;
+        }
+        .why-card:hover { background: rgba(25, 25, 25, 1); }
+        .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--accent); margin: 0 0 10px; }
         .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
 
-        /* --- SERVER CARDS --- */
-        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
-   
-        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; text-transform: uppercase; text-align: center; margin-top: 15px; }
-        .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
-        .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
-        .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
-        .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; margin: 0 0 15px; color: var(--accent); }
-        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
-        .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
-        .badge-dev span { opacity: 0.8; font-size: 0.7rem; background: var(--accent); color: #000; padding: 2px 4px; }
+        /* --- CONTENT GRID --- */
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); }
+        .server-card:hover { transform: translateY(-5px); background: #151515; }
+        .server-card h3 { font-family: 'Minecraft'; color: var(--accent); margin: 0 0 15px; }
 
-        /* --- PROGRESS --- */
-        .dev-label { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; display: block; }
-        .progress-container { width: 100%; height: 12px; background: #1a1a1a; border: 1px solid #333; margin: 20px 0; }
-        .progress-bar { height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-
-        /* --- MODALS --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; 
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); align-items: flex-start; justify-content: center;
-            overflow-y: auto; opacity: 0; transition: opacity 0.3s ease; padding: 40px 0;
-        }
-        .modal-overlay.show-flex { display: flex; }
-        .modal-overlay.active { opacity: 1; }
-        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 700px; padding: 40px 30px; position: relative; margin: auto; transform: translateY(20px); transition: 0.3s; }
-        .modal-overlay.active .modal-window { transform: translateY(0); }
-        .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: pointer; z-index: 100; }
-        .modal-grid { display: grid; grid-template-columns: 1fr; gap: 40px; margin-top: 30px; }
-        @media (min-width: 850px) { .modal-grid { grid-template-columns: 1.7fr 1fr; } }
-
-        .dropdown { margin-bottom: 5px; background: #141414; }
-        .dropdown-btn { width: 100%; background: none; padding: 18px 20px; border: none; color: #fff; text-align: left; cursor: pointer; display: flex; justify-content: space-between; font-family: 'Minecraft'; font-size: 0.7rem; }
-        .dropdown-content { display: none; padding: 15px 20px; font-size: 0.7rem; color: var(--text-dim); line-height: 1.8; border-top: 1px solid #222; }
-        .dropdown.active .dropdown-content { display: block; }
-        .btn-apply { background: var(--accent); color: #000; padding: 20px; text-decoration: none; font-family: 'Minecraft'; font-size: 0.8rem; display: block; text-align: center; margin-top: 20px; transition: 0.3s; }
-        .btn-apply:hover { background: #fff; color: var(--accent); box-shadow: 0 0 20px var(--accent); }
-        .tech-box { background: #050505; padding: 20px; border: 1px solid #222; font-size: 0.9rem; line-height: 2.2; }
-        .tech-box span { color: var(--accent); }
-
-
-        /* --- NEWS SECTION --- */
-        .news-container {
-            max-width: 1160px;
-            width: 95%;
-            margin: 20px auto 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 0; /* Чтобы кнопка плотно прилегала к плашке */
-        }
-
-        .news-card {
-            background: rgba(20, 20, 20, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-bottom: none; /* Убираем нижнюю рамку, её заменит кнопка */
-            padding: 25px;
-            position: relative;
-        }
-
-        .news-badge {
-            display: inline-block;
-            background: var(--accent);
-            color: #000;
-            padding: 4px 12px;
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.7rem;
-            margin-bottom: 15px;
-        }
-
-        .news-date {
-            float: right;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-        }
-
-        .news-card h3 {
-            font-family: 'Minecraft', sans-serif;
-            color: var(--accent);
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-        }
-
-        .news-card p {
-            color: var(--text-main);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        /* Растянутая кнопка под новостью */
-        .news-more-btn {
-            background: rgba(30, 30, 30, 1);
-            color: #fff;
-            text-align: center;
-            text-decoration: none;
-            padding: 12px;
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: var(--transition);
-            display: block;
-        }
-
-        .news-more-btn:hover {
-            background: var(--accent);
-            color: #000;
-        }
-        
-        /* --- ТЕГИ (МЕТКИ) --- */
-        .news-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px; /* Отступ под заголовком */
-        }
-
-        .tag {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.65rem;
-            padding: 3px 5px;
-        }
-
-        /* Цветовые схемы в стиле Minecraft */
-        .tag-gold  { background: #FA0; color: #000; }
-        .tag-blue  { background: #55F; color: #fff; }
-        .tag-dark-blue  { background: #00A; color: #fff; }
-        .tag-light-purple  { background: #F5F; color: #000; }
-        .tag-red   { background: #F55; color: #000; }
-        .tag-dark-red   { background: #A00; color: #fff; }
-
-        footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
-        .footer-links { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 10px; }
-        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
-        .footer-links a:hover { color: var(--accent); }
-        .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
-        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
-
-        @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
+        footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; text-align: center; }
+        .copyright-bar { font-size: 0.65rem; color: #333; font-family: 'Minecraft'; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -421,281 +136,101 @@
         </div>
     </nav>
 
-    <div class="donate-banner">
-        <div class="donate-info">
-            <div class="donate-title">Сбор на мощное железо</div>
-            <div class="donate-goal">Для стабильной работы всех наших серверов 24/7 и переезда на выделенный сервер нам необходимо собрать <b>30 000 ₽</b>. Да, это дорогая роскошь, но даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.</div>
-        <div class="donate-progress">
-            <div class="donate-progress-bar" style="width: 7.167%;"></div>
-            <div class="donate-progress-text">2150 из 30000 собрано</div>
-        </div>
-        </div>
-        
-        <a href="donate" class="donate-btn-small">ПОДДЕРЖАТЬ</a>
-    </div>
-
-
-    <header id="hero-header">
+    <header>
         <h1>KAERONT</h1>
-        <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.</div>
+        <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для тех, кто ценит Minecraft как искусство.</div>
     </header>
 
     <div class="section-title">Почему мы?</div>
-    <section class="why-us-container" id="whyUsScroll">
+    <div class="why-us-container" id="whyUsScroll">
         <div class="why-us-track" id="whyUsTrack">
-            <div class="why-card"><h4>Комьюнити</h4><p>Адекватная, дружелюбная среда и строгий отбор игроков.</p></div>
-            <div class="why-card"><h4>Нет вайпов</h4><p>На текущих серверах нет вайпов, так что можете строить постройки и не терять их через время.</p></div>
+            <div class="why-card"><h4>Комьюнити</h4><p>Адекватная среда и строгий отбор игроков.</p></div>
+            <div class="why-card"><h4>Нет вайпов</h4><p>Ваши постройки сохранятся навсегда.</p></div>
             <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
-            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
-            <div class="why-card"><h4>Доступность</h4><p>Наши сервера предоставляют бесплатную игру.</p></div>
-            <div class="why-card"><h4>Администрация</h4><p>Быстрая и вежливая Администрация проекта.</p></div>
+            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все равны.</p></div>
+            <div class="why-card"><h4>Доступность</h4><p>Бесплатный вход для всех одобренных игроков.</p></div>
         </div>
-    </section>
+    </div>
 
-            <div class="servers-header">Наши сервера</div>
     <main class="content-grid" id="servers">
-        <div>
-            <div class="section-header">Миры</div>
-            <div class="server-card" onclick="openModal('modal-survival')">
-                <h3>Kaeront: Survival</h3>
-                <p>Основной сервер. Спокойно строй, исследуй и заводи друзей без угрозы гриферства. Мирная атмосфера взаимопомощи.</p>
-            </div>
-            <div class="server-card" onclick="openModal('modal-hub')">
-                <h3>Kaeront: Hub</h3>
-                <p>Сердце проекта и центр навигации. Найди друзей в Хабе, начни историю на Survival или стань легендой Мини-игр. Всё начинается здесь.</p>
-                <div class="badge-dev">В РАЗРАБОТКЕ <span>90%</span></div>
-            </div>
-            <div class="server-card" onclick="openModal('modal-bedrock')">
-                <h3>Kaeront: Bedrock</h3>
-                <p>Выживание на Minecraft Bedrock Edition. Описание не готово.</p>
-                <div class="badge-dev">НА ЗАДНЕМ ПЛАНЕ</div>
-            </div>
+        <div class="server-card">
+            <h3>Kaeront: Survival</h3>
+            <p>Классическое выживание без лишнего мусора.</p>
         </div>
-        <div>
-            <div class="section-header">Игры</div>
-            <div class="server-card" onclick="openModal('modal-cc')">
-                <h3>Crystal Clash</h3>
-                <p>Защити Аметистовое Ядро! Выберай уникальные способности и разбей базу противника в динамичной магической битве.</p>
-                <div class="badge-dev">ПЛАНИРУЕТСЯ</div>
-            </div>
-            <div class="server-card" onclick="openModal('modal-payload')">
-                <h3>Payload: Backyard</h3>
-                <p>Командная гонка вагонеток на динамичной карте Backyard.</p>
-                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
-            </div>
-            <div class="server-card" onclick="openModal('modal-trident')">
-                <h3>Tridentball</h3>
-                <p>Спортивный гандбол на трезубцах. Уникальный командный геймплей.</p>
-                <div class="badge-dev">В РАЗРАБОТКЕ <span>50%</span></div>
-            </div>
+        <div class="server-card">
+            <h3>Payload: Backyard</h3>
+            <p>Уникальный режим гонки вагонеток.</p>
         </div>
     </main>
 
-    <div class="modal-overlay" id="modal-survival">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха. Готов к долгому пути?</p>            
-            <div class="modal-grid">
-                <div class="modal-left">
-                    <div class="dropdown" id="r1"><button class="dropdown-btn" onclick="toggleDropdown('r1')">1. Общие положения <span>+</span></button><div class="dropdown-content">1.1. Сервер «Kaeront: Survival» предоставляет возможность игры в Minecraft<br>1.2. Администрация оставляет за собой право изменять правила<br>1.3. Игрок обязан ознакомиться с правилами до начала игры<br>1.4. Незнание правил не освобождает от ответственности</div></div>
-                    <div class="dropdown" id="r2"><button class="dropdown-btn" onclick="toggleDropdown('r2')">2. Поведение игроков <span>+</span></button><div class="dropdown-content">2.1. Уважайте других игроков и администрацию<br>2.2. Запрещены оскорбления, унижения, дискриминация<br>2.3. Запрещен троллинг и целенаправленное раздражение игроков<br>2.4. Запрещена порча чужого игрового опыта<br>2.5. Сохраняйте дружелюбную атмосферу</div></div>
-                    <div class="dropdown" id="r3"><button class="dropdown-btn" onclick="toggleDropdown('r3')">3. Запрещенные действия <span>+</span></button><div class="dropdown-content">3.1. Читы и нечестная игра<br>3.2. Гриферство и порча чужих построек<br>3.3. Кража предметов<br>3.4. Использование багов и дюпов<br>3.5. Создание ловушек для убийства игроков<br>3.6. Употребление нецензурной лексики</div></div>
-                    <div class="dropdown" id="r4"><button class="dropdown-btn" onclick="toggleDropdown('r4')">4. Чат и общение <span>+</span></button><div class="dropdown-content">4.1. Запрещен флуд и спам в чате<br>4.2. Запрещена реклама<br>4.3. Запрещено злоупотребление Caps Lock<br>4.4. Разрешены русский и английский языки<br>4.5. Запрещены политические и религиозные темы</div></div>
-                    <div class="dropdown" id="r5"><button class="dropdown-btn" onclick="toggleDropdown('r5')">5. Постройки и территория <span>+</span></button><div class="dropdown-content">5.1. Запрещено строительство непристойных или оскорбительных построек<br>5.2. Убирайте за собой временные постройки<br>5.3. Запрещены лаг-машины, дюп-машины и постройки вызывающие лаги<br>5.4. Любые строительные работы или снос на территории другого игрока разрешены только при наличии официального «Разрешения на строительство», выданной администрацией. Работа без данного документа приравнивается к гриферству.</div></div>
-                    <div class="dropdown" id="r6"><button class="dropdown-btn" onclick="toggleDropdown('r6')">6. Безопасность <span>+</span></button><div class="dropdown-content">6.1. Запрещена передача данных своего аккаунт другим лицам<br>6.2. Не распространяйте личную информацию<br>6.3. Сообщайте о багах и проблемах Telegram аккаунту поддержки — @KaerontMC</div></div>
-                    <div class="dropdown" id="r7"><button class="dropdown-btn" onclick="toggleDropdown('r7')">7. Возрастные ограничения <span>+</span></button><div class="dropdown-content">7.1. Игра лицам младше 14 лет разрешена только при наличии письменного разрешения от родителя или законного опекуна, отправленного Telegram аккаунту поддержки — @KaerontMC<br>7.2. Если вам стало известно, что кому-то меньше 14 лет - немедленно сообщите Telegram аккаунту поддержки — @KaerontMC<br>7.3. Возраст проверяется через звонок в Discord</div></div>
-                    <div class="dropdown" id="r8"><button class="dropdown-btn" onclick="toggleDropdown('r8')">8. Правила подачи жалоб <span>+</span></button><div class="dropdown-content">8.1. Жалобы принимаются только от Telegram аккаунта поддержки — @KaerontMC<br>8.2. Жалобы принимаются только в текстовом формате с четким описанием нарушения и никнеймом нарушителя<br>8.3. Если есть, прилагайте файлы-доказательства<br>8.4. Укажите никнейм нарушителя, время и координаты события<br>8.5. За ложные жалобы — предупреждение или блокировка<br>8.6. Администрация оставляет за собой право отказать в рассмотрении без объяснения причин<br>8.7. Решение администрации окончательно</div></div>
-                </div>
-                <div class="modal-right">
-                    <div class="tech-box">Версия: <span>Java 1.21.8</span><br>Адрес: <span>Временно недоступен</span><br>Лицензия: <span>Не обязательно</span><br>Обязательные моды: <span>Нет</span></span></span></div>
-                    <a href="https://forms.gle/xhKPWc1LHf23SApc8" class="btn-apply" target="_blank">ПОДАТЬ ЗАЯВКУ</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-hub">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Hub</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Главная площадка для общения и старта. Здесь ты найдешь свежие новости, топ-игроков и прямой доступ ко всей экосистеме Kaeront. Залетай на Survival, если готов к долгому пути, или ворвись в Мини-игры для быстрого фана!</p>            
-            <span class="dev-label">РАЗРАБОТКА (90%)</span>
-            <div class="progress-container"><div class="progress-bar" style="width: 90%;"></div></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-bedrock">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Bedrock</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Выживание на Minecraft Bedrock Edition. Описание не готово.</p>            
-            <span class="dev-label">НА ЗАДНЕМ ПЛАНЕ</span>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-cc">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-cc')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Crystal Clash</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Масштабная командная тактическая игра, где исход сражения определяет не только скорость клика, но и выверенная командная стратегия. Вместо привычных баз здесь в центре каждой крепости сияют Аметистовые Ядра — священные источники силы вашей команды, которые нужно защищать любой ценой. Используйте способности и сражайтесь за классы с уникальными свойствами!</p>            
-            <span class="dev-label">ПЛАНИРУЕТСЯ</span>
-        </div>
-
-    </div>
-    <div class="modal-overlay" id="modal-payload">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Payload: Backyard</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Сопровождай ценный груз через задний двор, полный опасностей и тактических позиций. Слаженная работа, уникальные способности и динамичный геймплей. Доставь груз любой ценой или останови врага!</p>            
-            <span class="dev-label">РАЗРАБОТКА (70%)</span>
-            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-trident">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-trident')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Tridentball</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Представь обычный гандбол, но вместо мяча у тебя в руках — спортивный трезубец. Твоя задача проста: забросить его в ворота противника больше раз, чем это сделает другая команда!</p>            
-            <span class="dev-label">РАЗРАБОТКА (50%)</span>
-            <div class="progress-container"><div class="progress-bar" style="width: 50%;"></div></div>
-        </div>
-    </div>
-
-    <div class="news-container">
-        <div class="news-card">
-            <span class="news-date">09.03.2026</span>
-            <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
-            <h3>Технические работы</h3>
-                <div class="news-tags">
-        <span class="tag tag-dark-red">Отключение</span>
-        <span class="tag tag-red">Важное</span>
-        <span class="tag tag-blue">Сервера</span>
-                </div>
-            <p>Проект Kaeront временно меняет формат! Мы приостанавливаем работу режима Survival, чтобы сосредоточиться на технической части и качественном пробросе портов для стабильного доступа, однако нет поводов для грусти — всего за сутки наш Hub был завершен на 90% и уже готов встречать первых игроков. Работа над сетевой частью уже кипит, и совсем скоро закончится.</p>
-        </div>
-        <a href="news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
-    </div>
-
     <footer>
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h4>KAERONT</h4>
-                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
-            </div>
-            <div class="footer-section">
-                <h4>ДОКУМЕНТЫ</h4>
-                <ul class="footer-links">
-<li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-<li><a href="offer">Публичная оферта</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>ПРОЕКТ</h4>
-                <ul class="footer-links">
-                    <li><a href="news">Новости</a></li>
-                    <li><a href="donate">Пожертвовать</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>КОНТАКТЫ</h4>
-                <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.</div>
     </footer>
 
     <script>
-        // --- MODAL LOGIC ---
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if(modal) {
-                modal.classList.add('show-flex');
-                setTimeout(() => modal.classList.add('active'), 10);
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if(modal) {
-                modal.classList.remove('active');
-                setTimeout(() => modal.classList.remove('show-flex'), 300);
-                document.body.style.overflow = 'auto';
-            }
-        }
-        function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
-
-        // --- SCROLL NAV ---
-        window.onscroll = function() {
-            const nav = document.getElementById('smart-nav');
+        const nav = document.getElementById('smart-nav');
+        const container = document.getElementById('whyUsScroll');
+        const track = document.getElementById('whyUsTrack');
+        
+        // --- NAVIGATION ---
+        window.onscroll = () => {
             if (window.pageYOffset > 50) nav.classList.add('scrolled');
             else nav.classList.remove('scrolled');
         };
 
-        // --- INFINITE AUTO-SCROLL "WHY US" ---
-        const scrollContainer = document.getElementById('whyUsScroll');
-        const track = document.getElementById('whyUsTrack');
-        let cards = Array.from(track.children);
-        
-        // Клонируем элементы для создания иллюзии бесконечности
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            track.appendChild(clone);
-        });
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            track.insertBefore(clone, track.firstChild);
-        });
-
+        // --- WHY US: DRAG & AUTO-SCROLL ---
+        let isDown = false;
+        let startX;
+        let scrollLeft;
         let isPaused = false;
-        const step = 1; // Прыжок в пикселях
 
-        // Устанавливаем начальную позицию в центр (на оригинальные карточки)
-        scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
+        // Дублируем карточки для плавного бесконечного скролла
+        const cards = Array.from(track.children);
+        cards.forEach(card => track.appendChild(card.cloneNode(true)));
 
-        function autoScroll() {
-            if (!isPaused) {
-                let target = scrollContainer.scrollLeft + step;
-                scrollContainer.scrollTo({
-                    left: target,
-                    behavior: 'smooth'
-                });
-            }
-        }
-
-        // Проверка границ для мгновенного перемещения (зацикливание)
-        scrollContainer.addEventListener('scroll', () => {
-            const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            if (scrollContainer.scrollLeft <= 0) {
-                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-            } else if (scrollContainer.scrollLeft >= maxScroll - 1) {
-                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-            }
+        // Обработка Drag-and-Drop (Мышь)
+        container.addEventListener('mousedown', (e) => {
+            isDown = true;
+            isPaused = true;
+            container.style.scrollSnapType = 'none'; // Отключаем магнит при перетаскивании
+            startX = e.pageX - container.offsetLeft;
+            scrollLeft = container.scrollLeft;
         });
 
-        // Пауза при наведении или касании
-        scrollContainer.addEventListener('mouseenter', () => isPaused = true);
-        scrollContainer.addEventListener('mouseleave', () => isPaused = false);
-        scrollContainer.addEventListener('touchstart', () => isPaused = true);
-        scrollContainer.addEventListener('touchend', () => {
-            // Возобновляем через 2 секунды после того, как пользователь отпустил ленту
-            setTimeout(() => isPaused = false, 1000); 
+        container.addEventListener('mouseleave', () => { isDown = false; isPaused = false; });
+        container.addEventListener('mouseup', () => { 
+            isDown = false; 
+            isPaused = false;
+            container.style.scrollSnapType = 'x mandatory'; // Возвращаем магнит
         });
 
-        // Запуск интервала авто-скролла (раз в 3 секунды)
-        setInterval(autoScroll, 0);
+        container.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - container.offsetLeft;
+            const walk = (x - startX) * 2;
+            container.scrollLeft = scrollLeft - walk;
+        });
 
-        // Закрытие модалок по клику на затемненный фон (overlay)
-        window.onclick = function(e) { 
-            if (e.target.classList.contains('modal-overlay')) {
-                closeModal(e.target.id);
-            } 
+        // Касания для смартфонов
+        container.addEventListener('touchstart', () => isPaused = true);
+        container.addEventListener('touchend', () => {
+            setTimeout(() => isPaused = false, 2000);
+        });
+
+        // Авто-прокрутка
+        function step() {
+            if (!isPaused && !isDown) {
+                container.scrollLeft += 1; // Плавное движение по 1 пикселю
+                
+                // Если дошли до конца первой пачки карточек — прыгаем в начало
+                if (container.scrollLeft >= track.scrollWidth / 2) {
+                    container.scrollLeft = 0;
+                }
+            }
+            requestAnimationFrame(step);
         }
+        requestAnimationFrame(step);
     </script>
 </body>
 </html>
