@@ -244,15 +244,16 @@
         h1 { font-family: 'Minecraft', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
-        /* --- WHY US (FIXED SCROLL) --- */
+        /* --- WHY US (INFINITE VERSION) --- */
         .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
         .why-us-container { 
             width: 100%; 
-            overflow-x: hidden; /* Скрываем полосу, скролл через JS */
+            overflow-x: hidden; /* Скрываем полосу, скролл только через JS */
             padding: 20px 0; 
             cursor: grab;
             user-select: none;
-            touch-action: pan-y; /* Позволяет листать страницу по вертикали, но перехватывает горизонталь */
+            /* Отключаем плавность браузера для этой секции, чтобы JS работал плавно */
+            scroll-behavior: auto !important; 
         }
         .why-us-container:active { cursor: grabbing; }
         .why-us-track { 
@@ -262,7 +263,7 @@
             width: max-content; 
             will-change: transform;
         }
-        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: background 0.3s, box-shadow 0.3s; pointer-events: all; }
+        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: background 0.3s, box-shadow 0.3s; }
         .why-card:hover { background: rgba(25, 25, 25, 1); box-shadow: 0 5px 15px rgba(0, 0, 0, 1); }
         .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin: 0 0 10px; }
         .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
@@ -528,7 +529,7 @@
 
     <div class="modal-overlay" id="modal-bedrock">
         <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-bedrock')">ЗАКРЫТЬ</span>
+            <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Bedrock</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Выживание на Minecraft Bedrock Edition. Описание не готово.</p>            
             <span class="dev-label">НА ЗАДНЕМ ПЛАНЕ</span>
@@ -638,7 +639,7 @@
             else nav.classList.remove('scrolled');
         };
 
-        // --- БЕСКОНЕЧНЫЙ СКРОЛЛ (DRAGGABLE + AUTO) ---
+        // --- INFINITE SMOOTH SCROLL "WHY US" ---
         const scrollContainer = document.getElementById('whyUsScroll');
         const track = document.getElementById('whyUsTrack');
         let cards = Array.from(track.children);
@@ -650,69 +651,74 @@
         let isDown = false;
         let startX;
         let scrollLeft;
-        let isPaused = false;
-        const speed = 0.5; // Скорость авто-скролла
+        
+        // Переменные для плавности
+        let currentSpeed = 0.6; // Текущая скорость (пиксели за кадр)
+        const targetSpeedNormal = 0.6; // Обычная скорость
+        const lerpAmount = 0.05; // Коэффициент плавности (чем меньше, тем плавнее тормозит/разгоняется)
+        let isHovered = false;
 
-        // Начальная позиция
+        // Центрируем
         scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
 
-        function autoScroll() {
-            if (!isPaused && !isDown) {
-                scrollContainer.scrollLeft += speed;
-                
-                // Зацикливание
-                const max = cards[0].offsetWidth * cards.length * 2;
-                if (scrollContainer.scrollLeft >= max) {
-                    scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-                }
+        function animate() {
+            // Плавное изменение скорости (Lerp)
+            let targetSpeed = (isHovered || isDown) ? 0 : targetSpeedNormal;
+            currentSpeed += (targetSpeed - currentSpeed) * lerpAmount;
+
+            // Применяем скролл только если скорость значима
+            if (Math.abs(currentSpeed) > 0.01) {
+                scrollContainer.scrollLeft += currentSpeed;
             }
-            requestAnimationFrame(autoScroll);
+
+            // Зацикливание (бесшовный переход)
+            const unit = cards[0].offsetWidth * cards.length;
+            if (scrollContainer.scrollLeft <= unit * 0.5) {
+                scrollContainer.scrollLeft += unit;
+            } else if (scrollContainer.scrollLeft >= unit * 1.5) {
+                scrollContainer.scrollLeft -= unit;
+            }
+
+            requestAnimationFrame(animate);
         }
 
-        // --- ОБРАБОТКА РУЧНОГО СКРОЛЛА (ПК И МОБИЛЬНЫЕ) ---
+        // --- ОБРАБОТКА МЫШИ / ТАЧА ---
         const startDragging = (e) => {
             isDown = true;
-            isPaused = true;
             startX = (e.pageX || e.touches[0].pageX) - scrollContainer.offsetLeft;
             scrollLeft = scrollContainer.scrollLeft;
         };
 
         const stopDragging = () => {
             isDown = false;
-            // Возвращаем автоскролл через секунду после того, как отпустили
-            setTimeout(() => { if(!isDown) isPaused = false; }, 1000);
         };
 
         const moveDragging = (e) => {
             if (!isDown) return;
-            e.preventDefault();
+            // e.preventDefault(); // Закомментировано, чтобы не блокировать вертикальный скролл страницы на моб.
             const x = (e.pageX || e.touches[0].pageX) - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 2; // Чувствительность
+            const walk = (x - startX) * 1.2; // Чувствительность прокрутки понижена (было 2 или выше)
             scrollContainer.scrollLeft = scrollLeft - walk;
-
-            // Мгновенное зацикливание при ручном скролле
-            const unit = cards[0].offsetWidth * cards.length;
-            if (scrollContainer.scrollLeft <= 0) scrollContainer.scrollLeft = unit;
-            if (scrollContainer.scrollLeft >= unit * 2) scrollContainer.scrollLeft = unit;
         };
 
+        // События мыши
         scrollContainer.addEventListener('mousedown', startDragging);
-        scrollContainer.addEventListener('touchstart', startDragging, {passive: true});
-        
         window.addEventListener('mouseup', stopDragging);
-        window.addEventListener('touchend', stopDragging);
-        
         scrollContainer.addEventListener('mousemove', moveDragging);
-        scrollContainer.addEventListener('touchmove', moveDragging, {passive: false});
 
-        // Пауза при наведении мыши (плавная остановка)
-        scrollContainer.addEventListener('mouseenter', () => isPaused = true);
-        scrollContainer.addEventListener('mouseleave', () => { if(!isDown) isPaused = false; });
+        // События тача
+        scrollContainer.addEventListener('touchstart', startDragging, {passive: true});
+        window.addEventListener('touchend', stopDragging);
+        scrollContainer.addEventListener('touchmove', moveDragging, {passive: true});
 
-        // Запуск
-        autoScroll();
+        // Плавная остановка при наведении
+        scrollContainer.addEventListener('mouseenter', () => isHovered = true);
+        scrollContainer.addEventListener('mouseleave', () => isHovered = false);
 
-        // Закрытие модалок по клику на фон
+        // Запуск анимации
+        requestAnimationFrame(animate);
+
+        // Закрытие модалок
         window.onclick = function(e) { 
             if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
         }
