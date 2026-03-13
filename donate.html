@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta property="og:title" content="Kaeront — Поддержка проекта">
+    <meta property="og:description" content="Поддержи любимый сервер и помоги нам стать лучше.">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
+    <meta property="og:url" content="https://kaeront.ru/pay">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#FFAA00">
+
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Поддержка проекта Kaeront</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --accent: #FFAA00;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --line-color: rgba(40, 40, 40, 0.4);
+            --nav-height: 70px;
+        }
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('minecraft.ttf') format('truetype');
+            font-weight: 200;
+            font-style: normal;
+            font-display: swap;
+        }
+        body {
+            background-color: var(--bg);
+            background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
+            background-size: 12px 12px;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(10px);
+            border-bottom: 1.5px solid #1a1a1a; display: flex; justify-content: space-between;
+            align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        }
+        .nav-logo { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--accent); text-decoration: none; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        .legal-wrapper {
+            padding-top: calc(var(--nav-height) + 40px);
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .legal-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid #1a1a1a;
+            border-top: 4px solid var(--accent);
+            padding: 50px 40px;
+            margin: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); margin-bottom: 30px; }
+        
+        .donation-box {
+            margin-top: 20px;
+        }
+
+        /* Чекбокс оферты */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+        .checkbox-container input {
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+        .checkbox-container a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dashed;
+        }
+
+        /* Кнопка оплаты */
+        .btn-pay {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Minecraft';
+            font-size: 0.9rem;
+            cursor: not-allowed;
+            transition: 0.3s;
+            opacity: 0.4;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-pay.active {
+            opacity: 1;
+            cursor: pointer;
+        }
+        .btn-pay.active:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+        }
+
+        footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+        .footer-links a:hover { color: var(--accent); }
+        .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
+
+        @media (max-width: 600px) {
+            .legal-card { padding: 40px 20px; }
+            h1 { font-size: 0.9rem; }
+            .checkbox-container { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="./" class="nav-logo">KAERONT</a>
+        <div class="nav-links">
+            <a href="./#servers">Сервера</a>
+            <a href="news">Новости</a>
+            <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
+            <a href="pay" style="color: var(--accent);">Пожертвовать</a>
+        </div>
+    </nav>
+
+    <div class="legal-wrapper">
+        <div class="legal-card">
+            <h1>ПОДДЕРЖКА ПРОЕКТА KAERONT</h1>
+            <p style="margin-bottom: 40px;">Ваше добровольное пожертвование помогает нам оплачивать хостинг и делать контент лучше.</p>
+
+            <div class="donation-box">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="offer-check">
+                    <span>Я согласен с <a href="offer">публичной офертой</a></span>
+                </label>
+
+                <a id="pay-button" class="btn-pay">Поддержать проект</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h4>KAERONT</h4>
+                <p style="color: var(--text-dim); font-size: 0.8rem; line-height: 1.6;">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
+            </div>
+            <div class="footer-section">
+                <h4>ДОКУМЕНТЫ</h4>
+                <ul class="footer-links">
+                    <li><a href="privacy">Политика конфиденциальности</a></li>
+                    <li><a href="offer">Публичная оферта</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>ПРОЕКТ</h4>
+                <ul class="footer-links">
+                    <li><a href="news">Новости</a></li>
+                    <li><a href="pay" style="color: var(--accent);">Пожертвовать</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>КОНТАКТЫ</h4>
+                <ul class="footer-links">
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
+                    <li><a href="mailto:support@kaeront.ru">support@kaeront.ru</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT.</div>
+    </footer>
+
+    <script>
+        const check = document.getElementById('offer-check');
+        const btn = document.getElementById('pay-button');
+        const cloudTipsUrl = 'https://pay.cloudtips.ru/p/db4c09dc';
+
+        check.addEventListener('change', function() {
+            if(this.checked) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        btn.addEventListener('click', function(e) {
+            if(check.checked) {
+                // 1. Открываем CloudTips в новой вкладке
+                window.open(cloudTipsUrl, '_blank');
+                
+                // 2. Текущую вкладку редиректим на главную через небольшую паузу
+                setTimeout(() => {
+                    window.location.href = './';
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
