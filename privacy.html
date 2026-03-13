@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <meta property="og:title" content="Kaeront — Уникальные Minecraft сервер">
-    <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
-    <meta property="og:url" content="https://kaeront.ru">
+    <meta property="og:title" content="Kaeront — Поддержка проекта">
+    <meta property="og:description" content="Ваш вклад в развитие уникальной экосистемы серверов Kaeront.">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
+    <meta property="og:url" content="https://kaeront.ru/donate">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
 
-    <meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>ПКОПД игрового проекта «Kaeront»</title>
+    <title>Поддержка проекта «Kaeront»</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -24,13 +23,13 @@
             --line-color: rgba(40, 40, 40, 0.4);
             --nav-height: 70px;
         }
-@font-face {
-        font-family: 'Minecraft';
-        src: url('minecraft.ttf') format('truetype');
-        font-weight: 200;
-        font-style: normal;
-        font-display: swap;
-    }
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('minecraft.ttf') format('truetype');
+            font-weight: 200;
+            font-style: normal;
+            font-display: swap;
+        }
         body {
             background-color: var(--bg);
             background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
@@ -55,7 +54,7 @@
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.65rem; text-transform: uppercase; font-weight: 600; transition: 0.3s; }
         .nav-links a:hover { color: var(--accent); }
 
-        /* --- LEGAL CONTENT --- */
+        /* --- CONTENT --- */
         .legal-wrapper {
             padding-top: calc(var(--nav-height) + 40px);
             max-width: 900px;
@@ -71,28 +70,65 @@
             border-top: 4px solid var(--accent);
             padding: 50px 40px;
             margin: 20px;
+            text-align: center;
         }
 
         .btn-back {
-            display: inline-block;
+            display: block;
             margin-bottom: 30px;
             color: var(--text-main);
             text-decoration: none;
             font-family: 'Minecraft';
             font-size: 0.7rem;
             transition: 0.3s;
+            text-align: left;
         }
         .btn-back:hover { color: var(--accent); }
 
-        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.2; margin-bottom: 10px; }
-        .date-label { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 40px; display: block; }
+        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.2; margin-bottom: 20px; }
+        p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
 
-        h3 { font-family: 'Minecraft'; font-size: 0.8rem; color: #fff; margin-top: 40px; border-left: 3px solid var(--accent); padding-left: 15px; }
-        p, li { color: var(--text-dim); font-size: 0.95rem; line-height: 1.3; margin-bottom: 15px; }
-        ul { padding-left: 20px; margin-bottom: 20px; }
-        strong { color: #fff; }
+        .donation-controls {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
 
-        /* --- FOOTER (MATCHING INDEX.HTML) --- */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label input { accent-color: var(--accent); cursor: pointer; }
+        .checkbox-label a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+
+        .btn-pay-action {
+            display: inline-block;
+            background: var(--accent);
+            color: #000;
+            padding: 15px 45px;
+            font-family: 'Minecraft';
+            font-size: 0.8rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: 0.3s;
+            border: none;
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-pay-action.active {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        /* --- FOOTER --- */
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
@@ -125,42 +161,18 @@
         <div class="legal-card">
             <a href="./" class="btn-back">< НА ГЛАВНУЮ</a>
             
-            <h1>Политика конфиденциальности и обработки персональных данных игрового проекта «Kaeront»</h1>
-            <span class="date-label">Редакция от: 08.03.2026</span>
+            <h1>ПОДДЕРЖКА ПРОЕКТА «KAERONT»</h1>
+            <p>Kaeront — это не просто сеть серверов, это пространство, созданное игроками для игроков. Мы стремимся обеспечить максимально качественный игровой опыт, стабильный пинг и уникальные механики, которые требуют значительных ресурсов для поддержания и постоянной модернизации серверного оборудования.</p>
+            <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS-атак, разработку новых режимов и улучшение текущего функционала проекта. Мы ценим каждого, кто помогает нам двигаться вперед.</p>
 
-            <h3>1. Общие положения</h3>
-            <p>1.1. Настоящая Политика устанавливает правила использования Администрацией игрового проекта «Kaeront» в лице Амир а Кашапова (далее — «Проект») персональной информации, получаемой от пользователей в процессе использования ими сайта и игровых серверов.</p>
-            <p>1.2. Под персональными данными понимается любая информация, относящаяся к прямо или косвенно определенному физическому лицу.</p>
-            <p>1.3. Использование сервисов Проекта означает безоговорочное согласие Пользователя с условиями настоящей Политики.</p>
+            <div class="donation-controls">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="offer-check">
+                    <span>Я согласен с <a href="offer" target="_blank">публичной офертой</a></span>
+                </label>
 
-            <h3>2. Состав и способы сбора информации</h3>
-            <p>2.1. Проект осуществляет сбор только тех данных, которые необходимы для предоставления игрового сервиса:</p>
-            <ul>
-                <li>Идентификационные данные: Игровой никнейм (Minecraft IGN), уникальный идентификатор пользователя (UUID);</li>
-                <li>Контактные данные: Идентификатор (ID) и имя пользователя в мессенджере Telegram;</li>
-                <li>Техническая информация: IP-адрес, логи игровых сессий, история внутриигровых действий;</li>
-                <li>Данные форм: Информация, добровольно предоставленная через Google Forms при подаче заявок.</li>
-            </ul>
-
-            <h3>3. Цели и правовые основания</h3>
-            <p>3.1. Данные обрабатываются для обеспечения доступа к серверам (Survival, Hub и др.), осуществления технической поддержки через Telegram, предотвращения нарушений (анти-гриферство) и аналитики для улучшения игрового опыта.</p>
-
-            <h3>4. Передача данных третьим лицам</h3>
-            <p>4.1. Персональная информация Пользователей не передается третьим лицам, за исключением случаев использования платежного агрегатора CloudTips для обработки добровольных пожертвований. Администрация не получает данные ваших банковских карт.</p>
-
-            <h3>5. Принципы защиты и хранения</h3>
-            <p>5.1. Администратор принимает необходимые организационные меры для защиты информации Пользователя от неправомерного доступа.</p>
-            <p>5.2. Сбор и хранение данных осуществляется с использованием защищенных облачных сервисов Google Cloud (Forms, Sheets).</p>
-
-            <h3>6. Ограничения по возрасту</h3>
-            <p>6.1. Проект предназначен для лиц, достигших 14-летнего возраста.</p>
-            <p>6.2. Обработка данных лиц младше 14 лет допускается исключительно при наличии согласия законных представителей, направленного официальному аккаунту поддержки: @KaerontMC.</p>
-
-            <h3>7. Права субъектов данных</h3>
-            <p>7.1. Пользователь имеет право на уточнение, блокирование или уничтожение своих данных по запросу через Telegram: @KaerontMC.</p>
-
-            <h3>8. Заключительные положения</h3>
-            <p>8.1. Проект Kaeront является независимым и не аффилирован с компаниями Mojang AB или Microsoft.</p>
+                <button id="pay-button" class="btn-pay-action">Поддержать проект</button>
+            </div>
         </div>
     </div>
 
@@ -173,8 +185,8 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-<li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-<li><a href="offer">Публичная оферта</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
+                    <li><a href="offer">Публичная оферта</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -195,5 +207,28 @@
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
+
+    <script>
+        const check = document.getElementById('offer-check');
+        const btn = document.getElementById('pay-button');
+        const cloudTipsUrl = 'https://pay.cloudtips.ru/p/db4c09dc';
+
+        check.addEventListener('change', function() {
+            if(this.checked) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        btn.addEventListener('click', function() {
+            if(check.checked) {
+                window.open(cloudTipsUrl, '_blank');
+                setTimeout(() => {
+                    window.location.href = './';
+                }, 400);
+            }
+        });
+    </script>
 </body>
 </html>
