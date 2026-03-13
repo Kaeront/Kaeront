@@ -6,7 +6,7 @@
 
     <meta property="og:title" content="Kaeront — Уникальные Minecraft сервер">
     <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
     <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
@@ -115,14 +115,14 @@
             display: inline-block;
             background: #151515;
             color: #fff;
-            padding: 15px 0; /* Паддинги по бокам убираем, так как будем менять ширину */
-            width: 280px; /* Начальная ширина */
+            padding: 15px 0;
+            width: 280px;
             font-family: 'Minecraft';
             font-size: 0.8rem;
             text-decoration: none;
             text-transform: uppercase;
             border: none;
-            opacity: 0.4;
+            opacity: 0.4; /* Вернул твою прозрачность */
             cursor: not-allowed;
             white-space: nowrap;
             overflow: hidden;
@@ -141,7 +141,7 @@
         }
 
         .btn-pay-action.active:hover {
-            background: #fff;
+            background: #fff; /* Твой оригинальный белый ховер */
             box-shadow: 0 0 20px var(--accent);
             color: var(--accent);
         }
@@ -217,12 +217,13 @@
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
-                    <li><a href="mailto:support@kaeront.ru">support@kaeront.ru</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
+                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
+                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
 <script>
@@ -233,29 +234,24 @@
     const textDisabled = "Примите условия оферты";
     const textEnabled = "Перейти к оплате";
 
-    // Массив ширин для каждого текста (настрой под себя, если текст изменишь)
     const widthDisabled = "300px";
     const widthEnabled = "220px";
 
-    // Устанавливаем начальную ширину
     btn.style.width = widthDisabled;
 
     check.addEventListener('change', function() {
-        // 1. Прячем текст (затухание)
         btn.style.color = 'transparent';
-        
-        // 2. Меняем ширину кнопки
         btn.style.width = this.checked ? widthEnabled : widthDisabled;
 
         setTimeout(() => {
             if(this.checked) {
                 btn.classList.add('active');
                 btn.innerText = textEnabled;
-                btn.style.color = '#000'; // Цвет текста для активной кнопки
+                btn.style.color = '#000';
             } else {
                 btn.classList.remove('active');
                 btn.innerText = textDisabled;
-                btn.style.color = '#fff'; // Цвет текста для неактивной кнопки
+                btn.style.color = '#fff';
             }
         }, 200);
     });
