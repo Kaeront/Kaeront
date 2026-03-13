@@ -70,8 +70,9 @@
             max-width: 850px; width: 90%; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
         }
         @keyframes move-stripes { 0% { background-position: 0 0; } 100% { background-position: -40px 0; } }
-        .donate-progress { width: 100%; height: 22px; background: rgba(0, 0, 0, 0.2); margin-top: 10px; position: relative; overflow: hidden; }
+        .donate-progress { width: 100%; height: 22px; background: rgba(0, 0, 0, 0.2); margin-top: 10px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;}
         .donate-progress-bar { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .donate-progress-text { position: relative; z-index: 3; font-family: 'Minecraft'; font-size: 0.65rem; }
         .donate-btn-small { background: var(--accent); color: #000; text-decoration: none; font-family: 'Minecraft'; font-size: 0.9rem; padding: 12px 25px; transition: var(--transition); border: none; cursor: pointer; }
 
         header { padding: 140px 20px 50px; text-align: center; }
@@ -95,7 +96,7 @@
             display: flex; 
             gap: 20px; 
             width: max-content; 
-            padding-left: 50px;
+            padding: 0 50px;
             scroll-behavior: smooth;
         }
 
@@ -117,23 +118,34 @@
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); position: relative; margin-bottom: 20px;}
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
         .server-card h3 { font-family: 'Minecraft'; color: var(--accent); margin: 0 0 15px; }
+        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
         .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
+        .badge-dev span { background: var(--accent); color: #000; padding: 2px 4px; }
 
         /* --- NEWS --- */
         .news-container { max-width: 1160px; width: 95%; margin: 20px auto 40px; display: flex; flex-direction: column; }
         .news-card { background: rgba(20, 20, 20, 1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 25px; position: relative; }
         .news-badge { display: inline-block; background: var(--accent); color: #000; padding: 4px 12px; font-family: 'Minecraft'; font-size: 0.7rem; margin-bottom: 15px; }
+        .news-date { float: right; color: var(--text-dim); font-size: 0.8rem; }
         .news-more-btn { background: rgba(30, 30, 30, 1); color: #fff; text-align: center; text-decoration: none; padding: 12px; font-family: 'Minecraft'; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.2); transition: var(--transition); display: block; }
+        .news-more-btn:hover { background: var(--accent); color: #000; }
 
         /* --- MODALS --- */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.show-flex { display: flex; }
         .modal-overlay.active { opacity: 1; }
-        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 700px; padding: 40px 30px; position: relative; }
+        .modal-window { background: #0d0d0d; border-top: 6px solid var(--accent); width: 95%; max-width: 700px; padding: 40px 30px; position: relative; transform: translateY(20px); transition: 0.3s; }
+        .modal-overlay.active .modal-window { transform: translateY(0); }
         .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: pointer; }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
-        .copyright-bar { text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; margin-top: 40px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+        .footer-links a:hover { color: var(--accent); }
+        .copyright-bar { text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; margin-top: 40px; border-top: 1px solid #111; padding-top: 30px;}
     </style>
 </head>
 <body>
@@ -151,14 +163,17 @@
     <div class="donate-banner">
         <div style="flex-grow: 1;">
             <div style="font-family: 'Minecraft'; color: var(--accent);">Сбор на мощное железо</div>
-            <div class="donate-progress"><div class="donate-progress-bar" style="width: 7.167%;"></div></div>
+            <div class="donate-progress">
+                <div class="donate-progress-bar" style="width: 7.167%;"></div>
+                <div class="donate-progress-text">2150 из 30000 собрано</div>
+            </div>
         </div>
         <a href="donate" class="donate-btn-small" style="margin-left: 20px;">ПОДДЕРЖАТЬ</a>
     </div>
 
     <header>
         <h1>KAERONT</h1>
-        <div class="hero-desc">Твой новый дом в мире Minecraft.</div>
+        <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для тех, кто ценит Minecraft как искусство.</div>
     </header>
 
     <div class="section-title">Почему мы?</div>
@@ -166,9 +181,10 @@
         <div class="why-us-track" id="whyUsTrack">
             <div class="why-card"><h4>Комьюнити</h4><p>Адекватная среда и строгий отбор игроков.</p></div>
             <div class="why-card"><h4>Нет вайпов</h4><p>Ваши постройки сохранятся навсегда.</p></div>
-            <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера без лагов.</p></div>
-            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на ресурсы. Все равны.</p></div>
-            <div class="why-card"><h4>Администрация</h4><p>Быстрая поддержка 24/7.</p></div>
+            <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
+            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
+            <div class="why-card"><h4>Доступность</h4><p>Наши сервера предоставляют бесплатную игру.</p></div>
+            <div class="why-card"><h4>Администрация</h4><p>Быстрая и вежливая поддержка проекта.</p></div>
         </div>
     </div>
 
@@ -176,14 +192,25 @@
         <div>
             <div class="section-header">Миры</div>
             <div class="server-card" onclick="openModal('modal-survival')">
-                <h3>Survival</h3>
-                <p>Классическое выживание.</p>
+                <h3>Kaeront: Survival</h3>
+                <p>Основной сервер. Спокойно строй и исследуй без угрозы гриферства.</p>
+            </div>
+            <div class="server-card" onclick="openModal('modal-hub')">
+                <h3>Kaeront: Hub</h3>
+                <p>Сердце проекта и центр навигации.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>90%</span></div>
             </div>
         </div>
         <div>
             <div class="section-header">Игры</div>
-            <div class="server-card">
+            <div class="server-card" onclick="openModal('modal-payload')">
+                <h3>Payload: Backyard</h3>
+                <p>Командная гонка вагонеток.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
+            </div>
+            <div class="server-card" onclick="openModal('modal-trident')">
                 <h3>Tridentball</h3>
+                <p>Гандбол на трезубцах.</p>
                 <div class="badge-dev">В РАЗРАБОТКЕ <span>50%</span></div>
             </div>
         </div>
@@ -191,41 +218,59 @@
 
     <div class="news-container">
         <div class="news-card">
-            <div class="news-badge">НОВОСТИ</div>
-            <h3>Мы открылись!</h3>
-            <p>Добро пожаловать на проект Kaeront.</p>
+            <span class="news-date">09.03.2026</span>
+            <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
+            <h3>Технические работы</h3>
+            <p>Проект Kaeront временно меняет формат! Мы фокусируемся на стабильности сети.</p>
         </div>
+        <a href="news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
     </div>
 
-    <div class="modal-overlay" id="modal-survival"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2><p>Приятной игры!</p></div></div>
+    <div class="modal-overlay" id="modal-survival">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2>
+            <p style="color: var(--text-dim);">Основной сервер для выживания.</p>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal-hub"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Hub</h2><p>В разработке...</p></div></div>
+    <div class="modal-overlay" id="modal-payload"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Payload</h2><p>В разработке...</p></div></div>
+    <div class="modal-overlay" id="modal-trident"><div class="modal-window"><span class="close-btn" onclick="closeModal('modal-trident')">ЗАКРЫТЬ</span><h2 style="font-family: 'Minecraft'; color: var(--accent);">Tridentball</h2><p>В разработке...</p></div></div>
 
-    <footer><div class="copyright-bar">Copyright © Kaeront 2026.</div></footer>
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section"><h4>KAERONT</h4><p style="font-size: 0.8rem; color: var(--text-dim);">Minecraft как искусство.</p></div>
+            <div class="footer-section"><h4>КОНТАКТЫ</h4><ul class="footer-links"><li><a href="mailto:admin@kaeront.ru">admin@kaeront.ru</a></li></ul></div>
+        </div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.</div>
+    </footer>
 
     <script>
-        // --- MODALS ---
+        // --- МОДАЛКИ ---
         function openModal(id) {
             const m = document.getElementById(id);
             m.classList.add('show-flex');
             setTimeout(() => m.classList.add('active'), 10);
+            document.body.style.overflow = 'hidden';
         }
         function closeModal(id) {
             const m = document.getElementById(id);
             m.classList.remove('active');
-            setTimeout(() => m.classList.remove('show-flex'), 300);
+            setTimeout(() => { m.classList.remove('show-flex'); document.body.style.overflow = 'auto'; }, 300);
         }
 
-        // --- SMART NAV ---
+        // --- NAV SCROLL ---
         window.onscroll = () => {
             const n = document.getElementById('smart-nav');
             if (window.pageYOffset > 50) n.classList.add('scrolled');
             else n.classList.remove('scrolled');
         };
 
-        // --- WHY US: INFINITE DRAG & AUTO-SCROLL ---
+        // --- ЛЕНТА "ПОЧЕМУ МЫ" ---
         const scrollContainer = document.getElementById('whyUsScroll');
         const track = document.getElementById('whyUsTrack');
         
-        // Клонируем элементы для бесконечности
+        // Клонирование для бесконечности
         const originalCards = Array.from(track.children);
         originalCards.forEach(c => track.appendChild(c.cloneNode(true)));
         originalCards.forEach(c => track.insertBefore(c.cloneNode(true), track.firstChild));
@@ -234,53 +279,73 @@
         let startX;
         let scrollLeft;
         let isPaused = false;
+        let autoScrollInterval;
         const cardWidth = originalCards[0].offsetWidth + 20;
 
-        // Начальная позиция в центре
+        // Центрируем
         scrollContainer.scrollLeft = cardWidth * originalCards.length;
 
-        // Функция авто-скролла
-        function autoMove() {
-            if (!isPaused && !isDown) {
-                scrollContainer.scrollLeft += 1;
-                // Зацикливание
-                if (scrollContainer.scrollLeft >= cardWidth * originalCards.length * 2) {
-                    scrollContainer.scrollLeft = cardWidth * originalCards.length;
+        // Авто-скролл с доводкой (Snap)
+        function startAutoScroll() {
+            autoScrollInterval = setInterval(() => {
+                if (!isPaused && !isDown) {
+                    let target = scrollContainer.scrollLeft + cardWidth;
+                    scrollContainer.scrollTo({ left: target, behavior: 'smooth' });
                 }
-            }
-            requestAnimationFrame(autoMove);
+            }, 3000);
         }
-        requestAnimationFrame(autoMove);
 
-        // DRAG LOGIC
+        // Зацикливание при скролле
+        scrollContainer.addEventListener('scroll', () => {
+            const segment = cardWidth * originalCards.length;
+            if (scrollContainer.scrollLeft <= 0) {
+                scrollContainer.scrollLeft = segment;
+            } else if (scrollContainer.scrollLeft >= segment * 2) {
+                scrollContainer.scrollLeft = segment;
+            }
+        });
+
+        // Drag-and-Drop
         scrollContainer.addEventListener('mousedown', (e) => {
             isDown = true;
             isPaused = true;
             startX = e.pageX - scrollContainer.offsetLeft;
             scrollLeft = scrollContainer.scrollLeft;
+            scrollContainer.style.scrollBehavior = 'auto';
         });
-        window.addEventListener('mouseup', () => {
+
+        const endDrag = () => {
             if (!isDown) return;
             isDown = false;
-            isPaused = false;
-            // Snap (привязка к сетке)
+            scrollContainer.style.scrollBehavior = 'smooth';
+            // Snap доводка
             const nearest = Math.round(scrollContainer.scrollLeft / cardWidth) * cardWidth;
             scrollContainer.scrollTo({ left: nearest, behavior: 'smooth' });
-        });
+            setTimeout(() => { isPaused = false; }, 2000);
+        };
+
+        window.addEventListener('mouseup', endDrag);
         scrollContainer.addEventListener('mousemove', (e) => {
             if (!isDown) return;
             e.preventDefault();
             const x = e.pageX - scrollContainer.offsetLeft;
-            scrollContainer.scrollLeft = scrollLeft - (x - startX) * 1.5;
+            const walk = (x - startX) * 2;
+            scrollContainer.scrollLeft = scrollLeft - walk;
         });
 
         // Touch (Mobile)
-        scrollContainer.addEventListener('touchstart', () => isPaused = true);
+        scrollContainer.addEventListener('touchstart', () => { isPaused = true; scrollContainer.style.scrollBehavior = 'auto'; });
         scrollContainer.addEventListener('touchend', () => {
-            isPaused = false;
+            scrollContainer.style.scrollBehavior = 'smooth';
             const nearest = Math.round(scrollContainer.scrollLeft / cardWidth) * cardWidth;
             scrollContainer.scrollTo({ left: nearest, behavior: 'smooth' });
+            setTimeout(() => { isPaused = false; }, 2000);
         });
+
+        startAutoScroll();
+
+        // Overlay close
+        window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeModal(e.target.id); }
     </script>
 </body>
 </html>
