@@ -6,7 +6,7 @@
 
     <meta property="og:title" content="Kaeront — Уникальные Minecraft сервер">
     <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
     <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
@@ -82,13 +82,14 @@
             font-family: 'Minecraft';
             font-size: 0.7rem;
             transition: 0.3s;
+            text-align: center;
+            width: 100%; /* Для центрирования */
         }
         .btn-back:hover { color: var(--accent); }
 
         h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.2; margin-bottom: 20px; }
         p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.3; margin-bottom: 30px; }
 
-        /* Элементы управления донатом */
         .donation-controls {
             margin-top: 30px;
             display: flex;
@@ -129,13 +130,12 @@
             cursor: pointer;
         }
 
+        /* --- FOOTER (Inactivated links) --- */
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
         .footer-links { list-style: none; padding: 0; margin: 0; }
-        .footer-links li { margin-bottom: 10px; }
-        .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
-        .footer-links a:hover { color: var(--accent); }
+        .footer-links li { margin-bottom: 10px; color: var(--text-dim); font-size: 0.8rem; }
         .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
         .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
@@ -153,7 +153,7 @@
             <a href="./#servers">Сервера</a>
             <a href="news">Новости</a>
             <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
-            <a href="donate" style="color: var(--accent);">Пожертвовать</a>
+            <a href="pay" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>
 
@@ -184,23 +184,23 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-                    <li><a href="offer">Публичная оферта</a></li>
+                    <li>Политика конфиденциальности и обработки персональных данных</li>
+                    <li>Публичная оферта</li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>ПРОЕКТ</h4>
                 <ul class="footer-links">
-                    <li><a href="news">Новости</a></li>
-                    <li><a href="pay" style="color: var(--accent);">Пожертвовать</a></li>
+                    <li>Новости</li>
+                    <li style="color: var(--accent);">Пожертвовать</li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
+                    <li>@KaerontMC (Telegram) — поддержка</li>
+                    <li>support@kaeront.ru — поддержка</li>
+                    <li>admin@kaeront.ru — важные вопросы</li>
                 </ul>
             </div>
         </div>
@@ -222,10 +222,7 @@
 
         btn.addEventListener('click', function() {
             if(check.checked) {
-                // Открываем донат в новой вкладке
                 window.open(cloudTipsUrl, '_blank');
-                
-                // Эту вкладку редиректим на главную
                 setTimeout(() => {
                     window.location.href = './';
                 }, 400);
