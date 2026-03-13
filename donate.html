@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#FFAA00">
 
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Поддержка проекта «Kaeront»</title>
+    <title>Пожертвование проекту «Kaeront»</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -122,7 +122,7 @@
             text-decoration: none;
             text-transform: uppercase;
             border: none;
-            opacity: 0.4; /* Вернул твою прозрачность */
+            opacity: 0.5;
             cursor: not-allowed;
             white-space: nowrap;
             overflow: hidden;
@@ -141,7 +141,7 @@
         }
 
         .btn-pay-action.active:hover {
-            background: #fff; /* Твой оригинальный белый ховер */
+            background: #fff;
             box-shadow: 0 0 20px var(--accent);
             color: var(--accent);
         }
@@ -189,7 +189,7 @@
                     <span>Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.</span>
                 </label>
 
-                <button id="pay-button" class="btn-pay-action">Примите условия оферты</button>
+                <button id="pay-button" class="btn-pay-action">Подтвердите согласие</button>
             </div>
         </div>
     </div>
@@ -231,10 +231,10 @@
     const btn = document.getElementById('pay-button');
     const cloudTipsUrl = 'https://pay.cloudtips.ru/p/db4c09dc';
 
-    const textDisabled = "Примите условия оферты";
+    const textDisabled = "Подтвердите согласие";
     const textEnabled = "Перейти к оплате";
 
-    const widthDisabled = "300px";
+    const widthDisabled = "260px";
     const widthEnabled = "220px";
 
     btn.style.width = widthDisabled;
