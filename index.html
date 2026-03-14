@@ -244,27 +244,32 @@
         h1 { font-family: 'Minecraft', cursive; font-size: clamp(2rem, 8vw, 3.5rem); color: var(--accent); margin: 0; }
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
-        /* --- WHY US (INFINITE VERSION) --- */
-        .section-title { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--text-main); text-align: center; margin: 40px 0 20px; text-transform: uppercase; }
-        .why-us-container { 
-            width: 100%; 
-            overflow-x: auto; 
-            padding: 20px 0; 
-            scrollbar-width: none; 
-            -ms-overflow-style: none;
-        }
-        .why-us-container::-webkit-scrollbar { display: none; }
-        .why-us-track { 
-            display: flex; 
-            gap: 20px; 
-            padding: 0 5%; 
-            width: max-content; 
-            transition: transform 0.5s ease;
-        }
-        .why-card { background: rgba(20, 20, 20, 0.5); border-left: 3px solid var(--accent); padding: 25px; width: 280px; flex-shrink: 0; transition: var(--transition); }
-        .why-card:hover { background: rgba(25, 25, 25, 1); box-shadow: 0 5px 15px rgba(0, 0, 0, 1); }
-        .why-card h4 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: var(--accent); margin: 0 0 10px; }
-        .why-card p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0; }
+.why-us-container { 
+    width: 100%; 
+    overflow: hidden; /* Скрываем полосу прокрутки совсем */
+    padding: 20px 0; 
+    cursor: grab;
+    user-select: none; /* Чтобы текст не выделялся при перетаскивании */
+    touch-action: pan-y; /* Позволяет листать страницу вертикально на мобиле */
+}
+.why-us-container:active { cursor: grabbing; }
+
+.why-us-track { 
+    display: flex; 
+    gap: 20px; 
+    padding: 0 10px; /* Небольшой отступ */
+    width: max-content; 
+    will-change: transform; /* Оптимизация для видеокарты */
+}
+
+.why-card { 
+    background: rgba(20, 20, 20, 0.5); 
+    border-left: 3px solid var(--accent); 
+    padding: 25px; 
+    width: 280px; 
+    flex-shrink: 0; 
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s; 
+}
 
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
@@ -440,17 +445,18 @@
         <div class="hero-desc">Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.</div>
     </header>
 
-    <div class="section-title">Почему мы?</div>
-    <section class="why-us-container" id="whyUsScroll">
-        <div class="why-us-track" id="whyUsTrack">
-            <div class="why-card"><h4>Комьюнити</h4><p>Адекватная, дружелюбная среда и строгий отбор игроков.</p></div>
-            <div class="why-card"><h4>Нет вайпов</h4><p>На текущих серверах нет вайпов, так что можете строить постройки и не терять их через время.</p></div>
-            <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
-            <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
-            <div class="why-card"><h4>Доступность</h4><p>Наши сервера предоставляют бесплатную игру.</p></div>
-            <div class="why-card"><h4>Администрация</h4><p>Быстрая и вежливая Администрация проекта.</p></div>
-        </div>
-    </section>
+<div class="section-title">Почему мы?</div>
+<section class="why-us-container" id="whyUsScroll">
+    <div class="why-us-track" id="whyUsTrack">
+        <div class="why-card"><h4>Комьюнити</h4><p>Адекватная, дружелюбная среда и строгий отбор игроков.</p></div>
+        <div class="why-card"><h4>Нет вайпов</h4><p>На текущих серверах нет вайпов, так что можете строить постройки и не терять их через время.</p></div>
+        <div class="why-card"><h4>Стабильность</h4><p>Плавные сервера с минимальным количеством лагов.</p></div>
+        <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
+        <div class="why-card"><h4>Доступность</h4><p>Наши сервера предоставляют бесплатную игру.</p></div>
+        <div class="why-card"><h4>Администрация</h4><p>Быстрая и вежливая Администрация проекта.</p></div>
+    </div>
+</section>
+
 
             <div class="servers-header">Наши сервера</div>
     <main class="content-grid" id="servers">
@@ -637,58 +643,97 @@
             else nav.classList.remove('scrolled');
         };
 
-        // --- INFINITE AUTO-SCROLL "WHY US" ---
-        const scrollContainer = document.getElementById('whyUsScroll');
-        const track = document.getElementById('whyUsTrack');
-        let cards = Array.from(track.children);
+const container = document.getElementById('whyUsScroll');
+const track = document.getElementById('whyUsTrack');
+const cardsOriginal = Array.from(track.children);
+
+// Создаем клоны для бесконечного цикла
+cardsOriginal.forEach(card => track.appendChild(card.cloneNode(true)));
+cardsOriginal.forEach(card => track.insertBefore(card.cloneNode(true), track.firstChild));
+
+let isDragging = false;
+let startX, scrollLeft;
+let velocity = 0; // Скорость инерции
+let lastX, lastTime;
+let autoSpeed = 0.5; // Базовая скорость дрейфа
+let currentAutoSpeed = 0.5;
+let currentX = cardsOriginal[0].offsetWidth * cardsOriginal.length;
+
+// Установка начальной позиции
+container.scrollLeft = currentX;
+
+function update() {
+    if (!isDragging) {
+        // Применяем инерцию и авто-дрейф
+        currentX += velocity + currentAutoSpeed;
         
-        // Клонируем элементы для создания иллюзии бесконечности
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            track.appendChild(clone);
-        });
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            track.insertBefore(clone, track.firstChild);
-        });
+        // Постепенно возвращаем авто-скорость, если она была изменена (например, после hover)
+        currentAutoSpeed += (autoSpeed - currentAutoSpeed) * 0.05;
+        
+        // Затухание инерции
+        velocity *= 0.95; 
 
-        let isPaused = false;
-        const step = 1; // Прыжок в пикселях
+        container.scrollLeft = currentX;
 
-        // Устанавливаем начальную позицию в центр (на оригинальные карточки)
-        scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-
-        function autoScroll() {
-            if (!isPaused) {
-                let target = scrollContainer.scrollLeft + step;
-                scrollContainer.scrollTo({
-                    left: target,
-                    behavior: 'smooth'
-                });
-            }
+        // Бесшовный переход (зацикливание)
+        const unitWidth = cardsOriginal[0].offsetWidth * cardsOriginal.length;
+        if (container.scrollLeft < unitWidth) {
+            currentX += unitWidth;
+            container.scrollLeft = currentX;
+        } else if (container.scrollLeft > unitWidth * 2) {
+            currentX -= unitWidth;
+            container.scrollLeft = currentX;
         }
+    }
+    requestAnimationFrame(update);
+}
 
-        // Проверка границ для мгновенного перемещения (зацикливание)
-        scrollContainer.addEventListener('scroll', () => {
-            const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            if (scrollContainer.scrollLeft <= 0) {
-                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-            } else if (scrollContainer.scrollLeft >= maxScroll - 1) {
-                scrollContainer.scrollLeft = cards[0].offsetWidth * cards.length;
-            }
-        });
+// События мыши и тача
+const onStart = (e) => {
+    isDragging = true;
+    startX = (e.pageX || e.touches[0].pageX);
+    scrollLeft = container.scrollLeft;
+    velocity = 0;
+    lastX = startX;
+    lastTime = performance.now();
+};
 
-        // Пауза при наведении или касании
-        scrollContainer.addEventListener('mouseenter', () => isPaused = true);
-        scrollContainer.addEventListener('mouseleave', () => isPaused = false);
-        scrollContainer.addEventListener('touchstart', () => isPaused = true);
-        scrollContainer.addEventListener('touchend', () => {
-            // Возобновляем через 2 секунды после того, как пользователь отпустил ленту
-            setTimeout(() => isPaused = false, 1000); 
-        });
+const onMove = (e) => {
+    if (!isDragging) return;
+    const x = (e.pageX || e.touches[0].pageX);
+    const walk = x - startX;
+    container.scrollLeft = scrollLeft - walk;
+    currentX = container.scrollLeft;
 
-        // Запуск интервала авто-скролла (раз в 3 секунды)
-        setInterval(autoScroll, 0);
+    // Расчет мгновенной скорости для инерции
+    const now = performance.now();
+    const dt = now - lastTime;
+    const dx = x - lastX;
+    if (dt > 0) velocity = -dx / (dt / 16); // Нормализация под 60fps
+
+    lastX = x;
+    lastTime = now;
+};
+
+const onEnd = () => {
+    isDragging = false;
+};
+
+// Привязка событий
+container.addEventListener('mousedown', onStart);
+window.addEventListener('mousemove', onMove);
+window.addEventListener('mouseup', onEnd);
+
+container.addEventListener('touchstart', onStart, {passive: true});
+window.addEventListener('touchmove', onMove, {passive: true});
+window.addEventListener('touchend', onEnd);
+
+// Плавная остановка при наведении
+container.addEventListener('mouseenter', () => autoSpeed = 0);
+container.addEventListener('mouseleave', () => autoSpeed = 0.5);
+
+// Запуск цикла
+requestAnimationFrame(update);
 
         // Закрытие модалок по клику на затемненный фон (overlay)
         window.onclick = function(e) { 
