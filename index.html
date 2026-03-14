@@ -272,7 +272,7 @@
 }
 
 .why-card { 
-    background: rgba(20, 20, 20, 0.5); 
+    background: rgba(20, 20, 20, 0.7); 
     border-left: 3px solid var(--accent); 
     padding: 20px;
     width: 260px; 
@@ -280,7 +280,7 @@
     box-sizing: border-box;
     /* Добавляем это: */
     transition: background 0.3s, box-shadow 0.3s, opacity 0.3s ease; 
-    opacity: 0.3; /* Базовая прозрачность для боковых карточек */
+    opacity: 0.5; /* Базовая прозрачность для боковых карточек */
 }
 
 
@@ -706,10 +706,10 @@ function updateOpacity() {
         // Можно поиграть с цифрами: 1.0 — центр, 0.2 — края
         if (distanceFromCenter < 200) {
             const opacity = 1 - (distanceFromCenter / 300); // Плавное затухание
-            card.style.opacity = Math.max(opacity, 0.2); // Не меньше 0.2
+            card.style.opacity = Math.max(opacity, 0.5); // Не меньше 0.5
             card.style.transform = `scale(${Math.max(1, 1.05 - distanceFromCenter/1000)})`; // Легкий зум в центре
         } else {
-            card.style.opacity = 0.2;
+            card.style.opacity = 0.5;
             card.style.transform = `scale(1)`;
         }
     });
