@@ -706,7 +706,7 @@ function updateOpacity() {
         if (distanceFromCenter < 130) {
             const opacity = 1 - (distanceFromCenter / 130); // Плавное затухание
             card.style.opacity = Math.max(opacity, 1); // Не меньше 0.5
-            card.style.transform = `scale(${Math.max(1, 1.15 - distanceFromCenter/390)})`; // Легкий зум в центре
+            card.style.transform = `scale(${Math.max(1, 1.15 - distanceFromCenter/520)})`; // Легкий зум в центре
         } else {
             card.style.opacity = 0.5;
             card.style.transform = `scale(1)`;
