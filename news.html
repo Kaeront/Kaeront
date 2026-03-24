@@ -27,6 +27,7 @@
             margin: 0; display: flex; flex-direction: column; min-height: 100vh;
         }
 
+        /* Навигация */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
             background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px);
@@ -43,11 +44,12 @@
             max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex-grow: 1;
         }
 
-        /* Управление поиском и фильтрами */
+        /* Поиск и Фильтры */
         .controls { margin: 20px; display: flex; flex-direction: column; gap: 15px; }
         .search-input {
             background: #151515; border: 1px solid #333; color: white;
             padding: 12px; font-family: 'Montserrat'; outline: none; width: 100%; box-sizing: border-box;
+            border-radius: 0;
         }
         .search-input:focus { border-color: var(--accent); }
         
@@ -62,36 +64,46 @@
         .btn-back { display: inline-block; margin-bottom: 20px; color: var(--text-main); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem; transition: 0.3s; }
         h1 { font-family: 'Minecraft'; font-size: 1.5rem; color: var(--accent); margin-bottom: 30px; }
 
-        .news-list { display: flex; flex-direction: column; gap: 30px; margin: 20px; }
+        .news-list { display: flex; flex-direction: column; gap: 30px; margin: 20px; min-height: 200px; }
         
+        /* Карточка новости */
         .news-card {
             background: var(--card-bg); border: 1px solid #1a1a1a; padding: 30px;
-            position: relative; animation: fadeIn 0.3s ease-out;
+            position: relative; transition: 0.3s;
+            animation: fadeIn 0.3s ease-out;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .news-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 3px 5px; }
         
-        /* Стили тегов */
-        .tag-gold { background: #FA0; color: #000; }
-        .tag-blue { background: #55F; color: #fff; }
-        .tag-dark-blue { background: #00A; color: #fff; }
-        .tag-red { background: #F55; color: #000; }
-        .tag-dark-red { background: #A00; color: #fff; }
+        /* Цвета тегов */
+        .tag-gold  { background: #FA0; color: #000; }
+        .tag-blue  { background: #55F; color: #fff; }
+        .tag-dark-blue  { background: #00A; color: #fff; }
+        .tag-light-purple  { background: #F5F; color: #000; }
+        .tag-red  { background: #F55; color: #000; }
+        .tag-dark-red  { background: #A00; color: #fff; }
 
         .news-card h2 { font-family: 'Minecraft'; font-size: 1rem; color: var(--accent); margin: 0 0 15px 0; }
         .news-meta { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; display: block; font-family: 'Minecraft'; }
         .news-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin-bottom: 0; }
+        .news-card b { color: #fff; }
+
+        /* Состояние "Ничего не найдено" */
+        .no-results {
+            text-align: center; color: var(--text-dim); font-family: 'Minecraft';
+            font-size: 0.8rem; margin: 60px 0; grid-column: 1/-1;
+        }
 
         .show-more-btn {
             background: transparent; border: 1px dashed var(--text-dim); color: var(--text-dim);
             padding: 15px; width: 100%; font-family: 'Minecraft'; font-size: 0.7rem;
-            cursor: pointer; margin-top: 20px; transition: 0.3s;
+            cursor: pointer; transition: 0.3s;
         }
-        .show-more-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ФУТЕР ВОССТАНОВЛЕН */
+        /* Футер */
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
@@ -122,14 +134,14 @@
         </div>
 
         <div class="controls">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию или тексту...">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск по новостям...">
             <div class="filter-tags" id="filterContainer">
                 </div>
         </div>
 
         <div class="news-list" id="newsContainer"></div>
         
-        <div style="margin: 0 20px 40px 20px;">
+        <div style="margin: 0 20px 40px 20px;" id="btnWrapper">
             <button class="show-more-btn" id="loadMoreBtn">ПОКАЗАТЬ ПРЕДЫДУЩИЕ НОВОСТИ</button>
         </div>
     </div>
@@ -143,7 +155,7 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
                 </ul>
             </div>
@@ -157,100 +169,143 @@
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
-                    <li><a href="mailto:support@kaeront.ru">support@kaeront.ru</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
+                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
+                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
     <script>
+        // ДАННЫЕ НОВОСТЕЙ (Твой оригинальный текст)
         const allNews = [
-            { id: "1", date: "11 марта, 2026 года", title: "Мы переезжаем!", tags: [{name: "Сайт", class: "tag-blue"}, {name: "Сервера", class: "tag-blue"}], content: "Проект Kaeront переехал на новый домен! Теперь, kaeront.ru будет единой точкой всего проекта." },
-            { id: "2", date: "9 марта, 2026 года", title: "Технические работы", tags: [{name: "Отключение", class: "tag-dark-red"}, {name: "Важное", class: "tag-red"}, {name: "Сервера", class: "tag-blue"}], content: "Проект Kaeront временно меняет формат! Мы приостанавливаем работу режима Survival." },
-            { id: "3", date: "8 марта, 2026 года", title: "Открытие официального сайта", tags: [{name: "Важное", class: "tag-red"}, {name: "Сайт", class: "tag-blue"}], content: "Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом можно в одном месте." },
-            { id: "4", date: "4 марта, 2026 года", title: "Мы переименовались в Kaeront", tags: [{name: "Важное", class: "tag-red"}], content: "Мы официально меняем название на Kaeront. Это связано с расширением нашей инфраструктуры." },
-            { id: "5", date: "23 февраля, 2026 года", title: "Чувствуете запах выпечки?", tags: [{name: "AlsasnikS", class: "tag-blue"}], content: "Мы делаем классный датапак 'Cuisine', который добавит нам новые предметы!" },
-            { id: "6", date: "22 февраля, 2026 года", title: "Ачивочное выживание", tags: [{name: "AlsasnikS", class: "tag-blue"}], content: "Скоро на AlsasnikS появятся новые ачивки и квесты! У нас уже готово 30 ачивок." }
+            {
+                id: "11-03-2026",
+                date: "11 марта, 2026 года",
+                title: "Мы переезжаем!",
+                tags: [{n: "Сайт", c: "tag-blue"}, {n: "Сервера", c: "tag-blue"}],
+                content: "Проект Kaeront переехал на новый домен! Теперь, kaeront.ru будет единой точкой всего проекта."
+            },
+            {
+                id: "09-03-2026",
+                date: "9 марта, 2026 года",
+                title: "Технические работы",
+                tags: [{n: "Отключение", c: "tag-dark-red"}, {n: "Важное", c: "tag-red"}, {n: "Сервера", c: "tag-blue"}],
+                content: "Проект Kaeront временно меняет формат! Мы приостанавливаем работу режима Survival, чтобы сосредоточиться на технической части и качественном пробросе портов для стабильного доступа, однако нет поводов для грусти — всего за сутки наш Hub был завершен на 90% и уже готов встречать первых игроков. Работа над сетевой частью уже кипит, и совсем скоро закончится."
+            },
+            {
+                id: "08-03-2026",
+                date: "8 марта, 2026 года",
+                title: "Открытие официального сайта",
+                tags: [{n: "Важное", c: "tag-red"}, {n: "Сайт", c: "tag-blue"}],
+                content: "Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом разработки, подавать заявки на Survival и поддерживать проект можно в одном месте. Сайт будет дополняться новыми функциями по мере развития Хаба."
+            },
+            {
+                id: "04-03-2026",
+                date: "4 марта, 2026 года",
+                title: "Мы переименовались в Kaeront",
+                tags: [{n: "Важное", c: "tag-red"}],
+                content: "Мы официально меняем название на <b>Kaeront</b>. Это решение связано с расширением нашей инфраструктуры и подготовкой к запуску глобальной сети серверов."
+            },
+            {
+                id: "23-02-2026",
+                date: "23 февраля, 2026 года",
+                title: "Чувствуете запах выпечки?",
+                tags: [{n: "AlsasnikS", c: "tag-blue"}],
+                content: "Мы делаем классный датапак/ресурспак <b>'Cuisine'</b>, который добавит нам новые предметы, связанные с кулинарией! Инструменты, материалы, продукты и блюда подходят на AlsasnikS!"
+            },
+            {
+                id: "22-02-2026",
+                date: "22 февраля, 2026 года",
+                title: "Ачивочное выживание",
+                tags: [{n: "AlsasnikS", c: "tag-blue"}],
+                content: "Скоро на AlsasnikS появятся новые ачивки и квесты! У нас, пока, готово 30 ачивок (много!). Помимо простых ачивок мы добавили испытания, с которыми вы с ума сойдёте..."
+            }
         ];
 
-        let activeTags = new Set();
+        let activeFilters = new Set();
+        let filteredNews = [];
         let currentIndex = 0;
-        const limit = 3;
-        let filteredNews = [...allNews];
+        const limit = 2; // Сколько новостей грузить за раз
 
-        const newsContainer = document.getElementById('newsContainer');
+        const container = document.getElementById('newsContainer');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         const searchInput = document.getElementById('searchInput');
 
-        function initFilters() {
+        // Создаем кнопки фильтров на основе уникальных тегов
+        function renderFilterButtons() {
             const tags = new Set();
-            allNews.forEach(news => news.tags.forEach(t => tags.add(t.name)));
-            const container = document.getElementById('filterContainer');
+            allNews.forEach(n => n.tags.forEach(t => tags.add(t.n)));
+            const filterBox = document.getElementById('filterContainer');
             
             tags.forEach(tagName => {
                 const btn = document.createElement('button');
                 btn.className = 'filter-btn';
                 btn.textContent = tagName;
-                btn.onclick = () => toggleTag(tagName, btn);
-                container.appendChild(btn);
+                btn.onclick = () => toggleFilter(tagName, btn);
+                filterBox.appendChild(btn);
             });
         }
 
-        function toggleTag(tag, btn) {
-            if (activeTags.has(tag)) {
-                activeTags.delete(tag);
+        function toggleFilter(tagName, btn) {
+            if (activeFilters.has(tagName)) {
+                activeFilters.delete(tagName);
                 btn.classList.remove('active');
             } else {
-                activeTags.add(tag);
+                activeFilters.add(tagName);
                 btn.classList.add('active');
             }
-            updateDisplay();
+            applyFilters();
         }
 
-        function createCard(item) {
-            const tagsHtml = item.tags.map(t => `<span class="tag ${t.class}">${t.name}</span>`).join('');
-            return `
-                <div class="news-card">
-                    <span class="news-meta">${item.date}</span>
-                    <h2>${item.title}</h2>
-                    <div class="news-tags">${tagsHtml}</div>
-                    <p>${item.content}</p>
-                </div>
-            `;
-        }
-
-        function renderNext() {
-            const nextBatch = filteredNews.slice(currentIndex, currentIndex + limit);
-            nextBatch.forEach(item => {
-                newsContainer.insertAdjacentHTML('beforeend', createCard(item));
-            });
-            currentIndex += limit;
-            loadMoreBtn.style.display = currentIndex >= filteredNews.length ? 'none' : 'block';
-        }
-
-        function updateDisplay() {
-            newsContainer.innerHTML = '';
-            currentIndex = 0;
+        function applyFilters() {
             const query = searchInput.value.toLowerCase();
-
+            
             filteredNews = allNews.filter(news => {
                 const matchesSearch = news.title.toLowerCase().includes(query) || news.content.toLowerCase().includes(query);
-                // Проверяем, содержит ли новость ХОТЯ БЫ ОДИН из активных тегов (OR logic)
-                // Если нужно, чтобы были ВСЕ выбранные теги, замените .some на .every
-                const matchesTags = activeTags.size === 0 || news.tags.some(t => activeTags.has(t.name));
+                // Если фильтры не выбраны — показываем всё. Если выбраны — новость должна содержать ХОТЯ БЫ ОДИН из выбранных тегов.
+                const matchesTags = activeFilters.size === 0 || news.tags.some(t => activeFilters.has(t.n));
                 return matchesSearch && matchesTags;
             });
 
-            renderNext();
+            currentIndex = 0;
+            container.innerHTML = '';
+            
+            if (filteredNews.length === 0) {
+                container.innerHTML = `<div class="no-results">ПО ВАШЕМУ ЗАПРОСУ НИЧЕГО НЕ НАЙДЕНО. ПРОВЕРЬТЕ ФИЛЬТРЫ.</div>`;
+                document.getElementById('btnWrapper').style.display = 'none';
+            } else {
+                renderBatch();
+            }
         }
 
-        loadMoreBtn.addEventListener('click', renderNext);
-        searchInput.addEventListener('input', updateDisplay);
+        function renderBatch() {
+            const nextBatch = filteredNews.slice(currentIndex, currentIndex + limit);
+            nextBatch.forEach(item => {
+                const tagsHtml = item.tags.map(t => `<span class="tag ${t.c}">${t.n}</span>`).join('');
+                const html = `
+                    <div class="news-card" id="${item.id}">
+                        <span class="news-meta">${item.date}</span>
+                        <h2>${item.title}</h2>
+                        <div class="news-tags">${tagsHtml}</div>
+                        <p>${item.content}</p>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+            
+            currentIndex += limit;
+            document.getElementById('btnWrapper').style.display = currentIndex >= filteredNews.length ? 'none' : 'block';
+        }
 
-        initFilters();
-        updateDisplay();
+        searchInput.addEventListener('input', applyFilters);
+        loadMoreBtn.addEventListener('click', renderBatch);
+
+        // Инициализация
+        renderFilterButtons();
+        applyFilters();
     </script>
 </body>
 </html>
