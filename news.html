@@ -3,16 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <meta property="og:title" content="Kaeront — Уникальные Minecraft сервера">
-    <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
-    <meta property="og:url" content="https://kaeront.ru">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#FFAA00">
-
-<meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
-<link rel="icon" type="image/png" href="globe.png">
     <title>Kaeront | Новости</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -37,6 +27,7 @@
             margin: 0; display: flex; flex-direction: column; min-height: 100vh;
         }
 
+        /* Навигация */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
             background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px);
@@ -53,55 +44,55 @@
             max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex-grow: 1;
         }
 
+        /* Панель управления (Поиск и Фильтры) */
+        .controls { margin: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .search-input {
+            background: #151515; border: 1px solid #333; color: white;
+            padding: 12px; font-family: 'Montserrat'; outline: none; width: 100%; box-sizing: border-box;
+        }
+        .search-input:focus { border-color: var(--accent); }
+        
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .filter-btn {
+            background: #151515; border: 1px solid #333; color: var(--text-dim);
+            padding: 5px 12px; cursor: pointer; font-family: 'Minecraft'; font-size: 0.6rem; transition: 0.3s;
+        }
+        .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255, 170, 0, 0.1); }
+
         .header-section { margin: 20px; }
         .btn-back { display: inline-block; margin-bottom: 20px; color: var(--text-main); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem; transition: 0.3s; }
-        .btn-back:hover { color: var(--accent); }
         h1 { font-family: 'Minecraft'; font-size: 1.5rem; color: var(--accent); margin-bottom: 30px; }
 
         .news-list { display: flex; flex-direction: column; gap: 30px; margin: 20px; }
         
         .news-card {
             background: var(--card-bg); border: 1px solid #1a1a1a; padding: 30px;
-            position: relative; transition: 0.3s; scroll-margin-top: 100px;
+            position: relative; transition: 0.3s;
+            animation: fadeIn 0.4s ease-out;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ТЕГИ (МЕТКИ) --- */
-        .news-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px; /* Отступ под заголовком */
-        }
-
-        .tag {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.65rem;
-            padding: 3px 5px;
-        }
-
-        /* Цветовые схемы в стиле Minecraft */
-        .tag-gold  { background: #FA0; color: #000; }
-        .tag-blue  { background: #55F; color: #fff; }
-        .tag-dark-blue  { background: #00A; color: #fff; }
-        .tag-light-purple  { background: #F5F; color: #000; }
-        .tag-red  { background: #F55; color: #000; }
-        .tag-dark-red  { background: #A00; color: #fff; }
-
+        .news-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 3px 5px; }
         
-        /* Скрываем архивные новости */
-        .news-card.hidden { display: none; }
+        /* Классы тегов */
+        .tag-default { background: #444; color: #fff; }
+        .tag-gold { background: #FA0; color: #000; }
+        .tag-blue { background: #55F; color: #fff; }
+        .tag-red { background: #F55; color: #000; }
+        .tag-dark-red { background: #A00; color: #fff; }
 
-        .news-card:target { border-color: var(--accent); background: rgba(40, 30, 0, 0.2); }
         .news-card h2 { font-family: 'Minecraft'; font-size: 1rem; color: var(--accent); margin: 0 0 15px 0; }
         .news-meta { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; display: block; font-family: 'Minecraft'; }
         .news-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; margin-bottom: 0; }
 
         .show-more-btn {
-            background: rgba(20, 20, 20, 0); border: 1px dashed var(--text-dim); color: var(--text-dim);
+            background: transparent; border: 1px dashed var(--text-dim); color: var(--text-dim);
             padding: 15px; width: 100%; font-family: 'Minecraft'; font-size: 0.7rem;
             cursor: pointer; margin-top: 20px; transition: 0.3s;
         }
-        .show-more-btn:hover { background: rgba(20, 20, 20, 0); border-color: var(--accent); color: var(--accent); }
+        .show-more-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .show-more-btn:disabled { opacity: 0.3; cursor: default; }
 
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
@@ -110,7 +101,6 @@
         .footer-links li { margin-bottom: 10px; }
         .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--accent); }
-        .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
         .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
     </style>
 </head>
@@ -132,66 +122,17 @@
             <h1>Лента новостей</h1>
         </div>
 
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-input" placeholder="Поиск новостей...">
+            <div class="filter-tags" id="filterContainer">
+                <button class="filter-btn active" onclick="filterByTag('Все')">Все</button>
+                </div>
+        </div>
+
         <div class="news-list" id="newsContainer">
-         
-            <div class="news-card" id="11-03-2026">
-                <span class="news-meta">11 марта, 2026 года</span>
-                <h2>Мы переезжаем!</h2>
-                <div class="news-tags">
-        <span class="tag tag-blue">Сайт</span>
-        <span class="tag tag-blue">Сервера</span>
-                </div>
-            <p>Проект Kaeront переехал на новый домен! Теперь, kaeront.ru будет единой точкой всего проекта.</p>
             </div>
-   
-            <div class="news-card hidden" id="09-03-2026">
-                <span class="news-meta">9 марта, 2026 года</span>
-                <h2>Технические работы</h2>
-                <div class="news-tags">
-        <span class="tag tag-dark-red">Отключение</span>
-        <span class="tag tag-red">Важное</span>
-        <span class="tag tag-blue">Сервера</span>
-                </div>
-                <p>Проект Kaeront временно меняет формат! Мы приостанавливаем работу режима Survival, чтобы сосредоточиться на технической части и качественном пробросе портов для стабильного доступа, однако нет поводов для грусти — всего за сутки наш Hub был завершен на 90% и уже готов встречать первых игроков. Работа над сетевой частью уже кипит, и совсем скоро закончится.</p>
-            </div>
-
-            <div class="news-card hidden" id="08-03-2026">
-                <span class="news-meta">8 марта, 2026 года</span>
-                <h2>Открытие официального сайта</h2>
-                <div class="news-tags">
-        <span class="tag tag-red">Важное</span>
-        <span class="tag tag-blue">Сайт</span>
-                </div>
-                <p>Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом разработки, подавать заявки на Survival и поддерживать проект можно в одном месте. Сайт будет дополняться новыми функциями по мере развития Хаба.</p>
-            </div>
-
-            <div class="news-card hidden" id="04-03-2026">
-                <span class="news-meta">4 марта, 2026 года</span>
-                <h2>Мы переименовались в Kaeront</h2>
-                <div class="news-tags">
-        <span class="tag tag-red">Важное</span>
-                </div>
-                <p>Мы официально меняем название на <b>Kaeront</b>. Это решение связано с расширением нашей инфраструктуры и подготовкой к запуску глобальной сети серверов.</p>
-            </div>
-
-            <div class="news-card hidden" id="23-02-2026">
-                <span class="news-meta">23 февраля, 2026 года</span>
-                <h2>Чувствуете запах выпечки?</h2>
-                <div class="news-tags">
-        <span class="tag tag-blue">AlsasnikS</span>
-                </div>
-                <p>Мы делаем классный датапак/ресурспак <b>"Cuisine"</b>, который добавит нам новые предметы, связанные с кулинарией! Инструменты, материалы, продукты и блюда подходят на AlsasnikS!</p>
-            </div>
-
-            <div class="news-card hidden" id="22-02-2026">
-                <span class="news-meta">22 февраля, 2026 года</span>
-                <h2>Ачивочное выживание</h2>
-               <div class="news-tags">
-        <span class="tag tag-blue">AlsasnikS</span>
-                </div>
-                <p>Скоро на AlsasnikS появятся новые ачивки и квесты! У нас, пока, готово 30 ачивок (много!). Помимо простых ачивок мы добавили испытания, с которыми вы с ума сойдёте...</p>
-            </div>
-
+        
+        <div style="margin: 0 20px 40px 20px;">
             <button class="show-more-btn" id="loadMoreBtn">ПОКАЗАТЬ ПРЕДЫДУЩИЕ НОВОСТИ</button>
         </div>
     </div>
@@ -200,14 +141,7 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h4>KAERONT</h4>
-                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
-            </div>
-            <div class="footer-section">
-                <h4>ДОКУМЕНТЫ</h4>
-                <ul class="footer-links">
-<li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-<li><a href="offer">Публичная оферта</a></li>
-                </ul>
+                <p style="font-size: 0.8rem; color: #888;">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
             </div>
             <div class="footer-section">
                 <h4>ПРОЕКТ</h4>
@@ -216,63 +150,138 @@
                     <li><a href="donate">Пожертвовать</a></li>
                 </ul>
             </div>
-            <div class="footer-section">
-                <h4>КОНТАКТЫ</h4>
-                <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
-                </ul>
-            </div>
         </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026.</div>
     </footer>
 
     <script>
-        const newsPerPage = 2; // Сколько новостей раскрывать за один раз
-        const btn = document.getElementById('loadMoreBtn');
+        // БАЗА ДАННЫХ НОВОСТЕЙ
+        const allNews = [
+            {
+                id: "11-03-2026",
+                date: "11 марта, 2026 года",
+                title: "Мы переезжаем!",
+                tags: [{name: "Сайт", class: "tag-blue"}, {name: "Сервера", class: "tag-blue"}],
+                content: "Проект Kaeront переехал на новый домен! Теперь, kaeront.ru будет единой точкой всего проекта."
+            },
+            {
+                id: "09-03-2026",
+                date: "9 марта, 2026 года",
+                title: "Технические работы",
+                tags: [{name: "Отключение", class: "tag-dark-red"}, {name: "Важное", class: "tag-red"}, {name: "Сервера", class: "tag-blue"}],
+                content: "Проект Kaeront временно меняет формат! Мы приостанавливаем работу режима Survival, чтобы сосредоточиться на технической части."
+            },
+            {
+                id: "08-03-2026",
+                date: "8 марта, 2026 года",
+                title: "Открытие официального сайта",
+                tags: [{name: "Важное", class: "tag-red"}, {name: "Сайт", class: "tag-blue"}],
+                content: "Добро пожаловать в наш новый цифровой дом! Теперь следить за прогрессом можно в одном месте."
+            },
+            {
+                id: "04-03-2026",
+                date: "4 марта, 2026 года",
+                title: "Мы переименовались в Kaeront",
+                tags: [{name: "Важное", class: "tag-red"}],
+                content: "Мы официально меняем название на Kaeront. Это решение связано с расширением нашей инфраструктуры."
+            },
+            {
+                id: "23-02-2026",
+                date: "23 февраля, 2026 года",
+                title: "Чувствуете запах выпечки?",
+                tags: [{name: "AlsasnikS", class: "tag-blue"}],
+                content: "Мы делаем классный датапак 'Cuisine', который добавит нам новые предметы, связанные с кулинарией!"
+            },
+            {
+                id: "22-02-2026",
+                date: "22 февраля, 2026 года",
+                title: "Ачивочное выживание",
+                tags: [{name: "AlsasnikS", class: "tag-blue"}],
+                content: "Скоро на AlsasnikS появятся новые ачивки и квесты! У нас уже готово 30 ачивок."
+            }
+        ];
 
-        btn.addEventListener('click', function() {
-            const hiddenNews = document.querySelectorAll('.news-card.hidden');
+        let filteredNews = [...allNews];
+        let currentIndex = 0;
+        const limit = 3; // Сколько новостей грузить за раз
+        let currentTag = "Все";
+
+        const newsContainer = document.getElementById('newsContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        // Инициализация фильтров тегов
+        function initFilters() {
+            const tags = new Set();
+            allNews.forEach(news => news.tags.forEach(t => tags.add(t.name)));
+            const container = document.getElementById('filterContainer');
+            tags.forEach(tag => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.textContent = tag;
+                btn.onclick = () => filterByTag(tag);
+                container.appendChild(btn);
+            });
+        }
+
+        // Отрисовка одной карточки
+        function createCard(item) {
+            const tagsHtml = item.tags.map(t => `<span class="tag ${t.class}">${t.name}</span>`).join('');
+            return `
+                <div class="news-card" id="${item.id}">
+                    <span class="news-meta">${item.date}</span>
+                    <h2>${item.title}</h2>
+                    <div class="news-tags">${tagsHtml}</div>
+                    <p>${item.content}</p>
+                </div>
+            `;
+        }
+
+        // Рендер порции новостей
+        function renderNext() {
+            const nextBatch = filteredNews.slice(currentIndex, currentIndex + limit);
+            nextBatch.forEach(item => {
+                newsContainer.insertAdjacentHTML('beforeend', createCard(item));
+            });
+            currentIndex += limit;
             
-            // Раскрываем только определенное количество
-            for(let i = 0; i < newsPerPage && i < hiddenNews.length; i++) {
-                hiddenNews[i].classList.remove('hidden');
-            }
-
-            // Если скрытых новостей больше нет — убираем кнопку
-            if (document.querySelectorAll('.news-card.hidden').length === 0) {
-                btn.style.display = 'none';
-            }
-        });
-
-        // Функция обработки хэша в URL (якорь по дате)
-        function checkHash() {
-            if(window.location.hash) {
-                const targetId = window.location.hash.substring(1);
-                const targetElement = document.getElementById(targetId);
-                
-                if(targetElement) {
-                    // Раскрываем все новости до целевой, если она скрыта
-                    let parent = targetElement;
-                    if (parent.classList.contains('hidden')) {
-                        const allHiddenBefore = [];
-                        let current = parent;
-                        // Находим все скрытые элементы в контейнере
-                        const allHidden = document.querySelectorAll('.news-card.hidden');
-                        allHidden.forEach(el => el.classList.remove('hidden'));
-                        btn.style.display = 'none';
-                    }
-                    
-                    setTimeout(() => {
-                        targetElement.scrollIntoView({ behavior: 'smooth' });
-                    }, 200);
-                }
+            if (currentIndex >= filteredNews.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
             }
         }
 
-        window.addEventListener('load', checkHash);
-        window.addEventListener('hashchange', checkHash);
+        // Сброс и применение фильтров/поиска
+        function updateDisplay() {
+            newsContainer.innerHTML = '';
+            currentIndex = 0;
+            const query = searchInput.value.toLowerCase();
+
+            filteredNews = allNews.filter(news => {
+                const matchesSearch = news.title.toLowerCase().includes(query) || news.content.toLowerCase().includes(query);
+                const matchesTag = currentTag === "Все" || news.tags.some(t => t.name === currentTag);
+                return matchesSearch && matchesTag;
+            });
+
+            renderNext();
+        }
+
+        function filterByTag(tag) {
+            currentTag = tag;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === tag);
+            });
+            updateDisplay();
+        }
+
+        // Слушатели событий
+        loadMoreBtn.addEventListener('click', renderNext);
+        searchInput.addEventListener('input', updateDisplay);
+
+        // Старт
+        initFilters();
+        updateDisplay();
     </script>
 </body>
 </html>
