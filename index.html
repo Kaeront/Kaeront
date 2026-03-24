@@ -641,41 +641,38 @@
     </footer>
 
     <script>
-        // --- MODAL LOGIC ---
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            if(modal) {
-                modal.classList.add('show-flex');
-                setTimeout(() => modal.classList.add('active'), 10);
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if(modal) {
-                modal.classList.remove('active');
-                setTimeout(() => modal.classList.remove('show-flex'), 300);
-                document.body.style.overflow = 'auto';
-            }
-        }
-        function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
+// --- MODAL LOGIC ---
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if(modal) {
+        modal.classList.add('show-flex');
+        setTimeout(() => modal.classList.add('active'), 10);
+        document.body.style.overflow = 'hidden';
+    }
+}
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if(modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.classList.remove('show-flex'), 300);
+        document.body.style.overflow = 'auto';
+    }
+}
+function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
 
-        // --- SCROLL NAV ---
-        window.onscroll = function() {
-            const nav = document.getElementById('smart-nav');
-            if (window.pageYOffset > 70) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
-        };
+// --- SCROLL NAV ---
+window.onscroll = function() {
+    const nav = document.getElementById('smart-nav');
+    if (window.pageYOffset > 70) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+};
 
+// --- WHY US INFINITE SCROLL ---
 const scrollContainer = document.getElementById('whyUsScroll');
 const track = document.getElementById('whyUsTrack');
 const originalCards = Array.from(track.children);
 
-const scrollContainer = document.getElementById('whyUsScroll');
-const track = document.getElementById('whyUsTrack');
-const originalCards = Array.from(track.children);
-
-// Клонируем карточки для бесконечного эффекта (в начало и в конец)
+// Клонируем карточки для бесшовности
 originalCards.forEach(card => track.appendChild(card.cloneNode(true)));
 originalCards.forEach(card => track.insertBefore(card.cloneNode(true), track.firstChild));
 
@@ -684,14 +681,12 @@ let startX, scrollLeftAtStart;
 let velocity = 0;
 let lastX, lastTime;
 
-// ФУНКЦИЯ РАСЧЕТА ШИРИНЫ ОДНОГО БЛОКА (Карточки + Отступы)
 function getUnitWidth() {
     const cardWidth = originalCards[0].offsetWidth;
-    const gap = 20; // Твой gap в CSS
+    const gap = 20; 
     return (cardWidth + gap) * originalCards.length;
 }
 
-// Устанавливаем начальную позицию в центр (на второй набор карточек)
 let currentX = getUnitWidth();
 scrollContainer.scrollLeft = currentX;
 
@@ -704,11 +699,10 @@ function updateOpacity() {
         const cardCenter = rect.left + rect.width / 2;
         const distanceFromCenter = Math.abs(containerCenter - cardCenter);
         
-        // Плавное выделение центральной карточки
-        if (distanceFromCenter < 200) {
-            const ratio = 1 - (distanceFromCenter / 200);
-            card.style.opacity = 0.5 + (ratio * 0.5); // От 0.5 до 1.0
-            card.style.transform = `scale(${1 + (ratio * 0.1)})`; // Легкий зум x1.1
+        if (distanceFromCenter < 180) {
+            const ratio = 1 - (distanceFromCenter / 180);
+            card.style.opacity = 0.5 + (ratio * 0.5);
+            card.style.transform = `scale(${1 + (ratio * 0.1)})`;
         } else {
             card.style.opacity = 0.5;
             card.style.transform = `scale(1)`;
@@ -723,24 +717,18 @@ function animate() {
     const unitWidth = getUnitWidth();
 
     if (!isDragging) {
-        // Плавный возврат к авто-скорости после перетаскивания
         currentAutoSpeed += (targetAutoSpeed - currentAutoSpeed) * 0.05;
         currentX += velocity + currentAutoSpeed;
-        velocity *= 0.95; // Затухание инерции
+        velocity *= 0.95; 
 
         scrollContainer.scrollLeft = currentX;
 
-        // БЕСШОВНЫЙ ПЕРЕНОС
-        // Если ушли слишком далеко вправо
         if (currentX >= unitWidth * 2) {
             currentX -= unitWidth;
-        } 
-        // Если ушли слишком далеко влево
-        else if (currentX <= 0) {
+        } else if (currentX <= 0) {
             currentX += unitWidth;
         }
     } else {
-        // Во время драга обновляем currentX, чтобы анимация знала, где мы
         currentX = scrollContainer.scrollLeft;
     }
     
@@ -748,10 +736,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// Запускаем цикл
-requestAnimationFrame(animate);
-
-// --- ОБРАБОТЧИКИ СОБЫТИЙ (Оставь их, они важны) ---
 const startDrag = (e) => {
     isDragging = true;
     startX = (e.pageX || e.touches[0].pageX);
@@ -784,16 +768,16 @@ scrollContainer.addEventListener('touchstart', startDrag, {passive: true});
 window.addEventListener('touchmove', moveDrag, {passive: true});
 window.addEventListener('touchend', endDrag);
 
-// Остановка при наведении
 scrollContainer.addEventListener('mouseenter', () => targetAutoSpeed = 0);
 scrollContainer.addEventListener('mouseleave', () => targetAutoSpeed = 0.4);
 
-        // Закрытие модалок по клику на затемненный фон (overlay)
-        window.onclick = function(e) { 
-            if (e.target.classList.contains('modal-overlay')) {
-                closeModal(e.target.id);
-            } 
-        }
+window.onclick = function(e) { 
+    if (e.target.classList.contains('modal-overlay')) {
+        closeModal(e.target.id);
+    } 
+};
+
+requestAnimationFrame(animate);
     </script>
 </body>
 </html>
