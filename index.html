@@ -302,14 +302,16 @@
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 40px 20px; width: 100%; box-sizing: border-box; }
    
-        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; text-transform: uppercase; text-align: center; margin-top: 15px; }
+        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; text-transform: uppercase; text-align: center; margin-top: 30px; }
         .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
         .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; font-weight: 400; margin: 0 0 15px; color: var(--accent); }
-        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
+        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }        
         .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
         .badge-dev span { opacity: 0.8; font-size: 0.7rem; background: var(--accent); color: #000; padding: 2px 4px; }
+        .servers-btn { background: #141414; color: var(--text-main); padding: 15px; text-decoration: none; font-family: 'Minecraft'; font-size: 0.8rem; display: block; text-align: center; margin-top: 20px; transition: 0.3s; }
+        .servers-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent); }
 
         /* --- PROGRESS --- */
         .dev-label { font-family: 'Minecraft'; font-size: 0.8rem; color: var(--accent); margin-bottom: 10px; display: block; }
@@ -525,17 +527,13 @@
                 <p>Защити Аметистовое Ядро! Выбирай уникальные способности и классы, чтобы разбить базу противника в динамичной магической битве!</p>
                 <div class="badge-dev">ПЛАНИРУЕТСЯ</div>
             </div>
-            <div class="server-card" onclick="openModal('modal-payload')">
-                <h3>Payload</h3>
-                <p>Сопровождай ценный груз или останавливай врага на динамичных картах.</p>
-                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
-            </div>
             <div class="server-card" onclick="openModal('modal-trident')">
                 <h3>Tridentball</h3>
                 <p>Спортивный гандбол на трезубцах. Уникальный командный геймплей.</p>
                 <div class="badge-dev">В РАЗРАБОТКЕ <span>50%</span></div>
             </div>
         </div>
+            <a href="servers" class="servers-btn">ВСЕ СЕРВЕРА</a>
     </main>
 
     <div class="modal-overlay" id="modal-survival">
@@ -583,15 +581,6 @@
             <span class="dev-label">ПЛАНИРУЕТСЯ</span>
         </div>
 
-    </div>
-    <div class="modal-overlay" id="modal-payload">
-        <div class="modal-window">
-            <span class="close-btn" onclick="closeModal('modal-payload')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Payload</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Сопровождай ценный груз или останови врага на локациях, полных опасностей и тактических позиций. Слаженная работа, уникальные способности и динамичный геймплей.</p>            
-            <span class="dev-label">РАЗРАБОТКА (70%)</span>
-            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
-        </div>
     </div>
 
     <div class="modal-overlay" id="modal-trident">
