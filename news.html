@@ -298,7 +298,7 @@
             container.innerHTML = '';
             
             if (filteredNews.length === 0) {
-                container.innerHTML = `<div class="no-results">ПО ВАШЕМУ ЗАПРОСУ НИЧЕГО НЕ НАЙДЕНО. ПРОВЕРЬТЕ ФИЛЬТРЫ.</div>`;
+                container.innerHTML = `<div class="no-results">ПО ВАШЕМУ ЗАПРОСУ НИЧЕГО НЕ НАЙДЕНО.</div>`;
                 document.getElementById('btnWrapper').style.display = 'none';
             } else {
                 renderBatch();
