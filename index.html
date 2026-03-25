@@ -307,7 +307,49 @@
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
         .server-card:hover { transform: translateY(-5px); background: #151515; box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
         .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; font-weight: 400; margin: 0 0 15px; color: var(--accent); }
-        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }        
+        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
+.server-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-family: 'Minecraft', sans-serif;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Кружочек */
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+}
+
+/* Состояния */
+.status-online { background-color: #55FF55; box-shadow: 0 0 8px #55FF55; }
+.status-offline { background-color: #FF5555; box-shadow: 0 0 8px #FF5555; }
+.status-work { background-color: #FFAA00; box-shadow: 0 0 8px #FFAA00; }
+
+/* Анимация пульсации только для онлайн-статуса */
+.status-online::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    border-radius: 50%;
+    animation: status-pulse 2s infinite;
+}
+
+@keyframes status-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+.status-text-online { color: #55FF55; }
+.status-text-offline { color: #FF5555; }
         .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
         .badge-dev span { opacity: 0.8; font-size: 0.7rem; background: var(--accent); color: #000; padding: 2px 4px; }
 
@@ -550,10 +592,18 @@
             <div class="server-card" onclick="openModal('modal-hub')">
                 <h3>Kaeront: Hub</h3>
                 <p>Сердце проекта и центр навигации. Найди друзей в Хабе, начни историю на Survival или стань легендой Мини-игр. Всё начинается здесь.</p>
+                <div class="server-status">
+                     <div class="status-dot status-offline"></div>
+                     <span class="status-text-offline">Не в сети</span>
+                </div>
             </div>
             <div class="server-card" onclick="openModal('modal-survival')">
                 <h3>Kaeront: Survival</h3>
                 <p>Основной сервер. Спокойно строй, исследуй и заводи друзей без угрозы гриферства. Мирная атмосфера взаимопомощи.</p>
+                <div class="server-status">
+                     <div class="status-dot status-offline"></div>
+                     <span class="status-text-offline">Не в сети</span>
+                </div>
             </div>
 
         </div>
