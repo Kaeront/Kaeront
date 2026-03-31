@@ -175,11 +175,16 @@
             <h1>Лента новостей</h1>
         </div>
 
-        <div class="controls">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск по новостям...">
-            <div class="filter-tags" id="filterContainer">
-                </div>
-        </div>
+<div class="controls">
+    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по новостям...">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div class="filter-tags" id="filterContainer"></div>
+        <button id="clearFilters" class="filter-btn" style="display: none; border-color: var(--accent); color: var(--accent); background: rgba(255, 170, 0, 0.05);">
+            ✕ СБРОСИТЬ
+        </button>
+    </div>
+</div>
+
 
         <div class="news-list" id="newsContainer"></div>
         
@@ -295,7 +300,7 @@
             {
                 id: "28-08-2025",
                 date: "28 августа, 2025 года",
-                title: "Добро пожаловать на AlsasnikS!"
+                title: "Добро пожаловать на AlsasnikS!",
                 tags: [{n: "AlsasnikS", c: "tag-gold"}],
                 content: "<b>На данный момент эта новость переходит с другого источников. Это займёт недолго.</b>"
             },
@@ -350,87 +355,114 @@
             }
         ];
 
-        let activeFilters = new Set();
-        let filteredNews = [];
-        let currentIndex = 0;
-        const limit = 3; // Сколько новостей грузить за раз
+    let activeFilters = new Set();
+    let filteredNews = [];
+    let currentIndex = 0;
+    const limit = 3;
 
-        const container = document.getElementById('newsContainer');
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        const searchInput = document.getElementById('searchInput');
+    const container = document.getElementById('newsContainer');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearFilters');
 
-        // Создаем кнопки фильтров на основе уникальных тегов
-        function renderFilterButtons() {
-            const tags = new Set();
-            allNews.forEach(n => n.tags.forEach(t => tags.add(t.n)));
-            const filterBox = document.getElementById('filterContainer');
-            
-            tags.forEach(tagName => {
-                const btn = document.createElement('button');
-                btn.className = 'filter-btn';
-                btn.textContent = tagName;
-                btn.onclick = () => toggleFilter(tagName, btn);
-                filterBox.appendChild(btn);
-            });
+    // Функция для очистки текста от HTML-тегов перед поиском
+    function stripHTML(html) {
+        const tmp = document.createElement("DIV");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+    }
+
+    // Создание кнопок фильтров
+    function renderFilterButtons() {
+        const tags = new Set();
+        allNews.forEach(n => n.tags.forEach(t => tags.add(t.n)));
+        const filterBox = document.getElementById('filterContainer');
+        filterBox.innerHTML = ''; 
+        
+        tags.forEach(tagName => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn';
+            btn.textContent = tagName;
+            btn.onclick = () => toggleFilter(tagName, btn);
+            filterBox.appendChild(btn);
+        });
+    }
+
+    function toggleFilter(tagName, btn) {
+        if (activeFilters.has(tagName)) {
+            activeFilters.delete(tagName);
+            btn.classList.remove('active');
+        } else {
+            activeFilters.add(tagName);
+            btn.classList.add('active');
         }
-
-        function toggleFilter(tagName, btn) {
-            if (activeFilters.has(tagName)) {
-                activeFilters.delete(tagName);
-                btn.classList.remove('active');
-            } else {
-                activeFilters.add(tagName);
-                btn.classList.add('active');
-            }
-            applyFilters();
-        }
-
-        function applyFilters() {
-            const query = searchInput.value.toLowerCase();
-            
-            filteredNews = allNews.filter(news => {
-                const matchesSearch = news.title.toLowerCase().includes(query) || news.content.toLowerCase().includes(query);
-                // Если фильтры не выбраны — показываем всё. Если выбраны — новость должна содержать ХОТЯ БЫ ОДИН из выбранных тегов.
-                const matchesTags = activeFilters.size === 0 || news.tags.some(t => activeFilters.has(t.n));
-                return matchesSearch && matchesTags;
-            });
-
-            currentIndex = 0;
-            container.innerHTML = '';
-            
-            if (filteredNews.length === 0) {
-                container.innerHTML = `<div class="no-results">ПО ВАШЕМУ ЗАПРОСУ НИЧЕГО НЕ НАЙДЕНО.</div>`;
-                document.getElementById('btnWrapper').style.display = 'none';
-            } else {
-                renderBatch();
-            }
-        }
-
-        function renderBatch() {
-            const nextBatch = filteredNews.slice(currentIndex, currentIndex + limit);
-            nextBatch.forEach(item => {
-                const tagsHtml = item.tags.map(t => `<span class="tag ${t.c}">${t.n}</span>`).join('');
-                const html = `
-                    <div class="news-card" id="${item.id}">
-                        <span class="news-meta">${item.date}</span>
-                        <h2>${item.title}</h2>
-                        <div class="news-tags">${tagsHtml}</div>
-                        <p>${item.content}</p>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', html);
-            });
-            
-            currentIndex += limit;
-            document.getElementById('btnWrapper').style.display = currentIndex >= filteredNews.length ? 'none' : 'block';
-        }
-
-        searchInput.addEventListener('input', applyFilters);
-        loadMoreBtn.addEventListener('click', renderBatch);
-
-        // Инициализация
-        renderFilterButtons();
         applyFilters();
+    }
+
+    // Логика кнопки сброса (Крестик)
+    clearBtn.onclick = function() {
+        activeFilters.clear();
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        searchInput.value = '';
+        applyFilters();
+    };
+
+    function applyFilters() {
+        const query = searchInput.value.toLowerCase();
+        
+        // Показываем кнопку сброса, если что-то введено или выбран фильтр
+        clearBtn.style.display = (activeFilters.size > 0 || query.length > 0) ? 'block' : 'none';
+
+        filteredNews = allNews.filter(news => {
+            // Ищем только по чистому тексту, игнорируя <a href>, <b> и т.д.
+            const cleanTitle = stripHTML(news.title).toLowerCase();
+            const cleanContent = stripHTML(news.content).toLowerCase();
+            
+            const matchesSearch = cleanTitle.includes(query) || cleanContent.includes(query);
+            const matchesTags = activeFilters.size === 0 || news.tags.some(t => activeFilters.has(t.n));
+            
+            return matchesSearch && matchesTags;
+        });
+
+        currentIndex = 0;
+        container.innerHTML = '';
+        
+        if (filteredNews.length === 0) {
+            container.innerHTML = `<div class="no-results">ПО ВАШЕМУ ЗАПРОСУ НИЧЕГО НЕ НАЙДЕНО.</div>`;
+            document.getElementById('btnWrapper').style.display = 'none';
+        } else {
+            document.getElementById('btnWrapper').style.display = 'block';
+            renderBatch();
+        }
+    }
+
+    function renderBatch() {
+        const nextBatch = filteredNews.slice(currentIndex, currentIndex + limit);
+        nextBatch.forEach(item => {
+            const tagsHtml = item.tags.map(t => `<span class="tag ${t.c}">${t.n}</span>`).join('');
+            const html = `
+                <div class="news-card" id="${item.id}">
+                    <span class="news-meta">${item.date}</span>
+                    <h2>${item.title}</h2>
+                    <div class="news-tags">${tagsHtml}</div>
+                    <p>${item.content}</p>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        });
+        
+        currentIndex += limit;
+        // Скрываем кнопку "Показать еще", если новости закончились
+        loadMoreBtn.style.display = currentIndex >= filteredNews.length ? 'none' : 'block';
+    }
+
+    // Слушатели событий
+    searchInput.addEventListener('input', applyFilters);
+    loadMoreBtn.addEventListener('click', renderBatch);
+
+    // Инициализация страницы
+    renderFilterButtons();
+    applyFilters();
     </script>
 </body>
 </html>
