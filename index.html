@@ -49,9 +49,8 @@
             min-height: 100vh;
         }
 
-        /* --- DONATION BANNER WITH ANIMATION ---*/
+        /* --- DONATION BANNER ---*/
         .donate-banner {
-            /* Темно-оранжевые линии */
             background: linear-gradient(
                 135deg, 
                 rgba(255, 170, 0, 0.1) 25%, 
@@ -62,8 +61,8 @@
                 transparent 75%, 
                 transparent
             );
-            background-size: 20px 20px; /* Размер шага линий */
-            animation: move-stripes 2.5s linear infinite; /* Движение */
+            background-size: 20px 20px;
+            animation: move-stripes 2.5s linear infinite;
             
             border: 1px solid rgba(255, 170, 0, 0.4);
             margin: calc(var(--nav-height) + 20px) auto 0;
@@ -78,7 +77,6 @@
             overflow: hidden;
         }
 
-        /* Анимация движения линий влево-вверх */
         @keyframes move-stripes {
             0% { background-position: 0 0; }
             100% { background-position: -40px 0; }
@@ -88,7 +86,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            z-index: 2; /* Чтобы текст был поверх линий */
+            z-index: 2;
         }
 
         .donate-title {
@@ -185,7 +183,6 @@
             }
         }
 
-/* Контейнер для прогресс-бара */
 .donate-progress {
     width: 100%;
     height: 22px;
@@ -198,7 +195,6 @@
     overflow: hidden;
 }
 
-/* Сама полоска загрузки */
 .donate-progress-bar {
     position: absolute;
     left: 0;
@@ -210,7 +206,6 @@
     box-shadow: 0 0 25px var(--accent);
 }
 
-/* Текст поверх шкалы */
 .donate-progress-text {
     position: relative;
     z-index: 3;
@@ -218,7 +213,7 @@
     font-size: 0.65rem;
     color: #fff;
     text-shadow: 1px 1px 2px #000;
-    pointer-events: none; /* Чтобы не мешал кликам */
+    pointer-events: none;
 }
 
         /* --- NAVIGATION --- */
@@ -245,13 +240,12 @@
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
 
-/* Заголовок секции */
 .section-title { 
     font-family: 'Minecraft'; 
     font-size: 1.1rem; 
     color: var(--text-main); 
     text-align: center; 
-    margin: 60px 0 20px; /* Отступ сверху, чтобы не прилипало */
+    margin: 60px 0 20px;
     text-transform: uppercase; 
 }
 
@@ -278,9 +272,8 @@
     width: 260px; 
     flex-shrink: 0; 
     box-sizing: border-box;
-    /* Добавляем это: */
     transition: background 0.3s, box-shadow 0.3s, opacity 0.3s ease; 
-    opacity: 0.2; /* Базовая прозрачность для боковых карточек */
+    opacity: 0.2;
 }
 
 
@@ -319,7 +312,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Кружочек */
+        /* STATUS */
         .status-dot {
             width: 10px;
             height: 10px;
@@ -327,11 +320,9 @@
             position: relative;
         }
 
-        /* Состояния */
         .status-online { background-color: #55FF55; #55FF55; }
         .status-offline { background-color: #FF5555; #FF5555; }
 
-        /* Анимация пульсации только для онлайн-статуса */
         .status-online::after {
             content: '';
             position: absolute;
@@ -392,7 +383,7 @@
             margin: 20px auto 40px;
             display: flex;
             flex-direction: column;
-            gap: 0; /* Чтобы кнопка плотно прилегала к плашке */
+            gap: 0;
         }
 
         .news-card {
@@ -447,7 +438,6 @@
             transition: 0.3s;
         }
         
-        /* Растянутая кнопка под новостью */
         .news-more-btn {
             background: rgba(30, 30, 30, 1);
             color: #fff;
@@ -467,12 +457,12 @@
             color: #000;
         }
         
-        /* --- ТЕГИ (МЕТКИ) --- */
+        /* --- NEWS TAGS --- */
         .news-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px; /* Отступ под заголовком */
+            margin-bottom: 15px;
         }
 
         .tag {
@@ -481,7 +471,6 @@
             padding: 3px 5px;
         }
 
-        /* Цветовые схемы в стиле Minecraft */
         .tag-gold  { background: #FA0; color: #000; }
         .tag-blue  { background: #55F; color: #fff; }
         .tag-dark-blue  { background: #00A; color: #fff; }
@@ -521,7 +510,7 @@
         font-family: 'Montserrat', sans-serif;
         padding: 20px;
         box-sizing: border-box;
-        overflow: hidden; /* Запрещает внутренний скролл плашки */
+        overflow: hidden;
     ">
         <h2 style="font-family: 'Minecraft'; color: #FA0; font-weight: 400; margin-bottom: 20px;">Включите JavaScript</h2>
         
@@ -690,13 +679,14 @@
 
     <div class="news-container">
         <div class="news-card">
-            <span class="news-date">24.03.2026</span>
+            <span class="news-date">30.03.2026</span>
             <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
-            <h3>Улучшенная страница новостей</h3>
+            <h3>Присоединение к Kaeront</h3>
                 <div class="news-tags">
-        <span class="tag tag-blue">Сайт</span>
+                    <span class="tag tag-red">Важное</span>
+                    <span class="tag tag-blue">Сайт</span>
                 </div>
-            <p>Мы полностью обновили страницу с новостями! Раньше была простая лента новостей: без фильтров, поиска, с небольшими лагами. Но теперь, на <a href="news">kaeront.ru/news</a> есть поиск, фильтры и оптимизированные карточки новостей, чтобы не нагружать ваше устройство. В дальнейшем планируется навигация по страницам и рассылка.</p>
+            <p>К Kaeront присоединились прочие Minecraft-проекты от KAmir, такие как: FYGHTING и STRYKE. Прошлые новости уже дополняются в страницу с новостями <a href=\"news\">kaeront.ru/news</a>.</p>
         </div>
         <a href="news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
     </div>
