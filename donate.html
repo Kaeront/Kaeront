@@ -66,9 +66,9 @@
             margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 25px;
         }
 
-        /* --- CUSTOM CHECKBOX (14x14) --- */
+        /* --- CUSTOM CHECKBOX --- */
         .checkbox-container {
-            display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
             text-align: left; user-select: none;
         }
         
@@ -76,13 +76,12 @@
         #offer-check { display: none; }
         
         .custom-box {
-            width: 14px; height: 14px; border: 2px solid #333;
+            width: 18px; height: 18px; border: 2px solid #333;
             display: grid; place-items: center; transition: 0.2s; flex-shrink: 0;
             box-sizing: border-box;
-            margin-top: 2px; /* Выравнивание по высоте текста */
         }
         .custom-box::after {
-            content: ""; width: 6px; height: 6px; 
+            content: ""; width: 10px; height: 10px; 
             background: var(--accent); opacity: 0; transition: 0.2s;
         }
 
