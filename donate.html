@@ -84,65 +84,79 @@
         .checkbox-text { color: var(--text-dim); font-size: 0.75rem; line-height: 1.4; }
         .checkbox-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
 
-/* --- ANIMATED BUTTON --- */
-.btn-wrapper {
-    display: inline-block; 
-    text-decoration: none;
-    pointer-events: none; 
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-pay-action {
-    position: relative;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    background: #151515; 
-    color: var(--text-dim);
-    padding: 15px 30px; /* Вернули нормальные падинги */
-    width: fit-content;  /* Теперь будет работать */
-    font-family: 'Minecraft'; 
-    font-size: 0.75rem;
-    text-transform: uppercase; 
-    border: 3px solid #222;
-    cursor: not-allowed; 
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-/* ИСПРАВЛЕНИЕ: Убираем position: absolute */
-.btn-pay-action .txt-confirm {
-    position: relative; /* Текст теперь распирает кнопку */
-    display: block;
-    white-space: nowrap;
-    transition: all 0.3s ease;
-}
-
-.btn-pay-action .txt-pay {
-    display: none; /* Скрываем вторую надпись полностью */
-    white-space: nowrap;
-    color: #000;
-}
-
-/* Логика активации */
-#offer-check:checked ~ .btn-wrapper { 
-    pointer-events: auto; 
-}
-
-#offer-check:checked ~ .btn-wrapper .btn-pay-action {
-    background: var(--accent); 
-    border-color: var(--accent); 
-    cursor: pointer;
-}
-
-/* ИСПРАВЛЕНИЕ АНИМАЦИИ: Меняем одну надпись на другую */
-#offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { 
-    display: none; 
-}
-
-#offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { 
-    display: block; 
-}
+        /* --- ANIMATED BUTTON --- */
+        .btn-wrapper {
+            display: inline-block;
+            text-decoration: none;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-pay-action {
+            position: relative;
+            display: inline-flex; /* Важно для авто-ширины */
+            align-items: center;
+            justify-content: center;
+            background: #151515;
+            color: var(--text-dim);
+            padding: 15px 30px;
+            width: fit-content;
+            font-family: 'Minecraft';
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border: 3px solid #222;
+            cursor: not-allowed;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        /* Первый текст — он задает ширину кнопки */
+        .btn-pay-action .txt-confirm {
+            position: relative; 
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Второй текст — он просто накладывается сверху по центру */
+        .btn-pay-action .txt-pay {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, 20px); /* Смещен вниз и отцентрирован */
+            opacity: 0;
+            color: #000;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Логика при активации чекбокса */
+        #offer-check:checked ~ .btn-wrapper {
+            pointer-events: auto;
+        }
+        
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action {
+            background: var(--accent);
+            border-color: var(--accent);
+            cursor: pointer;
+        }
+        
+        /* Анимация текстов */
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm {
+            opacity: 0;
+            transform: translateY(-20px); /* Улетает вверх */
+        }
+        
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay {
+            opacity: 1;
+            transform: translate(-50%, -50%); /* Появляется точно по центру */
+        }
+        
+        /* Ховер эффект */
+        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
+            background: #fff;
+            box-shadow: 0 0 20px var(--accent);
+        }
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
