@@ -86,7 +86,7 @@
         }
 
         /* --- CUSTOM CHECKBOX --- */
-        .checkbox-wrapper {
+        .checkbox-container {
             display: flex;
             align-items: flex-start;
             gap: 15px;
@@ -96,100 +96,90 @@
             user-select: none;
         }
 
-        /* Скрываем реальный чекбокс */
-        .hidden-check {
-            display: none;
-        }
-
-        /* Визуальный кастомный чекбокс */
-        .custom-box {
-            min-width: 18px;
-            height: 18px;
-            border: 1.5px solid #333;
-            background: #000;
-            position: relative;
-            transition: 0.2s;
-            margin-top: 2px;
-        }
-
-        .custom-box::after {
-            content: '';
+        /* Прячем стандартный инпут */
+        .checkbox-container input {
             position: absolute;
-            top: 3px; left: 3px;
-            right: 3px; bottom: 3px;
-            background: var(--accent);
             opacity: 0;
-            transform: scale(0.5);
-            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            height: 0; width: 0;
         }
 
-        .hidden-check:checked + .custom-box {
-            border-color: var(--accent);
+        /* Обводка квадрата */
+        .checkmark {
+            height: 18px;
+            width: 18px;
+            border: 2px solid #333;
+            display: inline-block;
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: border-color 0.3s;
         }
 
-        .hidden-check:checked + .custom-box::after {
-            opacity: 1;
-            transform: scale(1);
+        /* Внутренний квадрат (точка) */
+        .checkmark::after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 4px; top: 4px;
+            width: 10px; height: 10px;
+            background: var(--accent);
         }
 
-        .check-text {
-            color: var(--text-dim);
-            font-size: 0.7rem;
-            line-height: 1.5;
-        }
+        .checkbox-container:hover .checkmark { border-color: var(--accent); }
+        .checkbox-container input:checked ~ .checkmark { border-color: var(--accent); }
+        .checkbox-container input:checked ~ .checkmark::after { display: block; }
 
-        .check-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+        .checkbox-text { color: var(--text-dim); font-size: 0.7rem; line-height: 1.5; }
+        .checkbox-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
 
-        /* --- BUTTON ACTION (NO JS VERSION) --- */
-        .btn-pay-link {
-            text-decoration: none;
-            pointer-events: none; /* Отключаем клики по умолчанию */
+        /* --- BUTTON LOGIC (NO-JS) --- */
+        .btn-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
         }
 
         .btn-pay-action {
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: #151515;
-            color: #555;
-            padding: 15px 0;
-            width: 300px;
-            max-width: 100%;
-            box-sizing: border-box;
+            color: var(--text-dim);
+            padding: 15px 30px;
             font-family: 'Minecraft';
             font-size: 0.8rem;
+            text-decoration: none;
             text-transform: uppercase;
-            border: none;
-            cursor: not-allowed;
+            border: 1px solid #1a1a1a;
+            pointer-events: none; /* Пока не чекнуто — не кликабельно */
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            width: auto;
+            min-width: 280px;
         }
 
-        /* Динамика при активации (CSS Checkbox Hack) */
-        .hidden-check:checked ~ .btn-pay-link {
-            pointer-events: auto; /* Разрешаем клик */
-        }
+        /* Текстовые слоты внутри кнопки */
+        .btn-pay-action .text-ready { display: none; }
+        .btn-pay-action .text-wait { display: block; }
 
-        .hidden-check:checked ~ .btn-pay-link .btn-pay-action {
+        /* Состояние, когда чекбокс нажат */
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action {
             background: var(--accent);
             color: #000;
-            width: 170px;
-            cursor: pointer;
+            border-color: var(--accent);
+            pointer-events: auto; /* Делаем ссылку активной */
+            min-width: 160px;
         }
 
-        /* Текст внутри кнопки меняется через контент */
-        .btn-pay-action span::before {
-            content: "Подтвердите согласие";
-        }
-
-        .hidden-check:checked ~ .btn-pay-link .btn-pay-action span::before {
-            content: "К оплате";
-        }
-
-        .hidden-check:checked ~ .btn-pay-link .btn-pay-action:hover {
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action:hover {
             background: #fff;
-            box-shadow: 0 0 20px var(--accent);
-            color: var(--accent);
+            box-shadow: 0 0 25px var(--accent);
+            color: #000;
+            transform: translateY(-2px);
         }
+
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .text-ready { display: block; }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .text-wait { display: none; }
 
         /* --- FOOTER --- */
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
@@ -227,19 +217,19 @@
             <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS-атак, разработку новых режимов и улучшение текущего функционала проекта.</p>
 
             <div class="donation-controls">
-                <label class="checkbox-wrapper">
-                    <input type="checkbox" class="hidden-check" id="offer-check">
-                    <div class="custom-box"></div>
-                    <span class="check-text">
-                        Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.
-                    </span>
-                    
-                    <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-pay-link">
-                        <div class="btn-pay-action">
-                            <span></span>
-                        </div>
-                    </a>
+                <input type="checkbox" id="offer-check">
+                
+                <label for="offer-check" class="checkbox-container">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-text">Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.</span>
                 </label>
+
+                <div class="btn-wrapper">
+                    <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-pay-action">
+                        <span class="text-wait">Подтвердите согласие</span>
+                        <span class="text-ready">К оплате</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -253,7 +243,7 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки ПД</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
                     <li><a href="terms">Пользовательское соглашение</a></li>
                 </ul>
@@ -276,6 +266,5 @@
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
-
 </body>
 </html>
