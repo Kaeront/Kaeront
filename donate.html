@@ -113,7 +113,7 @@
         /* Логика активации через чекбокс (используем общий родительский контейнер) */
         #offer-check:checked ~ .btn-wrapper { pointer-events: auto; }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
-            background: var(--accent); border-color: rgba(0, 0, 0, 0); min-width: 100px; cursor: pointer;
+            background: var(--accent); border-color: color-mix(in srgb, var(--accent), transparent 100%); min-width: 100px; cursor: pointer;
         }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(-20px); }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
