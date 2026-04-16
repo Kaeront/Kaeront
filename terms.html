@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Пользовательское соглашение проекта Kaeront. Правила взаимодействия и использования ресурсов.">
+    <meta name="description" content="Пользовательское соглашение проекта Kaeront — правила использования ресурсов и инфраструктуры.">
     <link rel="icon" type="image/png" href="document.png">
 
     <meta property="og:title" content="Kaeront — Пользовательское соглашение">
+    <meta property="og:description" content="Официальные правила использования сервисов и игровых ресурсов сети Kaeront в рамках KAmir Group.">
     <meta property="og:image" content="https://kaeront.ru/preview.png">
+    <meta property="og:url" content="https://kaeront.ru/terms">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
 
-    <title>Пользовательское соглашение — Kaeront</title>
+    <title>Пользовательское соглашение проекта «Kaeront»</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -41,6 +43,7 @@
             min-height: 100vh;
         }
 
+        /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
             background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px);
@@ -52,6 +55,7 @@
         .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
         .nav-links a:hover { color: var(--accent); }
 
+        /* --- LEGAL CONTENT --- */
         .legal-wrapper {
             padding-top: calc(var(--nav-height) + 40px);
             max-width: 900px;
@@ -75,8 +79,9 @@
         h3 { font-family: 'Minecraft'; font-size: 0.8rem; color: #fff; margin-top: 40px; border-left: 3px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
         p, li { color: var(--text-dim); font-size: 0.95rem; line-height: 1.3; margin-bottom: 15px; }
         ul { padding-left: 20px; margin-bottom: 20px; list-style-type: square; }
-        strong { color: #fff; font-weight: 600; }
+        strong { color: #fff; }
 
+        /* --- FOOTER --- */
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
         .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; }
@@ -84,11 +89,12 @@
         .footer-links li { margin-bottom: 10px; }
         .footer-links a { color: var(--text-dim); text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
         .footer-links a:hover { color: var(--accent); }
+        .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
         .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
         @media (max-width: 600px) {
             .legal-card { padding: 30px 20px; }
-            h1 { font-size: 0.9rem; }
+            h1 { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -107,28 +113,35 @@
     <div class="legal-wrapper">
         <div class="legal-card">
 
-            <h1>Пользовательское соглашение проекта «Kaeront»</h1>
+            <h1>Пользовательское соглашение сети проектов «Kaeront»</h1>
             <span class="date-label">Последнее изменение: 16.04.2026</span>
 
-            <h3>1. Статус документа</h3>
-            <p>1.1. Настоящее Соглашение является юридически значимым документом, определяющим правила использования ресурсов проекта «Kaeront» (далее — «Проект»), находящегося под управлением Амира «KAmir» Кашапова (KAmir Group).</p>
-            <p>1.2. Использование любых сервисов Проекта, включая подключение к игровым серверам, означает полное и безоговорочное принятие условий данного документа.</p>
+            <h3>1. Термины и определения</h3>
+            <p>1.1. <strong>Администрация</strong> — физическое лицо Амир «KAmir» Кашапов, являющийся владельцем и главным архитектором инфраструктуры KAmir Group.</p>
+            <p>1.2. <strong>Проект</strong> — сеть серверов и веб-ресурсов «Kaeront», входящая в состав KAmir Group.</p>
+            <p>1.3. <strong>Пользователь</strong> — любое физическое лицо, осуществившее доступ к ресурсам Проекта.</p>
 
-            <h3>2. Интеллектуальная собственность</h3>
-            <p>2.1. Все программные решения, уникальные конфигурации, текстовые и графические материалы, размещенные на ресурсах Проекта, являются интеллектуальной собственностью KAmir Group, если не указано иное.</p>
-            <p>2.2. Пользователю предоставляется право на использование ресурсов Проекта исключительно в ознакомительных и развлекательных целях.</p>
+            <h3>2. Условия использования ресурсов</h3>
+            <p>2.1. Использование ресурсов Проекта является добровольным. Фактом принятия данного Соглашения является запуск игрового клиента для подключения к серверам или использование веб-сайта kaeront.ru.</p>
+            <p>2.2. Администрация предоставляет Пользователю неисключительное право на использование игрового функционала Проекта в развлекательных целях.</p>
+            <p>2.3. Пользователь обязуется соблюдать внутренние правила серверов, не использовать стороннее ПО для получения преимуществ и не совершать действий, направленных на дестабилизацию работы инфраструктуры.</p>
 
-            <h3>3. Правила взаимодействия</h3>
-            <p>3.1. Доступ к Проекту предоставляется на безвозмездной основе. Администрация оставляет за собой право ограничить доступ к ресурсам (блокировка аккаунта) в случае нарушения внутренних правил сети, деструктивного поведения или попыток дестабилизации технической инфраструктуры.</p>
-            <p>3.2. Пользователь самостоятельно несет ответственность за сохранность своих учетных данных и любые действия, совершенные под его игровым псевдонимом (Никнеймом).</p>
+            <h3>3. Права и обязанности Администрации</h3>
+            <p>3.1. Администрация имеет право в одностороннем порядке ограничивать доступ Пользователя к Проекту (блокировка/бан) в случае нарушения этических норм, правил серверов или данного Соглашения.</p>
+            <p>3.2. Администрация оставляет за собой право изменять программный код, игровую механику и наполнение серверов без предварительного уведомления.</p>
+            <p>3.3. Проект предоставляется по принципу <strong>«как есть» (as is)</strong>. Администрация не несет ответственности за временную недоступность сервисов по техническим причинам.</p>
 
-            <h3>4. Ограничение ответственности</h3>
-            <p>4.1. Ресурсы Проекта предоставляются по принципу «как есть» (as is). Администрация не гарантирует непрерывную работоспособность сервисов в случае форс-мажорных обстоятельств или технических работ.</p>
-            <p>4.2. Проект не несет ответственности за любой косвенный ущерб, возникший в результате использования или невозможности использования игровых ресурсов.</p>
+            <h3>4. Интеллектуальная собственность</h3>
+            <p>4.1. Все авторские наработки, конфигурации, дизайн и уникальный код Проекта являются интеллектуальной собственностью KAmir Group и защищены лицензией Apache 2.0 (где это применимо).</p>
+            <p>4.2. Названия «Kaeront» и «KAmir Group» являются уникальными брендами проекта. Любое копирование дизайна или концепции без разрешения Администрации запрещено.</p>
 
-            <h3>5. Заключительные положения</h3>
-            <p>5.1. Данное Соглашение может быть изменено Администрацией в одностороннем порядке. Актуальная версия всегда доступна на странице <strong>kaeront.ru/terms</strong>.</p>
-            <p>5.2. По всем вопросам взаимодействия Пользователи могут обращаться по адресу <strong>admin@kaeront.ru</strong>.</p>
+            <h3>5. Ответственность сторон</h3>
+            <p>5.1. Пользователь несет личную ответственность за сохранность своих учетных данных и любые действия, совершенные с его игрового аккаунта.</p>
+            <p>5.2. Администрация не несет ответственности за возможные убытки или ущерб, возникшие в результате использования или невозможности использования ресурсов Проекта.</p>
+
+            <h3>6. Заключительные положения</h3>
+            <p>6.1. Данное Соглашение может быть изменено Администрацией в любое время. Продолжение использования ресурсов Проекта после изменений означает их автоматическое принятие Пользователем.</p>
+            <p>6.2. Все споры и разногласия решаются путем переговоров через официальные каналы связи: <strong>admin@kaeront.ru</strong>.</p>
         </div>
     </div>
 
@@ -136,14 +149,14 @@
         <div class="footer-grid">
             <div class="footer-section">
                 <h4>KAERONT</h4>
-                <p style="font-size: 0.9rem; line-height: 1.6;">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
+                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
             </div>
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="terms">Пользовательское соглашение</a></li>
-                    <li><a href="privacy">Политика конфиденциальности</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки ПД</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
+                    <li><a href="terms">Пользовательское соглашение</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -156,12 +169,13 @@
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
+                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
+                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
                 </ul>
             </div>
         </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. Проект разработчика Амира «KAmir» Кашапова.</div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 </body>
 </html>
