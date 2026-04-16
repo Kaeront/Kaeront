@@ -8,7 +8,7 @@
 
     <meta property="og:title" content="Kaeront — Уникальные Minecraft сервера">
     <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png">
+    <meta property="og:image" content="https://kaeront.ru/preview.png"> 
     <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
@@ -85,7 +85,7 @@
             gap: 20px;
         }
 
-        /* --- CUSTOM CHECKBOX (NO SCRIPT) --- */
+        /* --- CUSTOM CHECKBOX --- */
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -93,103 +93,79 @@
             cursor: pointer;
             max-width: 600px;
             text-align: left;
+            user-select: none;
         }
 
-        /* Скрываем реальный чекбокс */
-        .hidden-check {
-            display: none;
-        }
+        .checkbox-container input { display: none; }
 
-        /* Квадратная обводка */
         .custom-box {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border: 2px solid #333;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: 0.2s;
             flex-shrink: 0;
-            transition: border-color 0.3s;
         }
 
-        /* Квадрат внутри */
         .custom-box::after {
             content: "";
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: var(--accent);
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: 0.2s;
         }
 
-        /* Текст рядом */
-        .check-text {
-            color: var(--text-dim);
-            font-size: 0.7rem;
-            line-height: 1.5;
-        }
-        .check-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+        .checkbox-container input:checked + .custom-box { border-color: var(--accent); }
+        .checkbox-container input:checked + .custom-box::after { opacity: 1; }
 
-        /* Логика нажатия */
-        .hidden-check:checked + .custom-box { border-color: var(--accent); }
-        .hidden-check:checked + .custom-box::after { opacity: 1; }
+        .checkbox-text { color: var(--text-dim); font-size: 0.7rem; line-height: 1.5; }
+        .checkbox-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
 
-        /* --- BUTTON LOGIC (NO SCRIPT) --- */
-        .btn-pay-wrapper {
-            position: relative;
+        /* --- SMART BUTTON --- */
+        .btn-wrapper {
             display: inline-block;
+            text-decoration: none;
+            pointer-events: none; /* Выключена по умолчанию */
+            transition: 0.3s;
         }
 
-        /* Базовая кнопка (Серая, "Заглушка") */
-        .btn-fake {
+        .btn-pay-action {
             display: inline-block;
             background: #151515;
-            color: #fff;
-            padding: 15px 30px;
-            width: 300px;
-            box-sizing: border-box;
+            color: var(--text-dim);
+            padding: 15px 35px;
+            width: fit-content; /* Автоматическая ширина */
             font-family: 'Minecraft';
             font-size: 0.8rem;
             text-transform: uppercase;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none; /* Не нажимается */
+            border: 1px solid #222;
+            cursor: not-allowed;
+            transition: all 0.3s ease;
         }
 
-        /* Реальная ссылка оплаты (Скрыта по умолчанию) */
-        .btn-real-link {
-            position: absolute;
-            top: 0; left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 100%;
+        /* Состояние "Подтвердите согласие" */
+        .btn-pay-action::before { content: "Подтвердите согласие"; }
+
+        /* Логика при активации чекбокса */
+        #offer-check:checked ~ .btn-wrapper {
+            pointer-events: auto;
+        }
+
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action {
             background: var(--accent);
             color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Minecraft';
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            text-decoration: none;
-            opacity: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
+            border-color: var(--accent);
+            cursor: pointer;
         }
 
-        /* Когда чекбокс нажат — меняем видимость */
-        .hidden-check:checked ~ .btn-pay-wrapper .btn-real-link {
-            width: 170px; /* Авто-ширина под текст "К ОПЛАТЕ" */
-            opacity: 1;
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action::before {
+            content: "К оплате";
         }
 
-        .hidden-check:checked ~ .btn-pay-wrapper .btn-fake {
-            opacity: 0;
-            width: 170px;
-        }
-
-        .btn-real-link:hover {
+        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
             background: #fff;
             box-shadow: 0 0 20px var(--accent);
             color: var(--accent);
@@ -231,19 +207,15 @@
             <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS-атак, разработку новых режимов и улучшение текущего функционала проекта.</p>
 
             <div class="donation-controls">
-                <input type="checkbox" id="offer-check" class="hidden-check">
-                
-                <label for="offer-check" class="checkbox-container">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="offer-check">
                     <div class="custom-box"></div>
-                    <span class="check-text">
-                        Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.
-                    </span>
+                    <span class="checkbox-text">Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.</span>
                 </label>
 
-                <div class="btn-pay-wrapper">
-                    <div class="btn-fake">Подтвердите согласие</div>
-                    <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-real-link">К ОПЛАТЕ</a>
-                </div>
+                <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-wrapper" id="pay-link">
+                    <div class="btn-pay-action" id="pay-button"></div>
+                </a>
             </div>
         </div>
     </div>
@@ -257,8 +229,9 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и ПД</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
+                    <li><a href="terms">Пользовательское соглашение</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -271,14 +244,28 @@
             <div class="footer-section">
                 <h4>КОНТАКТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram)</a></li>
+                    <li><a href="mailto:support@kaeront.ru">support@kaeront.ru</a></li>
+                    <li><a href="mailto:admin@kaeront.ru">admin@kaeront.ru</a></li>
                 </ul>
             </div>
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
+<script>
+    const link = document.getElementById('pay-link');
+    const check = document.getElementById('offer-check');
+
+    // Если скрипты работают, добавляем редирект на главную после клика
+    link.addEventListener('click', function(e) {
+        if(check.checked) {
+            // Задержка перед редиректом, чтобы ссылка на оплату успела открыться в новой вкладке
+            setTimeout(() => { 
+                window.location.href = 'https://kaeront.ru'; 
+            }, 1000);
+        }
+    });
+</script>
 </body>
 </html>
