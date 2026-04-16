@@ -88,75 +88,65 @@
         .btn-wrapper {
             display: inline-block;
             text-decoration: none;
-            pointer-events: none;
-            transition: all 0.4s ease;
+            pointer-events: auto; /* Для теста лучше включить */
         }
         
         .btn-pay-action {
-            display: inline-grid; /* Grid позволяет наложить элементы друг на друга без absolute */
-            grid-template-areas: "stack"; /* Создаем одну общую область */
+            display: inline-grid;
+            /* Ключевой момент: создаем две колонки, одну из которых будем "схлопывать" в 0fr */
+            grid-template-columns: 1fr 0fr; 
             align-items: center;
             justify-content: center;
             background: #151515;
             color: var(--text-dim);
-            padding: 15px 30px;
-            width: fit-content;
-            font-family: 'Minecraft';
-            font-size: 0.75rem;
-            text-transform: uppercase;
+            padding: 15px 0; /* Паддинги переносим внутрь для точности */
             border: 3px solid #222;
-            cursor: not-allowed;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
         
-        /* Оба текста помещаем в одну и ту же ячейку grid */
+        /* Контейнеры для текстов */
         .btn-pay-action .txt-confirm, 
         .btn-pay-action .txt-pay {
-            grid-area: stack; 
             white-space: nowrap;
-            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 30px; /* Реальные отступы тут */
         }
         
-        /* Начальное состояние */
         .btn-pay-action .txt-confirm {
+            grid-column: 1;
             opacity: 1;
             transform: translateY(0);
         }
         
         .btn-pay-action .txt-pay {
+            grid-column: 2; /* Вторая колонка */
             opacity: 0;
-            transform: translateY(20px); /* Ждет внизу */
-            color: #000;
+            transform: translateY(20px);
+            padding: 0; /* Изначально схлопнут */
         }
         
-        /* Состояния при чеке */
-        #offer-check:checked ~ .btn-wrapper {
-            pointer-events: auto;
-        }
+        /* --- СОСТОЯНИЕ ПРИ ЧЕКЕ --- */
         
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
+            /* МЕНЯЕМ СЕТКУ: первая колонка в 0, вторая в 1 */
+            grid-template-columns: 0fr 1fr;
             background: var(--accent);
             border-color: var(--accent);
-            cursor: pointer;
         }
         
-        /* Анимация: один вверх, другой из-под низа в центр */
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm {
             opacity: 0;
             transform: translateY(-20px);
+            padding: 0; /* Убираем место */
         }
         
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay {
             opacity: 1;
             transform: translateY(0);
-        }
-        
-        /* Ховер */
-        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
-            background: #fff;
-            box-shadow: 0 0 20px var(--accent);
-            color: var(--accent);
+            padding: 0 30px; /* Раскрываем место */
+            color: #000;
         }
         
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
