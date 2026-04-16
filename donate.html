@@ -94,10 +94,10 @@
             position: relative;
             display: flex; align-items: center; justify-content: center;
             background: #151515; color: var(--text-dim);
-            padding: 15px 30px;
-            min-width: 280px; width: fit-content;
+            padding: 20px 10px;
+            min-width: 200px; width: fit-content;
             font-family: 'Minecraft'; font-size: 0.75rem;
-            text-transform: uppercase; border: 2px solid #222;
+            text-transform: uppercase; border: 3px solid #222;
             cursor: not-allowed; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
@@ -112,7 +112,7 @@
         /* Логика активации через чекбокс (используем общий родительский контейнер) */
         #offer-check:checked ~ .btn-wrapper { pointer-events: auto; }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
-            background: var(--accent); border-color: #fff; min-width: 160px; cursor: pointer;
+            background: var(--accent); border-color: rgba(0, 0, 0, 0); min-width: 100px; cursor: pointer;
         }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(-10px); }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
