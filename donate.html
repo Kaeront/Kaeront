@@ -88,65 +88,71 @@
         .btn-wrapper {
             display: inline-block;
             text-decoration: none;
-            pointer-events: auto; /* Для теста лучше включить */
+            pointer-events: none;
         }
         
         .btn-pay-action {
-            display: inline-grid;
-            /* Ключевой момент: создаем две колонки, одну из которых будем "схлопывать" в 0fr */
-            grid-template-columns: 1fr 0fr; 
-            align-items: center;
-            justify-content: center;
+            display: block; /* Важно для контроля ширины */
             background: #151515;
             color: var(--text-dim);
-            padding: 15px 0; /* Паддинги переносим внутрь для точности */
+            padding: 0; /* Убираем падинги, текст будем центровать внутри */
+            height: 50px; /* Фиксированная высота для удобства анимации */
+            
+            /* УСТАНАВЛИВАЕМ ШИРИНУ ВРУЧНУЮ (подберите под ваш шрифт) */
+            width: 280px; 
+            
+            font-family: 'Minecraft';
+            font-size: 0.75rem;
+            text-transform: uppercase;
             border: 3px solid #222;
+            cursor: not-allowed;
+            overflow: hidden; /* Скрываем вылетающий текст */
+            
+            /* Плавный переход для ВСЕХ свойств, включая ширину */
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
         }
         
-        /* Контейнеры для текстов */
-        .btn-pay-action .txt-confirm, 
-        .btn-pay-action .txt-pay {
+        /* Контейнер для двух строк текста */
+        .btn-content {
+            display: flex;
+            flex-direction: column; /* Тексты стоят друг под другом внутри */
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        
+        .btn-content span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px; /* Высота равна высоте кнопки */
+            min-width: 100%;
             white-space: nowrap;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 30px; /* Реальные отступы тут */
         }
         
-        .btn-pay-action .txt-confirm {
-            grid-column: 1;
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .txt-pay { color: #000; }
         
-        .btn-pay-action .txt-pay {
-            grid-column: 2; /* Вторая колонка */
-            opacity: 0;
-            transform: translateY(20px);
-            padding: 0; /* Изначально схлопнут */
-        }
+        /* --- ЛОГИКА АКТИВАЦИИ --- */
         
-        /* --- СОСТОЯНИЕ ПРИ ЧЕКЕ --- */
+        #offer-check:checked ~ .btn-wrapper {
+            pointer-events: auto;
+        }
         
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
-            /* МЕНЯЕМ СЕТКУ: первая колонка в 0, вторая в 1 */
-            grid-template-columns: 0fr 1fr;
             background: var(--accent);
             border-color: var(--accent);
+            /* НОВАЯ ШИРИНА: кнопка плавно ужмется */
+            width: 160px; 
         }
         
-        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm {
-            opacity: 0;
-            transform: translateY(-20px);
-            padding: 0; /* Убираем место */
+        /* Сдвигаем контейнер вверх, чтобы показать вторую строку */
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .btn-content {
+            transform: translateY(-50px); 
         }
         
-        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay {
-            opacity: 1;
-            transform: translateY(0);
-            padding: 0 30px; /* Раскрываем место */
-            color: #000;
+        /* Ховер */
+        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
+            background: #fff;
+            box-shadow: 0 0 20px var(--accent);
         }
         
         footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
