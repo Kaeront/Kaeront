@@ -116,7 +116,7 @@
             background: var(--accent); min-width: 100px; cursor: pointer;
         }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(20px); }
-        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(20px); }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(-20px); }
 
         #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
             background: #fff; box-shadow: 0 0 20px var(--accent); color: var(--accent);
@@ -206,22 +206,6 @@
             </div>
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
-    </footer>
-
-<script>
-    const link = document.getElementById('pay-link');
-    const check = document.getElementById('offer-check');
-
-    link.addEventListener('click', function(e) {
-        if(check.checked) {
-            setTimeout(() => { 
-                window.location.href = 'https://kaeront.ru'; 
-            }, 1000);
-        }
-    });
-</script>
-</body>
-</html>ss="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
 <script>
