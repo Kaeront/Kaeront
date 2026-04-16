@@ -8,7 +8,7 @@
 
     <meta property="og:title" content="Kaeront — Уникальные Minecraft сервера">
     <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
+    <meta property="og:image" content="https://kaeront.ru/preview.png">
     <meta property="og:url" content="https://kaeront.ru">
     <meta property="og:type" content="website">
     <meta name="theme-color" content="#FFAA00">
@@ -82,55 +82,113 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
         }
 
-        .checkbox-label {
+        /* --- CUSTOM CHECKBOX --- */
+        .checkbox-wrapper {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text-dim);
-            font-size: 0.7rem;
-            line-height: 1.5;
+            align-items: flex-start;
+            gap: 15px;
             cursor: pointer;
             max-width: 600px;
             text-align: left;
+            user-select: none;
         }
 
-        .checkbox-label input { accent-color: var(--accent); cursor: pointer; }
-        .checkbox-label a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+        /* Скрываем реальный чекбокс */
+        .hidden-check {
+            display: none;
+        }
+
+        /* Визуальный кастомный чекбокс */
+        .custom-box {
+            min-width: 18px;
+            height: 18px;
+            border: 1.5px solid #333;
+            background: #000;
+            position: relative;
+            transition: 0.2s;
+            margin-top: 2px;
+        }
+
+        .custom-box::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            right: 3px; bottom: 3px;
+            background: var(--accent);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hidden-check:checked + .custom-box {
+            border-color: var(--accent);
+        }
+
+        .hidden-check:checked + .custom-box::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .check-text {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            line-height: 1.5;
+        }
+
+        .check-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
+
+        /* --- BUTTON ACTION (NO JS VERSION) --- */
+        .btn-pay-link {
+            text-decoration: none;
+            pointer-events: none; /* Отключаем клики по умолчанию */
+        }
 
         .btn-pay-action {
             display: inline-block;
             background: #151515;
-            color: #fff;
+            color: #555;
             padding: 15px 0;
             width: 300px;
             max-width: 100%;
             box-sizing: border-box;
             font-family: 'Minecraft';
             font-size: 0.8rem;
-            text-decoration: none;
             text-transform: uppercase;
             border: none;
-            opacity: 1;
             cursor: not-allowed;
-            white-space: nowrap;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
         }
 
-        .btn-pay-action.active {
+        /* Динамика при активации (CSS Checkbox Hack) */
+        .hidden-check:checked ~ .btn-pay-link {
+            pointer-events: auto; /* Разрешаем клик */
+        }
+
+        .hidden-check:checked ~ .btn-pay-link .btn-pay-action {
             background: var(--accent);
             color: #000;
-            opacity: 1;
+            width: 170px;
             cursor: pointer;
         }
 
-        .btn-pay-action.active:hover {
+        /* Текст внутри кнопки меняется через контент */
+        .btn-pay-action span::before {
+            content: "Подтвердите согласие";
+        }
+
+        .hidden-check:checked ~ .btn-pay-link .btn-pay-action span::before {
+            content: "К оплате";
+        }
+
+        .hidden-check:checked ~ .btn-pay-link .btn-pay-action:hover {
             background: #fff;
             box-shadow: 0 0 20px var(--accent);
-            color: var(--accent) !important;
+            color: var(--accent);
         }
 
         /* --- FOOTER --- */
@@ -152,36 +210,6 @@
 </head>
 <body>
 
-<noscript>
-    <div style="
-        position: fixed; 
-        top: 0; left: 0; 
-        width: 100vw; height: 100vh; 
-        background: #0a0a0a; 
-        color: white; 
-        z-index: 9999; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center; 
-        text-align: center; 
-        font-family: 'Montserrat', sans-serif;
-        padding: 20px;
-        box-sizing: border-box;
-        overflow: hidden;
-    ">
-        <h2 style="font-family: 'Minecraft'; color: #FA0; font-weight: 400; margin-bottom: 20px;">Включите JavaScript</h2>
-        
-        <p style="max-width: 500px; line-height: 1.6; color: #888; margin-bottom: 30px;">
-            Для корректной работы сайта <b>Kaeront</b>, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки. ¯\_(ツ)_/¯
-        </p>
-    </div>
-    
-    <style>
-        body { overflow: hidden !important; }
-    </style>
-</noscript>
-
     <nav>
         <a href="./" class="nav-logo">Kaeront</a>
         <div class="nav-links">
@@ -199,12 +227,19 @@
             <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS-атак, разработку новых режимов и улучшение текущего функционала проекта.</p>
 
             <div class="donation-controls">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="offer-check">
-                    <span>Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.</span>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" class="hidden-check" id="offer-check">
+                    <div class="custom-box"></div>
+                    <span class="check-text">
+                        Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.
+                    </span>
+                    
+                    <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-pay-link">
+                        <div class="btn-pay-action">
+                            <span></span>
+                        </div>
+                    </a>
                 </label>
-
-                <button id="pay-button" class="btn-pay-action">Подтвердите согласие</button>
             </div>
         </div>
     </div>
@@ -218,8 +253,9 @@
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
+                    <li><a href="privacy">Политика конфиденциальности и обработки ПД</a></li>
                     <li><a href="offer">Публичная оферта</a></li>
+                    <li><a href="terms">Пользовательское соглашение</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -241,49 +277,5 @@
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
-<script>
-    const check = document.getElementById('offer-check');
-    const btn = document.getElementById('pay-button');
-    const cloudTipsUrl = 'https://pay.cloudtips.ru/p/db4c09dc';
-
-    const textDisabled = "Подтвердите согласие";
-    const textEnabled = "Перейти к оплате";
-
-    const widthDisabled = "300px";
-    const widthEnabled = "170px";
-
-    // Изначальный текст
-    btn.innerText = textDisabled;
-    btn.style.width = widthDisabled;
-
-    check.addEventListener('change', function() {
-        // 1. Мгновенно делаем текст почти прозрачным, чтобы смена букв была мягкой
-        btn.style.opacity = "0.3";
-        
-        // 2. Запускаем смену ширины и фона
-        btn.style.width = this.checked ? widthEnabled : widthDisabled;
-
-        // 3. Через очень короткую паузу (150мс) меняем текст и возвращаем видимость
-        setTimeout(() => {
-            if(this.checked) {
-                btn.classList.add('active');
-                btn.innerText = textEnabled;
-                btn.style.color = '#000';
-            } else {
-                btn.classList.remove('active');
-                btn.innerText = textDisabled;
-                btn.style.color = '#fff';
-            }
-            btn.style.opacity = this.checked ? "1" : "0.7";
-        }, 150); // Уменьшил задержку в 2 раза для синхронности
-    });
-
-    btn.addEventListener('click', function() {
-        if(check.checked) {
-            window.open(cloudTipsUrl, '_blank');
-            setTimeout(() => { window.location.href = './'; }, 400);
-        }
-    });
-</script>
 </body>
 </html>
