@@ -104,10 +104,10 @@
         }
 
         .btn-pay-action .txt-confirm, 
-        .btn-pay-action .txt-pay { 
-          opacity: 0; 
-          transform: translateY(-20px);
-          color: #000; 
+        .btn-pay-action .txt-pay {
+            position: absolute; transition: opacity 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn-pay-action .txt-pay { opacity: 0; transform: translateY(10px); color: #000; }
 
@@ -116,7 +116,7 @@
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
             background: var(--accent); min-width: 100px; cursor: pointer;
         }
-        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(20px); }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(-20px); }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
 
         #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
@@ -207,6 +207,22 @@
             </div>
         </div>
         <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
+    </footer>
+
+<script>
+    const link = document.getElementById('pay-link');
+    const check = document.getElementById('offer-check');
+
+    link.addEventListener('click', function(e) {
+        if(check.checked) {
+            setTimeout(() => { 
+                window.location.href = 'https://kaeront.ru'; 
+            }, 1000);
+        }
+    });
+</script>
+</body>
+</html>ss="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
     </footer>
 
 <script>
