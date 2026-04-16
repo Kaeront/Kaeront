@@ -57,27 +57,31 @@
             margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 25px;
         }
 
-        /* --- CUSTOM MINI CHECKBOX --- */
+        /* --- CUSTOM CHECKBOX (14x14) --- */
         .checkbox-container {
             display: flex; align-items: flex-start; gap: 12px; cursor: pointer;
             max-width: 600px; text-align: left; user-select: none;
         }
-        .checkbox-container input { display: none; }
+        
+        /* Скрытый инпут */
+        #offer-check { display: none; }
         
         .custom-box {
-            width: 10px; height: 10px; border: 2px solid #333;
+            width: 14px; height: 14px; border: 2px solid #333;
             display: grid; place-items: center; transition: 0.2s; flex-shrink: 0;
             box-sizing: border-box;
-            margin-top: 3px; /* Центровка относительно первой строки текста */
+            margin-top: 2px; /* Выравнивание по высоте текста */
         }
         .custom-box::after {
-            content: ""; width: 4px; height: 4px; 
+            content: ""; width: 6px; height: 6px; 
             background: var(--accent); opacity: 0; transition: 0.2s;
         }
-        .checkbox-container input:checked + .custom-box { border-color: var(--accent); }
-        .checkbox-container input:checked + .custom-box::after { opacity: 1; }
 
-        .checkbox-text { color: var(--text-dim); font-size: 0.7rem; line-height: 1.5; }
+        /* Состояния при чеке */
+        #offer-check:checked + .checkbox-container .custom-box { border-color: var(--accent); }
+        #offer-check:checked + .checkbox-container .custom-box::after { opacity: 1; }
+
+        .checkbox-text { color: var(--text-dim); font-size: 0.75rem; line-height: 1.4; }
         .checkbox-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
 
         /* --- ANIMATED BUTTON --- */
@@ -105,22 +109,15 @@
         }
         .btn-pay-action .txt-pay { opacity: 0; transform: translateY(10px); color: #000; }
 
-        /* Логика активации через :has */
-        .donation-controls:has(#offer-check:checked) .btn-wrapper { 
-            pointer-events: auto; 
-        }
-        .donation-controls:has(#offer-check:checked) .btn-wrapper .btn-pay-action {
+        /* Логика активации через чекбокс (используем общий родительский контейнер) */
+        #offer-check:checked ~ .btn-wrapper { pointer-events: auto; }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action {
             background: var(--accent); border-color: #fff; min-width: 160px; cursor: pointer;
         }
-        .donation-controls:has(#offer-check:checked) .btn-wrapper .btn-pay-action .txt-confirm { 
-            opacity: 0; transform: translateY(-10px); 
-        }
-        .donation-controls:has(#offer-check:checked) .btn-wrapper .btn-pay-action .txt-pay { 
-            opacity: 1; transform: translateY(0); 
-        }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(-10px); }
+        #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
 
-        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action,
-        .donation-controls:has(#offer-check:checked) .btn-wrapper:hover .btn-pay-action {
+        #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
             background: #fff; box-shadow: 0 0 20px var(--accent); color: var(--accent);
         }
 
@@ -158,8 +155,9 @@
             <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS и развитие новых режимов.</p>
 
             <div class="donation-controls">
-                <label class="checkbox-container">
-                    <input type="checkbox" id="offer-check">
+                <input type="checkbox" id="offer-check">
+                
+                <label for="offer-check" class="checkbox-container">
                     <div class="custom-box"></div>
                     <span class="checkbox-text">Я согласен с <a href="offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="privacy" target="_blank">обработку персональных данных</a>.</span>
                 </label>
