@@ -746,7 +746,7 @@ function toggleDropdown(id) { document.getElementById(id).classList.toggle('acti
 // --- SCROLL NAV ---
 window.onscroll = function() {
     const nav = document.getElementById('smart-nav');
-    if (window.pageYOffset > 30) nav.classList.add('scrolled');
+    if (window.pageYOffset > 40) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
 };
 
@@ -852,7 +852,7 @@ window.addEventListener('touchmove', moveDrag, {passive: true});
 window.addEventListener('touchend', endDrag);
 
 scrollContainer.addEventListener('mouseenter', () => targetAutoSpeed = 0);
-scrollContainer.addEventListener('mouseleave', () => targetAutoSpeed = 0.4);
+scrollContainer.addEventListener('mouseleave', () => targetAutoSpeed = 0.5);
 
 window.onclick = function(e) { 
     if (e.target.classList.contains('modal-overlay')) {
