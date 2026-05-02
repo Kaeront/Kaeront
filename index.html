@@ -430,6 +430,69 @@
 </head>
 <body>
 
+
+<!-- Loading Screen -->
+<div id="loader-wrapper" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s;
+">
+    <div style="position: relative; text-align: center; width: 100%;">
+        
+        <!-- Основной текст (исчезает через 5 секунд) -->
+        <div style="
+            font-family: 'Montserrat', sans-serif;
+            color: #888;
+            font-size: 2vw;
+            animation: fadeOutText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00;">Kaeront</span> загружается...
+        </div>
+
+        <!-- Текст ошибки -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #888;
+            font-size: 2vw;
+            opacity: 0;
+            animation: fadeInText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            «Что-то вы долго!»<br>
+            <span style="font-size: 1.2vw;">Попробуйте обновить страницу.</span>
+        </div>
+        
+    </div>
+</div>
+
+<style>
+    /* Анимация исчезновения первого текста */
+    @keyframes fadeOutText {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+
+    /* Анимация появления второго текста */
+    @keyframes fadeInText {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+    
     <div id="noscript-inject"></div>
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
