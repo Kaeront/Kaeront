@@ -31,7 +31,7 @@
 
         /* --- CUSTOM CHECKBOX --- */
         .checkbox-container {
-            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px; cursor: url('pointer.png');
             text-align: left; user-select: none;
         }
         
@@ -70,7 +70,7 @@
             font-family: 'Minecraft'; font-size: 0.75rem;
             border: 3px solid rgba(255, 255, 255, 0.1);
             text-transform: uppercase;
-            cursor: not-allowed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: url('not-allowed'); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
 
@@ -85,7 +85,7 @@
         /* Логика активации через чекбокс (используем общий родительский контейнер) */
         #offer-check:checked ~ .btn-wrapper { pointer-events: auto; }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
-            background: var(--accent); min-width: 100px; cursor: pointer;
+            background: var(--accent); min-width: 100px; cursor: url('pointer.png');
         }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(20px); }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
