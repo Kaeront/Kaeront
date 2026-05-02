@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/news/:id",
+      "source": "/news/(.*)",
       "destination": "/news-single.html"
     }
   ]
