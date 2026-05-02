@@ -8,10 +8,6 @@ if (initialLoader) {
     initialLoader.style.animation = 'none';
 }
 
-const KAERONT_CONFIG = {
-    ip: 'play.kaeront.ru'
-};
-
 const globalStyles = `
     :root {
         --bg: #0a0a0a;
@@ -87,7 +83,7 @@ const injectHTML = {
         <div class="nav-links">
             <a href="/servers">Сервера</a>
             <a href="/news">Новости</a>
-            <a href="${KAERONT_CONFIG.tg}" target="_blank">Поддержка</a>
+            <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
             <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>`,
@@ -131,7 +127,7 @@ const injectHTML = {
 const setupHead = () => {
     const metaTags = [
       { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
-      { name: 'theme-color', content: KAERONT_CONFIG.accent },
+      { name: 'theme-color', content: #FA0 },
       { property: 'og:locale', content: 'ru-RU' },
       { property: 'og:url', content: 'https://kaeront.ru' },
       { property: 'og:type', content: 'website' },
