@@ -68,37 +68,6 @@ const globalStyles = `
 `;
 
 const injectHTML = {
-    noscript: `
-      <noscript>
-        <div style="
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            background: #0a0a0a; 
-            color: white; 
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            font-family: 'Montserrat', sans-serif;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: hidden;
-        ">
-            <h2 style="font-family: 'Minecraft'; color: #FA0; font-weight: 400; margin-bottom: 20px;">Включите JavaScript</h2>
-            
-            <p style="max-width: 500px; line-height: 1.6; color: #888; margin-bottom: 30px;">
-                Для корректной работы сайта <b>Kaeront</b>, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки. ¯\_(ツ)_/¯
-            </p>
-        </div>
-        
-        <style>
-            body { overflow: hidden !important; }
-        </style>
-      </noscript>`,
-
     dev: `
     <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100%; opacity:0.5; z-index: 3000; padding: 0.2vw; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
       <p style="margin: 0; font-family: 'Montserrat', sans-serif; color: #888; font-size: 0.6vw;">
