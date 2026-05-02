@@ -166,7 +166,7 @@ window.addEventListener('scroll', () => {
         const navHide = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide'));
 
         // Сравниваем текущую прокрутку со значением переменной
-        if (window.scrollY > navHide) {
+        if (window.scrollY => navHide) {
             nav.classList.add('scrolled');
         } else {
             nav.classList.remove('scrolled');
