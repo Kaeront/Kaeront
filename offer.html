@@ -3,57 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Kaeront — лучшие сервера по Minecraft с уникальной атмосферой и дружным комьюнити. Присоединяйся к нам!">
-    <link rel="icon" type="image/png" href="document.png">
-
-    <meta property="og:title" content="Kaeront — Уникальные Minecraft сервера">
-    <meta property="og:description" content="Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.">
-    <meta property="og:image" content="https://kaeront.ru/preview.png"> <meta property="og:url" content="https://kaeront.ru">
-    <meta property="og:url" content="https://kaeront.ru">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#FFAA00">
-    
+    <link rel="icon" type="image/png" href="palm.png">
     <title>Публичная оферта проекта «Kaeront»</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="/global.js" defer></script>
+    
     <style>
         :root {
-            --bg: #0a0a0a;
-            --accent: #FFAA00;
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --line-color: rgba(40, 40, 40, 0.4);
-            --nav-height: 50px;
+            --nav-hide: 50px;
         }
-        @font-face {
-            font-family: 'Minecraft';
-            src: url('minecraft.ttf') format('truetype');
-            font-weight: 200;
-            font-style: normal;
-            font-display: swap;
-        }
-        body {
-            background-color: var(--bg);
-            background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
-            background-size: 12px 12px;
-            color: var(--text-main);
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* --- NAVIGATION --- */
-        nav {
-            position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px);
-            border-bottom: 1.5px solid #1a1a1a; display: flex; justify-content: space-between;
-            align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
-        }
-        .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; }
-        .nav-links { display: flex; gap: 10px; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
-        .nav-links a:hover { color: var(--accent); }
 
         /* --- LEGAL CONTENT --- */
         .legal-wrapper {
@@ -99,15 +56,126 @@
 </head>
 <body>
 
-    <nav>
-        <a href="./" class="nav-logo">Kaeront</a>
-        <div class="nav-links">
-            <a href="servers">Сервера</a>
-            <a href="news">Новости</a>
-            <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
-            <a href="donate" style="color: var(--accent);">Пожертвовать</a>
+<!-- Loading Screen -->
+<div id="loader-wrapper" style="
+    position: fixed;
+    user-select: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    animation: hideLoaderNoJS 0.5s forwards;
+    animation-delay: 0.25s;
+">
+    <div style="position: relative; text-align: center; width: 100%;">
+        
+        <!-- Основной текст (исчезает через 5 секунд) -->
+        <div style="
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            animation: fadeOutText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
         </div>
-    </nav>
+
+        <!-- Текст ошибки -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            opacity: 0;
+            animation: fadeInText 0.3s forwards;
+            animation-delay: 5s;
+            line-height: 0.7;
+        ">
+            «Что-то вы долго!»<span style="font-size: clamp(1.5vh, 1.5vw, 1.5vw);"><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    // Мгновенная блокировка авто-скрытия, если JS разрешен
+    (function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+            loader.style.animation = 'none';
+        }
+    })();
+</script>
+
+<style>
+    /* Блокировка скролла по умолчанию */
+    body { 
+        overflow: hidden;
+    }
+
+    /* Анимация для случая, когда JavaScript отключен */
+    @keyframes hideLoaderNoJS {
+        to { 
+            opacity: 0; 
+            visibility: hidden; 
+        }
+    }
+
+    @keyframes fadeOutText {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeInText {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+      <noscript>
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #0a0a0a; 
+            color: white; 
+            user-select: none;
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            font-family: sans-serif;
+            box-sizing: border-box;
+            overflow: hidden;
+        ">
+            <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+            
+            <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
+                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
+            </p>
+        </div>
+        
+        <style>
+            body { overflow: hidden !important; }
+        </style>
+      </noscript>
+    
+    
+    <div id="dev-inject"></div>
+    <div id="nav-inject"></div>
 
     <div class="legal-wrapper">
         <div class="legal-card">
@@ -143,37 +211,6 @@
         </div>
     </div>
 
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h4>KAERONT</h4>
-                <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
-            </div>
-            <div class="footer-section">
-                <h4>ДОКУМЕНТЫ</h4>
-                <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-                    <li><a href="offer">Публичная оферта</a></li>
-                    <li><a href="terms">Пользовательское соглашение</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>ПРОЕКТ</h4>
-                <ul class="footer-links">
-                    <li><a href="news">Новости</a></li>
-                    <li><a href="donate">Пожертвовать</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>КОНТАКТЫ</h4>
-                <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
-    </footer>
+    <div id="footer-inject"></div>
 </body>
 </html>
