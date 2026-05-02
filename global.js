@@ -43,20 +43,10 @@ const globalStyles = `
     .custom-pointer, a, button {
         cursor: url('pointer.png'), pointer;
     }
-    
-    /* Состояние "можно схватить" (например, карточки серверов) */
-    .grab-element {
-        cursor: url('grab.png'), grab;
-    }
-    
-    /* Состояние "уже схватил" (в процессе перетаскивания) */
-    .grab-element:active {
-        cursor: url('grabbing.png'), grabbing;
-    }
-    
+        
     /* Обычный курсор для всего сайта */
     body {
-        cursor: url('default.png'), auto;
+        cursor: url('cursor.png'), auto;
     }
 
     nav {
