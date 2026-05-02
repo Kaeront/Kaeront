@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/png" href="newspaper.png">
+    <title>Kaeront | Новость</title>
+    <script src="/global.js" defer></script>
+
+    <style>
+        :root {
+            --nav-hide: 50px;
+        }
+
+        /* --- NEW CONTENT --- */
+        .new-wrapper {
+            padding-top: calc(var(--nav-height) + 40px);
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+        }
+
+        .new-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid #1a1a1a;
+            border-top: 4px solid var(--accent);
+            padding: 50px 40px;
+            margin: 20px;
+        }
+
+        h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.4; margin-bottom: 10px; }
+        .date-label { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 40px; display: block; }
+
+        h3 { font-family: 'Minecraft'; font-size: 0.8rem; color: #fff; margin-top: 40px; border-left: 3px solid var(--accent); padding-left: 15px; }
+        p, li { color: var(--text-dim); font-size: 0.95rem; line-height: 1.3; margin-bottom: 15px; }
+        ul { padding-left: 20px; margin-bottom: 20px; }
+        strong { color: #fff; }
+
+        @media (max-width: 600px) {
+            .new-card { padding: 30px 20px; }
+            h1 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loader-wrapper" style="
+    position: fixed;
+    user-select: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    animation: hideLoaderNoJS 0.5s forwards;
+    animation-delay: 0.25s;
+">
+    <div style="position: relative; text-align: center; width: 100%;">
+
+        <!-- Основной текст (исчезает через 5 секунд) -->
+        <div style="
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            animation: fadeOutText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
+        </div>
+
+        <!-- Текст ошибки -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            opacity: 0;
+            animation: fadeInText 0.3s forwards;
+            animation-delay: 5s;
+            line-height: 0.7;
+        ">
+            «Что-то вы долго!»<span style="font-size: clamp(1.5vh, 1.5vw, 1.5vw);"><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Мгновенная блокировка авто-скрытия, если JS разрешен
+    (function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+            loader.style.animation = 'none';
+        }
+    })();
+</script>
+
+<style>
+    /* Блокировка скролла по умолчанию */
+    body { 
+        overflow: hidden;
+    }
+
+    /* Анимация для случая, когда JavaScript отключен */
+    @keyframes hideLoaderNoJS {
+        to { 
+            opacity: 0; 
+            visibility: hidden; 
+        }
+    }
+
+    @keyframes fadeOutText {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeInText {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+      <noscript>
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #0a0a0a; 
+            color: white; 
+            user-select: none;
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            font-family: sans-serif;
+            box-sizing: border-box;
+            overflow: hidden;
+        ">
+            <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+
+            <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
+                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
+            </p>
+        </div>
+
+        <style>
+            body { overflow: hidden !important; }
+        </style>
+      </noscript>
+
+
+    <div id="dev-inject"></div>
+    <div id="nav-inject"></div>
+
+    <div class="new-wrapper">
+        <div class="new-card">
+
+<h1 id="news-title">Загрузка...</h1>
+        <span class="date-label" id="news-date"></span>
+        <div id="news-text"></div>
+        </div>
+    </div>
+
+    <div id="footer-inject"></div>
+
+</body>
+</html>
+
+<script type="module">
+    import { allNews } from '/news-data.js';
+
+    // 1. Берем ID из URL (например, "03-05-2026")
+    const newsId = window.location.pathname.split('/').pop();
+
+    // 2. Ищем новость в нашей базе
+    const item = allNews.find(n => n.id === newsId);
+
+    if (item) {
+        document.title = `${item.title} | Kaeront News`;
+        document.getElementById('news-title').textContent = item.title;
+        document.getElementById('news-date').textContent = item.date;
+        document.getElementById('news-text').innerHTML = item.content;
+    } else {
+        // Если новости нет
+        document.getElementById('news-content').innerHTML = "<h1>Новость не найдена</h1><a href='/news'>Вернуться в ленту</a>";
+    }
+</script>
