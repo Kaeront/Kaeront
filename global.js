@@ -70,7 +70,7 @@ const globalStyles = `
 const injectHTML = {
     dev: `
     <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100%; opacity:0.5; z-index: 3000; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
-      <p style="margin: 0; font-family: 'Montserrat', sans-serif; color: #888; font-size: 1.1vw;">
+      <p style="margin: 0; font-family: 'Montserrat', sans-serif; color: #888; font-size: 1.1vh;">
         <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00; text-transform: uppercase; letter-spacing: 0.2vw; ">Проект в разработке!</span> Сайт и сервера временно работают в тестовом режиме и могут быть <b>недоступны 24/7</b>. Пожалуйста, вернитесь намного позже, когда мы завершим настройку инфраструктуры.
       </p>
     </div>
