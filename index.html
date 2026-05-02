@@ -38,8 +38,8 @@
 
         body {
             background-color: var(--bg);
-            background-image: linear-gradient(135deg, var(--line-color) 25%, transparent 50%, transparent 50%, var(--line-color) 50%, var(--line-color) 75%, transparent 75%, transparent);
-            background-size: 12px 12px;
+            background-image: url(https://transparenttextures.com/patterns/white-diamond-dark.png);
+            background-size: 3vw 3vw;
             color: var(--text-main);
             font-family: 'Montserrat', sans-serif;
             margin: 0;
@@ -183,38 +183,38 @@
             }
         }
 
-.donate-progress {
-    width: 100%;
-    height: 22px;
-    background: rgba(0, 0, 0, 0.2);
-    margin-top: 5px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.donate-progress-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background: var(--accent);
-    width: 4.5%; 
-    transition: width 1s ease-in-out;
-    box-shadow: 0 0 25px var(--accent);
-}
-
-.donate-progress-text {
-    position: relative;
-    z-index: 3;
-    font-family: 'Minecraft', sans-serif;
-    font-size: 0.65rem;
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
-    pointer-events: none;
-}
+        .donate-progress {
+            width: 100%;
+            height: 22px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 5px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .donate-progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--accent);
+            width: 4.5%; 
+            transition: width 1s ease-in-out;
+            box-shadow: 0 0 25px var(--accent);
+        }
+        
+        .donate-progress-text {
+            position: relative;
+            z-index: 3;
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.65rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            pointer-events: none;
+        }
 
         /* --- NAVIGATION --- */
         nav {
@@ -240,61 +240,62 @@
         .hero-desc { color: var(--text-main); margin-top: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
 
-.section-title { 
-    font-family: 'Minecraft'; 
-    font-size: 1.1rem; 
-    color: var(--text-main); 
-    text-align: center; 
-    margin: 60px 0 20px;
-    text-transform: uppercase; 
-}
-
-.why-us-container { 
-    width: 100%; 
-    overflow: hidden; 
-    padding: 10px 0; 
-    cursor: grab;
-    user-select: none;
-    touch-action: pan-y;
-}
-
-.why-us-container:active { 
-    cursor: grabbing;
-}
-
-.why-us-track { 
-    display: flex; 
-    gap: 20px; 
-    width: max-content; 
-    will-change: transform;
-}
-
-.why-card { 
-    background: rgba(20, 20, 20, 1); 
-    border-left: 3px solid var(--accent); 
-    padding: 20px;
-    width: 260px; 
-    flex-shrink: 0; 
-    box-sizing: border-box;
-    transition: background 0.3s, box-shadow 0.3s, opacity 0.3s ease; 
-    opacity: 0.2;
-}
-
-
-.why-card h4 { 
-    font-family: 'Minecraft', sans-serif;
-    font-size: 0.9rem;
-    color: var(--accent);
-    font-weight: 600;
-    margin: 0 0 5px;
-}
-
-.why-card p { 
-    color: var(--text-dim); 
-    font-size: 0.75rem; 
-    line-height: 1.2; 
-    margin: 0; 
-}
+        .section-title { 
+            font-family: 'Minecraft'; 
+            font-size: 1.1rem; 
+            color: var(--text-main); 
+            text-align: center; 
+            margin: 60px 0 20px;
+            text-transform: uppercase; 
+        }
+        
+        .why-us-container { 
+            width: 100%; 
+            overflow: hidden; 
+            padding: 10px 0; 
+            cursor: grab;
+            user-select: none;
+            touch-action: pan-y;
+            mask-image: linear-gradient(to left, transparent 0%, black 20% 80%, transparent 100%);
+        }
+        
+        .why-us-container:active { 
+            cursor: grabbing;
+        }
+        
+        .why-us-track { 
+            display: flex; 
+            gap: 20px; 
+            width: max-content; 
+            will-change: transform;
+        }
+        
+        .why-card { 
+            background: rgba(20, 20, 20, 1); 
+            border-left: 3px solid var(--accent); 
+            padding: 20px;
+            width: 260px; 
+            flex-shrink: 0; 
+            box-sizing: border-box;
+            transition: background 0.3s, box-shadow 0.3s, opacity 0.3s ease; 
+            opacity: 0.2;
+        }
+        
+        
+        .why-card h4 { 
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin: 0 0 5px;
+        }
+        
+        .why-card p { 
+            color: var(--text-dim); 
+            font-size: 0.75rem; 
+            line-height: 1.2; 
+            margin: 0; 
+        }
 
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0px 20px; width: 100%; box-sizing: border-box; }
@@ -751,7 +752,7 @@ function toggleDropdown(id) { document.getElementById(id).classList.toggle('acti
 // --- SCROLL NAV ---
 window.onscroll = function() {
     const nav = document.getElementById('smart-nav');
-    if (window.pageYOffset > 50) nav.classList.add('scrolled');
+    if (window.pageYOffset > 30) nav.classList.add('scrolled');
     else nav.classList.remove('scrolled');
 };
 
