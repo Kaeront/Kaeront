@@ -19,7 +19,6 @@ const globalStyles = `
         --text-main: #fff;
         --text-dim: #888;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --nav-height: 50px;
     }
     
     @font-face {
