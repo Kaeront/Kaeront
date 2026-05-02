@@ -451,7 +451,7 @@
     z-index: 99999;
     transition: opacity 0.5s ease, visibility 0.5s;
     animation: hideLoaderNoJS 0.5s forwards;
-    animation-delay: 5s;
+    animation-delay: 0.25s;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
         
@@ -485,6 +485,17 @@
         
     </div>
 </div>
+
+<script>
+    // Мгновенная блокировка авто-скрытия, если JS разрешен
+    (function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+            loader.style.animation = 'none';
+        }
+    })();
+</script>
 
 <style>
     /* Блокировка скролла по умолчанию */
