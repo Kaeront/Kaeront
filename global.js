@@ -28,7 +28,7 @@ const globalStyles = `
     body {
         background-color: var(--bg);
         background-image: url(https://transparenttextures.com/patterns/white-diamond-dark.png);
-        background-size: 3vw 3vw;
+        background-size: 3%;
         color: var(--text-main);
         font-family: 'Montserrat', sans-serif;
         margin: 0;
@@ -69,7 +69,7 @@ const globalStyles = `
 
 const injectHTML = {
     dev: `
-    <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100%; opacity:0.5; z-index: 3000; padding: 0.2vw; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
+    <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100%; opacity:0.5; z-index: 3000; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
       <p style="margin: 0; font-family: 'Montserrat', sans-serif; color: #888; font-size: 0.6vw;">
         <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00; text-transform: uppercase; letter-spacing: 0.2vw; ">Проект в разработке!</span> Сайт и сервера временно работают в тестовом режиме и могут быть <b>недоступны 24/7</b>. Пожалуйста, вернитесь намного позже, когда мы завершим настройку инфраструктуры.
       </p>
