@@ -207,3 +207,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.outerHTML = html;
     });
 });
+
+// Логика скрытия загрузочного экрана
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader-wrapper');
+    if (loader) {
+        // Плавное исчезновение
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+        
+        // Разблокировка скролла body
+        document.body.style.overflow = 'auto';
+        
+        // Полное удаление из DOM через 0.5 сек (после завершения CSS-перехода)
+        setTimeout(() => {
+            loader.remove();
+        }, 500);
+    }
+});
