@@ -157,6 +157,23 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
+// Скролл навигации
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('smart-nav');
+    
+    if (nav) {
+        // Получаем значение переменной из стилей документа
+        const navHide = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide'));
+
+        // Сравниваем текущую прокрутку со значением переменной
+        if (window.scrollY > navHide) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    }
+});
+
 // Сборка страницы
 setupHead();
 document.addEventListener('DOMContentLoaded', () => {
