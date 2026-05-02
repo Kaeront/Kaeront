@@ -37,8 +37,10 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        cursor: url('cursor.png'), auto;
         cursor: url('pointer.png'), pointer;
+        cursor: url('grab.png'), grab;
+        cursor: url('grabbing.png'), grabbing;
+        cursor: url('cursor.png'), auto;
     }
 
     nav {
