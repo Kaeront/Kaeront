@@ -202,7 +202,7 @@
             cursor: grab;
             user-select: none;
             touch-action: pan-y;
-            mask-image: linear-gradient(to left, transparent 0%, black 30% 70%, transparent 100%);
+            mask-image: linear-gradient(to left, transparent 0%, black 50%, transparent 100%);
         }
         
         .why-us-container:active { 
@@ -224,7 +224,6 @@
             flex-shrink: 0; 
             box-sizing: border-box;
             transition: background 0.3s, box-shadow 0.3s, opacity 0.3s ease; 
-            opacity: 0.2;
         }
         
         
@@ -768,10 +767,8 @@ function updateOpacity() {
         
         if (distanceFromCenter < 180) {
             const ratio = 1 - (distanceFromCenter / 180);
-            card.style.opacity = 0.5 + (ratio * 0.5);
-            card.style.transform = `scale(${1 + (ratio * 0.1)})`;
+            card.style.transform = `scale(${1 + (ratio * 0.2)})`;
         } else {
-            card.style.opacity = 0.5;
             card.style.transform = `scale(1)`;
         }
     });
