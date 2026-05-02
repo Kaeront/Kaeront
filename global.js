@@ -160,13 +160,9 @@ const setupHead = () => {
 // Скролл навигации
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('smart-nav');
-    
     if (nav) {
-        // Получаем значение переменной из стилей документа
-        const navHide = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide'));
-
-        // Сравниваем текущую прокрутку со значением переменной
-        if (window.scrollY => navHide) {
+        const navHideThreshold = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide')) || 0;
+        if (window.scrollY >= navHideThreshold) {
             nav.classList.add('scrolled');
         } else {
             nav.classList.remove('scrolled');
