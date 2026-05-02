@@ -127,7 +127,7 @@ const injectHTML = {
 const setupHead = () => {
     const metaTags = [
       { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
-      { name: 'theme-color', content: #ffaa00 },
+      { name: 'theme-color', content: '#ffaa00' },
       { property: 'og:locale', content: 'ru-RU' },
       { property: 'og:url', content: 'https://kaeront.ru' },
       { property: 'og:type', content: 'website' },
