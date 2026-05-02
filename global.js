@@ -37,10 +37,26 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+    }
+
+    /* Обычный указатель (ссылки, кнопки) */
+    .custom-pointer, a, button {
         cursor: url('pointer.png'), pointer;
+    }
+    
+    /* Состояние "можно схватить" (например, карточки серверов) */
+    .grab-element {
         cursor: url('grab.png'), grab;
+    }
+    
+    /* Состояние "уже схватил" (в процессе перетаскивания) */
+    .grab-element:active {
         cursor: url('grabbing.png'), grabbing;
-        cursor: url('cursor.png'), auto;
+    }
+    
+    /* Обычный курсор для всего сайта */
+    body {
+        cursor: url('default.png'), auto;
     }
 
     nav {
