@@ -38,9 +38,8 @@ const globalStyles = `
         flex-direction: column;
         min-height: 100vh;
         cursor: url('cursor.png'), auto;
+        cursor: url('pointer.png'), pointer;
     }
-
-    a:hover { cursor: url('pointer.png'), pointer; }
 
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
