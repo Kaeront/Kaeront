@@ -3,6 +3,11 @@
  * Architecture: KAmir Group
  */
 
+const initialLoader = document.getElementById('loader-wrapper');
+if (initialLoader) {
+    initialLoader.style.animation = 'none';
+}
+
 const KAERONT_CONFIG = {
     ip: 'play.kaeront.ru'
 };
@@ -185,10 +190,11 @@ window.addEventListener('load', () => {
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
         
-        // Разблокировка скролла body
-        document.body.style.overflow = 'auto';
+        // ИЗМЕНЕНО: Принудительный возврат скролла (перебиваем CSS в index.html)
+        document.body.style.setProperty('overflow', 'auto', 'important');
+        document.documentElement.style.overflow = 'auto'; 
         
-        // Полное удаление из DOM через 0.5 сек (после завершения CSS-перехода)
+        // Удаление из DOM
         setTimeout(() => {
             loader.remove();
         }, 500);
