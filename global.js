@@ -19,6 +19,7 @@ const globalStyles = `
         --text-main: #fff;
         --text-dim: #888;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --nav-height: 50px;
     }
     
     @font-face {
@@ -155,15 +156,6 @@ const setupHead = () => {
     style.innerHTML = globalStyles;
     document.head.appendChild(style);
 };
-
-// Скролл навигации
-window.addEventListener('scroll', () => {
-    const nav = document.getElementById('smart-nav');
-    if (nav) {
-        if (window.scrollY > 30) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
-    }
-});
 
 // Сборка страницы
 setupHead();
