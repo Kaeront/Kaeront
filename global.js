@@ -40,7 +40,7 @@ const globalStyles = `
     }
 
     /* Обычный указатель (ссылки, кнопки) */
-    .custom-pointer, a, button {
+    .a, button {
         cursor: url('pointer.png'), pointer;
     }
         
