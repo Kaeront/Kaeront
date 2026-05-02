@@ -445,6 +445,8 @@
     align-items: center;
     z-index: 99999;
     transition: opacity 0.5s ease, visibility 0.5s;
+    animation: hideLoaderNoJS 0.5s forwards;
+    animation-delay: 0.5s;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
         
@@ -480,20 +482,61 @@
 </div>
 
 <style>
-    /* Анимация исчезновения первого текста */
+    /* Блокировка скролла по умолчанию */
+    body { 
+        overflow: hidden !important; /* <-- ИЗМЕНЕНО: Запрет скролла сразу при загрузке */
+    }
+
+    /* Анимация для случая, когда JavaScript отключен */
+    @keyframes hideLoaderNoJS {
+        to { 
+            opacity: 0; 
+            visibility: hidden; 
+        }
+    }
+
     @keyframes fadeOutText {
         from { opacity: 1; }
         to { opacity: 0; visibility: hidden; }
     }
 
-    /* Анимация появления второго текста */
     @keyframes fadeInText {
         from { opacity: 0; }
         to { opacity: 1; }
     }
 </style>
+
+      <noscript>
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #0a0a0a; 
+            color: white; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            font-family: 'Montserrat', sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        ">
+            <h2 style="font-family: 'Minecraft'; color: #FA0; font-weight: 400; margin-bottom: 20px;">Включите JavaScript</h2>
+            
+            <p style="max-width: 500px; line-height: 1.6; color: #888; margin-bottom: 30px;">
+                Для корректной работы сайта <b>Kaeront</b>, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки. ¯\_(ツ)_/¯
+            </p>
+        </div>
+        
+        <style>
+            body { overflow: hidden !important; }
+        </style>
+      </noscript>
     
-    <div id="noscript-inject"></div>
+    
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
 
