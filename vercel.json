@@ -1,33 +1,11 @@
 {
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/minecraft.ttf",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/*.png",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/*.js",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/*.json",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/news-style.html",
-      "destination": "/404",
-      "permanent": false
-    }
-  ],
   "rewrites": [
-    { "source": "/news/:id", "destination": "/news-style" }
+    { "source": "/news/:id", "destination": "/news-style" },
+    { "source": "/minecraft.ttf", "destination": "/404" },
+    { "source": "/*.png", "destination": "/404" },
+    { "source": "/*.js", "destination": "/404" },
+    { "source": "/*.json", "destination": "/404" },
+    { "source": "/news-style.html", "destination": "/404" }
   ]
 }
