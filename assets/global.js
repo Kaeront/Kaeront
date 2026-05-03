@@ -18,7 +18,7 @@ const globalStyles = `
     
     @font-face {
         font-family: 'Minecraft';
-        src: url('/minecraft.ttf') format('truetype');
+        src: url('/assets/minecraft.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -39,12 +39,12 @@ const globalStyles = `
 
     /* Обычный указатель (ссылки, кнопки) */
     .a, button {
-        cursor: url('/pointer.png'), pointer;
+        cursor: url('/assets/pointer.png'), pointer;
     }
         
     /* Обычный курсор для всего сайта */
     body {
-        cursor: url('/cursor.png'), auto;
+        cursor: url('/assets/cursor.png'), auto;
     }
 
     nav {
