@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/news/:id", "destination": "/news-style.html" },
-    { "source": "/(.*)", "destination": "/404.html" } 
+    { "source": "/news/:id", "destination": "/news-style" }
   ]
 }
