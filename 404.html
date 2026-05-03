@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Kaeront | Страница не найдена</title>
+    <script src="/global.js" defer></script>
+    <style>
+        .error-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 { font-family: 'Minecraft'; color: var(--accent); font-size: clamp(3vh, 3vw, 3vw); margin: 0; }
+        #error-msg { color: var(--text-dim); font-size: clamp(1.5vh, 1.5vw, 1.5vw); margin: 1vh 0; }
+    </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+<div id="loader-wrapper" style="
+    position: fixed;
+    user-select: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    animation: hideLoaderNoJS 0.5s forwards;
+    animation-delay: 0.25s;
+">
+    <div style="position: relative; text-align: center; width: 100%;">
+        
+        <!-- Основной текст (исчезает через 5 секунд) -->
+        <div style="
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            animation: fadeOutText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
+        </div>
+
+        <!-- Текст ошибки -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            opacity: 0;
+            animation: fadeInText 0.3s forwards;
+            animation-delay: 5s;
+            line-height: 0.7;
+        ">
+            «Что-то вы долго!»<span style="font-size: clamp(1.5vh, 1.5vw, 1.5vw);"><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    // Мгновенная блокировка авто-скрытия, если JS разрешен
+    (function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+            loader.style.animation = 'none';
+        }
+    })();
+</script>
+
+<style>
+    /* Блокировка скролла по умолчанию */
+    body { 
+        overflow: hidden;
+    }
+
+    /* Анимация для случая, когда JavaScript отключен */
+    @keyframes hideLoaderNoJS {
+        to { 
+            opacity: 0; 
+            visibility: hidden; 
+        }
+    }
+
+    @keyframes fadeOutText {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeInText {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+      <noscript>
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #0a0a0a; 
+            color: white; 
+            user-select: none;
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            font-family: sans-serif;
+            box-sizing: border-box;
+            overflow: hidden;
+        ">
+            <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+            
+            <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
+                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
+            </p>
+        </div>
+        
+        <style>
+            body { overflow: hidden !important; }
+        </style>
+      </noscript>
+  
+    <div id="dev-inject"></div>
+    <div id="nav-inject"></div>
+    <div class="error-wrapper">
+        <h1>Ошибка 404: Не найдено</h1>
+        <p id="error-msg">Страница не найдена.</p>
+    </div>
+    <div id="footer-inject"></div>
+
+    <script>
+        const messages = [
+            "Кажется, этот чанк еще не прогрузился.",
+            "Здесь только пустота и криперы. Уходи.",
+            "Вы зашли слишком далеко в Край.",
+            "Этой страницы не существует, как и мирной жизни рядом с динамитом.",
+            "Ошибка 404: Страница была съедена чешуйницей.",
+            "Похоже, ваша карта сокровищ врет.",
+            "Тут ничего нет, кроме эха твоих шагов."
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            document.getElementById('error-msg').textContent = "«"+randomMsg+"»";
+        });
+    </script>
+</body>
+</html>
