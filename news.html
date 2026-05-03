@@ -325,12 +325,16 @@
             // ИЗМЕНЕНО: Заголовок теперь ссылка на /news/id
             // Убрали id="${item.id}" из контейнера, так как теперь есть прямая ссылка
             const html = `
-                <a href="/news/${item.id}" class="news-card" style="text-decoration: none; color: inherit;">
+                <div class="news-card">
                     <span class="news-meta">${item.date}</span>
-                    <h2>${item.title}</h2>
+                    <h2>
+                        <a href="/news/${item.id}" style="text-decoration: none; color: inherit;">
+                            ${item.title}
+                        </a>
+                    </h2>
                     <div class="news-tags">${tagsHtml}</div>
                     <p>${item.content}</p>
-                </a>
+                </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
         });
