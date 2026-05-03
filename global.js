@@ -106,16 +106,16 @@ const injectHTML = {
             <div class="footer-section">
                 <h4>ДОКУМЕНТЫ</h4>
                 <ul class="footer-links">
-                    <li><a href="privacy">Политика конфиденциальности и обработки персональных данных</a></li>
-                    <li><a href="offer">Публичная оферта</a></li>
-                    <li><a href="terms">Пользовательское соглашение</a></li>
+                    <li><a href="/privacy">Политика конфиденциальности и обработки персональных данных</a></li>
+                    <li><a href="/offer">Публичная оферта</a></li>
+                    <li><a href="/terms">Пользовательское соглашение</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>ПРОЕКТ</h4>
                 <ul class="footer-links">
-                    <li><a href="news">Новости</a></li>
-                    <li><a href="donate">Пожертвовать</a></li>
+                    <li><a href="/news">Новости</a></li>
+                    <li><a href="/donate">Пожертвовать</a></li>
                 </ul>
             </div>
             <div class="footer-section">
