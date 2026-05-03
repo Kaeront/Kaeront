@@ -1,8 +1,9 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/news/(.*)",
+      "source": "/news/:id",
       "destination": "/news-single.html"
     }
   ]
