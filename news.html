@@ -64,7 +64,7 @@
 
         .news-card h2 { font-family: 'Minecraft'; font-size: 1rem; color: var(--accent); margin-bottom: 15px; line-height: 1.5; }
         .news-meta { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; display: block; font-family: 'Minecraft'; }
-        .news-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; }
+        .news-card p, li { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; }
         .news-card b { color: var(--text-main); }
         .news-card a { color: var(--text-main); transition: 0.3s; }
         .news-card a:hover { color: var(--accent); transition: 0.3s; }
@@ -322,16 +322,12 @@
             // ИЗМЕНЕНО: Заголовок теперь ссылка на /news/id
             // Убрали id="${item.id}" из контейнера, так как теперь есть прямая ссылка
             const html = `
-                <div class="news-card">
+                <a class="news-card" style="text-decoration: none; color: inherit;">
                     <span class="news-meta">${item.date}</span>
-                    <h2>
-                        <a href="/news/${item.id}" style="text-decoration: none; color: inherit;">
-                            ${item.title}
-                        </a>
-                    </h2>
+                    <h2>${item.title}</h2>
                     <div class="news-tags">${tagsHtml}</div>
                     <p>${item.content}</p>
-                </div>
+                </a>
             `;
             container.insertAdjacentHTML('beforeend', html);
         });
