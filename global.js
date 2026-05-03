@@ -1,7 +1,5 @@
-/**
- * KAERONT NETWORK GLOBAL BUNDLE
- * Architecture: KAmir Group
- */
+/* KAERONT GLOBAL STYLES AND HTML ELEMENTS */
+
 
 const initialLoader = document.getElementById('loader-wrapper');
 if (initialLoader) {
@@ -20,7 +18,7 @@ const globalStyles = `
     
     @font-face {
         font-family: 'Minecraft';
-        src: url('minecraft.ttf') format('truetype');
+        src: url('/minecraft.ttf') format('truetype');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
@@ -41,12 +39,12 @@ const globalStyles = `
 
     /* Обычный указатель (ссылки, кнопки) */
     .a, button {
-        cursor: url('pointer.png'), pointer;
+        cursor: url('/pointer.png'), pointer;
     }
         
     /* Обычный курсор для всего сайта */
     body {
-        cursor: url('cursor.png'), auto;
+        cursor: url('/cursor.png'), auto;
     }
 
     nav {
