@@ -5,8 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/png" href="newspaper.png">
     <title>Kaeront | Новость</title>
+    <script src="/news-data.js"></script>
     <script src="/global.js" defer></script>
+<script>
+    (function() {
+        // 1. Получаем ID из URL (например, "03-05-2026")
+        const pathParts = window.location.pathname.split('/');
+        const newsId = pathParts[pathParts.length - 1];
 
+        // 2. Проверяем, загрузились ли данные
+        if (!window.allNews) {
+            console.error("База новостей не найдена!");
+            return;
+        }
+
+        // 3. Ищем новость
+        const item = window.allNews.find(n => n.id === newsId);
+        const container = document.querySelector('.legal-card');
+
+        if (item) {
+            document.title = item.title + " | Kaeront News";
+            // Заполняем шаблон данными
+            container.innerHTML = `
+                <h1>${item.title}</h1>
+                <span class="date-label">${item.date}</span>
+                <div class="news-content-text">${item.content}</div>
+                <br><br>
+                <a href="/news" style="color: var(--accent); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem;">← НАЗАД К НОВОСТЯМ</a>
+            `;
+        } else {
+            container.innerHTML = "<h1>Новость не найдена</h1><a href='/news'>Вернуться к списку</a>";
+        }
+    })();
+</script>
+    
     <style>
         :root {
             --nav-hide: 50px;
