@@ -1,7 +1,29 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/minecraft.ttf",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/global.js",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/news-style.html",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/cursor.png",
+      "destination": "/404",
+      "permanent": false
+    }
+  ],
   "rewrites": [
-    { "source": "/news/:id", "destination": "/news-style.html" },
-    { "source": "/(.*)", "destination": "/404.html" } 
+    { "source": "/news/:id", "destination": "/news-style" },
+    { "source": "/(.*)", "destination": "/404" } 
   ]
 }
