@@ -1,21 +1,25 @@
 {
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/(.*).png",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/news-style.html",
-      "destination": "/404",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
       "source": "/news/:id",
       "destination": "/news-style.html"
+    },
+    {
+      "source": "/(.*).png",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/(.*).ttf",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/global.js",
+      "destination": "/404.html"
+    },
+    {
+      "source": "/news-style.html",
+      "destination": "/404.html"
     }
   ]
 }
