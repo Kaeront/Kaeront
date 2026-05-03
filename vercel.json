@@ -2,6 +2,10 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/news",
+      "destination": "/news-list.html"
+    },
+    {
       "source": "/news/:id",
       "destination": "/news-style.html"
     }
