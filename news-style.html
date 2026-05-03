@@ -9,12 +9,11 @@
     <script src="/global.js" defer></script>
 <script>
     (function() {
-        // Запускаем логику только после загрузки DOM
         window.addEventListener('DOMContentLoaded', () => {
             const pathParts = window.location.pathname.split('/');
-            const newsId = pathParts[pathParts.length - 1];
+            // Берем ID новости, игнорируя расширение .html если оно есть
+            const newsId = pathParts[pathParts.length - 1].replace('.html', '');
 
-            // Проверяем наличие данных (они приходят из /news-data.js)
             if (!window.allNews) {
                 console.error("База новостей не найдена!");
                 return;
@@ -22,17 +21,23 @@
 
             const item = window.allNews.find(n => n.id === newsId);
 
-            // Ищем элементы
             const titleEl = document.getElementById('news-title');
             const dateEl = document.getElementById('news-date');
             const textEl = document.getElementById('news-text');
 
             if (item) {
-                document.title = item.title + " |  Новость Kaeront";
+                document.title = item.title + " | Новость Kaeront";
                 if(titleEl) titleEl.textContent = item.title;
                 if(dateEl) dateEl.textContent = item.date;
+                
+                // Рендерим теги
+                const tagsHtml = item.tags ? 
+                    `<div class="news-tags">` + 
+                    item.tags.map(t => `<span class="tag ${t.c}">${t.n}</span>`).join('') + 
+                    `</div>` : '';
+
                 if(textEl) {
-                    textEl.innerHTML = item.content + 
+                    textEl.innerHTML = tagsHtml + item.content + 
                     `<br><br><a href="/news" style="color: var(--accent); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem;">← НАЗАД К НОВОСТЯМ</a>`;
                 }
             } else {
@@ -66,6 +71,19 @@
             padding: 50px 40px;
             margin: 20px;
         }
+
+.news-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px 8px; text-transform: uppercase; }
+
+.tag-gold  { background: #FA0; color: #000; }
+.tag-blue  { background: #55F; color: #FFF; }
+.tag-dark-blue  { background: #00A; color: #FFF; }
+.tag-light-purple  { background: #F5F; color: #000; }
+.tag-red  { background: #F55; color: #000; }
+.tag-dark-red  { background: #A00; color: #FFF; }
+.tag-green  { background: #5F5; color: #000; }
+.tag-black-gold  { background: #000; color: #FA0; }
+
 
         h1 { font-family: 'Minecraft'; font-size: 1.1rem; color: var(--accent); line-height: 1.4; margin-bottom: 10px; }
         .date-label { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 40px; display: block; }
@@ -217,23 +235,3 @@
 
 </body>
 </html>
-
-<script type="module">
-    import { allNews } from '/news-data.js';
-
-    // 1. Берем ID из URL (например, "03-05-2026")
-    const newsId = window.location.pathname.split('/').pop();
-
-    // 2. Ищем новость в нашей базе
-    const item = allNews.find(n => n.id === newsId);
-
-    if (item) {
-        document.title = `${item.title} | Kaeront News`;
-        document.getElementById('news-title').textContent = item.title;
-        document.getElementById('news-date').textContent = item.date;
-        document.getElementById('news-text').innerHTML = item.content;
-    } else {
-        // Если новости нет
-        document.getElementById('news-content').innerHTML = "<h1>Новость не найдена</h1><a href='/news'>Вернуться в ленту</a>";
-    }
-</script>
