@@ -1,13 +1,7 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/news",
-      "destination": "/news-list.html"
-    },
-    {
-      "source": "/news/:id",
-      "destination": "/news-style.html"
-    }
+  "routes": [
+    { "src": "/news/(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-(19|20)\\d\\d", "dest": "/news-style.html" },
+    { "src": "/news", "dest": "/news-list.html" }
   ]
 }
