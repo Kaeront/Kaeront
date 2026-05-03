@@ -7,7 +7,17 @@
       "permanent": false
     },
     {
-      "source": "/global.js",
+      "source": "/*.png",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/*.js",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/*.json",
       "destination": "/404",
       "permanent": false
     },
@@ -15,15 +25,9 @@
       "source": "/news-style.html",
       "destination": "/404",
       "permanent": false
-    },
-    {
-      "source": "/cursor.png",
-      "destination": "/404",
-      "permanent": false
     }
   ],
   "rewrites": [
-    { "source": "/news/:id", "destination": "/news-style" },
-    { "source": "/(.*)", "destination": "/404" } 
+    { "source": "/news/:id", "destination": "/news-style" }
   ]
 }
