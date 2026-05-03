@@ -1,22 +1,17 @@
 {
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/global.js",
-      "has": [{ "type": "header", "key": "referer", "value": "^$" }],
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/news-style.html",
-      "destination": "/404",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
       "source": "/news/:id",
       "destination": "/news-style.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/news-style.html",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'none';" }
+      ]
     }
   ]
 }
