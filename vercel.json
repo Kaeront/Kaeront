@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/news/:id",
-      "destination": "/news-style.html"
+      "destination": "/news-style"
     }
   ]
 }
