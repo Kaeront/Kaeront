@@ -9,35 +9,40 @@
     <script src="/global.js" defer></script>
 <script>
     (function() {
-        // 1. Получаем ID из URL (например, "03-05-2026")
-        const pathParts = window.location.pathname.split('/');
-        const newsId = pathParts[pathParts.length - 1];
+        // Запускаем логику только после загрузки DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            const pathParts = window.location.pathname.split('/');
+            const newsId = pathParts[pathParts.length - 1];
 
-        // 2. Проверяем, загрузились ли данные
-        if (!window.allNews) {
-            console.error("База новостей не найдена!");
-            return;
-        }
+            // Проверяем наличие данных (они приходят из /news-data.js)
+            if (!window.allNews) {
+                console.error("База новостей не найдена!");
+                return;
+            }
 
-        // 3. Ищем новость
-        const item = window.allNews.find(n => n.id === newsId);
-        const container = document.querySelector('.legal-card');
+            const item = window.allNews.find(n => n.id === newsId);
 
-        if (item) {
-            document.title = item.title + " | Kaeront News";
-            // Заполняем шаблон данными
-            container.innerHTML = `
-                <h1>${item.title}</h1>
-                <span class="date-label">${item.date}</span>
-                <div class="news-content-text">${item.content}</div>
-                <br><br>
-                <a href="/news" style="color: var(--accent); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem;">← НАЗАД К НОВОСТЯМ</a>
-            `;
-        } else {
-            container.innerHTML = "<h1>Новость не найдена</h1><a href='/news'>Вернуться к списку</a>";
-        }
+            // Ищем элементы
+            const titleEl = document.getElementById('news-title');
+            const dateEl = document.getElementById('news-date');
+            const textEl = document.getElementById('news-text');
+
+            if (item) {
+                document.title = item.title + " |  Новость Kaeront";
+                if(titleEl) titleEl.textContent = item.title;
+                if(dateEl) dateEl.textContent = item.date;
+                if(textEl) {
+                    textEl.innerHTML = item.content + 
+                    `<br><br><a href="/news" style="color: var(--accent); text-decoration: none; font-family: 'Minecraft'; font-size: 0.7rem;">← НАЗАД К НОВОСТЯМ</a>`;
+                }
+            } else {
+                if(titleEl) titleEl.textContent = "Новость не найдена";
+                if(textEl) textEl.innerHTML = "<a href='/news'>Вернуться к списку</a>";
+            }
+        });
     })();
 </script>
+
     
     <style>
         :root {
