@@ -12,8 +12,8 @@
 
         :root {
             --nav-hide: 38px;
-            --donated: '5250';
-            --donate-goal: '15000';
+            --donated: 5250;
+            --donate-goal: 15000;
         }
 
         /* --- DONATION BANNER ---*/
@@ -180,10 +180,11 @@
             color: #fff;
             text-shadow: 1px 1px 2px #000;
             pointer-events: none;
+            counter-reset: current var(--donated) goal var(--donate-goal);
         }
         
         .donate-progress-text::before {
-            content: var(--donated) " из " var(--donate-goal) " RUB собрано";
+            content: counter(current) " из " counter(goal) " RUB собрано";
         }
 
         header { padding: 140px 20px 50px; text-align: center; }
