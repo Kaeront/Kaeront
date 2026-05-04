@@ -12,6 +12,8 @@
 
         :root {
             --nav-hide: 38px;
+            --donated: 5250;
+            --donate-goal: 15000;
         }
 
         /* --- DONATION BANNER ---*/
@@ -166,8 +168,7 @@
             top: 0;
             height: 100%;
             background: var(--accent);
-            width: 4.5%; 
-            transition: width 1s ease-in-out;
+            width: calc(var(--donated) / var(--donate-goal) * 100%);
             box-shadow: 0 0 25px var(--accent);
         }
         
@@ -179,6 +180,10 @@
             color: #fff;
             text-shadow: 1px 1px 2px #000;
             pointer-events: none;
+        }
+        
+        .donate-progress-text::before {
+            content: var(--donated) " из " var(--donate-goal) " RUB собрано";
         }
 
         header { padding: 140px 20px 50px; text-align: center; }
@@ -558,10 +563,10 @@
     <div class="donate-banner">
         <div class="donate-info">
             <div class="donate-title">Сбор на мощное железо</div>
-            <div class="donate-goal">Для стабильной работы всех наших серверов 24/7 и переезда на выделенный сервер нам необходимо собрать <b>50 000 ₽</b>. Да, это дорогая роскошь, но даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.</div>
+            <div class="donate-goal">Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать <b>15000₽</b>. Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.</div>
         <div class="donate-progress">
-            <div class="donate-progress-bar" style="width: 4.5%;"></div>
-            <div class="donate-progress-text">2250 из 50000 собрано</div>
+            <div class="donate-progress-bar"></div>
+            <div class="donate-progress-text"></div>
         </div>
         </div>
         
