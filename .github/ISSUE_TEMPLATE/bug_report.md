@@ -1,38 +1,24 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+## 🐛 Отчёт об ошибке
 
----
+**Локация проблемы:**
+- [ ] Kaeront: Hub (Лобби/Proxy)
+- [ ] Kaeront: Survival (Основной сервер)
+- [ ] Kaeront: FYGHTING (Геройский шутер)
+- [ ] Сайт / Инфраструктура
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Описание ошибки:**
+Четкое и краткое описание того, что идет не так.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Шаги для воспроизведения:**
+1. Подключиться к `...`
+2. Написать команду или выполнить действие `...`
+3. Увидеть ошибку `...`
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Ожидаемое поведение:**
+Как это должно работать на самом деле.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Скриншоты/Логи:**
+> Если есть логи консоли или скриншоты, прикрепите их сюда. Это значительно ускорит фикс.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+**Дополнительная информация:**
+Ваш игровой ник, версия клиента или используемый лаунчер.
