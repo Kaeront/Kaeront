@@ -47,6 +47,10 @@ const globalStyles = `
         cursor: url('/assets/cursor.png'), auto;
     }
 
+    h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    }
+
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
         background: transparent; backdrop-filter: blur(0px);
