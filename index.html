@@ -874,6 +874,90 @@ window.onclick = function(e) {
 };
 
 requestAnimationFrame(animate);
+
+async function updateKaerontStatus() {
+    const apiQuery = "https://mcstats.tickhosting.com/api/status?ip=play.kaeront.ru&port=25565&type=java";
+    
+    try {
+        const response = await fetch(apiQuery);
+        if (!response.ok) throw new Error('Ошибка обращения к API');
+        const data = await response.json();
+
+        // Проверяем, онлайн ли сервер
+        const isOnline = data.online === true;
+        
+        // Формируем текст: если онлайн — пишем "В сети (X из Y)", если офлайн — "Не в сети"
+        const statusText = isOnline 
+            ? `В сети (${data.players.online} из data.players.max)` 
+            : "Не в сети";
+
+        // 1. ОБНОВЛЯЕМ ДАННЫЕ ДЛЯ HUB
+        const hubCards = [
+            document.querySelector('.server-card[onclick*="modal-hub"] .server-status'), // Карточка на главной
+            document.querySelector('#modal-hub .server-status') // Внутри модалки Hub
+        ];
+
+        hubCards.forEach(statusBox => {
+            if (statusBox) {
+                const dot = statusBox.querySelector('.status-dot');
+                const textSpan = statusBox.querySelector('span');
+
+                if (isOnline) {
+                    if (dot) dot.className = "status-dot status-online";
+                    if (textSpan) {
+                        textSpan.className = "status-text-online";
+                        textSpan.innerText = `В сети (${data.players.online} из ${data.players.max})`;
+                    }
+                } else {
+                    if (dot) dot.className = "status-dot status-offline";
+                    if (textSpan) {
+                        textSpan.className = "status-text-offline";
+                        textSpan.innerText = "Не в сети";
+                    }
+                }
+            }
+        });
+
+        // 2. ОБНОВЛЯЕМ ДАННЫЕ ДЛЯ SURVIVAL (зависят от Hub)
+        const survivalCards = [
+            document.querySelector('.server-card[onclick*="modal-survival"] .server-status'), // Карточка на главной
+            document.querySelector('#modal-survival .server-status') // Внутри модалки Survival
+        ];
+
+        survivalCards.forEach(statusBox => {
+            if (statusBox) {
+                const dot = statusBox.querySelector('.status-dot');
+                const textSpan = statusBox.querySelector('span');
+
+                // По условию: Survival полностью копирует статус доступности Hub
+                if (isOnline) {
+                    if (dot) dot.className = "status-dot status-online";
+                    if (textSpan) {
+                        textSpan.className = "status-text-online";
+                        // Для сурвайвала пишем просто "В сети", так как общий онлайн относится к Хабу/Прокси
+                        textSpan.innerText = "В сети"; 
+                    }
+                } else {
+                    if (dot) dot.className = "status-dot status-offline";
+                    if (textSpan) {
+                        textSpan.className = "status-text-offline";
+                        textSpan.innerText = "Не в сети";
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error("Ошибка при обновлении статуса серверов Kaeront:", error);
+    }
+}
+
+// Запускаем мониторинг сразу при загрузке страницы
+document.addEventListener("DOMContentLoaded", () => {
+    updateKaerontStatus();
+    // Ставим автообновление каждые 60 секунд
+    setInterval(updateKaerontStatus, 60000);
+});
     </script>
 </body>
 </html>
