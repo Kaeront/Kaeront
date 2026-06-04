@@ -413,7 +413,7 @@ async function updateKaerontStatus() {
         
         // Формируем текст: если онлайн — пишем "В сети (X из Y)", если офлайн — "Не в сети"
         const statusText = isOnline 
-            ? `В сети (${data.players.online} из data.players.max)` 
+            ? `В сети (${data.players.online} чел.)` 
             : "Не в сети";
 
         // 1. ОБНОВЛЯЕМ ДАННЫЕ ДЛЯ HUB
@@ -431,7 +431,7 @@ async function updateKaerontStatus() {
                     if (dot) dot.className = "status-dot status-online";
                     if (textSpan) {
                         textSpan.className = "status-text-online";
-                        textSpan.innerText = `В сети (${data.players.online} из ${data.players.max})`;
+                        textSpan.innerText = `В сети (${data.players.online} чел.)`;
                     }
                 } else {
                     if (dot) dot.className = "status-dot status-offline";
