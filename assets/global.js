@@ -69,7 +69,7 @@ const globalStyles = `
         backdrop-filter: blur(5px);
         border-bottom: 1.5px solid #1a1a1a;
     }
-    .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; user-select: none }
+    .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; user-select: none; font-weight: normal; }
     .nav-links { display: flex; gap: 10px; }
     .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
     .nav-links a:hover { color: var(--accent); }
@@ -109,11 +109,11 @@ const injectHTML = {
     <footer>
         <div class="footer-grid">
             <div class="footer-section">
-                <h4>KAERONT</h4>
+                <h4 style="font-weight: 700;">Kaeront</h4>
                 <p class="footer-quote">«Мы создаем качественное игровое пространство для тех, кто ценит Minecraft как искусство» — KAmir.</p>
             </div>
             <div class="footer-section">
-                <h4>ДОКУМЕНТЫ</h4>
+                <h4>Документы</h4>
                 <ul class="footer-links">
                     <li><a href="/privacy">Политика конфиденциальности и обработки персональных данных</a></li>
                     <li><a href="/offer">Публичная оферта</a></li>
@@ -121,14 +121,14 @@ const injectHTML = {
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>ПРОЕКТ</h4>
+                <h4>Проект</h4>
                 <ul class="footer-links">
                     <li><a href="/news">Новости</a></li>
                     <li><a href="/donate">Пожертвовать</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>КОНТАКТЫ</h4>
+                <h4>Контакты</h4>
                 <ul class="footer-links">
                     <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
                     <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
