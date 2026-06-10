@@ -406,11 +406,11 @@ async function loadArticle(path) {
     
     if (!wikiContent) return;
 
-    // Включаем затемнение фона рендера (Текст затухает, накладывается #121212)
+    // Эффект затухания и наложения фона #202020 / #121212
     if (viewportOverlay) viewportOverlay.classList.add('active');
     wikiContent.classList.add('loading');
 
-    // Корректируем активный класс в меню
+    // Корректируем активный класс в навигации
     document.querySelectorAll('.file-node').forEach(el => {
         if (el.getAttribute('data-path') === path) {
             el.classList.add('active');
@@ -419,35 +419,32 @@ async function loadArticle(path) {
         }
     });
 
-    // Обновляем URL в браузере без перезагрузки
     if (window.location.pathname !== `/${path}` && path !== 'main_index') {
         history.pushState({ path: path }, '', `/${path}`);
     }
 
-   try {
-       // Явно указываем полный путь от корня сайта до папки с разметкой
-       const response = await fetch(`/wiki/articles/${path}.md`);
-       let markdownText = "";
-       
-       if (response.ok) {
-           markdownText = await response.text();
-       } else {
-           markdownText = generateTestPageData(path);
-       }
-   
-       setTimeout(() => {
-           wikiContent.innerHTML = parseMarkdown(markdownText);
-           if (viewportOverlay) viewportOverlay.classList.remove('active');
-           wikiContent.classList.remove('loading');
-           window.scrollTo({ top: 0, behavior: 'smooth' });
-       }, 300);
-   
-   } catch (err) {
-       // ... ваш старый код обработки ошибки
-   }
+    try {
+        /* ========================================================
+           ТО САМОЕ МЕСТО: ПУТЬ ДОЛЖЕН БЫТЬ СТРОГО ОТ КОРНЯ ПОДДОМЕНА
+           ======================================================== */
+        const response = await fetch(`/articles/${path}.md`);
+        
+        let markdownText = "";
+        if (response.ok) {
+            markdownText = await response.text();
+        } else {
+            markdownText = generateTestPageData(path);
+        }
+
+        setTimeout(() => {
+            wikiContent.innerHTML = parseMarkdown(markdownText);
+            if (viewportOverlay) viewportOverlay.classList.remove('active');
+            wikiContent.classList.remove('loading');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300);
 
     } catch (err) {
-        wikiContent.innerHTML = `<h1>Ошибка загрузки</h1><p>Не удалось получить данные для статьи: ${path}</p>`;
+        wikiContent.innerHTML = `<h1>Ошибка загрузки</h1><p>Не удалось получить данные.</p>`;
         if (viewportOverlay) viewportOverlay.classList.remove('active');
         wikiContent.classList.remove('loading');
     }
@@ -523,12 +520,13 @@ document.addEventListener('DOMContentLoaded', () => {
    if (currentPath.startsWith('/wiki')) {
        currentPath = currentPath.replace(/^\/wiki/, '');
    }
-   
-   currentPath = currentPath.substring(1); // убираем начальный слэш
-   
-   if (!currentPath || currentPath === "") {
-       currentPath = "survival/overview"; // Дефолтная статья
+
+   let currentPath = window.location.pathname.substring(1); // Просто убираем первый слэш "/"
+
+   if (!currentPath || currentPath === "" || currentPath === "wiki") {
+        currentPath = "survival/overview"; // Статья по умолчанию
    }
+
    loadArticle(currentPath);
 });
 
