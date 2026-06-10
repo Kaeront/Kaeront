@@ -424,28 +424,27 @@ async function loadArticle(path) {
         history.pushState({ path: path }, '', `/${path}`);
     }
 
-    try {
-        // Запрашиваем файл .md с сервера. 
-        // Если файла нет физически, движок сгенерирует красивую тестовую страницу динамически!
-        const response = await fetch(`/articles/${path}.md`);
-        let markdownText = "";
-        
-        if (response.ok) {
-            markdownText = await response.text();
-        } else {
-            // ФУНКЦИЯ-ЗАГЛУШКА: Если файл еще не создан на сервере, генерируем тестовую страницу "на лету"
-            markdownText = generateTestPageData(path);
-        }
-
-        // Рендерим Markdown в HTML через наш парсер
-        setTimeout(() => {
-            wikiContent.innerHTML = parseMarkdown(markdownText);
-            
-            // Убираем оверлей, плавно проявляем текст (like)
-            if (viewportOverlay) viewportOverlay.classList.remove('active');
-            wikiContent.classList.remove('loading');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 300); // Изящная микро-задержка для ощущения "тяжелого/дорогого" интерфейса
+   try {
+       // Явно указываем полный путь от корня сайта до папки с разметкой
+       const response = await fetch(`/wiki/articles/${path}.md`);
+       let markdownText = "";
+       
+       if (response.ok) {
+           markdownText = await response.text();
+       } else {
+           markdownText = generateTestPageData(path);
+       }
+   
+       setTimeout(() => {
+           wikiContent.innerHTML = parseMarkdown(markdownText);
+           if (viewportOverlay) viewportOverlay.classList.remove('active');
+           wikiContent.classList.remove('loading');
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+       }, 300);
+   
+   } catch (err) {
+       // ... ваш старый код обработки ошибки
+   }
 
     } catch (err) {
         wikiContent.innerHTML = `<h1>Ошибка загрузки</h1><p>Не удалось получить данные для статьи: ${path}</p>`;
@@ -517,12 +516,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Определяем, какую статью открыть при старте на основе URL
-    let currentPath = window.location.pathname.substring(1);
-    if (!currentPath || currentPath === "") {
-        currentPath = "survival/overview"; // Дефолтная страница
-    }
-    loadArticle(currentPath);
+   // Замените блок определения текущего пути при старте:
+   let currentPath = window.location.pathname;
+   
+   // Если зашли через kaeront.ru/wiki/, убираем этот префикс для корректного поиска статьи
+   if (currentPath.startsWith('/wiki')) {
+       currentPath = currentPath.replace(/^\/wiki/, '');
+   }
+   
+   currentPath = currentPath.substring(1); // убираем начальный слэш
+   
+   if (!currentPath || currentPath === "") {
+       currentPath = "survival/overview"; // Дефолтная статья
+   }
+   loadArticle(currentPath);
 });
 
 // Слушаем кнопки "Назад / Вперед" в браузере для полноценного SPA опыта
