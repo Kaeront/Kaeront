@@ -2,6 +2,10 @@
   "cleanUrls": true,
   "rewrites": [
     {
+      "source": "/news/:id",
+      "destination": "/news-style"
+    },
+    {
       "source": "/wiki-global.js",
       "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
       "destination": "/wiki/wiki-global.js"
@@ -12,11 +16,12 @@
       "destination": "/wiki/articles/:path*"
     },
     {
-      "source": "/news/:id",
-      "destination": "/news-style"
+      "source": "/",
+      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
+      "destination": "/wiki/index.html"
     },
     {
-      "source": "/((?!assets|wiki-global.js|articles).*)" ,
+      "source": "/:path*",
       "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
       "destination": "/wiki/index.html"
     }
