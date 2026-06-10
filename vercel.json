@@ -6,28 +6,24 @@
       "destination": "/assets/:path*"
     },
     {
-      "source": "/articles/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "wiki.kaeront.ru"
-        }
-      ],
-      "destination": "/wiki/articles/:path*"
+      "source": "/wiki/wiki-global.js",
+      "destination": "/wiki/wiki-global.js"
     },
     {
-      "source": "/wiki-global.js",
-      "has": [
-        {
-          "type": "host",
-          "value": "wiki.kaeront.ru"
-        }
-      ],
-      "destination": "/wiki/wiki-global.js"
+      "source": "/wiki/articles/:path*",
+      "destination": "/wiki/articles/:path*"
     },
     {
       "source": "/news/:id",
       "destination": "/news-style"
+    },
+    {
+      "source": "/wiki",
+      "destination": "/wiki/index.html"
+    },
+    {
+      "source": "/wiki/:path*",
+      "destination": "/wiki/index.html"
     },
     {
       "source": "/:path*",
