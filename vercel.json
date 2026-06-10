@@ -12,26 +12,16 @@
       "destination": "/wiki/articles/:path*"
     },
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/index.html"
-    },
-    {
       "source": "/news/:id",
       "destination": "/news-style"
+    },
+    {
+      "source": "/((?!assets|wiki-global.js|articles).*)" ,
+      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
+      "destination": "/wiki/index.html"
     }
   ],
   "redirects": [
-    {
-      "source": "/news-style",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/news-style/:path*",
-      "destination": "/404",
-      "permanent": false
-    },
     {
       "source": "/wiki",
       "destination": "/404",
@@ -43,12 +33,12 @@
       "permanent": false
     },
     {
-      "source": "/assets",
+      "source": "/news-style",
       "destination": "/404",
       "permanent": false
     },
     {
-      "source": "/assets/",
+      "source": "/news-style/:path*",
       "destination": "/404",
       "permanent": false
     }
