@@ -400,48 +400,22 @@ function buildTree(nodes, container) {
 }
 
 // 6. ИНТЕЛЛЕКТУАЛЬНЫЙ СИСТЕМНЫЙ ЗАГРУЗЧИК СТАТЕЙ (SPA)
-async function loadArticle(path) {
-    const viewportOverlay = document.getElementById('viewportOverlay');
-    const wikiContent = document.getElementById('wikiContent');
+try {
+    const response = await fetch(`/articles/${path}.md`);
     
-    if (!wikiContent) return;
-
-    // Эффект затухания и наложения фона #202020 / #121212
-    if (viewportOverlay) viewportOverlay.classList.add('active');
-    wikiContent.classList.add('loading');
-
-    // Корректируем активный класс в навигации
-    document.querySelectorAll('.file-node').forEach(el => {
-        if (el.getAttribute('data-path') === path) {
-            el.classList.add('active');
-        } else {
-            el.classList.remove('active');
-        }
-    });
-
-    if (window.location.pathname !== `/${path}` && path !== 'main_index') {
-        history.pushState({ path: path }, '', `/${path}`);
+    let markdownText = "";
+    if (response.ok) {
+        markdownText = await response.text();
+    } else {
+        markdownText = generateTestPageData(path);
     }
 
-    try {
-        /* ========================================================
-           ТО САМОЕ МЕСТО: ПУТЬ ДОЛЖЕН БЫТЬ СТРОГО ОТ КОРНЯ ПОДДОМЕНА
-           ======================================================== */
-        const response = await fetch(`/articles/${path}.md`);
-        
-        let markdownText = "";
-        if (response.ok) {
-            markdownText = await response.text();
-        } else {
-            markdownText = generateTestPageData(path);
-        }
-
-        setTimeout(() => {
-            wikiContent.innerHTML = parseMarkdown(markdownText);
-            if (viewportOverlay) viewportOverlay.classList.remove('active');
-            wikiContent.classList.remove('loading');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 300);
+    setTimeout(() => {
+        wikiContent.innerHTML = parseMarkdown(markdownText);
+        if (viewportOverlay) viewportOverlay.classList.remove('active');
+        wikiContent.classList.remove('loading');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
 
     } catch (err) {
         wikiContent.innerHTML = `<h1>Ошибка загрузки</h1><p>Не удалось получить данные.</p>`;
@@ -521,13 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
        currentPath = currentPath.replace(/^\/wiki/, '');
    }
 
-   let currentPath = window.location.pathname.substring(1); // Просто убираем первый слэш "/"
+   let currentPath = window.location.pathname.substring(1); 
 
-   if (!currentPath || currentPath === "" || currentPath === "wiki") {
-        currentPath = "survival/overview"; // Статья по умолчанию
-   }
-
-   loadArticle(currentPath);
+    // Если зашли на главную поддомена, открываем базовый гайд
+    if (!currentPath || currentPath === "" || currentPath === "index.html") {
+        currentPath = "survival/overview"; 
+    }
+    
+    loadArticle(currentPath);
 });
 
 // Слушаем кнопки "Назад / Вперед" в браузере для полноценного SPA опыта
