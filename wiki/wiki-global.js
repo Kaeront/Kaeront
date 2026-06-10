@@ -487,21 +487,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-   // Замените блок определения текущего пути при старте:
-   let currentPath = window.location.pathname;
-   
-   // Если зашли через kaeront.ru/wiki/, убираем этот префикс для корректного поиска статьи
-   if (currentPath.startsWith('/wiki')) {
-       currentPath = currentPath.replace(/^\/wiki/, '');
-   }
+   let currentPath = window.location.pathname.substring(1);
 
-   let currentPath = window.location.pathname.substring(1); 
-
-    // Если зашли на главную поддомена, открываем базовый гайд
+    // Если пути нет или мы попали на index.html поддомена — ставим дефолт
     if (!currentPath || currentPath === "" || currentPath === "index.html") {
         currentPath = "survival/overview"; 
     }
-    
+
+    // Запускаем загрузку статьи
     loadArticle(currentPath);
 });
 
