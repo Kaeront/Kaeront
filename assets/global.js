@@ -15,7 +15,15 @@ const globalStyles = `
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --nav-height: 50px;
     }
-    
+
+    @font-face {
+        font-family: 'Uniform';
+        src: url('/assets/uniform.otf') format('opentype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
     @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft.ttf') format('truetype');
