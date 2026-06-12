@@ -25,8 +25,8 @@ const globalStyles = `
     }
 
     @font-face {
-        font-family: 'Uniform-Upper';
-        src: url('/assets/uniform-upper.otf') format('opentype');
+        font-family: 'Uniform Upper';
+        src: url('/assets/uniform_upper.otf') format('opentype');
         font-weight: 400;
         font-style: normal;
         font-display: swap;
