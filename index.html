@@ -621,10 +621,16 @@
         </div>
         <div>
             <div class="section-header">Игры</div>
+            <div class="server-card" onclick="openModal('modal-l')" style="border-left: 4px solid; border-image: linear-gradient(to bottom, #AA00AA, #FF55FF) 1;">
+                <h3>𝔏𝔢𝔤𝔢𝔫𝔡𝔰 <sub style="font-family: 'Minecraft'; font-size: 0.6em; bottom: 0;">by Kaeront</sub></h3>
+                <p>RPG-приключение в полностью переработанном мире. Собирайте команду уникальных персонажей, прокачивайтесь, комбинируйте стихии и раскройте тайны великих Легенд.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>5%</span></div>
+            </div>
+
             <div class="server-card" onclick="openModal('modal-fy')">
                 <h3>FYGHTING</h3>
-                <p>Единственный динамичный Hero Shooter в мире Minecraft. Захватывающие бои с файтерами их уникальными способностями на интересных локациях!</p>
-                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
+                <p>Единственный динамичный геройский шутер в мире Minecraft. Захватывающие бои с файтерами их уникальными способностями на интересных локациях!</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>60%</span></div>
             </div>
         </div>
     </main>
@@ -634,13 +640,12 @@
     <div class="modal-overlay" id="modal-survival">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Kaeront: Survival</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2>
                 <div class="server-status">
                      <div class="status-dot status-offline"></div>
-                     <span class="status-text-offline">Не в сети</span>
+                     <span class="status-text-offline">Загрузка...</span>
                 </div>
             <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха. Готов к долгому пути?</p>
-            <span class="dev-label">Сервер недоступен, но заявки всё ещё принимаются.</span>
             <div class="modal-grid">
                 <div class="modal-left">
                     <div class="dropdown" id="r1"><button class="dropdown-btn" onclick="toggleDropdown('r1')">1. Общие положения <span>+</span></button><div class="dropdown-content">1.1. Сервер «Kaeront: Survival» предоставляет возможность игры в Minecraft<br>1.2. Администрация оставляет за собой право изменять правила<br>1.3. Игрок обязан ознакомиться с правилами до начала игры<br>1.4. Незнание правил не освобождает от ответственности</div></div>
@@ -663,26 +668,38 @@
     <div class="modal-overlay" id="modal-hub">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Kaeront: Hub</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Hub</h2>
                 <div class="server-status">
                      <div class="status-dot status-offline"></div>
-                     <span class="status-text-offline">Не в сети</span>
+                     <span class="status-text-offline">Загрузка...</span>
                 </div>
             <p style="color: var(--text-dim); line-height: 1.6;">Главная площадка для общения и старта. Здесь ты найдешь свежие новости, топ-игроков и прямой доступ ко всей экосистеме Kaeront. Залетай на Survival, если готов к долгому пути, или ворвись в Мини-игры для быстрого фана!</p>
             <div class="modal-right">
-                <div class="tech-box">Версия сервера: <span>Java 1.21.11</span><br>Поддерживаемая версия: <span>Java 1.17 и выше</span><br>Адрес: <span>play.kaeront.ru</span><br>Лицензия: <span>Обязательно</span><br>Обязательные моды: <span>Нет</span></span></span>
+                <div class="tech-box">Версия сервера: <span>Java 1.21.11</span><br>Поддерживаемая версия: <span>Java 1.21.8 и выше</span><br>Адрес: <span>play.kaeront.ru</span><br>Лицензия: <span>Обязательно</span><br>Обязательные моды: <span>Нет</span></span></span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-l">
+        <div class="modal-window" style="border-left: 4px solid; border-image: linear-gradient(to bottom, #AA00AA, #FF55FF) 1;">
+            <span class="close-btn" onclick="closeModal('modal-l')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">𝔏𝔢𝔤𝔢𝔫𝔡𝔰 <sub style="font-family: 'Minecraft'; font-size: 0.5em; color: var(--text-dim); bottom: 0;">by Kaeront</sub></h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">
+                Добро пожаловать в совершенно иную реальность Kaeront. Это масштабная Action-RPG с полностью переработанной генерацией мира, кастомной архитектурой и глубокой сюжетной линией.<br><br>Вам предстоит путешествовать по загадочным регионам, переключаться между уникальными персонажами прямо во время боя, комбинировать их стихийные элементы и выстраивать идеальные синергии отряда. Разгадывайте древние головоломки, исследуйте руины ушедших цивилизаций и бросайте вызов колоссальным боссам в грандиозном приключении, которое навсегда изменит ваше представление об RPG в Minecraft.
+            </p>
+            <span class="dev-label">РАЗРАБОТКА (5%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 5%; background: linear-gradient(90deg, #AA00AA, #FF55FF);"></div></div>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal-fy">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-fy')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">FYGHTING</h2>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">FYGHTING</h2>
             <p style="color: var(--text-dim); line-height: 1.6;">Единственный динамичный геройский шутер в Minecraft. Выбирайте уникальных файтеров, каждый из которых обладает своим набором разрушительных способностей, и докажите своё превосходство в командных сражениях.<br>Вас ждут стремительные бои 5 на 5 на проработанных картах, где тактика и знание своего файтера значат не меньше, чем точность ударов.</p>            
-            <span class="dev-label">РАЗРАБОТКА (70%)</span>
-            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
+            <span class="dev-label">РАЗРАБОТКА (60%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 60%;"></div></div>
         </div>
     </div>
 
