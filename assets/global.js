@@ -25,6 +25,14 @@ const globalStyles = `
     }
 
     @font-face {
+        font-family: 'Uniform-Upper';
+        src: url('/assets/uniform-upper.otf') format('opentype');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft.ttf') format('truetype');
         font-weight: 400;
