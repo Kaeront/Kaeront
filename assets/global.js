@@ -16,6 +16,8 @@ const globalStyles = `
         --nav-height: 50px;
     }
 
+    ::selection { color: #000; background: var(--accent); }
+
     @font-face {
         font-family: 'Uniform';
         src: url('/assets/uniform.otf') format('opentype');
