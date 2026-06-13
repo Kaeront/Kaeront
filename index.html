@@ -433,6 +433,12 @@
         .tag-green  { background: #5F5; color: #000; }
         .tag-black-gold  { background: #000; color: #FA0; }
 
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         @media (max-width: 768px) { .content-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -683,7 +689,7 @@
     </div>
 
     <div class="modal-overlay" id="modal-l">
-        <div class="modal-window" style="border-image: linear-gradient(to left, #AA00AA, #FF55FF) 1;">
+        <div class="modal-window" style="border-image: linear-gradient(to left, #AA00AA, #FF55FF) 1; background-image: linear-gradient(-45deg, rgba(0,0,0,0.2), rgba(170,0,170,0.2), rgba(255,85,255,0.2), rgba(255,255,255,0.2)); background-size: 300% 300%; animation: gradientMove 20s ease infinite;">
             <span class="close-btn" onclick="closeModal('modal-l')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Uniform', 'Uniform Upper', serif; font-weight: 400; background: linear-gradient(to bottom, #AA00AA, #FF55FF);-webkit-background-clip: text;-webkit-text-fill-color: transparent;font-size: 36px;">꧁༺𝔏𝔢𝔤𝔢𝔫𝔡𝔰༻꧂<span style="font-family: 'Montserrat', sans-serif;font-size: 0.4em;color: var(--text-dim);vertical-align: middle;">  by Kaeront</span></h2>
             <p style="color: var(--text-dim); line-height: 1.6;">
