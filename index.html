@@ -368,12 +368,9 @@
             font-size: 0.8rem;
         }
 
-        .news-card h3 {
-            font-family: 'Minecraft', 'Uniform', sans-serif;
-            color: var(--accent);
-            margin: 0 0 10px 0;
-            font-size: 1.2rem;
-        }
+        .news-card h3 a { font-family: 'Minecraft', 'Uniform', sans-serif; margin: 0 0 10px 0; font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; line-height: 1.5; text-decoration: none; transition: 0.3s; }
+
+        .news-card h3 a:hover { color: var(--text-main); filter: drop-shadow(0 0 10px var(--accent)); }
 
         .news-card p {
             color: var(--text-dim);
@@ -721,7 +718,7 @@
 </div>
 
     <!-- --- SECTION: WHAT IS KAERONT --- -->
-    <section id="about-section" style="max-width: 850px; width: 90%; margin: 60px auto 20px; box-sizing: border-box;">
+    <section id="about-section" style="max-width: 850px; width: 90%; margin: 60px auto 100px; box-sizing: border-box;">
         <div class="section-title">Что такое Kaeront?</div>
         
         <div style="border-left: 3px solid var(--accent); padding: 30px; position: relative;">
