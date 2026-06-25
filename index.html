@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="/assets/palm.png">
     <title>Kaeront — Уникальные Minecraft сервера</title>
     <script src="/assets/global.js" defer></script>
+    <script src="/assets/news-data.js"></script>
     
     <style>
         section, main, div { scroll-margin-top: calc(var(--nav-height) + 20px); }
@@ -712,18 +713,12 @@
         </div>
     </div>
 
-    <div class="news-container">
-        <div class="news-card">
-            <span class="news-date">3 июня, 2026 года</span>
-            <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
-            <h3>Модернизация инфраструктуры: Масштабирование и безопасность</h3>
-                <div class="news-tags">
-                    <span class="tag tag-blue">Сервера</span>
-                </div>
-            <p>Мы рады сообщить о начале масштабного этапа модернизации нашей локальной архитектуры. В рамках оптимизации рабочих станций под высокие серверные нагрузки начат процесс <b>перевода дисковой подсистемы на высокоскоростные твердотельные накопители NVMe с поддержкой технологии DRAM-кэширования</b>. Это позволит ликвидировать любые задержки при чтении/записи тяжелых баз данных и обеспечит стабильный ТПС на игровых мирах.<br><br>Следующим шагом станет <b>расширение объема оперативной памяти (ОЗУ) до высокоплотных конфигураций</b>, что необходимо для одновременного развертывания полноценной сети серверов под управлением прокси-ядра Velocity и изолированных игровых сегментов.<br><br>Особое внимание уделено сетевой безопасности. Мы полностью отказываемся от практики использования публичных (белых) IP-адресов для прямого доступа к оборудованию. Вместо этого разворачивается <b>архитектура на базе защищенных обратных прокси-серверов (Reverse Proxy) и шифрованных туннелей</b>. Весь входящий трафик с доменов play.kaeront.ru и f.kaeront.ru будет проходить предварительную фильтрацию от DDoS-атак на выделенных удаленных узлах, гарантируя абсолютную стабильность и конфиденциальность нашей внутренней сети.</p>
-        </div>
-        <a href="/news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
+<div class="news-container">
+    <div class="news-card" style="text-align: center; padding: 40px;">
+        <h3 style="color: var(--text-dim); font-size: 1rem;">Загрузка последней новости...</h3>
     </div>
+        <a href="/news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
+</div>
 
     <!-- --- SECTION: WHAT IS KAERONT --- -->
     <section id="about-section" style="max-width: 850px; width: 90%; margin: 60px auto 20px; box-sizing: border-box;">
@@ -964,6 +959,72 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ставим автообновление каждые 60 секунд
     setInterval(updateKaerontStatus, 60000);
 });
+
+
+
+
+// --- ДИНАМИЧЕСКИЙ ВЫВОД ПОСЛЕДНЕЙ НОВОСТИ ---
+async function loadLatestNews() {
+    const newsContainer = document.querySelector('.news-container');
+    if (!newsContainer) return;
+
+    try {
+        // 1. Проверяем, загружены ли уже данные (окно window.allNews)
+        // Если нет (например, скрипт в заголовке отработал позже), загружаем файл вручную
+        if (!window.allNews) {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = '/assets/news-data.js'; // Путь взят из news.html
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('Не удалось загрузить news-data.js'));
+                document.head.appendChild(script);
+            });
+        }
+
+        const newsData = window.allNews || [];
+        if (newsData.length === 0) return;
+
+        // 2. Берем самую последнюю новость (первую в массиве)
+        const latestNews = newsData[0];
+
+        // 3. Генерируем HTML-код для тегов
+        const tagsHtml = latestNews.tags && latestNews.tags.length 
+            ? latestNews.tags.map(t => `<span class="tag ${t.c}">${t.n}</span>`).join('')
+            : '';
+
+        // 4. Формируем структуру карточки с динамической ссылкой на /news/id
+        const newsCardHtml = `
+            <div class="news-card">
+                <span class="news-date">${latestNews.date}</span>
+                <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
+                <h3>
+                    <a href="/news/${latestNews.id}" style="text-decoration: none;">
+                        ${latestNews.title}
+                    </a>
+                </h3>
+                <div class="news-tags">
+                    ${tagsHtml}
+                </div>
+                <p>${latestNews.content}</p>
+            </div>
+            <a href="/news" class="news-more-btn">ЧИТАТЬ ЕЩЁ</a>
+        `;
+
+        // 5. Очищаем контейнер и вставляем новые данные
+        newsContainer.innerHTML = newsCardHtml;
+
+    } catch (error) {
+        console.error("Ошибка при отрисовке последней новости:", error);
+    }
+}
+
+// Запуск при загрузке DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadLatestNews);
+} else {
+    loadLatestNews();
+}
+
     </script>
 </body>
 </html>
