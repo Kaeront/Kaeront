@@ -489,7 +489,7 @@
             animation-delay: 5s;
             line-height: 0.3;
         ">
-            «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
+            «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
         </div>
         
     </div>
@@ -873,7 +873,7 @@ window.onclick = function(e) {
 requestAnimationFrame(animate);
 
 async function updateKaerontStatus() {
-    const apiQuery = "https://mcstats.tickhosting.com/api/status?ip=play.kaeront.ru&port=25565&type=java";
+    const apiQuery = "https://teramont.net/api/mcstatus?server=play.kaeront.ru&type=java";
     
     try {
         const response = await fetch(apiQuery);
