@@ -210,7 +210,7 @@ const checkInternetSpeed = () => {
         let isSlow = false;
 
         if (connection) {
-            if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5))
+            if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5)) {
                 isSlow = true;
             }
         }
