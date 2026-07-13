@@ -108,7 +108,7 @@ const globalStyles = `
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 25px;
         background: #181818;
-        color: var(--accent);
+        color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600;
