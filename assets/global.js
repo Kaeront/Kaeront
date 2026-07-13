@@ -13,7 +13,11 @@ const globalStyles = `
         --text-dim: #888;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --nav-height: 50px;
-        --popup-height: 0px; /* По умолчанию скрыто */
+    }
+
+    html {
+        padding-top: 0px;
+        transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -52,7 +56,6 @@ const globalStyles = `
         size-adjust: 150%; 
     }
 
-    /* Сдвиг всей страницы при появлении поп-апа */
     body {
         background-color: var(--bg);
         background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -63,8 +66,6 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        transform: translateY(var(--popup-height));
-        transition: var(--transition);
     }
 
     .a, button {
@@ -75,15 +76,13 @@ const globalStyles = `
         cursor: url('/assets/cursor.png'), auto;
     }
 
-    /* Навигация учитывает сдвиг поп-апа */
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
         background: transparent; backdrop-filter: blur(0px);
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
         align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
-        transform: translateY(var(--popup-height));
-        transition: var(--transition);
+        transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     nav.scrolled {
         background: rgba(10, 10, 10, 0.7); 
@@ -105,7 +104,7 @@ const globalStyles = `
     .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
     .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
-    /* СТИЛИ ДЛЯ ИНТЕРНЕТ ПОП-АПА */
+    /* ИНТЕРНЕТ ПОП-АП (ВСЕГДА СВЕРХУ ЭКРАНА) */
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 40px;
         background: #ba1c1c; color: #fff; z-index: 3001;
@@ -115,9 +114,8 @@ const globalStyles = `
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
-    #speed-popup-close { margin-left: 15px; cursor: pointer; color: #ffaa00; font-family: 'Minecraft'; font-weight: 700; border: none; background: none; padding: 0; font-size: 0.8rem;}
 
-    /* СТИЛИ ДЛЯ ОНЛАЙН КРУЖКА */
+    /* ОНЛАЙН КРУЖОК */
     #online-widget {
         position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
         border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
@@ -142,7 +140,7 @@ const injectHTML = {
     dev: `
     <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100%; opacity:0.5; z-index: 3000; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
       <p style="margin: 0; font-family: 'Montserrat', sans-serif; color: #888; font-size: 1.1vh;">
-        <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00; text-transform: uppercase; letter-spacing: 0.2vw; ">Проект в разработке!</span> Сайт и сервера временно работают в тестовом режиме и могут быть <b>недоступны 24/7</b>. Пожалуйста, вернитесь намного позже, когда мы завершим настройку инфраструктуры.
+        <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00; text-transform: uppercase; letter-spacing: 0.2vw; ">Проект в разработке!</span> Сайт и сервера временно работают в тестовом режиме и могут быть <b>недоступны 24/7</b>. Пожалуйста, вернитесь намного позже, когда мы завершим настройку infrastructure.
       </p>
     </div>
     `,
@@ -223,74 +221,57 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
-// Проверка скорости интернета с задержкой (Delay)
+// Проверка скорости интернета с задержкой (Закрыть нельзя)
 const checkInternetSpeed = () => {
     setTimeout(() => {
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         let isSlow = false;
 
         if (connection) {
-            // Если соединение 2g/3g или скорость скачивания меньше 1.5 Mbps
             if (['2g', '3g'].includes(connection.effectiveType) || (connection.downlink && connection.downlink < 1.5)) {
                 isSlow = true;
             }
         }
 
         if (isSlow) {
-            // Создаем элемент плашки
             const popup = document.createElement('div');
             popup.id = 'speed-popup';
-            popup.innerHTML = `
-                <span>Медленное соединение. Изображения и элементы могут загружаться дольше обычного.</span>
-                <button id="speed-popup-close">✕</button>
-            `;
+            popup.innerHTML = `<span>Медленное соединение. Изображения и элементы могут загружаться дольше обычного.</span>`;
             document.body.appendChild(popup);
 
-            // Активируем анимацию сдвига
+            // Сдвигаем тег html и опускаем фиксированный nav на высоту поп-апа (40px)
             setTimeout(() => {
-                document.documentElement.style.setProperty('--popup-height', '40px');
+                document.documentElement.style.paddingTop = '40px';
+                const nav = document.getElementById('smart-nav');
+                if (nav) nav.style.top = '40px';
                 popup.classList.add('active');
             }, 100);
-
-            // Обработчик закрытия
-            document.getElementById('speed-popup-close').addEventListener('click', () => {
-                popup.classList.remove('active');
-                document.documentElement.style.setProperty('--popup-height', '0px');
-                setTimeout(() => popup.remove(), 300);
-            });
         }
-    }, 1500); // 1.5 секунды делей перед проверкой и показом
+    }, 1500);
 };
 
-// Умный живой онлайн для статического сайта
+// Реалистичный онлайн для стадии разработки/тестов
 const initOnlineWidget = () => {
     const widget = document.createElement('div');
     widget.id = 'online-widget';
     widget.innerHTML = `
         <div class="online-pulse"></div>
-        <div class="online-count"><span id="online-number">..</span> НА САЙТЕ</div>
+        <div class="online-count"><span id="online-number">1</span> НА САЙТЕ</div>
     `;
     document.body.appendChild(widget);
 
     const updateOnline = () => {
-        const hour = new Date().getHours();
-        let baseOnline = 7; // Глубокая ночь
-
-        // Реалистичные колебания онлайна в зависимости от времени суток
-        if (hour >= 8 && hour < 12) baseOnline = 14;
-        else if (hour >= 12 && hour < 17) baseOnline = 23;
-        else if (hour >= 17 && hour < 23) baseOnline = 39; // Вечерний пик
-        else if (hour >= 23 || hour < 2) baseOnline = 18;
-
-        // Небольшая рандомизация +-3 человека каждые несколько секунд
-        const randomShift = Math.floor(Math.random() * 7) - 3;
-        const finalOnline = Math.max(3, baseOnline + randomShift);
-
-        document.getElementById('online-number').innerText = finalOnline;
+        // Базово показываем 1 (текущий пользователь). 
+        // С шансом 25% имитируем, что на сайте параллельно сидит еще 1 или 2 человека (тестировщики/разработчики)
+        let currentOnline = 1;
+        if (Math.random() < 0.25) {
+            currentOnline = Math.floor(Math.random() * 2) + 2; // Выдаст 2 или 3
+        }
+        document.getElementById('online-number').innerText = currentOnline;
     };
 
     updateOnline();
-    setInterval(updateOnline, 7000); // Обновление значения каждые 7 секунд
+    setInterval(updateOnline, 10000); // Редкая проверка раз в 10 секунд
 };
 
 // Скролл навигации
@@ -321,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.outerHTML = html;
     });
 
-    // Инициализация новых фич
     checkInternetSpeed();
     initOnlineWidget();
 });
