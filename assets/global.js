@@ -107,7 +107,9 @@ const globalStyles = `
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 30px;
-        background: #ba1c1c; color: #fff; z-index: 3001;
+        background: #202020;
+        color: #fff;
+        z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600;
         transform: translateY(-100%); transition: var(--transition);
@@ -208,7 +210,7 @@ const checkInternetSpeed = () => {
         let isSlow = false;
 
         if (connection) {
-            if (['2g', '3g'].includes(connection.effectiveType) || (connection.downlink && connection.downlink < 1.5)) {
+            if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5))
                 isSlow = true;
             }
         }
@@ -216,7 +218,7 @@ const checkInternetSpeed = () => {
         if (isSlow) {
             const popup = document.createElement('div');
             popup.id = 'speed-popup';
-            popup.innerHTML = `<span>Медленное соединение</span>`;
+            popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
             document.body.appendChild(popup);
 
             // Сдвигаем тег html и опускаем фиксированный nav на высоту поп-апа
