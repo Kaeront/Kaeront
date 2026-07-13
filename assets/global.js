@@ -106,36 +106,16 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 30px;
-        background: #202020;
+        position: fixed; top: 0; left: 0; width: 100%; height: 25px;
+        background: #181818;
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600;
+        font-family: 'Minecraft', sans-serif; font-size: 0.65rem; font-weight: 400;
         transform: translateY(-100%); transition: var(--transition);
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
-
-    /* ОНЛАЙН КРУЖОК */
-    #online-widget {
-        position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
-        border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
-        display: flex; align-items: center; gap: 8px; z-index: 2500;
-        user-select: none; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        transition: var(--transition);
-    }
-    #online-widget:hover { border-color: var(--accent); }
-    .online-pulse {
-        width: 7px; height: 7px; background: #00ff66; border-radius: 50%;
-        box-shadow: 0 0 8px #00ff66; animation: onlinePulseAnim 2s infinite;
-    }
-    @keyframes onlinePulseAnim {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
-    }
-    .online-count { font-family: 'Minecraft'; font-size: 0.7rem; color: #fff; letter-spacing: 0.5px; }
 `;
 
 const injectHTML = {
@@ -243,8 +223,8 @@ const toggleSpeedPopup = (show) => {
             }
             // Форсируем микро-таймаут для правильного срабатывания CSS-перехода
             setTimeout(() => {
-                document.documentElement.style.paddingTop = '30px';
-                if (nav) nav.style.top = '30px';
+                document.documentElement.style.paddingTop = '25px';
+                if (nav) nav.style.top = '25px';
                 popup.classList.add('active');
             }, 50);
         } else {
