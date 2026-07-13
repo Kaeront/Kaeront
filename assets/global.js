@@ -106,12 +106,12 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 30px;
-        background: #202020;
+        position: fixed; top: 0; left: 0; width: 100%; height: 25px;
+        background: #101010;
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600;
+        font-family: 'Minecraft', sans-serif; font-size: 0.65rem; font-weight: 700;
         transform: translateY(-100%); transition: var(--transition);
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
@@ -219,7 +219,7 @@ const renderPopup = (action) => {
         }
         // Плавный сдвиг контента и навигации
         document.documentElement.style.paddingTop = '30px';
-        if (nav) nav.style.top = '30px';
+        if (nav) nav.style.top = '25px';
         popup.classList.add('active');
     } else if (action === 'hide') {
         if (popup) {
