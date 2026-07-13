@@ -106,16 +106,36 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 25px;
+        position: fixed; top: 0; left: 0; width: 100%; height: 30px;
         background: #202020;
-        color: var(--text-dim);
+        color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Minecraft', sans-serif; font-size: 0.65rem; font-weight: 400;
+        font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600;
         transform: translateY(-100%); transition: var(--transition);
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
+
+    /* ОНЛАЙН КРУЖОК */
+    #online-widget {
+        position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
+        display: flex; align-items: center; gap: 8px; z-index: 2500;
+        user-select: none; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        transition: var(--transition);
+    }
+    #online-widget:hover { border-color: var(--accent); }
+    .online-pulse {
+        width: 7px; height: 7px; background: #00ff66; border-radius: 50%;
+        box-shadow: 0 0 8px #00ff66; animation: onlinePulseAnim 2s infinite;
+    }
+    @keyframes onlinePulseAnim {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+    }
+    .online-count { font-family: 'Minecraft'; font-size: 0.7rem; color: #fff; letter-spacing: 0.5px; }
 `;
 
 const injectHTML = {
@@ -203,74 +223,75 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
-// Управление отображением поп-апа
+// Динамическое управление поп-апом (Появление/Скрытие)
 let delayTimer = null;
 
-const renderPopup = (action) => {
-    let popup = document.getElementById('speed-popup');
-    const nav = document.getElementById('smart-nav');
-
-    if (action === 'show') {
-        if (!popup) {
-            popup = document.createElement('div');
-            popup.id = 'speed-popup';
-            popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
-            document.body.appendChild(popup);
-        }
-        // Плавный сдвиг контента и навигации
-        document.documentElement.style.paddingTop = '25px';
-        if (nav) nav.style.top = '25px';
-        popup.classList.add('active');
-    } else if (action === 'hide') {
-        if (popup) {
-            popup.classList.remove('active');
-            document.documentElement.style.paddingTop = '0px';
-            if (nav) nav.style.top = '0px';
-            setTimeout(() => popup.remove(), 300);
-        }
-    }
-};
-
-// Оценка сети
-const evaluateNetwork = (isImmediate = false) => {
+const toggleSpeedPopup = (show) => {
     clearTimeout(delayTimer);
 
-    const check = () => {
-        // Если телефон полностью ушел в авиарежим
-        if (!navigator.onLine) {
-            renderPopup('show');
-            return;
-        }
+    // Добавляем delay в 1.5 секунды перед любым визуальным изменением плашки
+    delayTimer = setTimeout(() => {
+        let popup = document.getElementById('speed-popup');
+        const nav = document.getElementById('smart-nav');
 
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection) {
-            // Если скорость упала ниже 0.5 Mbps или тип соединения стал 2G
-            if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5)) {
-                renderPopup('show');
-                return;
+        if (show) {
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'speed-popup';
+                popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
+                document.body.appendChild(popup);
+            }
+            // Форсируем микро-таймаут для правильного срабатывания CSS-перехода
+            setTimeout(() => {
+                document.documentElement.style.paddingTop = '30px';
+                if (nav) nav.style.top = '30px';
+                popup.classList.add('active');
+            }, 50);
+        } else {
+            if (popup) {
+                popup.classList.remove('active');
+                document.documentElement.style.paddingTop = '0px';
+                if (nav) nav.style.top = '0px';
+                setTimeout(() => popup.remove(), 300); // Удаляем из DOM после завершения анимации
             }
         }
-        renderPopup('hide');
-    };
-
-    if (isImmediate) {
-        check(); // Мгновенный вызов при обрыве сети (чтобы обойти заморозку в авиарежиме)
-    } else {
-        delayTimer = setTimeout(check, 1500); // Положенная задержка 1.5с при плановом замере
-    }
+    }, 1500);
 };
 
-// Мониторинг сети
-const startNetworkMonitoring = () => {
-    evaluateNetwork(false); // Первая проверка при старте с задержкой
+// Функция оценки состояния сети
+const evaluateNetwork = () => {
+    // 1. Если браузер полностью в офлайне (включен режим полета)
+    if (!navigator.onLine) {
+        toggleSpeedPopup(true);
+        return;
+    }
 
-    // При уходе в режим полета реагируем мгновенно, минуя таймаут
-    window.addEventListener('offline', () => evaluateNetwork(true));
-    window.addEventListener('online', () => evaluateNetwork(false));
-
+    // 2. Если онлайн, проверяем скорость соединения
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
-        connection.addEventListener('change', () => evaluateNetwork(false));
+        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5)) {
+            toggleSpeedPopup(true);
+            return;
+        }
+    }
+
+    // Если всё хорошо — убираем плашку
+    toggleSpeedPopup(false);
+};
+
+// Живой мониторинг интернета в реальном времени
+const startNetworkMonitoring = () => {
+    // Первичная проверка при загрузке
+    evaluateNetwork();
+
+    // Отслеживание физического отключения сети (Режим полета)
+    window.addEventListener('offline', () => toggleSpeedPopup(true));
+    window.addEventListener('online', () => evaluateNetwork());
+
+    // Отслеживание просадок скорости без разрыва соединения
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+        connection.addEventListener('change', evaluateNetwork);
     }
 };
 
