@@ -1,6 +1,5 @@
 /* KAERONT GLOBAL STYLES AND HTML ELEMENTS */
 
-
 const initialLoader = document.getElementById('loader-wrapper');
 if (initialLoader) {
     initialLoader.style.animation = 'none';
@@ -14,6 +13,7 @@ const globalStyles = `
         --text-dim: #888;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --nav-height: 50px;
+        --popup-height: 0px; /* По умолчанию скрыто */
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -52,6 +52,7 @@ const globalStyles = `
         size-adjust: 150%; 
     }
 
+    /* Сдвиг всей страницы при появлении поп-апа */
     body {
         background-color: var(--bg);
         background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -62,24 +63,26 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        transform: translateY(var(--popup-height));
+        transition: var(--transition);
     }
 
-    /* Обычный указатель (ссылки, кнопки) */
     .a, button {
         cursor: url('/assets/pointer.png'), pointer;
     }
         
-    /* Обычный курсор для всего сайта */
     body {
         cursor: url('/assets/cursor.png'), auto;
     }
 
+    /* Навигация учитывает сдвиг поп-апа */
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
         background: transparent; backdrop-filter: blur(0px);
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
         align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        transform: translateY(var(--popup-height));
         transition: var(--transition);
     }
     nav.scrolled {
@@ -101,6 +104,38 @@ const globalStyles = `
     .footer-links a:hover { color: var(--accent); }
     .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
     .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
+
+    /* СТИЛИ ДЛЯ ИНТЕРНЕТ ПОП-АПА */
+    #speed-popup {
+        position: fixed; top: 0; left: 0; width: 100%; height: 40px;
+        background: #ba1c1c; color: #fff; z-index: 3001;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600;
+        transform: translateY(-100%); transition: var(--transition);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    #speed-popup.active { transform: translateY(0); }
+    #speed-popup-close { margin-left: 15px; cursor: pointer; color: #ffaa00; font-family: 'Minecraft'; font-weight: 700; border: none; background: none; padding: 0; font-size: 0.8rem;}
+
+    /* СТИЛИ ДЛЯ ОНЛАЙН КРУЖКА */
+    #online-widget {
+        position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
+        display: flex; align-items: center; gap: 8px; z-index: 2500;
+        user-select: none; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        transition: var(--transition);
+    }
+    #online-widget:hover { border-color: var(--accent); }
+    .online-pulse {
+        width: 7px; height: 7px; background: #00ff66; border-radius: 50%;
+        box-shadow: 0 0 8px #00ff66; animation: onlinePulseAnim 2s infinite;
+    }
+    @keyframes onlinePulseAnim {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+    }
+    .online-count { font-family: 'Minecraft'; font-size: 0.7rem; color: #fff; letter-spacing: 0.5px; }
 `;
 
 const injectHTML = {
@@ -188,6 +223,76 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
+// Проверка скорости интернета с задержкой (Delay)
+const checkInternetSpeed = () => {
+    setTimeout(() => {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        let isSlow = false;
+
+        if (connection) {
+            // Если соединение 2g/3g или скорость скачивания меньше 1.5 Mbps
+            if (['2g', '3g'].includes(connection.effectiveType) || (connection.downlink && connection.downlink < 1.5)) {
+                isSlow = true;
+            }
+        }
+
+        if (isSlow) {
+            // Создаем элемент плашки
+            const popup = document.createElement('div');
+            popup.id = 'speed-popup';
+            popup.innerHTML = `
+                <span>Медленное соединение. Изображения и элементы могут загружаться дольше обычного.</span>
+                <button id="speed-popup-close">✕</button>
+            `;
+            document.body.appendChild(popup);
+
+            // Активируем анимацию сдвига
+            setTimeout(() => {
+                document.documentElement.style.setProperty('--popup-height', '40px');
+                popup.classList.add('active');
+            }, 100);
+
+            // Обработчик закрытия
+            document.getElementById('speed-popup-close').addEventListener('click', () => {
+                popup.classList.remove('active');
+                document.documentElement.style.setProperty('--popup-height', '0px');
+                setTimeout(() => popup.remove(), 300);
+            });
+        }
+    }, 1500); // 1.5 секунды делей перед проверкой и показом
+};
+
+// Умный живой онлайн для статического сайта
+const initOnlineWidget = () => {
+    const widget = document.createElement('div');
+    widget.id = 'online-widget';
+    widget.innerHTML = `
+        <div class="online-pulse"></div>
+        <div class="online-count"><span id="online-number">..</span> НА САЙТЕ</div>
+    `;
+    document.body.appendChild(widget);
+
+    const updateOnline = () => {
+        const hour = new Date().getHours();
+        let baseOnline = 7; // Глубокая ночь
+
+        // Реалистичные колебания онлайна в зависимости от времени суток
+        if (hour >= 8 && hour < 12) baseOnline = 14;
+        else if (hour >= 12 && hour < 17) baseOnline = 23;
+        else if (hour >= 17 && hour < 23) baseOnline = 39; // Вечерний пик
+        else if (hour >= 23 || hour < 2) baseOnline = 18;
+
+        // Небольшая рандомизация +-3 человека каждые несколько секунд
+        const randomShift = Math.floor(Math.random() * 7) - 3;
+        const finalOnline = Math.max(3, baseOnline + randomShift);
+
+        document.getElementById('online-number').innerText = finalOnline;
+    };
+
+    updateOnline();
+    setInterval(updateOnline, 7000); // Обновление значения каждые 7 секунд
+};
+
 // Скролл навигации
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('smart-nav');
@@ -215,21 +320,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById(id);
         if (el) el.outerHTML = html;
     });
+
+    // Инициализация новых фич
+    checkInternetSpeed();
+    initOnlineWidget();
 });
 
 // Логика скрытия загрузочного экрана
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
-        // Плавное исчезновение
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
         
-        // ИЗМЕНЕНО: Принудительный возврат скролла (перебиваем CSS в index.html)
         document.body.style.setProperty('overflow', 'auto', 'important');
         document.documentElement.style.overflow = 'auto'; 
         
-        // Удаление из DOM
         setTimeout(() => {
             loader.remove();
         }, 500);
