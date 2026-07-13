@@ -116,6 +116,26 @@ const globalStyles = `
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
+
+    /* ОНЛАЙН КРУЖОК */
+    #online-widget {
+        position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
+        display: flex; align-items: center; gap: 8px; z-index: 2500;
+        user-select: none; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        transition: var(--transition);
+    }
+    #online-widget:hover { border-color: var(--accent); }
+    .online-pulse {
+        width: 7px; height: 7px; background: #00ff66; border-radius: 50%;
+        box-shadow: 0 0 8px #00ff66; animation: onlinePulseAnim 2s infinite;
+    }
+    @keyframes onlinePulseAnim {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+    }
+    .online-count { font-family: 'Minecraft'; font-size: 0.7rem; color: #fff; letter-spacing: 0.5px; }
 `;
 
 const injectHTML = {
@@ -137,7 +157,7 @@ const injectHTML = {
             <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>`,
-    
+
     footer: `
     <footer>
         <div class="footer-grid">
@@ -203,33 +223,98 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
-// Проверка скорости интернета с задержкой
-const checkInternetSpeed = () => {
-    setTimeout(() => {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        let isSlow = false;
+// Динамическое управление поп-апом (Появление/Скрытие)
+let delayTimer = null;
 
-        if (connection) {
-            if (!connection.downlink || connection.downlink < 0.5) {
-                isSlow = true;
+const toggleSpeedPopup = (show) => {
+    clearTimeout(delayTimer);
+
+    // Добавляем delay в 1.5 секунды перед любым визуальным изменением плашки
+    delayTimer = setTimeout(() => {
+        let popup = document.getElementById('speed-popup');
+        const nav = document.getElementById('smart-nav');
+
+        if (show) {
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'speed-popup';
+                popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
+                document.body.appendChild(popup);
             }
-        }
-
-        if (isSlow) {
-            const popup = document.createElement('div');
-            popup.id = 'speed-popup';
-            popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
-            document.body.appendChild(popup);
-
-            // Сдвигаем тег html и опускаем фиксированный nav на высоту поп-апа
+            // Форсируем микро-таймаут для правильного срабатывания CSS-перехода
             setTimeout(() => {
                 document.documentElement.style.paddingTop = '30px';
-                const nav = document.getElementById('smart-nav');
                 if (nav) nav.style.top = '30px';
                 popup.classList.add('active');
-            }, 100);
+            }, 50);
+        } else {
+            if (popup) {
+                popup.classList.remove('active');
+                document.documentElement.style.paddingTop = '0px';
+                if (nav) nav.style.top = '0px';
+                setTimeout(() => popup.remove(), 300); // Удаляем из DOM после завершения анимации
+            }
         }
     }, 1500);
+};
+
+// Функция оценки состояния сети
+const evaluateNetwork = () => {
+    // 1. Если браузер полностью в офлайне (включен режим полета)
+    if (!navigator.onLine) {
+        toggleSpeedPopup(true);
+        return;
+    }
+
+    // 2. Если онлайн, проверяем скорость соединения
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5)) {
+            toggleSpeedPopup(true);
+            return;
+        }
+    }
+
+    // Если всё хорошо — убираем плашку
+    toggleSpeedPopup(false);
+};
+
+// Живой мониторинг интернета в реальном времени
+const startNetworkMonitoring = () => {
+    // Первичная проверка при загрузке
+    evaluateNetwork();
+
+    // Отслеживание физического отключения сети (Режим полета)
+    window.addEventListener('offline', () => toggleSpeedPopup(true));
+    window.addEventListener('online', () => evaluateNetwork());
+
+    // Отслеживание просадок скорости без разрыва соединения
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+        connection.addEventListener('change', evaluateNetwork);
+    }
+};
+
+// Реалистичный онлайн счетчик для стадии тестов
+const initOnlineWidget = () => {
+    const widget = document.createElement('div');
+    widget.id = 'online-widget';
+    widget.innerHTML = `
+        <div class="online-pulse"></div>
+        <div class="online-count"><span id="online-number">1</span> НА САЙТЕ</div>
+    `;
+    document.body.appendChild(widget);
+
+    const updateOnline = () => {
+        let currentOnline = 1;
+        if (Math.random() < 0.25) {
+            currentOnline = Math.floor(Math.random() * 2) + 2; 
+        }
+        document.getElementById('online-number').innerText = currentOnline;
+    };
+
+    updateOnline();
+    setInterval(updateOnline, 10000);
 };
 
 // Скролл навигации
@@ -260,7 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.outerHTML = html;
     });
 
-    checkInternetSpeed();
+    startNetworkMonitoring();
+    initOnlineWidget();
 });
 
 // Логика скрытия загрузочного экрана
@@ -269,10 +355,10 @@ window.addEventListener('load', () => {
     if (loader) {
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
-        
+
         document.body.style.setProperty('overflow', 'auto', 'important');
         document.documentElement.style.overflow = 'auto'; 
-        
+
         setTimeout(() => {
             loader.remove();
         }, 500);
