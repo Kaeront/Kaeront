@@ -104,36 +104,16 @@ const globalStyles = `
     .footer-quote { font-size: 0.9rem; color: #ffffff; line-height: 1.6; }
     .copyright-bar { border-top: 1px solid #111; padding-top: 30px; margin-top: 40px; text-align: center; font-size: 0.65rem; color: #333; font-family: 'Minecraft'; }
 
-    /* ИНТЕРНЕТ ПОП-АП (ВСЕГДА СВЕРХУ ЭКРАНА) */
+    /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 40px;
         background: #ba1c1c; color: #fff; z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600;
+        font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600;
         transform: translateY(-100%); transition: var(--transition);
         box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
-
-    /* ОНЛАЙН КРУЖОК */
-    #online-widget {
-        position: fixed; bottom: 20px; right: 20px; background: rgba(10, 10, 10, 0.85);
-        border: 1px solid #222; border-radius: 30px; padding: 6px 14px;
-        display: flex; align-items: center; gap: 8px; z-index: 2500;
-        user-select: none; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        transition: var(--transition);
-    }
-    #online-widget:hover { border-color: var(--accent); }
-    .online-pulse {
-        width: 7px; height: 7px; background: #00ff66; border-radius: 50%;
-        box-shadow: 0 0 8px #00ff66; animation: onlinePulseAnim 2s infinite;
-    }
-    @keyframes onlinePulseAnim {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 255, 102, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
-    }
-    .online-count { font-family: 'Minecraft'; font-size: 0.7rem; color: #fff; letter-spacing: 0.5px; }
 `;
 
 const injectHTML = {
@@ -221,7 +201,7 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
-// Проверка скорости интернета с задержкой (Закрыть нельзя)
+// Проверка скорости интернета с задержкой
 const checkInternetSpeed = () => {
     setTimeout(() => {
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -236,42 +216,18 @@ const checkInternetSpeed = () => {
         if (isSlow) {
             const popup = document.createElement('div');
             popup.id = 'speed-popup';
-            popup.innerHTML = `<span>Медленное соединение. Изображения и элементы могут загружаться дольше обычного.</span>`;
+            popup.innerHTML = `<span>Медленное соединение</span>`;
             document.body.appendChild(popup);
 
-            // Сдвигаем тег html и опускаем фиксированный nav на высоту поп-апа (40px)
+            // Сдвигаем тег html и опускаем фиксированный nav на высоту поп-апа
             setTimeout(() => {
-                document.documentElement.style.paddingTop = '40px';
+                document.documentElement.style.paddingTop = '30px';
                 const nav = document.getElementById('smart-nav');
-                if (nav) nav.style.top = '40px';
+                if (nav) nav.style.top = '30px';
                 popup.classList.add('active');
             }, 100);
         }
     }, 1500);
-};
-
-// Реалистичный онлайн для стадии разработки/тестов
-const initOnlineWidget = () => {
-    const widget = document.createElement('div');
-    widget.id = 'online-widget';
-    widget.innerHTML = `
-        <div class="online-pulse"></div>
-        <div class="online-count"><span id="online-number">1</span> НА САЙТЕ</div>
-    `;
-    document.body.appendChild(widget);
-
-    const updateOnline = () => {
-        // Базово показываем 1 (текущий пользователь). 
-        // С шансом 25% имитируем, что на сайте параллельно сидит еще 1 или 2 человека (тестировщики/разработчики)
-        let currentOnline = 1;
-        if (Math.random() < 0.25) {
-            currentOnline = Math.floor(Math.random() * 2) + 2; // Выдаст 2 или 3
-        }
-        document.getElementById('online-number').innerText = currentOnline;
-    };
-
-    updateOnline();
-    setInterval(updateOnline, 10000); // Редкая проверка раз в 10 секунд
 };
 
 // Скролл навигации
@@ -303,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     checkInternetSpeed();
-    initOnlineWidget();
 });
 
 // Логика скрытия загрузочного экрана
