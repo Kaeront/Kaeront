@@ -108,12 +108,11 @@ const globalStyles = `
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 25px;
         background: #181818;
-        color: #fff;
+        color: var(--accent);
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Minecraft', sans-serif; font-size: 0.65rem; font-weight: 400;
+        font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600;
         transform: translateY(-100%); transition: var(--transition);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #speed-popup.active { transform: translateY(0); }
 `;
