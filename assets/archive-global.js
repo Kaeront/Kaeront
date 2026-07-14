@@ -52,19 +52,15 @@ async function loadArticle() {
     }
 }
 
-// Быстрый и невесомый переход между страницами
+// Быстрый асинхронный переход
 async function performTransition(targetUrl) {
-    // 1. Мгновенно запускаем увядание старого контента
+    // 1. Быстро скрываем контент (150мс)
     appContainer.classList.add('scale-down');
 
-    // 2. Параллельно подгружаем новую статью и ждем всего 150мс (пока статья качается, экран плавно гаснет)
-    const loadPromise = loadArticle();
-    await Promise.all([
-        loadPromise,
-        new Promise(resolve => setTimeout(resolve, 150))
-    ]);
+    // 2. Ждем окончания быстрого скрытия
+    await new Promise(resolve => setTimeout(resolve, 150));
 
-    // 3. Быстро обновляем URL и сайдбар
+    // 3. Меняем URL и подгружаем новую статью
     if (isLocal) {
         window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
     } else {
@@ -72,12 +68,23 @@ async function performTransition(targetUrl) {
         window.history.pushState(null, null, cleanUrl);
     }
     
+    await loadArticle(); 
     updateActiveSidebarLink();
+    
     window.scrollTo(0, 0);
 
-    // 4. Плавно выталкиваем новый контент на экран
+    // 4. Плавно и элегантно проявляем (сработает transition на 350мс из CSS)
     appContainer.classList.remove('scale-down');
 }
+
+// Быстрый переход при клике по кнопкам "Назад/Вперед" в браузере
+window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
+    appContainer.classList.add('scale-down');
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await loadArticle();
+    updateActiveSidebarLink();
+    appContainer.classList.remove('scale-down');
+});
 
 // Подсветка текущей страницы в сайдбаре
 function updateActiveSidebarLink() {
