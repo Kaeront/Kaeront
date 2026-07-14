@@ -35,7 +35,11 @@
       "destination": "/archive/index.html"
     },
     {
-      "source": "/archive/:path*",
+      "source": "/archive/:path",
+      "destination": "/archive/index.html"
+    },
+    {
+      "source": "/archive/:path/:subpath*",
       "destination": "/archive/index.html"
     }
   ]
