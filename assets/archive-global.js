@@ -52,28 +52,29 @@ async function loadArticle() {
     }
 }
 
-// Асинхронный переход с гарантированной анимацией
+// Асинхронный переход с гарантированной анимацией всего блока приложения
 async function performTransition(targetUrl) {
-    // 1. Запускаем увядание контента
-    contentContainer.classList.add('scale-down');
+    // 1. Запускаем увядание приложения (scale-down)
+    appContainer.classList.add('scale-down');
 
-    // 2. Ждем окончания CSS-анимации увядания (200мс)
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // 2. Ждем окончания CSS-анимации увядания (синхронно с CSS: 500мс)
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    // 3. Меняем URL и загружаем контент в "невидимом" режиме
+    // 3. Меняем URL и загружаем контент
     if (isLocal) {
         window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
     } else {
         const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
         window.history.pushState(null, null, cleanUrl);
-        await loadArticle(); // Ждём полной загрузки новой статьи!
-        updateActiveSidebarLink();
     }
+    
+    await loadArticle(); // Ждём полной загрузки новой статьи, пока всё скрыто
+    updateActiveSidebarLink();
     
     window.scrollTo(0, 0);
 
-    // 4. Плавно проявляем новый готовый контент
-    contentContainer.classList.remove('scale-down');
+    // 4. Плавно проявляем приложение обратно
+    appContainer.classList.remove('scale-down');
 }
 
 // Подсветка текущей страницы в сайдбаре
@@ -106,25 +107,16 @@ document.body.addEventListener('click', e => {
     }
 });
 
-// Слушатели изменений истории
-if (isLocal) {
-    window.addEventListener('hashchange', async () => {
-        contentContainer.classList.add('scale-down');
-        await new Promise(resolve => setTimeout(resolve, 200));
-        await loadArticle();
-        updateActiveSidebarLink();
-        contentContainer.classList.remove('scale-down');
-    });
-} else {
-    window.addEventListener('popstate', async () => {
-        contentContainer.classList.add('scale-down');
-        await new Promise(resolve => setTimeout(resolve, 200));
-        await loadArticle();
-        updateActiveSidebarLink();
-        contentContainer.classList.remove('scale-down');
-    });
-}
+// Слушатели изменений истории (кнопки "Назад/Вперед" в браузере)
+window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
+    appContainer.classList.add('scale-down');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    await loadArticle();
+    updateActiveSidebarLink();
+    appContainer.classList.remove('scale-down');
+});
 
+// Первая инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
     if (!isLocal) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -138,12 +130,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Инициализируем страницу с красивым плавным появлением
-    contentContainer.classList.add('scale-down');
+    appContainer.classList.add('scale-down');
     await loadArticle();
     updateActiveSidebarLink();
     
-    // Небольшой таймаут, чтобы браузер успел отрисовать скрытое состояние перед анимацией проявления
+    // Небольшой таймаут, чтобы браузер успел применить класс перед его удалением
     setTimeout(() => {
-        contentContainer.classList.remove('scale-down');
+        appContainer.classList.remove('scale-down');
     }, 50);
 });
