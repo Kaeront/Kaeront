@@ -1,31 +1,5 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/news/:id",
-      "destination": "/news-style"
-    },
-    {
-      "source": "/wiki-global.js",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/wiki-global.js"
-    },
-    {
-      "source": "/articles/:path*",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/articles/:path*"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/index.html"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/index.html"
-    }
-  ],
   "redirects": [
     {
       "source": "/wiki",
@@ -46,6 +20,27 @@
       "source": "/news-style/:path*",
       "destination": "/404",
       "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/news/:id",
+      "destination": "/news-style"
+    },
+    {
+      "source": "/wiki-global.js",
+      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
+      "destination": "/wiki/wiki-global.js"
+    },
+    {
+      "source": "/:slug.md",
+      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
+      "destination": "/wiki/:slug.md"
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
+      "destination": "/wiki/index.html"
     }
   ]
 }
