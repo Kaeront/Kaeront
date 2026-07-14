@@ -3,37 +3,41 @@
 const appContainer = document.getElementById('wiki-app');
 const contentContainer = document.getElementById('wiki-content');
 
-// Настраиваем парсер Marked: включаем поддержку обычных переносов строк (breaks)
+// Настраиваем парсер Marked
 marked.setOptions({
     breaks: true,
     gfm: true
 });
 
-// Проверяем, запущен ли сайт локально. Это чисто для меня (KAmir213)
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-// Получаем чистый путь статьи в зависимости от режима (локальный/продакшн)
+// Получаем чистый путь статьи
 function getCleanRoute() {
     if (isLocal) {
         const hash = window.location.hash;
-        return (hash === '' || hash === '#/') ? 'index' : hash.replace('#/', '');
+        const cleanHash = hash.replace('#/archive/', '').replace('#/', '').replace('#', '');
+        return (cleanHash === '' || cleanHash === 'index' || cleanHash === 'archive') ? 'index' : cleanHash;
     } else {
         const path = window.location.pathname;
-        return (path === '/' || path === '/index') ? 'index' : path.replace('/', '');
+        // Отрезаем базовую часть "/archive"
+        let relativePath = path.replace(/^\/archive/, '');
+        // Убираем ведущий слэш
+        relativePath = relativePath.replace(/^\//, '');
+        
+        return (relativePath === '' || relativePath === 'index') ? 'index' : relativePath;
     }
 }
 
 // Загрузка Markdown-файла
 async function loadArticle() {
     const routeName = getCleanRoute();
-    const filePath = `/${routeName}.md`;
+    const filePath = `/archive/${routeName}.md`;
 
     try {
         const response = await fetch(filePath);
         if (!response.ok) throw new Error('Статья отсутствует');
         const markdownText = await response.text();
         
-        // Рендерим Markdown + HTML
         contentContainer.innerHTML = marked.parse(markdownText);
     } catch (error) {
         contentContainer.innerHTML = `
@@ -43,17 +47,17 @@ async function loadArticle() {
     }
 }
 
-// Плавный переход с анимацией scale-down (по кривой easeInOutQuint)
+// Плавный переход с анимацией scale-down
 function performTransition(targetUrl) {
     appContainer.classList.add('scale-down');
 
     setTimeout(async () => {
         if (isLocal) {
-            // В Acode меняем хэш
             window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
         } else {
-            // На продакшене меняем URL красиво через History API
-            window.history.pushState(null, null, targetUrl);
+            // Если переходим на главную архива, делаем красивый URL /archive
+            const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
+            window.history.pushState(null, null, cleanUrl);
             await loadArticle();
             updateActiveSidebarLink();
         }
@@ -69,9 +73,11 @@ function updateActiveSidebarLink() {
     const links = document.querySelectorAll('.category-links a');
     
     links.forEach(link => {
-        // Берем чистый путь из href ссылки (убираем # и / для сравнения)
-        const linkRoute = link.getAttribute('href').replace('#', '').replace('/', '') || 'index';
-        
+        let linkRoute = link.getAttribute('href')
+            .replace('/archive', '')
+            .replace('#', '')
+            .replace(/^\//, '') || 'index';
+            
         if (linkRoute === currentRoute) {
             link.classList.add('active');
             link.closest('.sidebar-category').classList.add('active');
@@ -86,12 +92,12 @@ document.body.addEventListener('click', e => {
     const target = e.target.closest('.category-links a');
     if (target) {
         e.preventDefault();
-        const targetUrl = target.getAttribute('href').replace('#', ''); // Получаем чистый путь вроде "/legends"
+        const targetUrl = target.getAttribute('href');
         performTransition(targetUrl);
     }
 });
 
-// Слушатели изменений истории браузера
+// Слушатели изменений истории
 if (isLocal) {
     window.addEventListener('hashchange', () => {
         appContainer.classList.add('scale-down');
@@ -112,8 +118,11 @@ if (isLocal) {
     });
 }
 
-// Инициализация при первой загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
+    // Если пользователь зашел на /archive/index, убираем "index" из строки браузера
+    if (!isLocal && window.location.pathname === '/archive/index') {
+        window.history.replaceState(null, null, '/archive');
+    }
     loadArticle();
     updateActiveSidebarLink();
 });
