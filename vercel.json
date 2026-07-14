@@ -17,7 +17,7 @@
       "permanent": true
     },
     {
-      "source": "/archive/:slug",
+      "source": "/archive/:slug((?!.*\\.md$).*)",
       "destination": "/archive?page=:slug",
       "permanent": false
     }
@@ -32,15 +32,7 @@
       "destination": "/archive/assets/:path*"
     },
     {
-      "source": "/archive/:slug.md",
-      "destination": "/archive/:slug.md"
-    },
-    {
-      "source": "/archive",
-      "destination": "/archive/index.html"
-    },
-    {
-      "source": "/archive/:path*",
+      "source": "/archive/((?!.*\\.).*)",
       "destination": "/archive/index.html"
     }
   ]
