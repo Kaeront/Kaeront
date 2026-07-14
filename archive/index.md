@@ -1,4 +1,4 @@
-это индекс!
+это index (главная страница)!
 # h1
 ## h2
 ### h3
@@ -10,7 +10,7 @@
 ---
 ***Bold italic*** **_Bold italic_**
 
-__Underlined__ (which is not working currently)
+__Underlined__ (which is not working currently, idk why)
 ***
 ~~Strikethrough~~
 `code yk blah-blah-blah-blah-blah-
@@ -46,8 +46,8 @@ Hyper
 [go to kaeront.ru](https://kaeront.ru)
 
 ***
-# *And the last thing.*
-###### (tahblihcah)
+# *Oh boy, and the last thing.*
+###### (**ta**h**bli**h**ca**h!!)
 | Заголовок 1 | Заголовок 2 | Заголовок 3 |
 | :--- | :---: | ---: |
 | Левый столбец | Центр | Правый столбец |
