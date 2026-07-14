@@ -27,6 +27,10 @@
       "destination": "/archive/assets/:path*"
     },
     {
+      "source": "/archive",
+      "destination": "/archive/index.html"
+    },
+    {
       "source": "/archive/:path*",
       "destination": "/archive/index.html"
     }
