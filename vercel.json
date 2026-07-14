@@ -2,6 +2,16 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/archive",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/archive/:path*",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
       "source": "/wiki",
       "destination": "/404",
       "permanent": false
@@ -29,23 +39,23 @@
     },
     {
       "source": "/wiki-global.js",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/wiki-global.js"
+      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "destination": "/archive/wiki-global.js"
     },
     {
       "source": "/:slug.md",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/:slug.md"
+      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "destination": "/archive/:slug.md"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/index.html"
+      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "destination": "/archive/index.html"
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
-      "destination": "/wiki/index.html"
+      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "destination": "/archive/index.html"
     }
   ]
 }
