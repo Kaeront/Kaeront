@@ -125,7 +125,7 @@ if (isLocal) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (!isLocal) {
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
@@ -136,6 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
             window.history.replaceState(null, null, '/archive');
         }
     }
-    loadArticle();
+
+    // Инициализируем страницу с красивым плавным появлением
+    contentContainer.classList.add('scale-down');
+    await loadArticle();
     updateActiveSidebarLink();
+    
+    // Небольшой таймаут, чтобы браузер успел отрисовать скрытое состояние перед анимацией проявления
+    setTimeout(() => {
+        contentContainer.classList.remove('scale-down');
+    }, 50);
 });
