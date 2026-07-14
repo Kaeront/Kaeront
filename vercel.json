@@ -15,24 +15,17 @@
       "source": "/archive/index",
       "destination": "/archive",
       "permanent": true
+    },
+    {
+      "source": "/archive/:slug",
+      "destination": "/archive?page=:slug",
+      "permanent": false
     }
   ],
   "rewrites": [
     {
       "source": "/news/:id",
       "destination": "/news-style"
-    },
-    {
-      "source": "/archive/assets/:path*",
-      "destination": "/archive/assets/:path*"
-    },
-    {
-      "source": "/archive",
-      "destination": "/archive/index.html"
-    },
-    {
-      "source": "/archive/:path*",
-      "destination": "/archive/index.html"
     }
   ]
 }
