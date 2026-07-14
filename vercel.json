@@ -17,17 +17,14 @@
       "source": "/news/:id",
       "destination": "/news-style"
     },
-    /* Маршрут для скрипта внутри архива */
     {
       "source": "/archive/wiki-global.js",
       "destination": "/archive/wiki-global.js"
     },
-    /* Позволяем скрипту запрашивать .md файлы напрямую из папки archive */
     {
       "source": "/archive/:slug.md",
       "destination": "/archive/:slug.md"
     },
-    /* Все запросы к kaeront.ru/archive или kaeront.ru/archive/any-page отдают главный файл архива */
     {
       "source": "/archive",
       "destination": "/archive/index.html"
