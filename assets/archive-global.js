@@ -1,4 +1,4 @@
-/* WIKI.KAERONT.RU GLOBAL CORE & SMART HYBRID ROUTER */
+/* ARCHIVE.KAERONT.RU GLOBAL CORE & SMART HYBRID ROUTER */
 
 const appContainer = document.getElementById('wiki-app');
 const contentContainer = document.getElementById('wiki-content');
