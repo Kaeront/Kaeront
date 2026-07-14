@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/png" href="/assets/palm.png">
+    <title>Wiki — Kaeront</title>
+    <!-- Подключаем парсер Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Твой новый скрипт для Вики -->
+    <script src="./wiki-global.js" defer></script>
+    <script src="./assets/global.js" defer></script>
+    
+    <style>
+        :root {
+            --sidebar-width: 280px;
+        }
+
+        /* Общий контейнер для сайдбара и контента */
+        .wiki-layout {
+            display: flex;
+            margin-top: var(--nav-height); /* Отступ под глобальный навбар */
+            min-height: calc(100vh - var(--nav-height));
+            position: relative;
+        }
+
+        /* --- САЙДБАР (В стиле Notion / Тёмный Kaeront) --- */
+        .wiki-sidebar {
+            width: var(--sidebar-width);
+            background: rgba(15, 15, 15, 0.95);
+            border-right: 1.5px solid #1a1a1a;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            position: sticky;
+            top: var(--nav-height);
+            height: calc(100vh - var(--nav-height));
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        /* Выпадающий список (Категория) */
+        .sidebar-category {
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: rgba(255, 170, 0, 0.05);
+            border-left: 2px solid var(--accent);
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .category-title:hover {
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        .category-title::after {
+            content: '▼';
+            font-size: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .sidebar-category.active .category-title::after {
+            transform: rotate(-180deg);
+        }
+
+        /* Список статей внутри категории */
+        .category-links {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            padding-left: 10px;
+        }
+
+        .sidebar-category.active .category-links {
+            max-height: 500px; /* Достаточное значение для раскрытия */
+            margin-top: 5px;
+        }
+
+        .category-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .category-links a:hover,
+        .category-links a.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            padding-left: 15px; /* Лёгкий сдвиг при наведении */
+        }
+
+        /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
+        #wiki-app {
+            flex-grow: 1;
+            padding: 40px;
+            max-width: 900px;
+            box-sizing: border-box;
+            /* Плавная анимация изменения прозрачности и масштаба */
+            transition: transform 0.5s cubic-bezier(0.83, 0, 0.17, 1), 
+                        opacity 0.5s cubic-bezier(0.83, 0, 0.17, 1);
+            transform-origin: center top;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Анимация отдаления (scale-down) по easeInOutQuint */
+        #wiki-app.scale-down {
+            opacity: 0;
+            transform: scale(0.97);
+        }
+
+        /* Рендеринг разметки статьи */
+        .markdown-body {
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        .markdown-body h1 { font-family: 'Minecraft', sans-serif; color: var(--accent); margin-top: 0; margin-bottom: 25px; font-size: 1.8rem; }
+        .markdown-body h2 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 35px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; font-size: 1.3rem; }
+        .markdown-body h3 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 25px; font-size: 1rem; }
+        .markdown-body p { color: var(--text-dim); text-align: justify; margin-bottom: 20px; }
+        .markdown-body a { color: var(--accent); text-decoration: none; transition: 0.3s; }
+        .markdown-body a:hover { text-decoration: underline; }
+        .markdown-body code { background: #141414; padding: 3px 6px; border-radius: 3px; font-family: monospace; font-size: 0.85rem; color: var(--accent); }
+
+        /* Адаптивность для мобильных */
+        @media (max-width: 768px) {
+            .wiki-layout {
+                flex-direction: column;
+            }
+            .wiki-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+                border-right: none;
+                border-bottom: 1.5px solid #1a1a1a;
+                padding: 20px;
+            }
+            #wiki-app {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Сюда встроится глобальный навбар из твоего основного скрипта -->
+    <div id="nav-inject"></div>
+
+    <div class="wiki-layout">
+        <!-- Сайдбар со структурой статей -->
+        <aside class="wiki-sidebar">
+            
+            <!-- Категория 1 -->
+            <div class="sidebar-category active">
+                <div class="category-title" onclick="toggleCategory(this)">О Проекте</div>
+                <div class="category-links">
+                    <a href="/index" class="active">Главная Вики</a>
+                    <a href="/rules">Правила проекта</a>
+                </div>
+            </div>
+
+            <!-- Категория 2 -->
+            <div class="sidebar-category">
+                <div class="category-title" onclick="toggleCategory(this)">Игровые Миры</div>
+                <div class="category-links">
+                    <a href="/legends">Legends RPG</a>
+                    <a href="/fyghting">FYGHTING Shooter</a>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Основной контент -->
+        <main id="wiki-app">
+            <article id="wiki-content" class="markdown-body">
+                <!-- Сюда динамически рендерится Markdown -->
+            </article>
+        </main>
+    </div>
+
+    <!-- Сюда встроится глобальный футер -->
+    <div id="footer-inject"></div>
+
+    <script>
+        // Функция раскрытия/закрытия папок в Сайдбаре
+        function toggleCategory(element) {
+            const parent = element.parentElement;
+            parent.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
