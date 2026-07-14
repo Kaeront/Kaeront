@@ -10,6 +10,12 @@
       "source": "/news-style/:path*",
       "destination": "/404",
       "permanent": false
+    },
+    /* Красиво перекидываем /archive/index на чистый /archive */
+    {
+      "source": "/archive/index",
+      "destination": "/archive",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -17,14 +23,16 @@
       "source": "/news/:id",
       "destination": "/news-style"
     },
+    /* Разрешаем прямой доступ к системным файлам архива */
     {
-      "source": "/archive/wiki-global.js",
-      "destination": "/archive/wiki-global.js"
+      "source": "/archive/assets/:path*",
+      "destination": "/archive/assets/:path*"
     },
     {
       "source": "/archive/:slug.md",
       "destination": "/archive/:slug.md"
     },
+    /* Любые запросы к /archive или /archive/что-угодно отдают единый index.html */
     {
       "source": "/archive",
       "destination": "/archive/index.html"
