@@ -21,7 +21,6 @@ function getCleanRoute() {
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
         
-        // Если есть параметр ?page=..., приоритетно отдаем его
         if (pageParam) {
             return pageParam;
         }
@@ -53,23 +52,28 @@ async function loadArticle() {
     }
 }
 
-// Плавный переход с анимацией scale-down
-function performTransition(targetUrl) {
+// Асинхронный переход с гарантированной анимацией
+async function performTransition(targetUrl) {
+    // 1. Запускаем увядание контента
     contentContainer.classList.add('scale-down');
 
-    setTimeout(async () => {
-        if (isLocal) {
-            window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
-        } else {
-            const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
-            window.history.pushState(null, null, cleanUrl);
-            await loadArticle();
-            updateActiveSidebarLink();
-        }
-        
-        window.scrollTo(0, 0);
-        contentContainer.classList.remove('scale-down');
-    }, 200);
+    // 2. Ждем окончания CSS-анимации увядания (200мс)
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // 3. Меняем URL и загружаем контент в "невидимом" режиме
+    if (isLocal) {
+        window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
+    } else {
+        const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
+        window.history.pushState(null, null, cleanUrl);
+        await loadArticle(); // Ждём полной загрузки новой статьи!
+        updateActiveSidebarLink();
+    }
+    
+    window.scrollTo(0, 0);
+
+    // 4. Плавно проявляем новый готовый контент
+    contentContainer.classList.remove('scale-down');
 }
 
 // Подсветка текущей страницы в сайдбаре
@@ -104,22 +108,20 @@ document.body.addEventListener('click', e => {
 
 // Слушатели изменений истории
 if (isLocal) {
-    window.addEventListener('hashchange', () => {
+    window.addEventListener('hashchange', async () => {
         contentContainer.classList.add('scale-down');
-        setTimeout(async () => {
-            await loadArticle();
-            updateActiveSidebarLink();
-            contentContainer.classList.remove('scale-down');
-        }, 200);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        await loadArticle();
+        updateActiveSidebarLink();
+        contentContainer.classList.remove('scale-down');
     });
 } else {
-    window.addEventListener('popstate', () => {
+    window.addEventListener('popstate', async () => {
         contentContainer.classList.add('scale-down');
-        setTimeout(async () => {
-            await loadArticle();
-            updateActiveSidebarLink();
-            contentContainer.classList.remove('scale-down');
-        }, 200);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        await loadArticle();
+        updateActiveSidebarLink();
+        contentContainer.classList.remove('scale-down');
     });
 }
 
@@ -129,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const pageParam = urlParams.get('page');
 
         if (pageParam) {
-            // "Красиво" заменяем URL с параметрами назад на чистый путь /archive/название_странички
             window.history.replaceState(null, null, `/archive/${pageParam}`);
         } else if (window.location.pathname === '/archive/index') {
             window.history.replaceState(null, null, '/archive');
