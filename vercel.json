@@ -32,7 +32,15 @@
       "destination": "/archive/assets/:path*"
     },
     {
+      "source": "/archive/:slug.md",
+      "destination": "/archive/:slug.md"
+    },
+    {
       "source": "/archive",
+      "destination": "/archive/index.html"
+    },
+    {
+      "source": "/archive/:path*",
       "destination": "/archive/index.html"
     }
   ]
