@@ -11,24 +11,22 @@ marked.setOptions({
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-// Получаем чистый путь статьи
+// Получаем чистый путь статьи с поддержкой редирект-параметров
 function getCleanRoute() {
     if (isLocal) {
         const hash = window.location.hash;
         const cleanHash = hash.replace('#/archive/', '').replace('#/', '').replace('#', '');
         return (cleanHash === '' || cleanHash === 'index' || cleanHash === 'archive') ? 'index' : cleanHash;
     } else {
-        const path = window.location.pathname;
-        
-        // 1. Проверяем, пришли ли мы по редиректу с параметром ?page=...
         const urlParams = new URLSearchParams(window.location.search);
-        const queryPage = urlParams.get('page');
+        const pageParam = urlParams.get('page');
         
-        if (queryPage) {
-            return queryPage;
+        // Если есть параметр ?page=..., приоритетно отдаем его
+        if (pageParam) {
+            return pageParam;
         }
 
-        // 2. Если параметров нет, парсим обычный URL path
+        const path = window.location.pathname;
         let relativePath = path.replace(/^\/archive/, '');
         relativePath = relativePath.replace(/^\//, '');
         
@@ -125,23 +123,18 @@ if (isLocal) {
     });
 }
 
-// Инициализация приложения
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     if (!isLocal) {
         const urlParams = new URLSearchParams(window.location.search);
-        const queryPage = urlParams.get('page');
+        const pageParam = urlParams.get('page');
 
-        if (queryPage) {
-            // Если зашли по редиректу с параметром, мгновенно заменяем URL на красивый
-            // Например: /archive?page=legends превратится в /archive/legends в строке браузера
-            const cleanUrl = queryPage === 'index' ? '/archive' : `/archive/${queryPage}`;
-            window.history.replaceState(null, null, cleanUrl);
+        if (pageParam) {
+            // "Красиво" заменяем URL с параметрами назад на чистый путь /archive/название_странички
+            window.history.replaceState(null, null, `/archive/${pageParam}`);
         } else if (window.location.pathname === '/archive/index') {
-            // Убираем "index" из строки браузера на главной архива
             window.history.replaceState(null, null, '/archive');
         }
     }
-    
-    await loadArticle();
+    loadArticle();
     updateActiveSidebarLink();
 });
