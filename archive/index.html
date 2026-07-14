@@ -76,14 +76,18 @@
         .category-links {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            /* Плавное изменение высоты и прозрачности с мягким торможением в конце */
+            transition: max-height 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
+                        opacity 0.3s ease;
+            opacity: 0;
             display: flex;
             flex-direction: column;
             padding-left: 10px;
         }
 
         .sidebar-category.active .category-links {
-            max-height: 500px; /* Достаточное значение для раскрытия */
+            max-height: 200px; /* Уменьшили запас до адекватного, чтобы анимация шла плавно */
+            opacity: 1;
             margin-top: 5px;
         }
 
@@ -93,14 +97,15 @@
             font-size: 0.8rem;
             padding: 6px 10px;
             border-radius: 4px;
-            transition: 0.2s;
+            /* Плавный сдвиг вбок при наведении */
+            transition: color 0.2s ease, background 0.2s ease, padding-left 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .category-links a:hover,
         .category-links a.active {
             color: #fff;
             background: rgba(255, 255, 255, 0.05);
-            padding-left: 15px; /* Лёгкий сдвиг при наведении */
+            padding-left: 16px; /* Мягкий, приятный глазу отскок вправо */
         }
 
         /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
