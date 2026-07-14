@@ -2,26 +2,6 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/archive",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/archive/:path*",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/wiki",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/wiki/:path*",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
       "source": "/news-style",
       "destination": "/404",
       "permanent": false
@@ -37,24 +17,23 @@
       "source": "/news/:id",
       "destination": "/news-style"
     },
+    /* Маршрут для скрипта внутри архива */
     {
-      "source": "/wiki-global.js",
-      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "source": "/archive/wiki-global.js",
       "destination": "/archive/wiki-global.js"
     },
+    /* Позволяем скрипту запрашивать .md файлы напрямую из папки archive */
     {
-      "source": "/:slug.md",
-      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "source": "/archive/:slug.md",
       "destination": "/archive/:slug.md"
     },
+    /* Все запросы к kaeront.ru/archive или kaeront.ru/archive/any-page отдают главный файл архива */
     {
-      "source": "/",
-      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "source": "/archive",
       "destination": "/archive/index.html"
     },
     {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "archive.kaeront.ru" }],
+      "source": "/archive/:path*",
       "destination": "/archive/index.html"
     }
   ]
