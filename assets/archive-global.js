@@ -52,15 +52,19 @@ async function loadArticle() {
     }
 }
 
-// Асинхронный переход с гарантированной анимацией всего блока приложения
+// Быстрый и невесомый переход между страницами
 async function performTransition(targetUrl) {
-    // 1. Запускаем увядание приложения (scale-down)
+    // 1. Мгновенно запускаем увядание старого контента
     appContainer.classList.add('scale-down');
 
-    // 2. Ждем окончания CSS-анимации увядания (синхронно с CSS: 500мс)
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 2. Параллельно подгружаем новую статью и ждем всего 150мс (пока статья качается, экран плавно гаснет)
+    const loadPromise = loadArticle();
+    await Promise.all([
+        loadPromise,
+        new Promise(resolve => setTimeout(resolve, 150))
+    ]);
 
-    // 3. Меняем URL и загружаем контент
+    // 3. Быстро обновляем URL и сайдбар
     if (isLocal) {
         window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
     } else {
@@ -68,12 +72,10 @@ async function performTransition(targetUrl) {
         window.history.pushState(null, null, cleanUrl);
     }
     
-    await loadArticle(); // Ждём полной загрузки новой статьи, пока всё скрыто
     updateActiveSidebarLink();
-    
     window.scrollTo(0, 0);
 
-    // 4. Плавно проявляем приложение обратно
+    // 4. Плавно выталкиваем новый контент на экран
     appContainer.classList.remove('scale-down');
 }
 
@@ -107,11 +109,13 @@ document.body.addEventListener('click', e => {
     }
 });
 
-// Слушатели изменений истории (кнопки "Назад/Вперед" в браузере)
+// Слушатели изменений истории (кнопки Назад/Вперед)
 window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
     appContainer.classList.add('scale-down');
-    await new Promise(resolve => setTimeout(resolve, 500));
-    await loadArticle();
+    await Promise.all([
+        loadArticle(),
+        new Promise(resolve => setTimeout(resolve, 150))
+    ]);
     updateActiveSidebarLink();
     appContainer.classList.remove('scale-down');
 });
@@ -134,7 +138,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadArticle();
     updateActiveSidebarLink();
     
-    // Небольшой таймаут, чтобы браузер успел применить класс перед его удалением
+    // Мягко убираем экран загрузки после рендеринга статьи
+    const loader = document.getElementById('loader-wrapper');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+    }
+    
     setTimeout(() => {
         appContainer.classList.remove('scale-down');
     }, 50);
