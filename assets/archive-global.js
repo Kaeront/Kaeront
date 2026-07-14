@@ -19,9 +19,17 @@ function getCleanRoute() {
         return (cleanHash === '' || cleanHash === 'index' || cleanHash === 'archive') ? 'index' : cleanHash;
     } else {
         const path = window.location.pathname;
-        // Отрезаем базовую часть "/archive"
+        
+        // 1. Проверяем, пришли ли мы по редиректу с параметром ?page=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryPage = urlParams.get('page');
+        
+        if (queryPage) {
+            return queryPage;
+        }
+
+        // 2. Если параметров нет, парсим обычный URL path
         let relativePath = path.replace(/^\/archive/, '');
-        // Убираем ведущий слэш
         relativePath = relativePath.replace(/^\//, '');
         
         return (relativePath === '' || relativePath === 'index') ? 'index' : relativePath;
@@ -49,13 +57,12 @@ async function loadArticle() {
 
 // Плавный переход с анимацией scale-down
 function performTransition(targetUrl) {
-    appContainer.classList.add('scale-down');
+    contentContainer.classList.add('scale-down');
 
     setTimeout(async () => {
         if (isLocal) {
             window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
         } else {
-            // Если переходим на главную архива, делаем красивый URL /archive
             const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
             window.history.pushState(null, null, cleanUrl);
             await loadArticle();
@@ -63,7 +70,7 @@ function performTransition(targetUrl) {
         }
         
         window.scrollTo(0, 0);
-        appContainer.classList.remove('scale-down');
+        contentContainer.classList.remove('scale-down');
     }, 200);
 }
 
@@ -100,29 +107,41 @@ document.body.addEventListener('click', e => {
 // Слушатели изменений истории
 if (isLocal) {
     window.addEventListener('hashchange', () => {
-        appContainer.classList.add('scale-down');
+        contentContainer.classList.add('scale-down');
         setTimeout(async () => {
             await loadArticle();
             updateActiveSidebarLink();
-            appContainer.classList.remove('scale-down');
+            contentContainer.classList.remove('scale-down');
         }, 200);
     });
 } else {
     window.addEventListener('popstate', () => {
-        appContainer.classList.add('scale-down');
+        contentContainer.classList.add('scale-down');
         setTimeout(async () => {
             await loadArticle();
             updateActiveSidebarLink();
-            appContainer.classList.remove('scale-down');
+            contentContainer.classList.remove('scale-down');
         }, 200);
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Если пользователь зашел на /archive/index, убираем "index" из строки браузера
-    if (!isLocal && window.location.pathname === '/archive/index') {
-        window.history.replaceState(null, null, '/archive');
+// Инициализация приложения
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!isLocal) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryPage = urlParams.get('page');
+
+        if (queryPage) {
+            // Если зашли по редиректу с параметром, мгновенно заменяем URL на красивый
+            // Например: /archive?page=legends превратится в /archive/legends в строке браузера
+            const cleanUrl = queryPage === 'index' ? '/archive' : `/archive/${queryPage}`;
+            window.history.replaceState(null, null, cleanUrl);
+        } else if (window.location.pathname === '/archive/index') {
+            // Убираем "index" из строки браузера на главной архива
+            window.history.replaceState(null, null, '/archive');
+        }
     }
-    loadArticle();
+    
+    await loadArticle();
     updateActiveSidebarLink();
 });
