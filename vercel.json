@@ -37,13 +37,11 @@
       "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
       "destination": "/wiki/:slug.md"
     },
-    /* Явное перенаправление корня wiki.kaeront.ru на wiki/index.html */
     {
       "source": "/",
       "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
       "destination": "/wiki/index.html"
     },
-    /* Перенаправление всех остальных путей (внутренних страниц) */
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "wiki.kaeront.ru" }],
