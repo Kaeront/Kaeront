@@ -27,11 +27,7 @@
       "destination": "/archive/assets/:path*"
     },
     {
-      "source": "/archive",
-      "destination": "/archive/index.html"
-    },
-    {
-      "source": "/archive/:path((?!assets/).*)",
+      "source": "/archive/:path*",
       "destination": "/archive/index.html"
     }
   ]
