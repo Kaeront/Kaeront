@@ -17,14 +17,23 @@
             --safe-nav-height: var(--nav-height, 50px); 
         }
 
+        html, body {
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
         /* Общий контейнер для сайдбара и контента */
         .wiki-layout {
             display: flex !important;
             margin-top: var(--safe-nav-height) !important;
+            height: calc(100vh - var(--safe-nav-height)) !important; 
             min-height: calc(100vh - var(--safe-nav-height)) !important;
             position: relative !important;
             width: 100% !important;
             box-sizing: border-box !important;
+            overflow: hidden !important;
         }
 
         /* --- САЙДБАР --- */
@@ -38,10 +47,9 @@
             background: rgb(15, 15, 15) !important;
             border-right: 1.5px solid #1a1a1a !important;
             box-sizing: border-box !important;
-            position: sticky !important;
-            top: var(--safe-nav-height) !important;
-            height: calc(100vh - var(--safe-nav-height)) !important;
-            overflow: hidden !important; 
+            position: relative !important;
+            height: 100% !important;
+            overflow: hidden !important;
             z-index: 99 !important;
             padding: 0 !important;
         }
@@ -240,20 +248,22 @@
             display: none !important;
         }
 
-/* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
-#wiki-app {
-    flex: 1 1 0% !important; 
-    min-width: 0 !important; 
-    padding: 40px !important;
-    box-sizing: border-box !important;
-    transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-    transform-origin: top center !important;
-    opacity: 1 !important;
-    transform: scale(1) !important;
-    position: relative; 
-    overflow: hidden;   
-}
+        /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
+        #wiki-app {
+            flex: 1 1 0% !important; 
+            min-width: 0 !important; 
+            padding: 40px !important;
+            box-sizing: border-box !important;
+            height: 100% !important;
+            overflow-y: auto !important; 
+            overflow-x: hidden !important;
+            transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+            transform-origin: top center !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            position: relative; 
+        }
 
 /* --- НАСТРОЙКА ШИММЕРА --- */
 #wiki-app::before {
@@ -310,9 +320,15 @@
 
         /* Адаптивность для мобильных */
         @media (max-width: 768px) {
+            html, body {
+                overflow: auto !important;
+                height: auto !important;
+            }
             .wiki-layout {
                 flex-direction: column !important;
-                margin-top: var(--safe-nav-height) !important;
+                height: auto !important;
+                min-height: calc(100vh - var(--safe-nav-height)) !important;
+                overflow: visible !important;
             }
             .wiki-sidebar {
                 max-width: 100% !important;
@@ -320,13 +336,15 @@
                 min-width: 100% !important;
                 height: auto !important;
                 position: relative !important;
-                top: 0 !important;
                 border-right: none !important;
                 border-bottom: 1.5px solid #1a1a1a !important;
-                padding: 15px !important;
+                padding: 0 !important;
+                overflow: visible !important;
             }
             #wiki-app {
                 padding: 30px 15px !important;
+                height: auto !important;
+                overflow: visible !important;
             }
         }
     </style>
