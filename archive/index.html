@@ -251,8 +251,8 @@
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
 #wiki-app.scale-down {
-    mask-image: linear-gradient(to left, transparent 0%, transparent 25%, black 25%, black 75%, transparent 75%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to left, transparent 0%, transparent 25%, black 25%, black 75%, transparent 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 25%, black 75%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 25%, black 75%, transparent);
     opacity: 0.15 !important;
     transform: scale(0.95) !important;
     transition: transform 0.15s ease-in,
