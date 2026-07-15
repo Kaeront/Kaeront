@@ -242,13 +242,14 @@
     bottom: 0;
     pointer-events: none;
     z-index: 9999;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(128, 128, 128, 0.5) 50%, rgba(255, 255, 255, 0) 100% );
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(128, 128, 128, 0.6) 50%, rgba(255, 255, 255, 0) 100%);
     background-size: 200% 100%;
     opacity: 0;
-    transform: scale(1);
+    transform: scale(1); 
     transition: opacity 0.3s ease-in-out, transform 0.15s ease-in !important;
 }
 
+/* --- СОСТОЯНИЕ SCALE-DOWN --- */
 #wiki-app.scale-down {
     opacity: 0.1 !important;
     transform: scale(0.95) !important;
@@ -259,17 +260,12 @@
 #wiki-app.scale-down::before {
     opacity: 1; /* Плавно проявляем шиммер */
     transform: scale(1.0526); 
-    
     animation: continuous-shimmer 1s linear infinite !important;
 }
 
 @keyframes continuous-shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
         /* Рендеринг разметки статьи */
