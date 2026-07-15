@@ -95,7 +95,7 @@ const globalStyles = `
     .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
     .nav-links a:hover { color: var(--accent); }
         
-    footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; }
+    footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; z-index: 500;}
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
     .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; font-weight: 400; }
     .footer-links { list-style: none; padding: 0; margin: 0; }
