@@ -27,42 +27,38 @@
             box-sizing: border-box !important;
         }
 
-        /* --- САЙДБАР --- */
+        /* --- САЙДБАР (Монолитная и стабильная основа) --- */
         .wiki-sidebar {
             display: flex !important;
             flex-direction: column !important;
-            gap: 0px !important; /* Убираем gap, чтобы поиск плотно сидел вверху */
+            gap: 0 !important; /* Убираем gap, чтобы поиск плотно прилегал к верху */
             flex: 0 0 var(--sidebar-width) !important; 
             width: var(--sidebar-width) !important;
             min-width: var(--sidebar-width) !important;
             background: rgb(15, 15, 15) !important;
             border-right: 1.5px solid #1a1a1a !important;
-            padding: 0px 15px 15px 15px !important; /* Убираем верхний padding, его заберет поиск */
             box-sizing: border-box !important;
             
-            /* Решение проблемы обрыва сайдбара при скролле всей страницы */
+            /* Sticky-позиционирование всей колонки */
             position: sticky !important;
             top: var(--safe-nav-height) !important;
             height: calc(100vh - var(--safe-nav-height)) !important;
-            align-self: flex-start !important; /* Не дает сайдбару схлопываться и улетать к футеру */
             
-            /* Скролл только внутри проводника */
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
+            /* Скролл отсюда ПЕРЕНЕСЕН во внутренний контейнер */
+            overflow: hidden !important; 
             z-index: 99 !important;
         }
 
-        /* --- ПОИСК СТАТЕЙ (Всегда на своем месте, перекрывает всё) --- */
+        /* --- ПОИСК СТАТЕЙ (Всегда сверху, перекрывает уходящие ссылки) --- */
         .sidebar-search-wrapper {
-            position: sticky !important;
-            top: 0 !important; /* Намертво держим в самом верху сайдбара */
-            padding-top: 15px !important; /* Возвращаем эстетичный отступ сверху */
-            padding-bottom: 15px !important;
+            position: relative !important;
+            padding: 15px 15px 12px 15px !important; /* Внутренние отступы вместо отступов сайдбара */
             width: 100% !important;
+            box-sizing: border-box !important;
             display: block !important;
-            z-index: 9999 !important; /* Гарантирует, что ссылки не пройдут поверх */
-            background: rgb(15, 15, 15) !important; /* Полностью непрозрачный фон */
-            border-bottom: 1.5px solid #1a1a1a !important; /* Четкое отделение поиска от проводника */
+            z-index: 110 !important; /* Выше, чем улетающий проводник */
+            background: rgb(15, 15, 15) !important; /* Плотный фон в цвет сайдбара */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
         }
 
         .sidebar-search {
@@ -88,6 +84,33 @@
             color: #444 !important;
         }
 
+        /* --- НОВЫЙ КОНТЕЙНЕР ДЛЯ ДЕРЕВА (Скролл и Маска тут) --- */
+        .sidebar-tree-container {
+            flex: 1 !important;
+            width: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
+            padding: 0 15px 15px 15px !important; /* Боковые и нижний отступы для прокрутки */
+            z-index: 100 !important; /* Под поиском, но над фоном */
+
+            /* Идеальное размытие: мягко исчезает у верхнего края (сразу после поиска) и у самого низа сайдбара */
+            -webkit-mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                black 15px, 
+                black calc(100% - 20px), 
+                transparent 100%
+            ) !important;
+            mask-image: linear-gradient(
+                to bottom, 
+                transparent 0%, 
+                black 15px, 
+                black calc(100% - 20px), 
+                transparent 100%
+            ) !important;
+        }
+
         /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
         .wiki-tree {
             position: static !important;
@@ -97,16 +120,9 @@
             width: 100% !important;
             height: auto !important;
             margin: 0 !important;
+            padding: 10px 0 20px 0 !important; /* Дополнительные отступы, чтобы элементы не обрезались маской резко */
             background: transparent !important;
             transform: none !important;
-            
-            /* Отступ сверху, чтобы первый элемент не прилипал к линии поиска */
-            padding-top: 15px !important; 
-            padding-bottom: 30px !important; /* Мягкий сход внизу */
-
-            /* Идеальное размытие: начинается ровно под поиском и мягко гаснет у нижнего края */
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 20px), transparent) !important;
-            mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 20px), transparent) !important;
         }
 
         /* Элемент папки (контейнер) */
@@ -408,104 +424,89 @@
 
 <div class="wiki-layout">
     <aside class="wiki-sidebar">
-        <!-- Поиск по сайдбару -->
+        <!-- Поиск по сайдбару (намертво зафиксирован сверху) -->
         <div class="sidebar-search-wrapper">
             <input type="text" id="wiki-search" class="sidebar-search" placeholder="Поиск по архиву..." autocomplete="off">
         </div>
 
-        <!-- Дерево навигации -->
-        <nav class="wiki-tree">
+        <!-- НОВЫЙ Контейнер-обертка для дерева (именно он будет скроллиться и размываться) -->
+        <div class="sidebar-tree-container">
+            <!-- Дерево навигации -->
+            <nav class="wiki-tree">
 
-<!-- Папка О Проекте -->
-<div class="wiki-folder open">
-    <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
-    <div class="folder-content">
-        <div class="folder-content-wrapper">
-            
-            <!-- Ссылка на главную архива (всегда видна в корне папки) -->
-            <a href="/archive/index" class="active">Главная архива</a>
-
-            <!-- Вложенная папка: Правила серверов -->
-            <div class="wiki-folder">
-                <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
-                <div class="folder-content">
-                    <div class="folder-content-wrapper">
-                        <a href="/archive/rules/kaeront_survival">Kaeront: Survival</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Вложенная папка: Юридический блок -->
-            <div class="wiki-folder">
-                <div class="folder-title" onclick="toggleFolder(this)">Юридический блок</div>
-                <div class="folder-content">
-                    <div class="folder-content-wrapper">
-                        <a href="/archive/law/privacy">Политика конфиденциальности</a>
-                        <a href="/archive/law/offer">Публичная оферта</a>
-                        <a href="/archive/law/agreement">Пользовательское соглашение</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-            <!-- Большая папка "Игры" с глубокой вложенностью -->
-            <div class="wiki-folder">
-                <div class="folder-title" onclick="toggleFolder(this)">Игры</div>
-                <div class="folder-content">
-                    <div class="folder-content-wrapper">
-
-                        <!-- Вложенная папка "Legends" -->
-                        <div class="wiki-folder">
-                            <div class="folder-title" onclick="toggleFolder(this)">Legends</div>
-                            <div class="folder-content">
-                                <div class="folder-content-wrapper">
-                                    <a href="/archive/legends">Главная Legends</a>
-                                    <a href="/archive/legends/pixieas_archive">Архивы Пиксии</a>
-
-                                    <!-- Вложенная папка "Персонажи" -->
-                                    <div class="wiki-folder">
-                                        <div class="folder-title" onclick="toggleFolder(this)">Персонажи</div>
-                                        <div class="folder-content">
-                                            <div class="folder-content-wrapper">
-
-                                                <!-- Вложенная папка "Игровые" -->
-                                                <div class="wiki-folder">
-                                                    <div class="folder-title" onclick="toggleFolder(this)">Игровые</div>
-                                                    <div class="folder-content">
-                                                        <div class="folder-content-wrapper">
-                                                            <a href="/archive/legends/characters/playable/sheng">Шэнг</a>
-                                                            <a href="/archive/legends/characters/playable/baochi">Баочи</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Вложенная папка "Враги" -->
-                                                <div class="wiki-folder">
-                                                    <div class="folder-title" onclick="toggleFolder(this)">Враги</div>
-                                                    <div class="folder-content">
-                                                        <div class="folder-content-wrapper">
-                                                            <a href="/archive/legends/characters/enemies/slimes">Слаймы</a>
-                                                            <a href="/archive/legends/characters/enemies/ifayenis">Ифайенисы</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div> <!-- Конец Персонажи -->
-
+                <!-- Папка О Проекте -->
+                <div class="wiki-folder open">
+                    <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
+                    <div class="folder-content">
+                        <div class="folder-content-wrapper">
+                            <a href="/archive/index" class="active">Главная архива</a>
+                            <div class="wiki-folder">
+                                <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
+                                <div class="folder-content">
+                                    <div class="folder-content-wrapper">
+                                        <a href="/archive/rules/kaeront_survival">Kaeront: Survival</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div> <!-- Конец Legends -->
-
+                            <div class="wiki-folder">
+                                <div class="folder-title" onclick="toggleFolder(this)">Юридический блок</div>
+                                <div class="folder-content">
+                                    <div class="folder-content-wrapper">
+                                        <a href="/archive/law/privacy">Политика конфиденциальности</a>
+                                        <a href="/archive/law/offer">Публичная оферта</a>
+                                        <a href="/archive/law/terms">Пользовательское соглашение</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div> <!-- Конец Игры -->
 
-        </nav>
+                <!-- Большая папка "Игры" -->
+                <div class="wiki-folder">
+                    <div class="folder-title" onclick="toggleFolder(this)">Игры</div>
+                    <div class="folder-content">
+                        <div class="folder-content-wrapper">
+                            <div class="wiki-folder">
+                                <div class="folder-title" onclick="toggleFolder(this)">Legends</div>
+                                <div class="folder-content">
+                                    <div class="folder-content-wrapper">
+                                        <a href="/archive/legends">Главная Legends</a>
+                                        <a href="/archive/legends/pixieas_archive">Архивы Пиксии</a>
+                                        <div class="wiki-folder">
+                                            <div class="folder-title" onclick="toggleFolder(this)">Персонажи</div>
+                                            <div class="folder-content">
+                                                <div class="folder-content-wrapper">
+                                                    <div class="wiki-folder">
+                                                        <div class="folder-title" onclick="toggleFolder(this)">Игровые</div>
+                                                        <div class="folder-content">
+                                                            <div class="folder-content-wrapper">
+                                                                <a href="/archive/legends/characters/playable/sheng">Шэнг</a>
+                                                                <a href="/archive/legends/characters/playable/baochi">Баочи</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="wiki-folder">
+                                                        <div class="folder-title" onclick="toggleFolder(this)">Враги</div>
+                                                        <div class="folder-content">
+                                                            <div class="folder-content-wrapper">
+                                                                <a href="/archive/legends/characters/enemies/slimes">Слаймы</a>
+                                                                <a href="/archive/legends/characters/enemies/ifayenis">Ифайенисы</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </nav>
+        </div>
     </aside>
 
     <!-- Основной контент -->
