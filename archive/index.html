@@ -27,28 +27,21 @@
             box-sizing: border-box !important;
         }
 
-        /* --- САЙДБАР (Жестко фиксируем и изолируем) --- */
+        /* --- САЙДБАР --- */
         .wiki-sidebar {
             display: flex !important;
             flex-direction: column !important;
             gap: 15px !important;
-            
             flex: 0 0 var(--sidebar-width) !important; 
             width: var(--sidebar-width) !important;
             min-width: var(--sidebar-width) !important;
-            
-            /* Явно прописываем непрозрачный фон, чтобы под ним ничего не просвечивало */
             background: rgb(15, 15, 15) !important;
             border-right: 1.5px solid #1a1a1a !important;
             padding: 15px !important;
             box-sizing: border-box !important;
-            
-            /* Поведение при скролле */
             position: sticky !important;
             top: var(--safe-nav-height) !important;
             height: calc(100vh - var(--safe-nav-height)) !important;
-            
-            /* Скроллбар ТОЛЬКО внутри сайдбара */
             overflow-y: auto !important;
             overflow-x: hidden !important;
             z-index: 99 !important;
@@ -85,9 +78,8 @@
         }
 
         /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
-        /* Снимаем любые внешние position: fixed / absolute */
         .wiki-tree {
-            position: static !important; /* Намертво возвращает дерево в поток сайдбара */
+            position: static !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 4px !important;
@@ -244,9 +236,9 @@
     z-index: 9999;
     background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
     opacity: 0;
-    transform: scale(1) translate3d(-100%, 0, 0); 
+    transform: scale(1) translate3d(-200%, 0, 0); 
     will-change: transform, opacity;
-    transition: opacity 0.3s ease-in-out, transform 0.15s ease-in !important;
+    transition: opacity 0.15s ease-in-out, transform 0.15s ease-in !important;
 }
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
