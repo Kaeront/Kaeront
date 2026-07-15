@@ -155,13 +155,25 @@ function initSearch() {
     });
 }
 
-// Перехват кликов по ссылкам сайдбара
+// Перехват кликов по ВСЕМ ссылкам на сайте (для бесшовного SPA-перехода)
 document.body.addEventListener('click', e => {
-    const target = e.target.closest('.wiki-tree a');
-    if (target) {
+    // Ищем ближайший тег <a> у элемента, по которому кликнули
+    const target = e.target.closest('a');
+    if (!target) return;
+
+    const href = target.getAttribute('href');
+    if (!href) return;
+
+    // Проверяем, является ли ссылка внутренней для архива (начинается с /archive или #)
+    const isArchiveLink = href.startsWith('/archive') || href.startsWith('#');
+    
+    // Исключаем внешние ссылки, почту, контакты и файлы
+    const isExternal = href.startsWith('http') && !href.includes(window.location.hostname);
+    const isSupport = href.includes('/archive/contacts'); // Если контакты/поддержка должны вести на внешнюю страницу или обрабатываться иначе
+
+    if (isArchiveLink && !isExternal && !isSupport) {
         e.preventDefault();
-        const targetUrl = target.getAttribute('href');
-        performTransition(targetUrl);
+        performTransition(href);
     }
 });
 
