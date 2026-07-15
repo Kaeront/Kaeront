@@ -108,15 +108,30 @@ const globalStyles = `
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 25px;
-        background: #181818;
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600;
-        transform: translateY(-100%); transition: var(--transition);
+        transform: translateY(-100%); 
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
         user-select: none;
     }
-    #speed-popup.active { transform: translateY(0); }
+    
+    /* Состояние: Медленный интернет (Оранжево-желтый) */
+    #speed-popup.slow {
+        background: #FFAA00;
+        color: #000;
+    }
+
+    /* Состояние: Нет подключения (Красный) */
+    #speed-popup.offline {
+        background: #D12424;
+        color: #fff;
+    }
+
+    #speed-popup.active { 
+        transform: translateY(0); 
+    }
 `;
 
 const injectHTML = {
@@ -204,14 +219,14 @@ const setupHead = () => {
     document.head.appendChild(style);
 };
 
-// Динамическое управление поп-апом (Появление/Скрытие)
-let delayTimer = null;
+// Динамическое управление поп-апом интернета
+let networkDelayTimer = null;
 
-const toggleSpeedPopup = (show) => {
-    clearTimeout(delayTimer);
+const toggleSpeedPopup = (show, type = 'slow') => {
+    // Сбрасываем предыдущий таймер ожидания медленного соединения
+    clearTimeout(networkDelayTimer);
 
-    // Добавляем delay в 1.5 секунды перед любым визуальным изменением плашки
-    delayTimer = setTimeout(() => {
+    const applyVisibility = () => {
         let popup = document.getElementById('speed-popup');
         const nav = document.getElementById('smart-nav');
 
@@ -219,10 +234,19 @@ const toggleSpeedPopup = (show) => {
             if (!popup) {
                 popup = document.createElement('div');
                 popup.id = 'speed-popup';
-                popup.innerHTML = `<span>Ой-ой! Медленное соединение!</span>`;
                 document.body.appendChild(popup);
             }
-            // Форсируем микро-таймаут для правильного срабатывания CSS-перехода
+
+            // Настраиваем контент и классы в зависимости от типа ошибки
+            if (type === 'offline') {
+                popup.innerHTML = `<span>Подключение к интернету отсутствует. Проверьте соединение.</span>`;
+                popup.className = 'offline'; // Вешаем красный стиль
+            } else {
+                popup.innerHTML = `<span>Ой-ой! Зафиксировано медленное соединение!</span>`;
+                popup.className = 'slow'; // Вешаем желтый стиль
+            }
+
+            // Форсируем микро-таймаут для плавного CSS-перехода
             setTimeout(() => {
                 document.documentElement.style.paddingTop = '25px';
                 if (nav) nav.style.top = '25px';
@@ -233,43 +257,57 @@ const toggleSpeedPopup = (show) => {
                 popup.classList.remove('active');
                 document.documentElement.style.paddingTop = '0px';
                 if (nav) nav.style.top = '0px';
-                setTimeout(() => popup.remove(), 300); // Удаляем из DOM после завершения анимации
+                setTimeout(() => popup.remove(), 300); // Чистим DOM после скрытия
             }
         }
-    }, 1500);
+    };
+
+    if (type === 'offline') {
+        // Если интернета вообще нет — показываем плашку моментально без задержек!
+        applyVisibility();
+    } else {
+        // Если интернет просто просел по скорости — аккуратно ждем 1.5 сек перед показом
+        networkDelayTimer = setTimeout(applyVisibility, 1500);
+    }
 };
 
 // Функция оценки состояния сети
 const evaluateNetwork = () => {
-    // 1. Если браузер полностью в офлайне (включен режим полета)
+    // 1. Проверяем абсолютный офлайн
     if (!navigator.onLine) {
-        toggleSpeedPopup(true);
+        toggleSpeedPopup(true, 'offline');
         return;
     }
 
-    // 2. Если онлайн, проверяем скорость соединения
+    // 2. Проверяем просадку скорости
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
-        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.5)) {
-            toggleSpeedPopup(true);
+        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4)) {
+            toggleSpeedPopup(true, 'slow');
             return;
         }
     }
 
-    // Если всё хорошо — убираем плашку
+    // Если всё восстановилось — плавно скрываем предупреждение
     toggleSpeedPopup(false);
 };
 
-// Живой мониторинг интернета в реальном времени
+// Живой мониторинг в реальном времени
 const startNetworkMonitoring = () => {
-    // Первичная проверка при загрузке
+    // Первичная проверка при загрузке страницы
     evaluateNetwork();
 
-    // Отслеживание физического отключения сети (Режим полета)
-    window.addEventListener('offline', () => toggleSpeedPopup(true));
-    window.addEventListener('online', () => evaluateNetwork());
+    // Мгновенная реакция на физическое отключение (без таймеров и задержек)
+    window.addEventListener('offline', () => {
+        toggleSpeedPopup(true, 'offline');
+    });
 
-    // Отслеживание просадок скорости без разрыва соединения
+    // Реакция на возвращение сети
+    window.addEventListener('online', () => {
+        evaluateNetwork();
+    });
+
+    // Отслеживание изменений скорости «на лету»
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
         connection.addEventListener('change', evaluateNetwork);
