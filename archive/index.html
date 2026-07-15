@@ -14,190 +14,201 @@
         :root {
             --nav-hide: -1px;
             --sidebar-width: 240px;
-            /* Безопасный дефолтный отступ под шапку, если global.js еще не загрузился */
             --safe-nav-height: var(--nav-height, 60px); 
         }
 
         /* Общий контейнер для сайдбара и контента */
         .wiki-layout {
-            display: flex;
-            margin-top: var(--safe-nav-height);
-            min-height: calc(100vh - var(--safe-nav-height));
-            position: relative;
-            width: 100%;
-            box-sizing: border-box;
+            display: flex !important;
+            margin-top: var(--safe-nav-height) !important;
+            min-height: calc(100vh - var(--safe-nav-height)) !important;
+            position: relative !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
 
-        /* --- САЙДБАР (Теперь железобетонный) --- */
+        /* --- САЙДБАР (Жестко фиксируем и изолируем) --- */
         .wiki-sidebar {
-            /* flex: grow shrink basis -> запрещаем сжиматься или растягиваться */
-            flex: 0 0 var(--sidebar-width); 
-            width: var(--sidebar-width);
-            min-width: var(--sidebar-width);
-            background: rgb(15, 15, 15);
-            border-right: 1.5px solid #1a1a1a;
-            padding: 15px;
-            box-sizing: border-box;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 15px !important;
             
-            /* Фиксация при скролле */
-            position: sticky;
-            top: var(--safe-nav-height);
-            height: calc(100vh - var(--safe-nav-height));
-            overflow-y: auto;
-            overflow-x: hidden; /* Предотвращаем горизонтальный скролл внутри сайдбара */
-            z-index: 99;
+            flex: 0 0 var(--sidebar-width) !important; 
+            width: var(--sidebar-width) !important;
+            min-width: var(--sidebar-width) !important;
             
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            /* Явно прописываем непрозрачный фон, чтобы под ним ничего не просвечивало */
+            background: rgb(15, 15, 15) !important;
+            border-right: 1.5px solid #1a1a1a !important;
+            padding: 15px !important;
+            box-sizing: border-box !important;
+            
+            /* Поведение при скролле */
+            position: sticky !important;
+            top: var(--safe-nav-height) !important;
+            height: calc(100vh - var(--safe-nav-height)) !important;
+            
+            /* Скроллбар ТОЛЬКО внутри сайдбара */
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            z-index: 99 !important;
         }
 
         /* --- ПОИСК СТАТЕЙ --- */
         .sidebar-search-wrapper {
-            position: relative;
-            width: 100%;
+            position: relative !important;
+            width: 100% !important;
+            display: block !important;
         }
 
         .sidebar-search {
-            width: 100%;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            width: 100% !important;
+            background: #0a0a0a !important;
+            border: 1px solid #1a1a1a !important;
+            border-radius: 4px !important;
+            padding: 8px 12px !important;
+            box-sizing: border-box !important;
+            color: #fff !important;
+            font-family: 'Montserrat', sans-serif !important;
+            font-size: 0.7rem !important;
+            outline: none !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
 
         .sidebar-search:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 5px rgba(255, 170, 0, 0.15);
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 5px rgba(255, 170, 0, 0.15) !important;
         }
 
         .sidebar-search::placeholder {
-            color: #444;
+            color: #444 !important;
         }
 
         /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
+        /* Снимаем любые внешние position: fixed / absolute */
         .wiki-tree {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
+            position: static !important; /* Намертво возвращает дерево в поток сайдбара */
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            transform: none !important;
         }
 
         /* Элемент папки (контейнер) */
         .wiki-folder {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+            position: relative !important;
         }
 
         /* Заголовок папки */
         .folder-title {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 2px solid transparent;
-            user-select: none;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            border-radius: 0 4px 4px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Красивое троеточие, если текст не влезает */
+            font-family: 'Minecraft', sans-serif !important;
+            font-size: 0.65rem !important;
+            color: var(--text-dim) !important;
+            cursor: pointer !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 6px 10px !important;
+            background: rgba(255, 255, 255, 0.02) !important;
+            border-left: 2px solid transparent !important;
+            user-select: none !important;
+            transition: background 0.2s, color 0.2s, border-color 0.2s !important;
+            border-radius: 0 4px 4px 0 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
         }
 
         .folder-title:hover {
-            background: rgba(255, 170, 0, 0.05);
-            color: var(--accent);
+            background: rgba(255, 170, 0, 0.05) !important;
+            color: var(--accent) !important;
         }
 
         /* Иконка раскрытия */
         .folder-title::after {
-            content: '▶';
-            font-size: 0.45rem;
-            transition: transform 0.2s ease;
-            color: #444;
-            flex-shrink: 0;
-            margin-left: 5px;
+            content: '▶' !important;
+            font-size: 0.45rem !important;
+            transition: transform 0.2s ease !important;
+            color: #444 !important;
+            flex-shrink: 0 !important;
+            margin-left: 5px !important;
         }
 
         /* Активное/открытое состояние папки */
         .wiki-folder.open > .folder-title {
-            color: var(--accent);
-            background: rgba(255, 170, 0, 0.03);
-            border-left-color: var(--accent);
+            color: var(--accent) !important;
+            background: rgba(255, 170, 0, 0.03) !important;
+            border-left-color: var(--accent) !important;
         }
 
         .wiki-folder.open > .folder-title::after {
-            transform: rotate(90deg);
-            color: var(--accent);
+            transform: rotate(90deg) !important;
+            color: var(--accent) !important;
         }
 
         /* Контейнер для вложенного содержимого папки */
         .folder-content {
-            display: grid;
-            grid-template-rows: 0fr;
-            opacity: 0;
-            visibility: hidden;
+            display: grid !important;
+            grid-template-rows: 0fr !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
             transition: grid-template-rows 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
                         opacity 0.2s ease,
-                        visibility 0.2s ease;
-            padding-left: 8px; /* Сдвиг для визуальной вложенности */
+                        visibility 0.2s ease !important;
+            padding-left: 8px !important; 
         }
 
         .wiki-folder.open > .folder-content {
-            grid-template-rows: 1fr;
-            opacity: 1;
-            visibility: visible;
-            margin-top: 2px;
-            margin-bottom: 2px;
+            grid-template-rows: 1fr !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            margin-top: 2px !important;
+            margin-bottom: 2px !important;
         }
 
         /* Обёртка контента папки */
         .folder-content-wrapper {
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            border-left: 1px dashed #1a1a1a; /* Линия вложенности */
-            padding-left: 6px;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+            border-left: 1px dashed #1a1a1a !important; 
+            padding-left: 6px !important;
         }
 
         /* Конечные ссылки на статьи */
         .wiki-tree a {
-            color: var(--text-dim);
-            text-decoration: none;
-            font-size: 0.65rem;
-            padding: 5px 8px;
-            border-radius: 4px;
-            transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: var(--text-dim) !important;
+            text-decoration: none !important;
+            font-size: 0.65rem !important;
+            padding: 5px 8px !important;
+            border-radius: 4px !important;
+            transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
+            display: block !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
         }
 
         .wiki-tree a:hover,
         .wiki-tree a.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.04);
-            padding-left: 12px;
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.04) !important;
+            padding-left: 12px !important;
         }
 
         /* Подсветка найденного слова при поиске */
         .search-match {
             color: var(--accent) !important;
-            font-weight: 600;
+            font-weight: 600 !important;
         }
 
         /* Скрытие элементов, не подошедших под поиск */
@@ -208,58 +219,58 @@
 
         /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
         #wiki-app {
-            flex: 1 1 0%; /* Занимает всё оставшееся пространство */
-            min-width: 0; /* Не даёт контенту распирать флекс-контейнер */
-            padding: 40px;
-            box-sizing: border-box;
+            flex: 1 1 0% !important; 
+            min-width: 0 !important; 
+            padding: 40px !important;
+            box-sizing: border-box !important;
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1);
-            transform-origin: top center;
-            opacity: 1;
-            transform: scale(1);
+                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+            transform-origin: top center !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
         }
 
         /* Анимация отдаления */
         #wiki-app.scale-down {
-            opacity: 0.1;
-            transform: scale(0.95);
+            opacity: 0.1 !important;
+            transform: scale(0.95) !important;
             transition: transform 0.15s ease-in, 
-                        opacity 0.15s ease-in;
+                        opacity 0.15s ease-in !important;
         }
 
         /* Рендеринг разметки статьи */
         .markdown-body {
-            line-height: 1.7;
-            font-size: 0.95rem;
-            max-width: 800px;
+            line-height: 1.7 !important;
+            font-size: 0.95rem !important;
+            max-width: 800px !important;
         }
-        .markdown-body h1 { font-family: 'Minecraft', sans-serif; color: var(--accent); margin-top: 0; margin-bottom: 25px; font-size: 1.8rem; }
-        .markdown-body h2 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 35px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; font-size: 1.3rem; }
-        .markdown-body h3 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 25px; font-size: 1rem; }
-        .markdown-body p { color: var(--text-dim); text-align: justify; margin-bottom: 20px; }
-        .markdown-body a { color: var(--accent); text-decoration: none; transition: 0.3s; }
-        .markdown-body a:hover { text-decoration: underline; }
-        .markdown-body code { background: #141414; padding: 3px 6px; border-radius: 3px; font-family: monospace; font-size: 0.85rem; color: var(--accent); }
+        .markdown-body h1 { font-family: 'Minecraft', sans-serif !important; color: var(--accent) !important; margin-top: 0 !important; margin-bottom: 25px !important; font-size: 1.8rem !important; }
+        .markdown-body h2 { font-family: 'Minecraft', sans-serif !important; color: #fff !important; margin-top: 35px !important; border-bottom: 1px solid #1a1a1a !important; padding-bottom: 8px !important; font-size: 1.3rem !important; }
+        .markdown-body h3 { font-family: 'Minecraft', sans-serif !important; color: #fff !important; margin-top: 25px !important; font-size: 1rem !important; }
+        .markdown-body p { color: var(--text-dim) !important; text-align: justify !important; margin-bottom: 20px !important; }
+        .markdown-body a { color: var(--accent) !important; text-decoration: none !important; transition: 0.3s !important; }
+        .markdown-body a:hover { text-decoration: underline !important; }
+        .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 3px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
 
-        /* Адаптивность для мобильных (Обычный просмотр без имитации ПК) */
+        /* Адаптивность для мобильных */
         @media (max-width: 768px) {
             .wiki-layout {
-                flex-direction: column;
-                margin-top: var(--safe-nav-height);
+                flex-direction: column !important;
+                margin-top: var(--safe-nav-height) !important;
             }
             .wiki-sidebar {
                 max-width: 100% !important;
-                width: 100%;
+                width: 100% !important;
                 min-width: 100% !important;
-                height: auto;
-                position: relative;
-                top: 0;
-                border-right: none;
-                border-bottom: 1.5px solid #1a1a1a;
-                padding: 15px;
+                height: auto !important;
+                position: relative !important;
+                top: 0 !important;
+                border-right: none !important;
+                border-bottom: 1.5px solid #1a1a1a !important;
+                padding: 15px !important;
             }
             #wiki-app {
-                padding: 30px 15px;
+                padding: 30px 15px !important;
             }
         }
     </style>
