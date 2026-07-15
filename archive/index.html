@@ -45,16 +45,20 @@
             overflow-y: auto !important;
             overflow-x: hidden !important;
             z-index: 99 !important;
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 5px, black calc(100% - 5px), transparent);
-            mask-image: linear-gradient(to bottom, transparent, black 5px, black calc(100% - 5px), transparent);
-
         }
 
         /* --- ПОИСК СТАТЕЙ --- */
         .sidebar-search-wrapper {
-            position: relative !important;
+            position: sticky !important;
+            top: -15px !important;
+            margin-top: -15px !important;
+            padding-top: 15px !important;
+            padding-bottom: 12px !important;
             width: 100% !important;
             display: block !important;
+            z-index: 100 !important;
+            background: rgb(15, 15, 15) !important; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important; 
         }
 
         .sidebar-search {
@@ -89,9 +93,11 @@
             width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 0 !important;
+            padding-bottom: 15px !important;
             background: transparent !important;
             transform: none !important;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 15px), transparent);
+            mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 15px), transparent);
         }
 
         /* Элемент папки (контейнер) */
