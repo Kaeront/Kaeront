@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            --nav-hide: 0px;
+            --nav-hide: 1px;
             --sidebar-width: 240px;
             --safe-nav-height: var(--nav-height, 50px); 
         }
@@ -45,6 +45,8 @@
             overflow-y: auto !important;
             overflow-x: hidden !important;
             z-index: 99 !important;
+            -webkit-mask-image: linear-gradient(to top, transparent, black 5%, black 95%, transparent);
+            mask-image: linear-gradient(to top, transparent, black 5%, black 95%, transparent);
         }
 
         /* --- ПОИСК СТАТЕЙ --- */
