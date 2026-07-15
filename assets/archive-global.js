@@ -52,15 +52,11 @@ async function loadArticle() {
     }
 }
 
-// Быстрый асинхронный переход
+// Быстрый асинхронный переход (150мс сокрытие, 350мс плавный показ)
 async function performTransition(targetUrl) {
-    // 1. Быстро скрываем контент (150мс)
     appContainer.classList.add('scale-down');
-
-    // 2. Ждем окончания быстрого скрытия
     await new Promise(resolve => setTimeout(resolve, 150));
 
-    // 3. Меняем URL и подгружаем новую статью
     if (isLocal) {
         window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
     } else {
@@ -72,24 +68,13 @@ async function performTransition(targetUrl) {
     updateActiveSidebarLink();
     
     window.scrollTo(0, 0);
-
-    // 4. Плавно и элегантно проявляем (сработает transition на 350мс из CSS)
     appContainer.classList.remove('scale-down');
 }
 
-// Быстрый переход при клике по кнопкам "Назад/Вперед" в браузере
-window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
-    appContainer.classList.add('scale-down');
-    await new Promise(resolve => setTimeout(resolve, 150));
-    await loadArticle();
-    updateActiveSidebarLink();
-    appContainer.classList.remove('scale-down');
-});
-
-// Подсветка текущей страницы в сайдбаре
+// Подсветка текущей страницы в сайдбаре и автораскрытие папок вверх по дереву
 function updateActiveSidebarLink() {
     const currentRoute = getCleanRoute();
-    const links = document.querySelectorAll('.category-links a');
+    const links = document.querySelectorAll('.wiki-tree a');
     
     links.forEach(link => {
         let linkRoute = link.getAttribute('href')
@@ -99,16 +84,80 @@ function updateActiveSidebarLink() {
             
         if (linkRoute === currentRoute) {
             link.classList.add('active');
-            link.closest('.sidebar-category').classList.add('active');
+            
+            // Находим все родительские папки .wiki-folder этой ссылки и плавно раскрываем их
+            let parentFolder = link.closest('.wiki-folder');
+            while (parentFolder) {
+                parentFolder.classList.add('open');
+                parentFolder = parentFolder.parentElement.closest('.wiki-folder');
+            }
         } else {
             link.classList.remove('active');
         }
     });
 }
 
+// Логика живого поиска по сайдбару
+function initSearch() {
+    const searchInput = document.getElementById('wiki-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const links = document.querySelectorAll('.wiki-tree a');
+        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
+
+        // Сброс поиска, если поле ввода пустое
+        if (query === '') {
+            links.forEach(link => {
+                link.classList.remove('search-hidden');
+                link.innerHTML = link.textContent; // Сбрасываем подсветку букв
+            });
+            folders.forEach(folder => {
+                folder.classList.remove('search-hidden');
+                folder.classList.remove('open');
+            });
+            updateActiveSidebarLink(); // Раскроет только ту ветку, где мы сейчас находимся
+            return;
+        }
+
+        // 1. Показываем/скрываем конечные ссылки
+        links.forEach(link => {
+            const text = link.textContent;
+            const textLower = text.toLowerCase();
+            const index = textLower.indexOf(query);
+
+            if (index !== -1) {
+                link.classList.remove('search-hidden');
+                // Подсвечиваем совпавшую часть текста
+                link.innerHTML = text.substring(0, index) + 
+                                 `<span class="search-match">${text.substring(index, index + query.length)}</span>` + 
+                                 text.substring(index + query.length);
+            } else {
+                link.classList.add('search-hidden');
+                link.innerHTML = text;
+            }
+        });
+
+        // 2. Управляем видимостью и состоянием папок на основе их содержимого
+        folders.forEach(folder => {
+            // Проверяем, есть ли внутри этой папки хоть одна видимая (подходящая под поиск) ссылка
+            const hasVisibleLinks = folder.querySelectorAll('a:not(.search-hidden)').length > 0;
+
+            if (hasVisibleLinks) {
+                folder.classList.remove('search-hidden');
+                folder.classList.add('open'); // Автоматически раскрываем папки с совпадениями
+            } else {
+                folder.classList.add('search-hidden');
+                folder.classList.remove('open');
+            }
+        });
+    });
+}
+
 // Перехват кликов по ссылкам сайдбара
 document.body.addEventListener('click', e => {
-    const target = e.target.closest('.category-links a');
+    const target = e.target.closest('.wiki-tree a');
     if (target) {
         e.preventDefault();
         const targetUrl = target.getAttribute('href');
@@ -116,13 +165,11 @@ document.body.addEventListener('click', e => {
     }
 });
 
-// Слушатели изменений истории (кнопки Назад/Вперед)
+// Слушатели изменений истории (кнопки "Назад/Вперед")
 window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
     appContainer.classList.add('scale-down');
-    await Promise.all([
-        loadArticle(),
-        new Promise(resolve => setTimeout(resolve, 150))
-    ]);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    await loadArticle();
     updateActiveSidebarLink();
     appContainer.classList.remove('scale-down');
 });
@@ -140,10 +187,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Инициализируем страницу с красивым плавным появлением
+    // Инициализируем страницу и поиск
     appContainer.classList.add('scale-down');
     await loadArticle();
     updateActiveSidebarLink();
+    initSearch();
     
     // Мягко убираем экран загрузки после рендеринга статьи
     const loader = document.getElementById('loader-wrapper');
@@ -154,5 +202,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     setTimeout(() => {
         appContainer.classList.remove('scale-down');
-    }, 50);
+    }, 100);
 });
