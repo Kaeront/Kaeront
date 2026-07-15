@@ -14,7 +14,7 @@
         :root {
             --nav-hide: -1px;
             --sidebar-width: 240px;
-            --safe-nav-height: var(--nav-height, 60px); 
+            --safe-nav-height: var(--nav-height, 50px); 
         }
 
         /* Общий контейнер для сайдбара и контента */
@@ -246,7 +246,9 @@
     background-size: 200% 100%;
     opacity: 0;
     transform: scale(1); 
-    transition: opacity 0.3s ease-in-out, transform 0.15s ease-in !important;
+    transition: transform 0.15s ease-in, 
+                opacity 0.15s ease-in !important;
+    transform-origin: top center !important;
 }
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
@@ -258,7 +260,7 @@
 }
 
 #wiki-app.scale-down::before {
-    opacity: 1; /* Плавно проявляем шиммер */
+    opacity: 1;
     transform: scale(1.0526); 
     animation: continuous-shimmer 1s linear infinite !important;
 }
