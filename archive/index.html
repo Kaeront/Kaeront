@@ -12,37 +12,49 @@
     <script src="./assets/global.js" defer></script>
 
     <style>
-                :root {
+        :root {
             --nav-hide: -1px;
-            --sidebar-width: 260px; /* Оптимальная ширина для глубокой вложенности */
+            --sidebar-width: 250px;
         }
 
-        /* Общий контейнер-лейаут */
+        /* --- СЕТКА НА CSS GRID (Адаптируется под масштаб автоматически) --- */
         .wiki-layout {
-            display: flex;
-            margin-top: var(--nav-height); /* Отступ под глобальный навбар */
+            display: grid;
+            /* Если экран шире 768px, делаем 2 колонки. Иначе — все в 1 колонку */
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--sidebar-width)), 1fr));
+            margin-top: var(--nav-height);
             min-height: calc(100vh - var(--nav-height));
-            position: relative;
             width: 100%;
             box-sizing: border-box;
         }
 
+        /* На больших экранах жестко распределяем пропорции колонок: Сайдбар (250px) и Контент (все остальное) */
+        @media (min-width: 769px) {
+            .wiki-layout {
+                grid-template-columns: var(--sidebar-width) 1fr;
+            }
+        }
+
         /* --- САЙДБАР --- */
         .wiki-sidebar {
-            width: var(--sidebar-width);
-            min-width: var(--sidebar-width); /* Не даем флексам сжимать сайдбар */
             background: rgb(15, 15, 15);
             border-right: 1.5px solid #1a1a1a;
             padding: 15px;
             box-sizing: border-box;
-            position: sticky;
-            top: var(--nav-height);
-            height: calc(100vh - var(--nav-height));
-            overflow-y: auto;
-            z-index: 99; /* Ниже основного навбара (2000), но выше контента */
             display: flex;
             flex-direction: column;
             gap: 15px;
+            z-index: 99;
+        }
+
+        /* Фиксируем сайдбар при скролле только на десктопном режиме */
+        @media (min-width: 769px) {
+            .wiki-sidebar {
+                position: sticky;
+                top: var(--nav-height);
+                height: calc(100vh - var(--nav-height));
+                overflow-y: auto;
+            }
         }
 
         /* --- ПОИСК СТАТЕЙ --- */
@@ -81,14 +93,12 @@
             gap: 4px;
         }
 
-        /* Элемент папки (контейнер) */
         .wiki-folder {
             display: flex;
             flex-direction: column;
             width: 100%;
         }
 
-        /* Заголовок папки */
         .folder-title {
             font-family: 'Minecraft', sans-serif;
             font-size: 0.65rem;
@@ -110,7 +120,6 @@
             color: var(--accent);
         }
 
-        /* Иконка раскрытия */
         .folder-title::after {
             content: '▶';
             font-size: 0.45rem;
@@ -118,7 +127,6 @@
             color: #444;
         }
 
-        /* Активное/открытое состояние папки */
         .wiki-folder.open > .folder-title {
             color: var(--accent);
             background: rgba(255, 170, 0, 0.03);
@@ -130,7 +138,6 @@
             color: var(--accent);
         }
 
-        /* Контейнер для вложенного содержимого папки */
         .folder-content {
             display: grid;
             grid-template-rows: 0fr;
@@ -150,7 +157,6 @@
             margin-bottom: 2px;
         }
 
-        /* Обёртка контента папки */
         .folder-content-wrapper {
             overflow: hidden;
             display: flex;
@@ -160,7 +166,6 @@
             padding-left: 6px;
         }
 
-        /* Конечные ссылки на статьи */
         .wiki-tree a {
             color: var(--text-dim);
             text-decoration: none;
@@ -178,13 +183,11 @@
             padding-left: 12px;
         }
 
-        /* Подсветка найденного слова при поиске */
         .search-match {
             color: var(--accent) !important;
             font-weight: 600;
         }
 
-        /* Скрытие элементов, не подошедших под поиск */
         .wiki-folder.search-hidden,
         .wiki-tree a.search-hidden {
             display: none !important;
@@ -192,18 +195,16 @@
 
         /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
         #wiki-app {
-            flex-grow: 1;
             padding: 40px;
-            max-width: calc(100% - var(--sidebar-width)); /* Ограничиваем область, чтобы она не уползала под сайдбар */
             box-sizing: border-box;
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                         opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1);
             transform-origin: top center;
             opacity: 1;
             transform: scale(1);
+            min-width: 0; /* Спасает грид-ячейку от переполнения длинным кодом */
         }
 
-        /* Анимация отдаления */
         #wiki-app.scale-down {
             opacity: 0.1;
             transform: scale(0.95);
@@ -211,11 +212,10 @@
                         opacity 0.15s ease-in;
         }
 
-        /* Рендеринг разметки статьи */
         .markdown-body {
             line-height: 1.7;
             font-size: 0.95rem;
-            max-width: 800px; /* Делаем текст легко читаемым */
+            max-width: 800px;
         }
         .markdown-body h1 { font-family: 'Minecraft', sans-serif; color: var(--accent); margin-top: 0; margin-bottom: 25px; font-size: 1.8rem; }
         .markdown-body h2 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 35px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; font-size: 1.3rem; }
@@ -225,27 +225,18 @@
         .markdown-body a:hover { text-decoration: underline; }
         .markdown-body code { background: #141414; padding: 3px 6px; border-radius: 3px; font-family: monospace; font-size: 0.85rem; color: var(--accent); }
 
-        /* Адаптивность для мобильных */
+        /* --- МОБИЛЬНЫЕ НАСТРОЙКИ (До 768px) --- */
         @media (max-width: 768px) {
             .wiki-layout {
-                flex-direction: column;
-                margin-top: var(--nav-height);
+                grid-template-columns: 1fr; /* Только один столбец */
                 min-height: auto;
             }
             .wiki-sidebar {
-                width: 100%;
-                max-width: 100% !important;
-                min-width: 100% !important;
-                height: auto;
-                position: relative;
-                top: 0;
                 border-right: none;
                 border-bottom: 1.5px solid #1a1a1a;
                 padding: 15px;
             }
             #wiki-app {
-                width: 100%;
-                max-width: 100% !important;
                 padding: 30px 15px;
             }
         }
@@ -385,7 +376,7 @@
                                                     <div class="folder-title" onclick="toggleFolder(this)">Игровые</div>
                                                     <div class="folder-content">
                                                         <div class="folder-content-wrapper">
-                                                            <a href="/archive/legends/characters/playable/shang">Шэнг</a>
+                                                            <a href="/archive/legends/characters/playable/sheng">Шэнг</a>
                                                             <a href="/archive/legends/characters/playable/baochi">Баочи</a>
                                                         </div>
                                                     </div>
@@ -396,8 +387,8 @@
                                                     <div class="folder-title" onclick="toggleFolder(this)">Враги</div>
                                                     <div class="folder-content">
                                                         <div class="folder-content-wrapper">
-                                                            <a href="/archive/legends/characters/enemies/slimes">Слаймы</a>
-                                                            <a href="/archive/legends/characters/enemies/ifayenis">Ифайенисы</a>
+                                                            <a href="/archive/legends/characters/enemies/slime">Слайм</a>
+                                                            <a href="/archive/legends/characters/enemies/ifayenis">Ифайенис</a>
                                                         </div>
                                                     </div>
                                                 </div>
