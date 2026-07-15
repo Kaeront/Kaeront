@@ -11,236 +11,247 @@
     <script src="./assets/archive-global.js" defer></script>
     <script src="./assets/global.js" defer></script>
 
-    <style>
-        :root {
-            --nav-hide: -1px;
-            --sidebar-width: 250px;
-        }
+<style>
+    :root {
+        --nav-hide: -1px;
+        --sidebar-width: 260px;
+    }
 
-        /* --- СЕТКА НА CSS GRID (Адаптируется под масштаб автоматически) --- */
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #050505;
+        color: #ffffff;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    /* --- ГЛАВНЫЙ ЛЭЙАУТ --- */
+    .wiki-layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        margin-top: var(--nav-height);
+        min-height: calc(100vh - var(--nav-height));
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    /* --- САЙДБАР (ПРОВОДНИК) --- */
+    .wiki-sidebar {
+        background: #0d0d0d;
+        border-right: 1.5px solid #1a1a1a;
+        padding: 20px 15px;
+        box-sizing: border-box;
+        position: sticky;
+        top: var(--nav-height);
+        height: calc(100vh - var(--nav-height));
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 90;
+    }
+
+    /* --- ПОЛЕ ПОИСКА --- */
+    .sidebar-search-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sidebar-search {
+        width: 100%;
+        background: #050505;
+        border: 1px solid #1a1a1a;
+        border-radius: 4px;
+        padding: 10px 12px;
+        box-sizing: border-box;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.75rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .sidebar-search:focus {
+        border-color: var(--accent);
+    }
+
+    .sidebar-search::placeholder {
+        color: #444;
+    }
+
+    /* --- ДЕРЕВО НАВИГАЦИИ (Проводник) --- */
+    .wiki-tree {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .wiki-folder {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .folder-title {
+        font-family: 'Minecraft', sans-serif;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 2px solid transparent;
+        user-select: none;
+        transition: background 0.2s, color 0.2s;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .folder-title:hover {
+        background: rgba(255, 170, 0, 0.05);
+        color: var(--accent);
+    }
+
+    .folder-title::after {
+        content: '▶';
+        font-size: 0.5rem;
+        transition: transform 0.2s ease;
+        color: #444;
+    }
+
+    .wiki-folder.open > .folder-title {
+        color: var(--accent);
+        background: rgba(255, 170, 0, 0.03);
+        border-left-color: var(--accent);
+    }
+
+    .wiki-folder.open > .folder-title::after {
+        transform: rotate(90deg);
+        color: var(--accent);
+    }
+
+    /* Плавное раскрытие папок */
+    .folder-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        visibility: hidden;
+        transition: grid-template-rows 0.2s ease, opacity 0.2s ease;
+        padding-left: 10px;
+    }
+
+    .wiki-folder.open > .folder-content {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        visibility: visible;
+        margin-top: 4px;
+    }
+
+    .folder-content-wrapper {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        border-left: 1px dashed #1a1a1a;
+        padding-left: 8px;
+    }
+
+    /* Ссылки на статьи */
+    .wiki-tree a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.7rem;
+        padding: 6px 8px;
+        border-radius: 4px;
+        transition: color 0.2s, background 0.2s, padding-left 0.2s;
+        display: block;
+    }
+
+    .wiki-tree a:hover,
+    .wiki-tree a.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.04);
+        padding-left: 12px;
+    }
+
+    /* Системные классы поиска */
+    .search-match {
+        color: var(--accent) !important;
+        font-weight: 600;
+    }
+
+    .wiki-folder.search-hidden,
+    .wiki-tree a.search-hidden {
+        display: none !important;
+    }
+
+    /* --- ОБЛАСТЬ СТАТЬИ (КОНТЕНТ) --- */
+    #wiki-app {
+        padding: 40px;
+        box-sizing: border-box;
+        min-width: 0;
+        background-color: #050505;
+    }
+
+    /* Разметка Markdown внутри статьи */
+    .markdown-body {
+        line-height: 1.7;
+        font-size: 0.95rem;
+        max-width: 850px;
+        margin: 0 auto; /* Центрируем текст внутри контентной зоны */
+    }
+    
+    .markdown-body h1 { 
+        font-family: 'Minecraft', sans-serif; 
+        color: var(--accent); 
+        margin-top: 0; 
+        margin-bottom: 25px; 
+        font-size: 1.8rem; 
+    }
+    
+    .markdown-body h2 { 
+        font-family: 'Minecraft', sans-serif; 
+        color: #fff; 
+        margin-top: 35px; 
+        border-bottom: 1px solid #1a1a1a; 
+        padding-bottom: 8px; 
+        font-size: 1.3rem; 
+    }
+    
+    .markdown-body p { 
+        color: #ccc; 
+        text-align: justify; 
+        margin-bottom: 20px; 
+    }
+
+    /* --- АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ И МАСШТАБА --- */
+    @media (max-width: 768px) {
         .wiki-layout {
-            display: grid;
-            /* Если экран шире 768px, делаем 2 колонки. Иначе — все в 1 колонку */
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--sidebar-width)), 1fr));
+            grid-template-columns: 1fr; /* Перестраиваем в одну колонку */
             margin-top: var(--nav-height);
-            min-height: calc(100vh - var(--nav-height));
-            width: 100%;
-            box-sizing: border-box;
+            min-height: auto;
         }
 
-        /* На больших экранах жестко распределяем пропорции колонок: Сайдбар (250px) и Контент (все остальное) */
-        @media (min-width: 769px) {
-            .wiki-layout {
-                grid-template-columns: var(--sidebar-width) 1fr;
-            }
-        }
-
-        /* --- САЙДБАР --- */
         .wiki-sidebar {
-            background: rgb(15, 15, 15);
-            border-right: 1.5px solid #1a1a1a;
-            padding: 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 99;
-        }
-
-        /* Фиксируем сайдбар при скролле только на десктопном режиме */
-        @media (min-width: 769px) {
-            .wiki-sidebar {
-                position: sticky;
-                top: var(--nav-height);
-                height: calc(100vh - var(--nav-height));
-                overflow-y: auto;
-            }
-        }
-
-        /* --- ПОИСК СТАТЕЙ --- */
-        .sidebar-search-wrapper {
             position: relative;
+            top: 0;
+            height: auto;
             width: 100%;
+            border-right: none;
+            border-bottom: 1.5px solid #1a1a1a;
+            padding: 15px;
         }
 
-        .sidebar-search {
-            width: 100%;
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            padding: 8px 12px;
-            box-sizing: border-box;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
-            outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .sidebar-search:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 5px rgba(255, 170, 0, 0.15);
-        }
-
-        .sidebar-search::placeholder {
-            color: #444;
-        }
-
-        /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
-        .wiki-tree {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .wiki-folder {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .folder-title {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 2px solid transparent;
-            user-select: none;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            border-radius: 0 4px 4px 0;
-        }
-
-        .folder-title:hover {
-            background: rgba(255, 170, 0, 0.05);
-            color: var(--accent);
-        }
-
-        .folder-title::after {
-            content: '▶';
-            font-size: 0.45rem;
-            transition: transform 0.2s ease;
-            color: #444;
-        }
-
-        .wiki-folder.open > .folder-title {
-            color: var(--accent);
-            background: rgba(255, 170, 0, 0.03);
-            border-left-color: var(--accent);
-        }
-
-        .wiki-folder.open > .folder-title::after {
-            transform: rotate(90deg);
-            color: var(--accent);
-        }
-
-        .folder-content {
-            display: grid;
-            grid-template-rows: 0fr;
-            opacity: 0;
-            visibility: hidden;
-            transition: grid-template-rows 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
-                        opacity 0.2s ease,
-                        visibility 0.2s ease;
-            padding-left: 8px;
-        }
-
-        .wiki-folder.open > .folder-content {
-            grid-template-rows: 1fr;
-            opacity: 1;
-            visibility: visible;
-            margin-top: 2px;
-            margin-bottom: 2px;
-        }
-
-        .folder-content-wrapper {
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            border-left: 1px dashed #1a1a1a;
-            padding-left: 6px;
-        }
-
-        .wiki-tree a {
-            color: var(--text-dim);
-            text-decoration: none;
-            font-size: 0.65rem;
-            padding: 5px 8px;
-            border-radius: 4px;
-            transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-            display: block;
-        }
-
-        .wiki-tree a:hover,
-        .wiki-tree a.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.04);
-            padding-left: 12px;
-        }
-
-        .search-match {
-            color: var(--accent) !important;
-            font-weight: 600;
-        }
-
-        .wiki-folder.search-hidden,
-        .wiki-tree a.search-hidden {
-            display: none !important;
-        }
-
-        /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
         #wiki-app {
-            padding: 40px;
-            box-sizing: border-box;
-            transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1);
-            transform-origin: top center;
-            opacity: 1;
-            transform: scale(1);
-            min-width: 0; /* Спасает грид-ячейку от переполнения длинным кодом */
+            padding: 30px 15px;
+            width: 100%;
         }
-
-        #wiki-app.scale-down {
-            opacity: 0.1;
-            transform: scale(0.95);
-            transition: transform 0.15s ease-in, 
-                        opacity 0.15s ease-in;
-        }
-
-        .markdown-body {
-            line-height: 1.7;
-            font-size: 0.95rem;
-            max-width: 800px;
-        }
-        .markdown-body h1 { font-family: 'Minecraft', sans-serif; color: var(--accent); margin-top: 0; margin-bottom: 25px; font-size: 1.8rem; }
-        .markdown-body h2 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 35px; border-bottom: 1px solid #1a1a1a; padding-bottom: 8px; font-size: 1.3rem; }
-        .markdown-body h3 { font-family: 'Minecraft', sans-serif; color: #fff; margin-top: 25px; font-size: 1rem; }
-        .markdown-body p { color: var(--text-dim); text-align: justify; margin-bottom: 20px; }
-        .markdown-body a { color: var(--accent); text-decoration: none; transition: 0.3s; }
-        .markdown-body a:hover { text-decoration: underline; }
-        .markdown-body code { background: #141414; padding: 3px 6px; border-radius: 3px; font-family: monospace; font-size: 0.85rem; color: var(--accent); }
-
-        /* --- МОБИЛЬНЫЕ НАСТРОЙКИ (До 768px) --- */
-        @media (max-width: 768px) {
-            .wiki-layout {
-                grid-template-columns: 1fr; /* Только один столбец */
-                min-height: auto;
-            }
-            .wiki-sidebar {
-                border-right: none;
-                border-bottom: 1.5px solid #1a1a1a;
-                padding: 15px;
-            }
-            #wiki-app {
-                padding: 30px 15px;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 <!-- Loading Screen -->
