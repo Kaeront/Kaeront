@@ -10,17 +10,17 @@
     <!-- Твой новый скрипт для Вики -->
     <script src="./assets/archive-global.js" defer></script>
     <script src="./assets/global.js" defer></script>
-    
+
     <style>
         :root {
             --nav-hide: -1px;
-            --sidebar-width: 200px;
+            --sidebar-width: 240px; /* Немного расширим для глубокой вложенности */
         }
 
         /* Общий контейнер для сайдбара и контента */
         .wiki-layout {
             display: flex;
-            margin-top: var(--nav-height); /* Отступ под глобальный навбар */
+            margin-top: var(--nav-height);
             min-height: calc(100vh - var(--nav-height));
             position: relative;
         }
@@ -38,86 +38,155 @@
             height: calc(100vh - var(--nav-height));
             overflow-y: auto;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        /* Выпадающий список */
-        .sidebar-category {
-            margin-bottom: 15px;
+        /* --- ПОИСК СТАТЕЙ --- */
+        .sidebar-search-wrapper {
+            position: relative;
+            width: 100%;
         }
 
-        .category-title {
-            font-family: 'Minecraft', sans-serif;
+        .sidebar-search {
+            width: 100%;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            padding: 8px 12px;
+            box-sizing: border-box;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
             font-size: 0.7rem;
-            color: var(--accent);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .sidebar-search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 5px rgba(255, 170, 0, 0.15);
+        }
+
+        .sidebar-search::placeholder {
+            color: #444;
+        }
+
+        /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
+        .wiki-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Элемент папки (контейнер) */
+        .wiki-folder {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Заголовок папки */
+        .folder-title {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.65rem;
+            color: var(--text-dim);
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 10px;
-            background: rgba(255, 170, 0, 0.05);
-            border-left: 2px solid var(--accent);
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid transparent;
             user-select: none;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            border-radius: 0 4px 4px 0;
         }
 
-        .category-title:hover {
-            background: rgba(255, 170, 0, 0.1);
+        .folder-title:hover {
+            background: rgba(255, 170, 0, 0.05);
+            color: var(--accent);
         }
 
-        .category-title::after {
-            content: '▼';
-            font-size: 0.5rem;
-            transition: transform 0.3s;
+        /* Иконка раскрытия */
+        .folder-title::after {
+            content: '▶';
+            font-size: 0.45rem;
+            transition: transform 0.2s ease;
+            color: #444;
         }
 
-        .sidebar-category.active .category-title::after {
-            transform: rotate(-180deg);
+        /* Активное/открытое состояние папки */
+        .wiki-folder.open > .folder-title {
+            color: var(--accent);
+            background: rgba(255, 170, 0, 0.03);
+            border-left-color: var(--accent);
         }
 
-        /* Список статей внутри категории */
-        .category-links {
+        .wiki-folder.open > .folder-title::after {
+            transform: rotate(90deg);
+            color: var(--accent);
+        }
+
+        /* Контейнер для вложенного содержимого папки */
+        .folder-content {
             display: grid;
             grid-template-rows: 0fr;
-            transition: grid-template-rows 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
-                        opacity 0.2s ease,
-                        padding 0.3s ease;
             opacity: 0;
-            padding-left: 10px;
-            padding-top: 0;
-            padding-bottom: 0;
+            visibility: hidden;
+            transition: grid-template-rows 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
+                        opacity 0.2s ease,
+                        visibility 0.2s ease;
+            padding-left: 8px; /* Сдвиг для визуальной вложенности */
         }
 
-        /* Контейнер-обёртка, необходимый для работы плавного Grid */
-        .category-links-wrapper {
+        .wiki-folder.open > .folder-content {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            visibility: visible;
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
+
+        /* Обёртка контента папки */
+        .folder-content-wrapper {
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 2px; /* Небольшой зазор между ссылками */
+            gap: 2px;
+            border-left: 1px dashed #1a1a1a; /* Красивая линия вложенности */
+            padding-left: 6px;
         }
 
-        .sidebar-category.active .category-links {
-            grid-template-rows: 1fr;
-            opacity: 1;
-            padding-top: 8px; 
-            padding-bottom: 4px;
-        }
-
-        .category-links a {
+        /* Конечные ссылки на статьи */
+        .wiki-tree a {
             color: var(--text-dim);
             text-decoration: none;
-            font-size: 0.7rem;
-            padding: 6px 10px;
+            font-size: 0.65rem;
+            padding: 5px 8px;
             border-radius: 4px;
             transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+            display: block;
         }
 
-        .category-links a:hover,
-        .category-links a.active {
+        .wiki-tree a:hover,
+        .wiki-tree a.active {
             color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-            padding-left: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            padding-left: 12px;
         }
 
+        /* Подсветка найденного слова при поиске */
+        .search-match {
+            color: var(--accent) !important;
+            font-weight: 600;
+        }
+
+        /* Скрытие элементов, не подошедших под поиск */
+        .wiki-folder.search-hidden,
+        .wiki-tree a.search-hidden {
+            display: none !important;
+        }
 
         /* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
         #wiki-app {
@@ -192,8 +261,6 @@
     animation: hideLoaderNoJS 0.5s forwards;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
-
-        <!-- Основной текст (исчезает через 5 секунд) -->
         <div style="
             font-family: sans-serif;
             color: #888;
@@ -203,13 +270,9 @@
         ">
             <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
         </div>
-
-        <!-- Текст ошибки -->
         <div style="
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             font-family: sans-serif;
             color: #888;
             font-size: clamp(3vh, 3vw, 3vw);
@@ -220,123 +283,148 @@
         ">
             «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> всё ещё идёт.</span>
         </div>
-
     </div>
 </div>
 
 <script>
-    // Мгновенная блокировка авто-скрытия, если JS разрешен
     (function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
-            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
             loader.style.animation = 'none';
         }
     })();
 </script>
 
 <style>
-    /* Блокировка скролла по умолчанию */
-    body { 
-        overflow: hidden;
-    }
-
-    /* Анимация для случая, когда JavaScript отключен */
-    @keyframes hideLoaderNoJS {
-        to { 
-            opacity: 0; 
-            visibility: hidden; 
-        }
-    }
-
-    @keyframes fadeOutText {
-        from { opacity: 1; }
-        to { opacity: 0; visibility: hidden; }
-    }
-
-    @keyframes fadeInText {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+    body { overflow: hidden; }
+    @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
+    @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+    @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
 </style>
 
-      <noscript>
-        <div style="
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            background: #0a0a0a; 
-            color: white; 
-            user-select: none;
-            z-index: 9999; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            font-family: sans-serif;
-            box-sizing: border-box;
-            overflow: hidden;
-        ">
-            <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+<noscript>
+    <div style="
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100vw; height: 100vh; 
+        background: #0a0a0a; 
+        color: white; 
+        user-select: none;
+        z-index: 9999; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        text-align: center; 
+        font-family: sans-serif;
+        box-sizing: border-box;
+        overflow: hidden;
+    ">
+        <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
+            Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript. Без него большинство функций будет недоступно.<br>¯\_(ツ)_/¯
+        </p>
+    </div>
+    <style>body { overflow: hidden !important; }</style>
+</noscript>
 
-            <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
-                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
-            </p>
+<div id="nav-inject"></div>
+
+<div class="wiki-layout">
+    <aside class="wiki-sidebar">
+        <!-- Поиск по сайдбару -->
+        <div class="sidebar-search-wrapper">
+            <input type="text" id="wiki-search" class="sidebar-search" placeholder="Поиск по архиву..." autocomplete="off">
         </div>
 
-        <style>
-            body { overflow: hidden !important; }
-        </style>
-      </noscript>
+        <!-- Дерево навигации -->
+        <nav class="wiki-tree">
 
-    <div id="nav-inject"></div>
-
-    <div class="wiki-layout">
-        <aside class="wiki-sidebar">
-            
-            <!-- Категория 1 -->
-            <div class="sidebar-category active">
-                <div class="category-title" onclick="toggleCategory(this)">О Проекте</div>
-                <div class="category-links">
-                    <div class="category-links-wrapper">
+            <!-- Папка О Проекте -->
+            <div class="wiki-folder open">
+                <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
+                <div class="folder-content">
+                    <div class="folder-content-wrapper">
                         <a href="/archive/index" class="active">Главная архива</a>
                         <a href="/archive/rules">Правила проекта</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Категория 2 -->
-            <div class="sidebar-category">
-                <div class="category-title" onclick="toggleCategory(this)">Legends</div>
-                <div class="category-links">
-                    <div class="category-links-wrapper">
-                        <a href="/archive/legends">Главная</a>
-                        <a href="/archive/legends/pixieas_archive">Архивы Пиксии</a>
+            <!-- Большая папка "Игры" с глубокой вложенностью -->
+            <div class="wiki-folder">
+                <div class="folder-title" onclick="toggleFolder(this)">Игры</div>
+                <div class="folder-content">
+                    <div class="folder-content-wrapper">
+                        
+                        <!-- Вложенная папка "Legends" -->
+                        <div class="wiki-folder">
+                            <div class="folder-title" onclick="toggleFolder(this)">Legends</div>
+                            <div class="folder-content">
+                                <div class="folder-content-wrapper">
+                                    <a href="/archive/legends">Главная Legends</a>
+                                    <a href="/archive/legends/pixieas_archive">Архивы Пиксии</a>
+                                    
+                                    <!-- Вложенная папка "Персонажи" -->
+                                    <div class="wiki-folder">
+                                        <div class="folder-title" onclick="toggleFolder(this)">Персонажи</div>
+                                        <div class="folder-content">
+                                            <div class="folder-content-wrapper">
+                                                
+                                                <!-- Вложенная папка "Игровые" -->
+                                                <div class="wiki-folder">
+                                                    <div class="folder-title" onclick="toggleFolder(this)">Игровые</div>
+                                                    <div class="folder-content">
+                                                        <div class="folder-content-wrapper">
+                                                            <a href="/archive/legends/characters/playable/shang">Шэнг</a>
+                                                            <a href="/archive/legends/characters/playable/baochi">Баочи</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Вложенная папка "Враги" -->
+                                                <div class="wiki-folder">
+                                                    <div class="folder-title" onclick="toggleFolder(this)">Враги</div>
+                                                    <div class="folder-content">
+                                                        <div class="folder-content-wrapper">
+                                                            <a href="/archive/legends/characters/enemies/slimes">Слаймы</a>
+                                                            <a href="/archive/legends/characters/enemies/ifayenis">Ифайенисы</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div> <!-- Конец Персонажи -->
+
+                                </div>
+                            </div>
+                        </div> <!-- Конец Legends -->
+
                     </div>
                 </div>
-            </div>
+            </div> <!-- Конец Игры -->
 
-        </aside>
+        </nav>
+    </aside>
 
+    <!-- Основной контент -->
+    <main id="wiki-app">
+        <article id="wiki-content" class="markdown-body"></article>
+    </main>
+</div>
 
-        <!-- Основной контент -->
-        <main id="wiki-app">
-            <article id="wiki-content" class="markdown-body">
+<div id="footer-inject"></div>
 
-            </article>
-        </main>
-    </div>
-
-    <!-- Сюда встроится глобальный футер -->
-    <div id="footer-inject"></div>
-
-    <script>
-        // Функция раскрытия/закрытия папок в Сайдбаре
-        function toggleCategory(element) {
-            const parent = element.parentElement;
-            parent.classList.toggle('active');
-        }
-    </script>
+<script>
+    // Простая функция переключения класса папок
+    function toggleFolder(element) {
+        // Предотвращаем запуск клика, если поиск сейчас активен (чтобы не сбивать состояние раскрытия)
+        if (document.getElementById('wiki-search').value.trim() !== '') return;
+        
+        const folder = element.parentElement;
+        folder.classList.toggle('open');
+    }
+</script>
 </body>
 </html>
