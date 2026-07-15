@@ -27,52 +27,54 @@
             box-sizing: border-box !important;
         }
 
-        /* --- САЙДБАР (Монолитная и стабильная основа) --- */
+        /* --- САЙДБАР --- */
         .wiki-sidebar {
             display: flex !important;
             flex-direction: column !important;
-            gap: 0 !important; /* Убираем gap, чтобы поиск плотно прилегал к верху */
+            gap: 0 !important;
             flex: 0 0 var(--sidebar-width) !important; 
             width: var(--sidebar-width) !important;
             min-width: var(--sidebar-width) !important;
             background: rgb(15, 15, 15) !important;
             border-right: 1.5px solid #1a1a1a !important;
             box-sizing: border-box !important;
-            
-            /* Sticky-позиционирование всей колонки */
-            position: sticky !important;
+            position: fixed !important;
             top: var(--safe-nav-height) !important;
+            left: 0 !important;
             height: calc(100vh - var(--safe-nav-height)) !important;
             
-            /* Скролл отсюда ПЕРЕНЕСЕН во внутренний контейнер */
             overflow: hidden !important; 
             z-index: 99 !important;
         }
 
-        /* --- ПОИСК СТАТЕЙ (Всегда сверху, перекрывает уходящие ссылки) --- */
+        /* --- ПОИСК СТАТЕЙ --- */
         .sidebar-search-wrapper {
             position: relative !important;
-            padding: 15px 15px 12px 15px !important; /* Внутренние отступы вместо отступов сайдбара */
+            padding: 10px 15px !important;
             width: 100% !important;
             box-sizing: border-box !important;
             display: block !important;
-            z-index: 110 !important; /* Выше, чем улетающий проводник */
-            background: rgb(15, 15, 15) !important; /* Плотный фон в цвет сайдбара */
+            z-index: 110 !important;
+            background: rgb(15, 15, 15) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
         }
 
         .sidebar-search {
             width: 100% !important;
+            height: 32px !important;
+            margin: 0 !important;
+            padding: 0 12px !important;
             background: #0a0a0a !important;
             border: 1px solid #1a1a1a !important;
             border-radius: 4px !important;
-            padding: 8px 12px !important;
             box-sizing: border-box !important;
             color: #fff !important;
             font-family: 'Montserrat', sans-serif !important;
             font-size: 0.7rem !important;
             outline: none !important;
             transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
         }
 
         .sidebar-search:focus {
@@ -243,20 +245,21 @@
             display: none !important;
         }
 
-/* --- КОНТЕНТНАЯ ОБЛАСТЬ --- */
-#wiki-app {
-    flex: 1 1 0% !important; 
-    min-width: 0 !important; 
-    padding: 40px !important;
-    box-sizing: border-box !important;
-    transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-    transform-origin: top center !important;
-    opacity: 1 !important;
-    transform: scale(1) !important;
-    position: relative; 
-    overflow: hidden;   
-}
+/* --- КОНТЕНТНАЯ ОБЛАСТЬ (Сдвиг вправо на ширину сайдбара) --- */
+        #wiki-app {
+            flex: 1 1 0% !important; 
+            min-width: 0 !important; 
+            padding: 40px !important;
+            margin-left: var(--sidebar-width) !important; 
+            box-sizing: border-box !important;
+            transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+            transform-origin: top center !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            position: relative; 
+            overflow: hidden;   
+        }
 
 /* --- НАСТРОЙКА ШИММЕРА --- */
 #wiki-app::before {
@@ -318,17 +321,15 @@
                 margin-top: var(--safe-nav-height) !important;
             }
             .wiki-sidebar {
-                max-width: 100% !important;
+                position: relative !important;
+                top: 0 !important;
+                left: 0 !important;
                 width: 100% !important;
                 min-width: 100% !important;
                 height: auto !important;
-                position: relative !important;
-                top: 0 !important;
-                border-right: none !important;
-                border-bottom: 1.5px solid #1a1a1a !important;
-                padding: 15px !important;
             }
             #wiki-app {
+                margin-left: 0 !important;
                 padding: 30px 15px !important;
             }
         }
