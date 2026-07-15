@@ -228,8 +228,9 @@
     transform-origin: top center !important;
     opacity: 1 !important;
     transform: scale(1) !important;
-    position: relative;
-    overflow: hidden;
+    
+    position: relative; 
+    overflow: hidden;   
 }
 
 /* --- НАСТРОЙКА ШИММЕРА --- */
@@ -238,17 +239,31 @@
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 9999;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(128, 128, 128, 0.6) 50%, rgba(255, 255, 255, 0) 100%);
-    background-size: 200% 100%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+    z-index: 9999;        
+    
+    /* 
+       Мягкий размытый градиент.
+       Мы начинаем проявление позже (с 30%) и заканчиваем раньше (на 70%).
+       Края (0-30% и 70-100%) остаются абсолютно прозрачными — это дает эффект мягкого рассеивания.
+    */
+    background: linear-gradient(
+        90deg, 
+        rgba(128, 128, 128, 0) 30%, 
+        rgba(128, 128, 128, 0.25) 50%, 
+        rgba(128, 128, 128, 0) 70%
+    );
+    
     opacity: 0;
-    transform: scale(1); 
-    transition: transform 0.15s ease-in, 
-                opacity 0.15s ease-in !important;
-    transform-origin: top center !important;
+    /* Стартовая позиция за левым краем экрана на GPU */
+    transform: scale(1) translate3d(-100%, 0, 0); 
+    
+    /* Подсказываем браузеру, что эти свойства будут анимироваться (включает GPU-буст) */
+    will-change: transform, opacity;
+    
+    transition: opacity 0.3s ease-in-out, transform 0.15s ease-in !important;
 }
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
@@ -260,14 +275,22 @@
 }
 
 #wiki-app.scale-down::before {
-    opacity: 1;
-    transform: scale(1.0526); 
-    animation: continuous-shimmer 1s linear infinite !important;
+    opacity: 1; 
+    /* Запуск супер-плавной бесконечной анимации */
+    animation: continuous-shimmer 1.2s linear infinite !important;
 }
 
+/* 
+   Ключевые кадры теперь двигают весь блок через translate3d.
+   При этом сохраняется компенсирующий масштаб scale(1.0526).
+*/
 @keyframes continuous-shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        transform: scale(1.0526) translate3d(-100%, 0, 0);
+    }
+    100% {
+        transform: scale(1.0526) translate3d(100%, 0, 0);
+    }
 }
 
         /* Рендеринг разметки статьи */
