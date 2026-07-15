@@ -244,16 +244,16 @@
     z-index: 9999;
     background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
     opacity: 0;
-    transform: scale(1) translate3d(-100%, 0, 0); 
+    transform: scale(1) translate3d(0, 0, 0); 
     will-change: transform, opacity;
     transition: opacity 0.3s ease-in-out, transform 0.15s ease-in !important;
 }
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
 #wiki-app.scale-down {
-    -webkit-mask-image: linear-gradient(to left, transparent 0%, black 50%, transparent 100%);
-    mask-image: linear-gradient(to left, transparent 0%, black 50%, transparent 100%);
-    opacity: 0.1 !important;
+    mask-image: linear-gradient(to left, transparent 0%, transparent 25%, black 25%, black 75%, transparent 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, transparent 0%, transparent 25%, black 25%, black 75%, transparent 75%, transparent 100%);
+    opacity: 0.15 !important;
     transform: scale(0.95) !important;
     transition: transform 0.15s ease-in, 
                 opacity 0.15s ease-in !important;
