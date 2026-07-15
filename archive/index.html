@@ -27,37 +27,34 @@
             box-sizing: border-box !important;
         }
 
-        /* --- САЙДБАР (Монолитная и стабильная основа) --- */
+        /* --- САЙДБАР --- */
         .wiki-sidebar {
             display: flex !important;
             flex-direction: column !important;
-            gap: 0 !important; /* Убираем gap, чтобы поиск плотно прилегал к верху */
+            gap: 0 !important;
             flex: 0 0 var(--sidebar-width) !important; 
             width: var(--sidebar-width) !important;
             min-width: var(--sidebar-width) !important;
             background: rgb(15, 15, 15) !important;
             border-right: 1.5px solid #1a1a1a !important;
             box-sizing: border-box !important;
-            
-            /* Sticky-позиционирование всей колонки */
             position: sticky !important;
             top: var(--safe-nav-height) !important;
             height: calc(100vh - var(--safe-nav-height)) !important;
-            
-            /* Скролл отсюда ПЕРЕНЕСЕН во внутренний контейнер */
             overflow: hidden !important; 
             z-index: 99 !important;
+            padding: 0 !important;
         }
 
-        /* --- ПОИСК СТАТЕЙ (Всегда сверху, перекрывает уходящие ссылки) --- */
+        /* --- ПОИСК СТАТЕЙ --- */
         .sidebar-search-wrapper {
             position: relative !important;
-            padding: 15px 15px 12px 15px !important; /* Внутренние отступы вместо отступов сайдбара */
+            padding: 15px 15px 12px 15px !important;
             width: 100% !important;
             box-sizing: border-box !important;
             display: block !important;
-            z-index: 110 !important; /* Выше, чем улетающий проводник */
-            background: rgb(15, 15, 15) !important; /* Плотный фон в цвет сайдбара */
+            z-index: 110 !important;
+            background: rgb(15, 15, 15) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
         }
 
