@@ -373,25 +373,40 @@
         <!-- Дерево навигации -->
         <nav class="wiki-tree">
 
-            <!-- Папка О Проекте -->
+<!-- Папка О Проекте -->
+<div class="wiki-folder open">
+    <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
+    <div class="folder-content">
+        <div class="folder-content-wrapper">
+            
+            <!-- Ссылка на главную архива (всегда видна в корне папки) -->
+            <a href="/archive/index" class="active">Главная архива</a>
+
+            <!-- Вложенная папка: Правила серверов -->
             <div class="wiki-folder">
-                <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
+                <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
                 <div class="folder-content">
                     <div class="folder-content-wrapper">
-                        <a href="/archive/index" class="active">Главная архива</a>
-    <div class="folder-title" onclick="toggleFolder(this)">Тестовый блок</div>
-    
-                        <div class="folder-content">
-                            <div class="folder-content-wrapper">
-                                <a href="/archive/link1">Первая статья</a>
-                                <a href="/archive/link2">Вторая статья</a>
-                                <a href="/archive/link3">Третья статья</a>
-            
-                            </div>
-                        </div>
+                        <a href="/archive/rules/kaeront_survival">Kaeront: Survival</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Вложенная папка: Юридический блок -->
+            <div class="wiki-folder">
+                <div class="folder-title" onclick="toggleFolder(this)">Юридический блок</div>
+                <div class="folder-content">
+                    <div class="folder-content-wrapper">
+                        <a href="/archive/law/privacy">Политика конфиденциальности</a>
+                        <a href="/archive/law/offer">Публичная оферта</a>
+                        <a href="/archive/law/agreement">Пользовательское соглашение</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
             <!-- Большая папка "Игры" с глубокой вложенностью -->
             <div class="wiki-folder">
