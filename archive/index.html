@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            --nav-hide: 1px;
+            --nav-hide: -1px;
             --sidebar-width: 240px;
             --safe-nav-height: var(--nav-height, 50px); 
         }
@@ -22,6 +22,12 @@
             margin: 0 !important;
             padding: 0 !important;
             overflow: hidden !important;
+        }
+
+        nav {
+            background: rgb(10, 10, 10); 
+            backdrop-filter: none;
+            border-bottom: 1.5px solid #1a1a1a;
         }
 
         /* Общий контейнер для сайдбара и контента */
