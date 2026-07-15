@@ -155,25 +155,17 @@ function initSearch() {
     });
 }
 
-// Перехват кликов по ВСЕМ ссылкам на сайте (для бесшовного SPA-перехода)
+// УНИВЕРСАЛЬНЫЙ ПЕРЕХВАТ КЛИКОВ (Сайдбар + Контент внутри статей)
 document.body.addEventListener('click', e => {
-    // Ищем ближайший тег <a> у элемента, по которому кликнули
-    const target = e.target.closest('a');
-    if (!target) return;
-
-    const href = target.getAttribute('href');
-    if (!href) return;
-
-    // Проверяем, является ли ссылка внутренней для архива (начинается с /archive или #)
-    const isArchiveLink = href.startsWith('/archive') || href.startsWith('#');
+    // Ищем ближайшую ссылку <a>, по которой кликнули
+    const link = e.target.closest('a');
     
-    // Исключаем внешние ссылки, почту, контакты и файлы
-    const isExternal = href.startsWith('http') && !href.includes(window.location.hostname);
-    const isSupport = href.includes('/archive/contacts'); // Если контакты/поддержка должны вести на внешнюю страницу или обрабатываться иначе
-
-    if (isArchiveLink && !isExternal && !isSupport) {
-        e.preventDefault();
-        performTransition(href);
+    if (link) {
+        const href = link.getAttribute('href');
+        if (href && (href.startsWith('/archive') || href.startsWith('#'))) {
+            e.preventDefault();
+            performTransition(href);
+        }
     }
 });
 
