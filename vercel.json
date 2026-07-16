@@ -27,9 +27,9 @@
       "source": "/news/:id",
       "destination": "/news-style"
     },
-    { "source": "/archive/assets/:path*", "destination": "/archive/assets/:path*" },
-    { "source": "/archive/search", "destination": "/archive/index.html" },
-    { "source": "/archive/:slug", "destination": "/archive/index.html" },
-    { "source": "/archive", "destination": "/archive/index.html" }
+    {
+      "source": "/archive/:path*",
+      "destination": "/archive/index.html"
+    }
   ]
 }
