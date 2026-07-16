@@ -60,6 +60,13 @@ const STATUS_BANNERS = {
 // Загрузка Markdown-файла
 async function loadArticle() {
     const routeName = getCleanRoute();
+    
+    // ФАНТОМНАЯ СТРАНИЦА ПОИСКА
+    if (routeName === 'search') {
+        renderSearchPage();
+        return;
+    }
+
     const filePath = `/archive/${routeName}.md`;
 
     try {
@@ -67,13 +74,11 @@ async function loadArticle() {
         if (!response.ok) throw new Error('Статья отсутствует');
         let markdownText = await response.text();
 
-        // 1. Ищем строку статуса более гибким способом
-        // Ищем все, что между <!-- status: и -->
+        // 1. Ищем строку статуса
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
 
         if (statusMatch && statusMatch[1]) {
-            // Берем строку (например, "not-ready, no-images"), убираем лишние пробелы и делим
             const statusString = statusMatch[1];
             const statusList = statusString.split(',').map(s => s.trim());
             
@@ -83,11 +88,9 @@ async function loadArticle() {
                 }
             });
 
-            // 2. Вырезаем только сам комментарий
             markdownText = markdownText.replace(statusMatch[0], '');
         }
 
-        // Рендерим: баннер + остальной MD
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
 
     } catch (error) {
@@ -98,7 +101,44 @@ async function loadArticle() {
     }
 }
 
-// Быстрый асинхронный переход (150мс сокрытие, 350мс плавный показ)
+// ЛОГИКА ПОИСКОВОЙ СИСТЕМЫ
+async function renderSearchPage() {
+    const query = new URLSearchParams(window.location.search).get('q') || '';
+    contentContainer.innerHTML = `<h1>Результаты поиска для: «${query}»</h1><div id="search-results-container">Загрузка...</div>`;
+    
+    const links = Array.from(document.querySelectorAll('.wiki-tree a'));
+    const results = [];
+    const lowerQuery = query.toLowerCase();
+
+    for (const link of links) {
+        const href = link.getAttribute('href');
+        try {
+            const response = await fetch(`${href.replace('/archive', '/archive')}.md`);
+            const text = await response.text();
+            
+            // Проверка на вхождение (с учетом вариаций слов)
+            if (text.toLowerCase().includes(lowerQuery)) {
+                const index = text.toLowerCase().indexOf(lowerQuery);
+                const snippet = text.substring(Math.max(0, index - 50), Math.min(text.length, index + 100));
+                results.push({ title: link.textContent, href, snippet });
+            }
+        } catch (e) {}
+    }
+
+    const container = document.getElementById('search-results-container');
+    if (results.length === 0) {
+        container.innerHTML = '<p>Ничего не найдено.</p>';
+    } else {
+        container.innerHTML = results.map(r => `
+            <div class="search-card" style="border:1px solid #333; padding:20px; margin-bottom:15px; cursor:pointer;" onclick="performTransition('${r.href}')">
+                <h3>${r.title}</h3>
+                <p>...${r.snippet.replace(new RegExp(lowerQuery, 'gi'), '<b>$&</b>')}...</p>
+            </div>
+        `).join('');
+    }
+}
+
+// Быстрый асинхронный переход
 async function performTransition(targetUrl) {
     appContainer.classList.add('scale-down');
     await new Promise(resolve => setTimeout(resolve, 150));
@@ -117,7 +157,7 @@ async function performTransition(targetUrl) {
     appContainer.classList.remove('scale-down');
 }
 
-// Подсветка текущей страницы в сайдбаре и автораскрытие папок вверх по дереву
+// Подсветка текущей страницы
 function updateActiveSidebarLink() {
     const currentRoute = getCleanRoute();
     const links = document.querySelectorAll('.wiki-tree a');
@@ -130,8 +170,6 @@ function updateActiveSidebarLink() {
             
         if (linkRoute === currentRoute) {
             link.classList.add('active');
-            
-            // Находим все родительские папки .wiki-folder этой ссылки и плавно раскрываем их
             let parentFolder = link.closest('.wiki-folder');
             while (parentFolder) {
                 parentFolder.classList.add('open');
@@ -148,51 +186,53 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
+    // Фантомная ссылка "Все результаты"
+    const phantomLink = document.createElement('a');
+    phantomLink.style.display = 'none';
+    phantomLink.style.padding = '10px';
+    phantomLink.style.color = 'var(--accent)';
+    phantomLink.style.cursor = 'pointer';
+    searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
+
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
+        
+        if (query.length > 0) {
+            phantomLink.textContent = `Все результаты для «${query}»`;
+            phantomLink.style.display = 'block';
+            phantomLink.onclick = () => {
+                searchInput.value = '';
+                phantomLink.style.display = 'none';
+                performTransition('/archive/search?q=' + encodeURIComponent(query));
+            };
+        } else {
+            phantomLink.style.display = 'none';
+        }
+
         const links = document.querySelectorAll('.wiki-tree a');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        // Сброс поиска, если поле ввода пустое
         if (query === '') {
-            links.forEach(link => {
-                link.classList.remove('search-hidden');
-                link.innerHTML = link.textContent; // Сбрасываем подсветку букв
-            });
-            folders.forEach(folder => {
-                folder.classList.remove('search-hidden');
-                folder.classList.remove('open');
-            });
-            updateActiveSidebarLink(); // Раскроет только ту ветку, где мы сейчас находимся
+            links.forEach(l => { l.classList.remove('search-hidden'); l.innerHTML = l.textContent; });
+            folders.forEach(f => { f.classList.remove('search-hidden'); f.classList.remove('open'); });
+            updateActiveSidebarLink();
             return;
         }
 
-        // 1. Показываем/скрываем конечные ссылки
         links.forEach(link => {
             const text = link.textContent;
-            const textLower = text.toLowerCase();
-            const index = textLower.indexOf(query);
-
-            if (index !== -1) {
+            if (text.toLowerCase().includes(query)) {
                 link.classList.remove('search-hidden');
-                // Подсвечиваем совпавшую часть текста
-                link.innerHTML = text.substring(0, index) + 
-                                 `<span class="search-match">${text.substring(index, index + query.length)}</span>` + 
-                                 text.substring(index + query.length);
             } else {
                 link.classList.add('search-hidden');
-                link.innerHTML = text;
             }
         });
 
-        // 2. Управляем видимостью и состоянием папок на основе их содержимого
         folders.forEach(folder => {
-            // Проверяем, есть ли внутри этой папки хоть одна видимая (подходящая под поиск) ссылка
             const hasVisibleLinks = folder.querySelectorAll('a:not(.search-hidden)').length > 0;
-
             if (hasVisibleLinks) {
                 folder.classList.remove('search-hidden');
-                folder.classList.add('open'); // Автоматически раскрываем папки с совпадениями
+                folder.classList.add('open');
             } else {
                 folder.classList.add('search-hidden');
                 folder.classList.remove('open');
@@ -201,11 +241,9 @@ function initSearch() {
     });
 }
 
-// УНИВЕРСАЛЬНЫЙ ПЕРЕХВАТ КЛИКОВ (Сайдбар + Контент внутри статей)
+// УНИВЕРСАЛЬНЫЙ ПЕРЕХВАТ КЛИКОВ
 document.body.addEventListener('click', e => {
-    // Ищем ближайшую ссылку <a>, по которой кликнули
     const link = e.target.closest('a');
-    
     if (link) {
         const href = link.getAttribute('href');
         if (href && (href.startsWith('/archive') || href.startsWith('#'))) {
@@ -215,7 +253,6 @@ document.body.addEventListener('click', e => {
     }
 });
 
-// Слушатели изменений истории (кнопки "Назад/Вперед")
 window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
     appContainer.classList.add('scale-down');
     await new Promise(resolve => setTimeout(resolve, 150));
@@ -224,7 +261,6 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
     appContainer.classList.remove('scale-down');
 });
 
-// Первая инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
     if (!isLocal) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -237,13 +273,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Инициализируем страницу и поиск
     appContainer.classList.add('scale-down');
     await loadArticle();
     updateActiveSidebarLink();
     initSearch();
     
-    // Мягко убираем экран загрузки после рендеринга статьи
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
