@@ -425,7 +425,7 @@
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    transition: opacity 0.5s ease, visibility 0.5s;
+    transition: opacity 0.3s ease, visibility 0.3s;
     animation: hideLoaderNoJS 0.5s forwards;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
@@ -500,12 +500,10 @@
 
 <div class="wiki-layout">
     <aside class="wiki-sidebar">
-        <!-- Поиск по сайдбару (намертво зафиксирован сверху) -->
         <div class="sidebar-search-wrapper">
             <input type="text" id="wiki-search" class="sidebar-search" placeholder="Поиск по архиву..." autocomplete="off">
         </div>
 
-        <!-- НОВЫЙ Контейнер-обертка для дерева (именно он будет скроллиться и размываться) -->
         <div class="sidebar-tree-container">
             <!-- Дерево навигации -->
             <nav class="wiki-tree">
@@ -521,7 +519,7 @@
                                 <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
                                 <div class="folder-content">
                                     <div class="folder-content-wrapper">
-                                        <a href="/archive/rules/kaeront_survival">Kaeront: Survival</a>
+                                        <a href="/archive/rules/kaeront-survival">Kaeront: Survival</a>
                                     </div>
                                 </div>
                             </div>
