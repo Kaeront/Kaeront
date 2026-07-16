@@ -33,6 +33,30 @@ function getCleanRoute() {
     }
 }
 
+/* --- КОНФИГУРАЦИЯ СТАТУСОВ СТРАНИЦ --- */
+const STATUS_BANNERS = {
+    'dev': `
+        <div class="status-banner dev">
+            <h3>В разработке</h3>
+            <p>Идёт активное создание контента. Возможны изменения структуры.</p>
+        </div>`,
+    'no-images': `
+        <div class="status-banner no-images">
+            <h3>Планируются иллюстрации</h3>
+            <p>Страница содержит только текст. Иллюстрации и прочие изображения будут добавлены в ближайшее время.</p>
+        </div>`,
+    'not-ready': `
+        <div class="status-banner not-ready">
+            <h3>Статья не готова</h3>
+            <p>Контент на ранней стадии написания. Возможны неточности или пустые разделы.</p>
+        </div>`,
+    'outdated': `
+        <div class="status-banner outdated">
+            <h3>Статья могла устареть</h3>
+            <p>Статья восстановлена по старым архивам или памяти. Требует сверки с актуальной версией проекта.</p>
+        </div>`
+};
+
 // Загрузка Markdown-файла
 async function loadArticle() {
     const routeName = getCleanRoute();
@@ -41,9 +65,20 @@ async function loadArticle() {
     try {
         const response = await fetch(filePath);
         if (!response.ok) throw new Error('Статья отсутствует');
-        const markdownText = await response.text();
+        let markdownText = await response.text();
+
+        // Логика поиска статуса
+        let bannerHtml = '';
+        const statusMatch = markdownText.match(/<!--\s*status:\s*(\w+)\s*-->/);
+
+        if (statusMatch && statusMatch[1]) {
+            bannerHtml = STATUS_BANNERS[statusMatch[1]] || '';
+            // Вырезаем технический комментарий из текста, чтобы он не отображался
+            markdownText = markdownText.replace(statusMatch[0], '');
+        }
+
+        contentContainer.innerHTML = bannerHtml + marked.parse(markdownText);
         
-        contentContainer.innerHTML = marked.parse(markdownText);
     } catch (error) {
         contentContainer.innerHTML = `
             <h1>Статья не найдена</h1>
