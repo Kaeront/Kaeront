@@ -149,7 +149,7 @@ const injectHTML = {
         <div class="nav-links">
             <a href="/servers">Сервера</a>
             <a href="/news">Новости</a>
-            <a href="https://t.me/KaerontMC" target="_blank">Поддержка</a>
+            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif;">⚡</span></a>
             <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>`,
