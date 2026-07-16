@@ -14,24 +14,18 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 // Получаем чистый путь статьи с поддержкой редирект-параметров
 function getCleanRoute() {
     if (isLocal) {
-        const hash = window.location.hash;
-        const cleanHash = hash.replace('#/archive/', '').replace('#/', '').replace('#', '');
-        return (cleanHash === '' || cleanHash === 'index' || cleanHash === 'archive') ? 'index' : cleanHash;
+        const hash = window.location.hash.replace('#', '');
+        return (hash === '' || hash === '/archive' || hash === '/archive/') ? 'index' : hash.replace('/archive/', '');
     } else {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-        
-        if (pageParam) {
-            return pageParam;
-        }
-
         const path = window.location.pathname;
-        let relativePath = path.replace(/^\/archive/, '');
-        relativePath = relativePath.replace(/^\//, '');
+        // Если путь — это просто /archive/search, возвращаем 'search'
+        if (path.includes('/archive/search')) return 'search';
         
-        return (relativePath === '' || relativePath === 'index') ? 'index' : relativePath;
+        let route = path.replace(/^\/archive\/?/, '') || 'index';
+        return route;
     }
 }
+
 
 /* --- КОНФИГУРАЦИЯ СТАТУСОВ СТРАНИЦ --- */
 const STATUS_BANNERS = {
@@ -307,54 +301,40 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Фантомная ссылка для быстрого перехода
-    let phantomLink = document.querySelector('.phantom-search-link');
-    if (!phantomLink) {
-        phantomLink = document.createElement('a');
-        phantomLink.className = 'phantom-search-link';
-        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
-        searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
-    }
+    // Убираем дублирование фантомной ссылки
+    let phantomLink = document.querySelector('.phantom-search-link') || document.createElement('a');
+    phantomLink.className = 'phantom-search-link';
+    phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
+    if (!phantomLink.parentNode) searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const links = document.querySelectorAll('.wiki-tree a');
+        const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        // Управление фантомной ссылкой
-        if (query.length > 0) {
-            phantomLink.textContent = `Все результаты для «${query}»`;
-            phantomLink.style.display = 'block';
-            phantomLink.onclick = () => { 
-                performTransition('/archive/search?q=' + encodeURIComponent(query)); 
-            };
-        } else {
-            phantomLink.style.display = 'none';
-        }
+        phantomLink.style.display = query.length > 0 ? 'block' : 'none';
+        phantomLink.textContent = `Все результаты для «${query}»`;
+        phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
 
-        // Фильтрация ссылок
         links.forEach(link => {
             const text = link.textContent.toLowerCase();
-            if (query === '' || text.includes(query)) {
-                link.classList.remove('search-hidden');
-                // Подсветка (если нужно)
-                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = query !== '' ? link.textContent.replace(regex, '<span class="sidebar-match">$1</span>') : link.textContent;
+            const isMatch = query === '' || text.includes(query);
+            
+            link.style.display = isMatch ? '' : 'none'; // Скрываем ссылку через CSS
+            if (query !== '' && isMatch) {
+                const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+                link.innerHTML = link.textContent.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.classList.add('search-hidden');
+                link.innerHTML = link.textContent;
             }
         });
 
-        // Авто-свертывание и скрытие пустых папок
         folders.forEach(f => {
-            const hasVisibleLinks = f.querySelectorAll('a:not(.search-hidden)').length > 0;
-            if (query !== '') {
-                f.style.display = hasVisibleLinks ? '' : 'none';
-                if (hasVisibleLinks) f.classList.add('open');
-            } else {
-                f.style.display = '';
-                f.classList.remove('open');
-            }
+            const visibleLinks = Array.from(f.querySelectorAll('a')).filter(a => a.style.display !== 'none');
+            const hasVisible = visibleLinks.length > 0;
+            f.style.display = (hasVisible || query === '') ? '' : 'none';
+            if (query !== '' && hasVisible) f.classList.add('open');
+            else if (query === '') f.classList.remove('open');
         });
     });
 }
@@ -362,18 +342,22 @@ function initSearch() {
 // Быстрый асинхронный переход
 async function performTransition(targetUrl) {
     appContainer.classList.add('scale-down');
-    await new Promise(resolve => setTimeout(resolve, 150));
-
-    if (isLocal) {
-        window.location.hash = targetUrl.startsWith('/') ? '#' + targetUrl : targetUrl;
-    } else {
-        const cleanUrl = (targetUrl === '/archive/index' || targetUrl === '/archive') ? '/archive' : targetUrl;
-        window.history.pushState(null, null, cleanUrl);
-    }
     
-    await loadArticle(); 
+    // Меняем URL без перезагрузки
+    window.history.pushState(null, null, targetUrl);
+    
+    // Загружаем контент
+    await loadArticle();
     updateActiveSidebarLink();
     
+    // Если мы перешли на поиск, обновляем поле ввода
+    if (targetUrl.includes('/archive/search')) {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        const mainInput = document.querySelector('.search-input-field');
+        if (mainInput) mainInput.value = q || '';
+    }
+
     window.scrollTo(0, 0);
     appContainer.classList.remove('scale-down');
 }
