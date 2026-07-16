@@ -258,14 +258,17 @@
 /* --- НАСТРОЙКА ШИММЕРА --- */
 #wiki-app::before {
     content: "";
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    /* Используем fixed, чтобы он привязывался к границам экрана, а не к высоте скролла */
+    position: fixed !important; 
+    
+    /* Позиционируем строго поверх контентной области */
+    top: var(--safe-nav-height) !important;
+    left: var(--sidebar-width) !important;
+    right: 0 !important;
+    bottom: 0 !important;
     pointer-events: none;
     z-index: 299;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
     opacity: 0;
     transform: scale(1) translate3d(-100%, 0, 0); 
     will-change: transform, opacity;
@@ -338,6 +341,9 @@
                 padding: 30px 15px !important;
                 height: auto !important;
                 overflow: visible !important;
+            }
+            #wiki-app::before {
+                left: 0 !important;
             }
         }
     </style>
