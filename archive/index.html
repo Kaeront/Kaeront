@@ -252,16 +252,18 @@
             transform-origin: top center !important;
             opacity: 1 !important;
             transform: scale(1) !important;
-            position: relative; 
+            position: relative;
+            mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent) !important;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 50px), transparent) !important;
         }
 
-        /* --- СОСТОЯНИЕ SCALE-DOWN С МАСКОЙ --- */
+        /* --- СОСТОЯНИЕ SCALE-DOWN --- */
         #wiki-app.scale-down {
             opacity: 0.15 !important;
             transform: scale(0.95) !important;
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                         opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-}
+        }
 
         /* Ключевые кадры анимации шиммера */
         @keyframes continuous-shimmer {
