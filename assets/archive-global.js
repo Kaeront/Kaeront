@@ -13,18 +13,14 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 
 // Получаем чистый путь статьи с поддержкой редирект-параметров
 function getCleanRoute() {
-    if (isLocal) {
-        const hash = window.location.hash.replace('#', '');
-        return (hash === '' || hash === '/archive' || hash === '/archive/') ? 'index' : hash.replace('/archive/', '');
-    } else {
-        const path = window.location.pathname;
-        // Если путь — это просто /archive/search, возвращаем 'search'
-        if (path.includes('/archive/search')) return 'search';
-        
-        let route = path.replace(/^\/archive\/?/, '') || 'index';
-        return route;
-    }
+    const path = window.location.pathname; // Берем /archive/contacts или /archive/search
+    if (path === '/archive' || path === '/archive/') return 'index';
+    
+    // Убираем /archive/ из начала пути
+    const route = path.replace('/archive/', '');
+    return route || 'index';
 }
+
 
 
 /* --- КОНФИГУРАЦИЯ СТАТУСОВ СТРАНИЦ --- */
@@ -301,38 +297,23 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Убираем дублирование фантомной ссылки
-    let phantomLink = document.querySelector('.phantom-search-link') || document.createElement('a');
-    phantomLink.className = 'phantom-search-link';
-    phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
-    if (!phantomLink.parentNode) searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
-
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        phantomLink.style.display = query.length > 0 ? 'block' : 'none';
-        phantomLink.textContent = `Все результаты для «${query}»`;
-        phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
-
         links.forEach(link => {
-            const text = link.textContent.toLowerCase();
-            const isMatch = query === '' || text.includes(query);
-            
-            link.style.display = isMatch ? '' : 'none'; // Скрываем ссылку через CSS
-            if (query !== '' && isMatch) {
-                const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-                link.innerHTML = link.textContent.replace(regex, '<span class="sidebar-match">$1</span>');
-            } else {
-                link.innerHTML = link.textContent;
-            }
+            const match = link.textContent.toLowerCase().includes(query);
+            link.style.display = match ? '' : 'none'; // Скрываем ссылку
         });
 
         folders.forEach(f => {
-            const visibleLinks = Array.from(f.querySelectorAll('a')).filter(a => a.style.display !== 'none');
-            const hasVisible = visibleLinks.length > 0;
-            f.style.display = (hasVisible || query === '') ? '' : 'none';
+            const visibleChildren = Array.from(f.querySelectorAll('a')).filter(a => a.style.display !== 'none');
+            const hasVisible = visibleChildren.length > 0;
+            
+            // Если запрос есть: скрываем папку, если нет видимых ссылок
+            // Если запроса нет: показываем всё
+            f.style.display = (query === '' || hasVisible) ? '' : 'none';
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
         });
