@@ -471,20 +471,25 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     appContainer.classList.add('scale-down');
     
+    // 1. Инициализация контента и сайдбара
     await loadArticle();
     updateActiveSidebarLink();
-    initSearch(); // Инициализирует только сам поиск в сайдбаре
+    initSearch();
     
-    // ПРОВЕРКА ПАРАМЕТРОВ URL
+    // 2. БЕЗ принудительной перезаписи истории
+    // Мы просто считываем параметры, если они есть
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
     
-    if (query) {
-        // Если мы на странице /archive/search, контент уже отрендерился через loadArticle -> renderSearchPage
-        // Нам не нужно трогать поле в сайдбаре, чтобы не дублировать логику
-        console.log("Поиск активен для запроса:", query); 
+    // Если находимся на странице поиска, просто отображаем значение в поле
+    if (window.location.pathname.includes('/archive/search') && query) {
+        const mainInput = document.querySelector('.search-input-field');
+        if (mainInput) {
+            mainInput.value = query;
+        }
     }
     
+    // 3. Финальная отрисовка
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
