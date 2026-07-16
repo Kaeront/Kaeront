@@ -316,12 +316,23 @@
         .markdown-body p, li { color: var(--text-dim) !important; text-align: justify !important; margin-bottom: 20px !important; }
         .markdown-body a { color: var(--accent) !important; text-decoration: none !important; transition: 0.3s !important; }
         .markdown-body a:hover { text-decoration: underline !important; }
-        .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 3px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
-
-        /* --- Блоки-предупреждения страниц --- */
-        .block-outdated::after {
-            content: "### ⚠️ Статья устарела\AДанные в материале могли потерять актуальность. Мы уже работаем над обновлением текста.";
+        .markdown-body table {
+            display: block !important;
+            width: 100% !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            margin-bottom: 20px !important;
+            scrollbar-width: thin !important;
+            scrollbar-color: var(--accent) #1a1a1a !important;
         }
+        .markdown-body table::-webkit-scrollbar {
+            height: 6px !important;
+        }
+        .markdown-body table::-webkit-scrollbar-thumb {
+            background-color: var(--accent) !important;
+            border-radius: 3px !important;
+        }
+        .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 3px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
 
         /* Адаптивность для мобильных */
         @media (max-width: 768px) {
