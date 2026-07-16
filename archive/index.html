@@ -293,15 +293,11 @@
             will-change: transform, opacity;
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                         opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-}
-
-        #wiki-app.scale-down .markdown-body {
-            transition: 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
             mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent), linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent) !important;
             mask-composite: intersect !important;
             -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent), linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent) !important;
             -webkit-mask-composite: source-in !important;
-        }
+}
 
         /* --- СВЯЗКА АНИМАЦИИ ШИММЕРА С КЛАССОМ SCALE-DOWN РОДИТЕЛЯ --- */
         #wiki-app.scale-down .markdown-body::before {
