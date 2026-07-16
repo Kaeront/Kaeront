@@ -269,6 +269,50 @@
             100% { transform: translate3d(100%, 0, 0); }
         }
 
+        /* Базовый контейнер баннера */
+        .status-banner {
+            padding: 16px 20px !important;
+            border-radius: 4px !important;
+            margin-bottom: 30px !important;
+            margin-top: 10px !important;
+            border-left: 4px solid var(--accent) !important;
+            background: rgba(255, 170, 0, 0.03) !important; /* Легкий оттенок акцентного цвета */
+            font-family: 'Montserrat', sans-serif !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        /* Заголовок баннера */
+        .status-banner h3 {
+            margin: 0 0 6px 0 !important;
+            font-size: 0.85rem !important;
+            color: var(--accent) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            font-family: 'Minecraft', sans-serif !important;
+        }
+
+        /* Текст баннера */
+        .status-banner p {
+            margin: 0 !important;
+            font-size: 0.8rem !important;
+            color: var(--text-dim) !important;
+            line-height: 1.5 !important;
+        }
+
+        /* Вариации цветов для разных состояний */
+        .status-banner.outdated { 
+    border-left-color: #f55 !important; 
+            background: rgba(255, 85, 85, 0.03) !important;
+        }
+        .status-banner.outdated h3 { color: #f55 !important; }
+
+        .status-banner.not-ready { 
+            border-left-color: #fa0 !important; 
+            background: rgba(255, 165, 0, 0.03) !important;
+        }
+
+
         /* Рендеринг разметки статьи */
         .markdown-body {
             position: relative !important;
