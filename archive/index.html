@@ -271,45 +271,6 @@
             100% { transform: translate3d(100%, 0, 0); }
         }
 
-        /* Базовый контейнер баннера */
-        .status-banner {
-            padding: 0px 15px !important;
-            border-radius: 10px !important;
-            margin: 0 0 20px 0 !important;
-            border-left: 3px solid var(--accent) !important;
-            background: rgba(255, 170, 0, 0.03) !important;
-            font-family: 'Montserrat', sans-serif !important;
-            position: relative !important;
-            display: block !important;
-            line-height: 1 !important;
-        }
-
-        .status-banner h3, .status-banner p {
-            margin: 0 !important;
-            padding: 0 !important;
-            text-align: left !important;
-        }
-
-        .status-banner h3 {
-            font-size: 0.8rem !important;
-            color: var(--accent) !important;
-            margin-bottom: 10px !important;
-            font-family: 'Minecraft', sans-serif !important;
-        }
-
-        .status-banner p {
-            font-size: 0.7rem !important;
-            color: var(--text-dim) !important;
-            line-height: 1.3 !important;
-        }
-
-
-        /* Вариации цветов для разных состояний */
-        .status-banner.outdated { border-left-color: #f55 !important; background: rgba(255, 85, 85, 0.02) !important; }
-        .status-banner.not-ready { border-left-color: #ff5 !important; background: rgba(255, 255, 85, 0.02) !important; }
-        .status-banner.no-images { border-left-color: #55f !important; background: rgba(85, 85, 255, 0.02) !important; }
-
-
         /* Рендеринг разметки статьи */
         .markdown-body {
             position: relative !important;
@@ -374,6 +335,45 @@
             border-radius: 3px !important;
         }
         .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 3px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
+
+
+        /* Базовый контейнер баннера */
+        .status-banner {
+            padding: 3px 15px !important;
+            border-radius: 10px !important;
+            margin: 0 0 20px 0 !important;
+            border-left: 3px solid var(--accent) !important;
+            background: rgba(255, 170, 0, 0.03) !important;
+            font-family: 'Montserrat', sans-serif !important;
+            position: relative !important;
+            display: block !important;
+            line-height: 1 !important;
+        }
+
+        .status-banner h3, .status-banner p {
+            margin: 0 !important;
+            padding: 0 !important;
+            text-align: left !important;
+        }
+
+        .status-banner h3 {
+            font-size: 0.75rem !important;
+            color: var(--accent) !important;
+            margin-bottom: 10px !important;
+            font-family: 'Minecraft', sans-serif !important;
+        }
+
+        .status-banner p {
+            font-size: 0.65rem !important;
+            color: var(--text-dim) !important;
+            line-height: 1.3 !important;
+        }
+
+        /* Вариации цветов для разных состояний */
+        .status-banner.outdated { border-left-color: #f55 !important; background: rgba(255, 85, 85, 0.02) !important; }
+        .status-banner.not-ready { border-left-color: #ff5 !important; background: rgba(255, 255, 85, 0.02) !important; }
+        .status-banner.no-images { border-left-color: #55f !important; background: rgba(85, 85, 255, 0.02) !important; }
+
 
         /* Адаптивность для мобильных */
         @media (max-width: 768px) {
