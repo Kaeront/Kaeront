@@ -67,27 +67,27 @@ async function loadArticle() {
         if (!response.ok) throw new Error('Статья отсутствует');
         let markdownText = await response.text();
 
-        // 1. Ищем строку статуса (поддерживает дефисы и запятые)
-        // Регулярка [a-z0-9,-]+ позволяет буквы, цифры, дефисы и запятые
-        const statusMatch = markdownText.match(/<!--\s*status:\s*([a-z0-9,-]+)\s*-->/i);
+        // 1. Ищем строку статуса более гибким способом
+        // Ищем все, что между <!-- status: и -->
+        const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
 
         if (statusMatch && statusMatch[1]) {
-            // Разделяем статусы по запятой, если их несколько
-            const statusList = statusMatch[1].split(',');
+            // Берем строку (например, "not-ready, no-images"), убираем лишние пробелы и делим
+            const statusString = statusMatch[1];
+            const statusList = statusString.split(',').map(s => s.trim());
             
             statusList.forEach(id => {
-                const trimmedId = id.trim();
-                if (STATUS_BANNERS[trimmedId]) {
-                    bannersHtml += STATUS_BANNERS[trimmedId];
+                if (STATUS_BANNERS[id]) {
+                    bannersHtml += STATUS_BANNERS[id];
                 }
             });
 
-            // Вырезаем весь найденный комментарий
+            // 2. Вырезаем только сам комментарий
             markdownText = markdownText.replace(statusMatch[0], '');
         }
 
-        // 2. Рендерим результат
+        // Рендерим: баннер + остальной MD
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
 
     } catch (error) {
