@@ -35,8 +35,8 @@
       "source": "/archive/((?!.*\\.).*)",
       "destination": "/archive/index.html"
     },
-    { 
-      "source": "/archive/search", 
+    {
+      "source": "/archive/:path*",
       "destination": "/archive/index.html"
     }
   ]
