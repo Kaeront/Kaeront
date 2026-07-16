@@ -273,8 +273,8 @@
 
         /* Базовый контейнер баннера */
         .status-banner {
-            padding: 10px 15px !important;
-            border-radius: 6px !important;
+            padding: 0px 15px !important;
+            border-radius: 10px !important;
             margin: 0 0 20px 0 !important;
             border-left: 3px solid var(--accent) !important;
             background: rgba(255, 170, 0, 0.03) !important;
@@ -293,7 +293,7 @@
         .status-banner h3 {
             font-size: 0.8rem !important;
             color: var(--accent) !important;
-            margin-bottom: 5px !important;
+            margin-bottom: 10px !important;
             font-family: 'Minecraft', sans-serif !important;
         }
 
@@ -305,16 +305,9 @@
 
 
         /* Вариации цветов для разных состояний */
-        .status-banner.outdated { 
-    border-left-color: #f55 !important; 
-            background: rgba(255, 85, 85, 0.02) !important;
-        }
-        .status-banner.outdated h3 { color: #f55 !important; }
-
-        .status-banner.not-ready { 
-            border-left-color: #fa0 !important; 
-            background: rgba(255, 170, 0, 0.02) !important;
-        }
+        .status-banner.outdated { border-left-color: #f55 !important; background: rgba(255, 85, 85, 0.02) !important; }
+        .status-banner.not-ready { border-left-color: #ff5 !important; background: rgba(255, 255, 85, 0.02) !important; }
+        .status-banner.no-images { border-left-color: #55f !important; background: rgba(85, 85, 255, 0.02) !important; }
 
 
         /* Рендеринг разметки статьи */
