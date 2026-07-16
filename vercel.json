@@ -27,6 +27,13 @@
       "source": "/news/:id",
       "destination": "/news-style"
     },
-    { "source": "/archive/:path*", "destination": "/archive/index.html" }
+    {
+      "source": "/archive/assets/:path*",
+      "destination": "/archive/assets/:path*"
+    },
+    {
+      "source": "/archive/((?!.*\\.).*)",
+      "destination": "/archive/index.html"
+    }
   ]
 }
