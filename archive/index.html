@@ -255,19 +255,19 @@
             position: relative; 
         }
 
-/* --- СОСТОЯНИЕ SCALE-DOWN С МАСКОЙ --- */
-#wiki-app.scale-down {
-    opacity: 0.15 !important;
-    transform: scale(0.95) !important;
-    transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+        /* --- СОСТОЯНИЕ SCALE-DOWN С МАСКОЙ --- */
+        #wiki-app.scale-down {
+            opacity: 0.15 !important;
+            transform: scale(0.95) !important;
+            transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
 }
 
-/* Ключевые кадры анимации шиммера */
-@keyframes continuous-shimmer {
-    0% { transform: translate3d(-100%, 0, 0); }
-    100% { transform: translate3d(100%, 0, 0); }
-}
+        /* Ключевые кадры анимации шиммера */
+        @keyframes continuous-shimmer {
+            0% { transform: translate3d(-100%, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
+        }
 
         /* Рендеринг разметки статьи */
         .markdown-body {
@@ -294,6 +294,14 @@
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                         opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
 }
+
+        #wiki-app.scale-down .markdown-body {
+            transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
+            mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent) !important;
+            mask-composite: intersect !important;
+            -webkit-mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent) !important;
+            -webkit-mask-composite: source-in !important;
+        }
 
         /* --- СВЯЗКА АНИМАЦИИ ШИММЕРА С КЛАССОМ SCALE-DOWN РОДИТЕЛЯ --- */
         #wiki-app.scale-down .markdown-body::before {
