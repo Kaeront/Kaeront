@@ -404,57 +404,46 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Фантомная ссылка "Все результаты"
-    const phantomLink = document.createElement('a');
-    phantomLink.style.display = 'none';
-    phantomLink.style.padding = '10px';
-    phantomLink.style.color = 'var(--accent)';
-    phantomLink.style.cursor = 'pointer';
-    searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
+    // Ссылку "Все результаты" вынесем в глобальную область, чтобы не дублировать
+    let phantomLink = document.querySelector('.phantom-search-link');
+    if (!phantomLink) {
+        phantomLink = document.createElement('a');
+        phantomLink.className = 'phantom-search-link';
+        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
+        searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
+    }
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        
+        const links = document.querySelectorAll('.wiki-tree a');
+        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
+
         if (query.length > 0) {
             phantomLink.textContent = `Все результаты для «${query}»`;
             phantomLink.style.display = 'block';
-            phantomLink.onclick = () => {
-                searchInput.value = '';
-                phantomLink.style.display = 'none';
-                performTransition('/archive/search?q=' + encodeURIComponent(query));
-            };
+            phantomLink.onclick = () => { performTransition('/archive/search?q=' + encodeURIComponent(query)); };
         } else {
             phantomLink.style.display = 'none';
         }
 
-        const links = document.querySelectorAll('.wiki-tree a');
-        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
-
-        if (query === '') {
-            links.forEach(l => { l.classList.remove('search-hidden'); l.innerHTML = l.textContent; });
-            folders.forEach(f => { f.classList.remove('search-hidden'); f.classList.remove('open'); });
-            updateActiveSidebarLink();
-            return;
-        }
-
         links.forEach(link => {
             const text = link.textContent;
-            if (text.toLowerCase().includes(query)) {
+            // Используем textContent для проверки, чтобы не искать внутри тегов <span>
+            if (query && text.toLowerCase().includes(query)) {
                 link.classList.remove('search-hidden');
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.classList.add('search-hidden');
+                link.classList.remove('search-hidden');
+                link.innerHTML = text; // Очистка
             }
         });
 
-        folders.forEach(folder => {
-            const hasVisibleLinks = folder.querySelectorAll('a:not(.search-hidden)').length > 0;
-            if (hasVisibleLinks) {
-                folder.classList.remove('search-hidden');
-                folder.classList.add('open');
-            } else {
-                folder.classList.add('search-hidden');
-                folder.classList.remove('open');
-            }
+        // Скрытие пустых папок
+        folders.forEach(f => {
+            const hasVisible = f.querySelectorAll('a:not(.search-hidden)').length > 0;
+            f.style.display = (hasVisible || query === '') ? '' : 'none';
+            if (query !== '' && hasVisible) f.classList.add('open');
         });
     });
 }
@@ -501,6 +490,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('q')) {
+            const query = urlParams.get('q');
+            const searchInput = document.getElementById('wiki-search');
+            if (searchInput) {
+                searchInput.value = query;
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        }
     
     setTimeout(() => {
         appContainer.classList.remove('scale-down');
