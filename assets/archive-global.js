@@ -308,25 +308,49 @@ function initSearch() {
     if (!searchInput) return;
 
     searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        const lowerQuery = query.toLowerCase();
+        const query = this.value.trim().toLowerCase();
         const links = document.querySelectorAll('.wiki-tree a');
-        
+        const folders = document.querySelectorAll('.wiki-folder');
+
+        // 1. Сброс состояния
         links.forEach(link => {
-            // Сохраняем или восстанавливаем оригинальный текст из data-атрибута,
-            // чтобы не накапливать сломанные теги при многократном вводе символов
-            if (!link.hasAttribute('data-original-text')) {
-                link.setAttribute('data-original-text', link.textContent);
-            }
-            
-            const originalText = link.getAttribute('data-original-text');
-            
-            if (query && originalText.toLowerCase().includes(lowerQuery)) {
-                // Подсвечиваем совпадения, используя безопасный метод
-                link.innerHTML = highlightText(originalText, query, 'sidebar-match');
+            link.classList.remove('search-hidden');
+            link.innerHTML = link.textContent; // Убираем старые span
+        });
+        folders.forEach(f => {
+            f.classList.remove('search-hidden');
+            if (query === '') f.classList.remove('open'); // Закрываем при пустом поиске
+        });
+
+        if (query === '') return;
+
+        // 2. Фильтрация
+        links.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            const parentFolder = link.closest('.wiki-folder');
+
+            if (text.includes(query)) {
+                // Применяем хайлайт
+                const regex = new RegExp(`(${query})`, 'gi');
+                link.innerHTML = link.textContent.replace(regex, '<span class="search-match">$1</span>');
+                
+                // Раскрываем всех родителей
+                let parent = link.parentElement;
+                while (parent && parent.classList.contains('folder-content-wrapper')) {
+                    const folder = parent.closest('.wiki-folder');
+                    folder.classList.add('open');
+                    parent = folder.parentElement.closest('.folder-content-wrapper');
+                }
             } else {
-                // Возвращаем чистый текст, если поле ввода очищено
-                link.textContent = originalText;
+                link.classList.add('search-hidden');
+            }
+        });
+
+        // 3. Скрываем пустые папки
+        folders.forEach(f => {
+            const hasVisibleLinks = f.querySelectorAll('a:not(.search-hidden)').length > 0;
+            if (!hasVisibleLinks && !f.querySelector('.folder-content').textContent.toLowerCase().includes(query)) {
+                f.classList.add('search-hidden');
             }
         });
     });
