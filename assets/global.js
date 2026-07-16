@@ -81,7 +81,7 @@ const globalStyles = `
         background: transparent; backdrop-filter: blur(0px);
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
-        align-items: bottom; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
         transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
     }
