@@ -15,6 +15,11 @@
       "source": "/archive/index",
       "destination": "/archive",
       "permanent": true
+    },
+    {
+      "source": "/archive/:slug((?!.*\\.md$).*)",
+      "destination": "/archive?page=:slug",
+      "permanent": false
     }
   ],
   "rewrites": [
@@ -23,7 +28,11 @@
       "destination": "/news-style"
     },
     {
-      "source": "/archive/:path*",
+      "source": "/archive/assets/:path*",
+      "destination": "/archive/assets/:path*"
+    },
+    {
+      "source": "/archive/((?!.*\\.).*)",
       "destination": "/archive/index.html"
     }
   ]
