@@ -469,37 +469,33 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    if (!isLocal) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
-
-        if (pageParam) {
-            window.history.replaceState(null, null, `/archive/${pageParam}`);
-        } else if (window.location.pathname === '/archive/index') {
-            window.history.replaceState(null, null, '/archive');
-        }
-    }
-
+    // 1. Инициализация UI
     appContainer.classList.add('scale-down');
+    
+    // 2. Загружаем контент
     await loadArticle();
     updateActiveSidebarLink();
+    
+    // 3. Инициализируем поиск (после того, как дерево отрисовано)
     initSearch();
     
+    // 4. Логика восстановления поиска из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    const searchInput = document.getElementById('wiki-search');
+    
+    if (query && searchInput) {
+        searchInput.value = query;
+        // Принудительный триггер, чтобы отработал ваш алгоритм фильтрации
+        searchInput.dispatchEvent(new Event('input'));
+    }
+    
+    // 5. Убираем лоадер
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
     }
-
-    const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('q')) {
-            const query = urlParams.get('q');
-            const searchInput = document.getElementById('wiki-search');
-            if (searchInput) {
-                searchInput.value = query;
-                searchInput.dispatchEvent(new Event('input'));
-            }
-        }
     
     setTimeout(() => {
         appContainer.classList.remove('scale-down');
