@@ -44,7 +44,7 @@ const globalStyles = `
         font-weight: 400;
         font-style: normal;
         font-display: swap;
-        size-adjust: 150%; 
+        size-adjust: 130%; 
     }
 
     @font-face {
@@ -53,7 +53,7 @@ const globalStyles = `
         font-weight: 700;
         font-style: normal;
         font-display: swap;
-        size-adjust: 150%; 
+        size-adjust: 130%; 
     }
 
     body {
@@ -149,7 +149,7 @@ const injectHTML = {
         <div class="nav-links">
             <a href="/servers">Сервера</a>
             <a href="/news">Новости</a>
-            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif;">⚡</span></a>
+            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡</span></a>
             <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>`,
