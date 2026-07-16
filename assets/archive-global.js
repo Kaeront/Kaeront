@@ -469,28 +469,22 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Инициализация UI
     appContainer.classList.add('scale-down');
     
-    // 2. Загружаем контент
     await loadArticle();
     updateActiveSidebarLink();
+    initSearch(); // Инициализирует только сам поиск в сайдбаре
     
-    // 3. Инициализируем поиск (после того, как дерево отрисовано)
-    initSearch();
-    
-    // 4. Логика восстановления поиска из URL
+    // ПРОВЕРКА ПАРАМЕТРОВ URL
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
-    const searchInput = document.getElementById('wiki-search');
     
-    if (query && searchInput) {
-        searchInput.value = query;
-        // Принудительный триггер, чтобы отработал ваш алгоритм фильтрации
-        searchInput.dispatchEvent(new Event('input'));
+    if (query) {
+        // Если мы на странице /archive/search, контент уже отрендерился через loadArticle -> renderSearchPage
+        // Нам не нужно трогать поле в сайдбаре, чтобы не дублировать логику
+        console.log("Поиск активен для запроса:", query); 
     }
     
-    // 5. Убираем лоадер
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
