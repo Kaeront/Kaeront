@@ -255,45 +255,44 @@
             position: relative; 
         }
 
-/* --- НАСТРОЙКА ШИММЕРА --- */
+/* --- ШИММЕР --- */
 #wiki-app::before {
     content: "";
-    /* Используем fixed, чтобы он привязывался к границам экрана, а не к высоте скролла */
-    position: fixed !important; 
-    
-    /* Позиционируем строго поверх контентной области */
-    top: var(--safe-nav-height) !important;
-    left: var(--sidebar-width) !important;
-    right: 0 !important;
-    bottom: 0 !important;
+    position: absolute !important; 
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
     pointer-events: none;
     z-index: 299;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%) !important;
     opacity: 0;
-    transform: scale(1) translate3d(-100%, 0, 0); 
+    transform: translate3d(-100%, 0, 0); 
     will-change: transform, opacity;
     transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                 opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
 }
 
-/* --- СОСТОЯНИЕ SCALE-DOWN --- */
+/* --- СОСТОЯНИЕ SCALE-DOWN С МАСКОЙ --- */
 #wiki-app.scale-down {
-    mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent);
-    mask-composite: intersect;
-    -webkit-mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent);
-    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent) !important;
+    mask-composite: intersect !important;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent) !important;
+    -webkit-mask-composite: source-in !important;
     opacity: 0.15 !important;
     transform: scale(0.95) !important;
     transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
                 opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
 }
 
+/* Запуск анимации при переходе */
 #wiki-app.scale-down::before {
-    opacity: 1; 
-    animation: continuous-shimmer 0.5s linear infinite !important;
+    opacity: 1 !important; 
+    animation: continuous-shimmer 0.6s linear infinite !important;
 }
 
-/* Ключевые кадры с аппаратным ускорением */
+/* Ключевые кадры анимации шиммера */
 @keyframes continuous-shimmer {
     0% { transform: translate3d(-100%, 0, 0); }
     100% { transform: translate3d(100%, 0, 0); }
