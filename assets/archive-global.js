@@ -13,17 +13,16 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 
 // Получаем чистый путь статьи с поддержкой редирект-параметров
 function getCleanRoute() {
-    const path = window.location.pathname; 
+    const path = window.location.pathname;
     
-    // Если мы в корне архива
+    // Исключаем корень, возвращая индекс
     if (path === '/archive' || path === '/archive/') return 'index';
     
-    // Берем все, что идет после /archive/
-    const route = path.split('/archive/')[1];
+    // Получаем путь после /archive/
+    let route = path.replace(/^\/archive\//, '');
     
-    // Если после /archive/ ничего нет или это search
-    if (!route) return 'index';
-    return route.split('?')[0]; // Убираем параметры, если они попали сюда
+    // Очищаем от возможных параметров запроса, если они попали в строку
+    return route.split('?')[0] || 'index';
 }
 
 /* --- КОНФИГУРАЦИЯ СТАТУСОВ СТРАНИЦ --- */
@@ -54,8 +53,8 @@ const STATUS_BANNERS = {
 async function loadArticle() {
     const routeName = getCleanRoute();
     
-    // ФАНТОМНАЯ СТРАНИЦА ПОИСКА
-    if (routeName === 'search') {
+    // Если путь совпадает с поиском или в URL есть параметры поиска, вызываем рендер
+    if (routeName === 'search' || window.location.pathname.includes('/search')) {
         renderSearchPage();
         return;
     }
