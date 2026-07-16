@@ -67,18 +67,29 @@ async function loadArticle() {
         if (!response.ok) throw new Error('Статья отсутствует');
         let markdownText = await response.text();
 
-        // Логика поиска статуса
-        let bannerHtml = '';
-        const statusMatch = markdownText.match(/<!--\s*status:\s*(\w+)\s*-->/);
+        // 1. Ищем строку статуса (поддерживает дефисы и запятые)
+        // Регулярка [a-z0-9,-]+ позволяет буквы, цифры, дефисы и запятые
+        const statusMatch = markdownText.match(/<!--\s*status:\s*([a-z0-9,-]+)\s*-->/i);
+        let bannersHtml = '';
 
         if (statusMatch && statusMatch[1]) {
-            bannerHtml = STATUS_BANNERS[statusMatch[1]] || '';
-            // Вырезаем технический комментарий из текста, чтобы он не отображался
+            // Разделяем статусы по запятой, если их несколько
+            const statusList = statusMatch[1].split(',');
+            
+            statusList.forEach(id => {
+                const trimmedId = id.trim();
+                if (STATUS_BANNERS[trimmedId]) {
+                    bannersHtml += STATUS_BANNERS[trimmedId];
+                }
+            });
+
+            // Вырезаем весь найденный комментарий
             markdownText = markdownText.replace(statusMatch[0], '');
         }
 
-        contentContainer.innerHTML = bannerHtml + marked.parse(markdownText);
-        
+        // 2. Рендерим результат
+        contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
+
     } catch (error) {
         contentContainer.innerHTML = `
             <h1>Статья не найдена</h1>
