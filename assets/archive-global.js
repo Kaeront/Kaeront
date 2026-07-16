@@ -469,11 +469,20 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // ПРИНУДИТЕЛЬНАЯ НОРМАЛИЗАЦИЯ URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    
+    // Если есть запрос, но мы находимся не на странице /archive/search
+    if (query && !window.location.pathname.includes('/archive/search')) {
+        window.history.replaceState(null, null, `/archive/search?q=${encodeURIComponent(query)}`);
+    }
+
     appContainer.classList.add('scale-down');
     
     await loadArticle();
     updateActiveSidebarLink();
-    initSearch(); // Инициализирует только сам поиск в сайдбаре
+    initSearch();
     
     // ПРОВЕРКА ПАРАМЕТРОВ URL
     const urlParams = new URLSearchParams(window.location.search);
