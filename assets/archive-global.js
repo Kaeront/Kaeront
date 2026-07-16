@@ -101,11 +101,13 @@ async function loadArticle() {
     }
 }
 
-/* Добавить в CSS или вставить через JS */
+// CSS для подсветки
 const style = document.createElement('style');
 style.textContent = `
-    .search-match { font-weight: bold; color: var(--accent); background: rgba(255,165,0,0.2); }
-    .search-input-field { width: 100%; padding: 10px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; }
+    .search-match { font-weight: bold; color: var(--accent); background: rgba(255,165,0,0.3); padding: 0 2px; }
+    .search-input-field { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 20px; }
+    .search-result-card { border: 1px solid #333; padding: 15px; margin-bottom: 15px; cursor: pointer; }
+    .sidebar-match { font-weight: bold; color: var(--accent); }
 `;
 document.head.appendChild(style);
 
@@ -113,52 +115,74 @@ async function renderSearchPage() {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('q') || '';
     
-    // 4. Поиск-поле на странице результатов
-    contentContainer.innerHTML = `
-        <h1>Поиск</h1>
-        <input type="text" class="search-input-field" value="${query}" placeholder="Введите запрос...">
-        <div id="results-list"></div>
-    `;
+    contentContainer.innerHTML = `<h1>Поиск</h1><input type="text" class="search-input-field" value="${query}" placeholder="Введите запрос...">
+    <div id="results-list"></div>`;
 
     const input = contentContainer.querySelector('.search-input-field');
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performTransition('/archive/search?q=' + encodeURIComponent(input.value));
-    });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') performTransition('/archive/search?q=' + encodeURIComponent(input.value)); });
 
     if (!query) return;
+    const list = document.getElementById('results-list');
+    list.innerHTML = '<p>Загрузка результатов...</p>';
 
     const links = Array.from(document.querySelectorAll('.wiki-tree a'));
     const results = [];
-    
-    // 6. Базовая эвристика корня (обрезаем окончания)
-    const getRoot = (word) => word.toLowerCase().slice(0, Math.max(3, word.length - 2));
-    const rootQuery = getRoot(query);
+    const lowerQuery = query.toLowerCase();
 
     for (const link of links) {
         try {
             const res = await fetch(`${link.getAttribute('href')}.md`);
-            const rawText = await res.text();
+            const text = await res.text();
             
-            // 5. Очистка от HTML и Markdown для поиска
-            const cleanText = rawText
-                .replace(/<[^>]*>/g, '') // Удалить HTML
-                .replace(/[#*\[\]()_]/g, '') // Удалить MD символы
-                .replace(/\s+/g, ' ');
-
-            if (cleanText.toLowerCase().includes(rootQuery)) {
-                const snippet = cleanText.substring(cleanText.toLowerCase().indexOf(rootQuery) - 30, 100);
+            // Парсинг: превращаем MD в HTML и очищаем через DOMParser (игнорирует теги)
+            const html = marked.parse(text);
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const cleanText = doc.body.textContent || "";
+            
+            if (cleanText.toLowerCase().includes(lowerQuery)) {
+                // Создание сниппета с нормальным троеточием
+                const idx = cleanText.toLowerCase().indexOf(lowerQuery);
+                const start = Math.max(0, idx - 40);
+                const end = Math.min(cleanText.length, idx + 60);
+                let snippet = cleanText.substring(start, end);
+                if (start > 0) snippet = '...' + snippet;
+                if (end < cleanText.length) snippet = snippet + '...';
+                
                 results.push({ title: link.textContent, href: link.getAttribute('href'), snippet });
             }
         } catch (e) {}
     }
 
-    // 2-3. Подсветка найденного
-    document.getElementById('results-list').innerHTML = results.map(r => `
-        <div class="search-result" style="padding:15px; border-bottom:1px solid #333;" onclick="performTransition('${r.href}')">
-            <h3>${r.title}</h3>
-            <p>${r.snippet.replace(new RegExp(query, 'gi'), '<mark class="search-match">$&</mark>')}</p>
-        </div>
-    `).join('');
+    if (results.length === 0) {
+        list.innerHTML = '<p>Результатов не найдено.</p>';
+    } else {
+        list.innerHTML = results.map(r => `
+            <div class="search-result-card" onclick="performTransition('${r.href}')">
+                <h3>${r.title}</h3>
+                <p>${r.snippet.replace(new RegExp(query, 'gi'), '<mark class="search-match">$&</mark>')}</p>
+            </div>
+        `).join('');
+    }
+}
+
+// Улучшенный поиск в сайдбаре
+function initSearch() {
+    const searchInput = document.getElementById('wiki-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const links = document.querySelectorAll('.wiki-tree a');
+        
+        links.forEach(link => {
+            const text = link.textContent;
+            if (query && text.toLowerCase().includes(query)) {
+                link.innerHTML = text.replace(new RegExp(query, 'gi'), '<span class="sidebar-match">$&</span>');
+            } else {
+                link.innerHTML = text;
+            }
+        });
+    });
 }
 
 // Быстрый асинхронный переход
