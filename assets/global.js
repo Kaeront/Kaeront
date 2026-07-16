@@ -81,7 +81,7 @@ const globalStyles = `
         background: transparent; backdrop-filter: blur(0px);
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
-        align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        align-items: bottom; padding: 0 5%; box-sizing: border-box; z-index: 2000;
         transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
     }
@@ -149,7 +149,7 @@ const injectHTML = {
         <div class="nav-links">
             <a href="/servers">Сервера</a>
             <a href="/news">Новости</a>
-            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡</span></a>
+            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a>
             <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
         </div>
     </nav>`,
