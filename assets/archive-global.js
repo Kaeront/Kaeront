@@ -101,41 +101,64 @@ async function loadArticle() {
     }
 }
 
-// ЛОГИКА ПОИСКОВОЙ СИСТЕМЫ
+/* Добавить в CSS или вставить через JS */
+const style = document.createElement('style');
+style.textContent = `
+    .search-match { font-weight: bold; color: var(--accent); background: rgba(255,165,0,0.2); }
+    .search-input-field { width: 100%; padding: 10px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; }
+`;
+document.head.appendChild(style);
+
 async function renderSearchPage() {
-    const query = new URLSearchParams(window.location.search).get('q') || '';
-    contentContainer.innerHTML = `<h1>Результаты поиска для: «${query}»</h1><div id="search-results-container">Загрузка...</div>`;
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q') || '';
     
+    // 4. Поиск-поле на странице результатов
+    contentContainer.innerHTML = `
+        <h1>Поиск</h1>
+        <input type="text" class="search-input-field" value="${query}" placeholder="Введите запрос...">
+        <div id="results-list"></div>
+    `;
+
+    const input = contentContainer.querySelector('.search-input-field');
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performTransition('/archive/search?q=' + encodeURIComponent(input.value));
+    });
+
+    if (!query) return;
+
     const links = Array.from(document.querySelectorAll('.wiki-tree a'));
     const results = [];
-    const lowerQuery = query.toLowerCase();
+    
+    // 6. Базовая эвристика корня (обрезаем окончания)
+    const getRoot = (word) => word.toLowerCase().slice(0, Math.max(3, word.length - 2));
+    const rootQuery = getRoot(query);
 
     for (const link of links) {
-        const href = link.getAttribute('href');
         try {
-            const response = await fetch(`${href.replace('/archive', '/archive')}.md`);
-            const text = await response.text();
+            const res = await fetch(`${link.getAttribute('href')}.md`);
+            const rawText = await res.text();
             
-            // Проверка на вхождение (с учетом вариаций слов)
-            if (text.toLowerCase().includes(lowerQuery)) {
-                const index = text.toLowerCase().indexOf(lowerQuery);
-                const snippet = text.substring(Math.max(0, index - 50), Math.min(text.length, index + 100));
-                results.push({ title: link.textContent, href, snippet });
+            // 5. Очистка от HTML и Markdown для поиска
+            const cleanText = rawText
+                .replace(/<[^>]*>/g, '') // Удалить HTML
+                .replace(/[#*\[\]()_]/g, '') // Удалить MD символы
+                .replace(/\s+/g, ' ');
+
+            if (cleanText.toLowerCase().includes(rootQuery)) {
+                const snippet = cleanText.substring(cleanText.toLowerCase().indexOf(rootQuery) - 30, 100);
+                results.push({ title: link.textContent, href: link.getAttribute('href'), snippet });
             }
         } catch (e) {}
     }
 
-    const container = document.getElementById('search-results-container');
-    if (results.length === 0) {
-        container.innerHTML = '<p>Ничего не найдено.</p>';
-    } else {
-        container.innerHTML = results.map(r => `
-            <div class="search-card" style="border:1px solid #333; padding:20px; margin-bottom:15px; cursor:pointer;" onclick="performTransition('${r.href}')">
-                <h3>${r.title}</h3>
-                <p>...${r.snippet.replace(new RegExp(lowerQuery, 'gi'), '<b>$&</b>')}...</p>
-            </div>
-        `).join('');
-    }
+    // 2-3. Подсветка найденного
+    document.getElementById('results-list').innerHTML = results.map(r => `
+        <div class="search-result" style="padding:15px; border-bottom:1px solid #333;" onclick="performTransition('${r.href}')">
+            <h3>${r.title}</h3>
+            <p>${r.snippet.replace(new RegExp(query, 'gi'), '<mark class="search-match">$&</mark>')}</p>
+        </div>
+    `).join('');
 }
 
 // Быстрый асинхронный переход
