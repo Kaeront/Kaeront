@@ -258,7 +258,7 @@
 /* --- НАСТРОЙКА ШИММЕРА --- */
 #wiki-app::before {
     content: "";
-    position: fixed;
+    position: fixed !important;
     top: 0;
     left: 0;
     right: 0;
@@ -275,9 +275,9 @@
 
 /* --- СОСТОЯНИЕ SCALE-DOWN --- */
 #wiki-app.scale-down {
-    mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent), linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent);
     mask-composite: intersect;
-    -webkit-mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent), linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 50px, black calc(100% - 50px), transparent), linear-gradient(to bottom, transparent, black 50px, black calc(100% - 50px), transparent);
     -webkit-mask-composite: source-in;
     opacity: 0.15 !important;
     transform: scale(0.95) !important;
