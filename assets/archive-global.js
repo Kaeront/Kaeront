@@ -101,85 +101,232 @@ async function loadArticle() {
     }
 }
 
-// CSS для подсветки
+// ==========================================
+// 1. Внедрение стилей с высокой специфичностью
+// ==========================================
 const style = document.createElement('style');
 style.textContent = `
-    .search-match { font-weight: bold; color: var(--accent); background: rgba(255,165,0,0.3); padding: 0 2px; }
-    .search-input-field { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 20px; }
-    .search-result-card { border: 1px solid #333; padding: 15px; margin-bottom: 15px; cursor: pointer; }
-    .sidebar-match { font-weight: bold; color: var(--accent); }
+    /* Подсветка в карточках результатов поиска */
+    mark.search-match {
+        font-weight: bold !important;
+        color: #ff9900 !important; /* Ваш акцентный цвет Kaeront */
+        background: rgba(255, 153, 0, 0.2) !important;
+        padding: 0 4px !important;
+        border-radius: 3px !important;
+        border: 1px solid rgba(255, 153, 0, 0.4) !important;
+    }
+    
+    /* Стили для поля ввода */
+    .search-input-field {
+        width: 100%;
+        padding: 12px;
+        background: #0d0d0d;
+        border: 1px solid #222;
+        color: #fff;
+        margin-bottom: 25px;
+        font-family: inherit;
+        border-radius: 4px;
+        transition: border-color 0.2s ease;
+    }
+    .search-input-field:focus {
+        border-color: #ff9900;
+        outline: none;
+    }
+
+    /* Карточки результатов */
+    .search-result-card {
+        border: 1px solid #1a1a1a;
+        background: #050505;
+        padding: 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .search-result-card:hover {
+        border-color: #333;
+        transform: translateY(-2px);
+    }
+    .search-result-card h3 {
+        margin: 0 0 10px 0;
+        color: #ff9900;
+        font-size: 1.2rem;
+    }
+    .search-result-card p {
+        margin: 0;
+        color: #888;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Подсветка совпадений в сайдбаре */
+    .sidebar-match {
+        font-weight: bold !important;
+        color: #ff9900 !important; /* Яркий акцентный цвет */
+        text-shadow: 0 0 8px rgba(255, 153, 0, 0.4) !important;
+        background: rgba(255, 153, 0, 0.1) !important;
+        padding: 1px 3px !important;
+        border-radius: 2px !important;
+    }
 `;
 document.head.appendChild(style);
 
+// ==========================================
+// Helper: Безопасное экранирование спецсимволов RegExp
+// ==========================================
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ==========================================
+// Helper: Безопасная подсветка текста (Защита от инъекций в HTML)
+// ==========================================
+function highlightText(text, query, className) {
+    if (!query) return text;
+    const escapedQuery = escapeRegExp(query);
+    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+    
+    // Разбиваем текст по совпадениям и экранируем обычный текст, 
+    // оборачивая только совпавшие куски в теги подсветки
+    return text.split(regex).map((part, i) => {
+        if (i % 2 === 1) {
+            return `<mark class="${className}">${escapeHtml(part)}</mark>`;
+        }
+        return escapeHtml(part);
+    }).join('');
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// ==========================================
+// 2. Логика страницы глобального поиска
+// ==========================================
 async function renderSearchPage() {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('q') || '';
     
-    contentContainer.innerHTML = `<h1>Поиск</h1><input type="text" class="search-input-field" value="${query}" placeholder="Введите запрос...">
-    <div id="results-list"></div>`;
+    contentContainer.innerHTML = `
+        <h1>Поиск по архиву</h1>
+        <input type="text" class="search-input-field" value="${escapeHtml(query)}" placeholder="Что вы хотите найти?">
+        <div id="results-list"></div>
+    `;
 
     const input = contentContainer.querySelector('.search-input-field');
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') performTransition('/archive/search?q=' + encodeURIComponent(input.value)); });
+    input.addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter') {
+            performTransition('/archive/search?q=' + encodeURIComponent(input.value.trim())); 
+        } 
+    });
 
-    if (!query) return;
+    if (!query.trim()) return;
     const list = document.getElementById('results-list');
-    list.innerHTML = '<p>Загрузка результатов...</p>';
+    list.innerHTML = '<p style="color: #666;">Поиск совпадений по базам данных...</p>';
 
     const links = Array.from(document.querySelectorAll('.wiki-tree a'));
     const results = [];
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = query.toLowerCase().trim();
 
     for (const link of links) {
+        const href = link.getAttribute('href');
+        if (!href || href.includes('search')) continue; // Пропускаем саму страницу поиска
+
         try {
-            const res = await fetch(`${link.getAttribute('href')}.md`);
-            const text = await res.text();
+            const res = await fetch(`${href}.md`);
             
-            // Парсинг: превращаем MD в HTML и очищаем через DOMParser (игнорирует теги)
-            const html = marked.parse(text);
+            // Защита от 404/500 ошибок (когда сервер возвращает HTML вместо MD)
+            if (!res.ok) {
+                console.warn(`Не удалось загрузить ресурс ${href}.md (Статус: ${res.status})`);
+                continue; 
+            }
+
+            const rawText = await res.text();
+            
+            // Компилируем Markdown в HTML, затем извлекаем исключительно текстовую ноду
+            const html = marked.parse(rawText);
             const doc = new DOMParser().parseFromString(html, 'text/html');
-            const cleanText = doc.body.textContent || "";
             
-            if (cleanText.toLowerCase().includes(lowerQuery)) {
-                // Создание сниппета с нормальным троеточием
-                const idx = cleanText.toLowerCase().indexOf(lowerQuery);
-                const start = Math.max(0, idx - 40);
-                const end = Math.min(cleanText.length, idx + 60);
+            // Удаляем стили и скрипты, если они случайно просочились
+            const scripts = doc.querySelectorAll('script, style');
+            scripts.forEach(s => s.remove());
+
+            const cleanText = doc.body.textContent || "";
+            const cleanTextLower = cleanText.toLowerCase();
+
+            if (cleanTextLower.includes(lowerQuery)) {
+                const idx = cleanTextLower.indexOf(lowerQuery);
+                
+                // Динамическое формирование контекстных границ сниппета
+                const start = Math.max(0, idx - 60);
+                const end = Math.min(cleanText.length, idx + lowerQuery.length + 80);
+                
                 let snippet = cleanText.substring(start, end);
+                
+                // Красивое оформление границ текста
                 if (start > 0) snippet = '...' + snippet;
                 if (end < cleanText.length) snippet = snippet + '...';
                 
-                results.push({ title: link.textContent, href: link.getAttribute('href'), snippet });
+                // Очищаем сниппет от лишних переносов строк для компактности
+                snippet = snippet.replace(/\s+/g, ' ');
+
+                results.push({ 
+                    title: link.textContent.trim(), 
+                    href: href, 
+                    snippet: snippet 
+                });
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error(`Ошибка обработки файла ${href}:`, e);
+        }
     }
 
     if (results.length === 0) {
-        list.innerHTML = '<p>Результатов не найдено.</p>';
+        list.innerHTML = '<p style="color: #888; margin-top: 20px;">Ничего не найдено. Попробуйте изменить запрос.</p>';
     } else {
         list.innerHTML = results.map(r => `
             <div class="search-result-card" onclick="performTransition('${r.href}')">
-                <h3>${r.title}</h3>
-                <p>${r.snippet.replace(new RegExp(query, 'gi'), '<mark class="search-match">$&</mark>')}</p>
+                <h3>${escapeHtml(r.title)}</h3>
+                <p>${highlightText(r.snippet, query, 'search-match')}</p>
             </div>
         `).join('');
     }
 }
 
-// Улучшенный поиск в сайдбаре
+// ==========================================
+// 3. Быстрый поиск и подсветка в сайдбаре
+// ==========================================
 function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
     searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
+        const query = this.value.trim();
+        const lowerQuery = query.toLowerCase();
         const links = document.querySelectorAll('.wiki-tree a');
         
         links.forEach(link => {
-            const text = link.textContent;
-            if (query && text.toLowerCase().includes(query)) {
-                link.innerHTML = text.replace(new RegExp(query, 'gi'), '<span class="sidebar-match">$&</span>');
+            // Сохраняем или восстанавливаем оригинальный текст из data-атрибута,
+            // чтобы не накапливать сломанные теги при многократном вводе символов
+            if (!link.hasAttribute('data-original-text')) {
+                link.setAttribute('data-original-text', link.textContent);
+            }
+            
+            const originalText = link.getAttribute('data-original-text');
+            
+            if (query && originalText.toLowerCase().includes(lowerQuery)) {
+                // Подсвечиваем совпадения, используя безопасный метод
+                link.innerHTML = highlightText(originalText, query, 'sidebar-match');
             } else {
-                link.innerHTML = text;
+                // Возвращаем чистый текст, если поле ввода очищено
+                link.textContent = originalText;
             }
         });
     });
