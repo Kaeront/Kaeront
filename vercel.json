@@ -36,8 +36,8 @@
       "destination": "/archive/index.html"
     },
     { 
-      "source": "/archive/(?!search$)(?!.*\\.).*", 
-      "destination": "/archive/index.html" 
+      "source": "/archive/search", 
+      "destination": "/archive/index.html"
     }
   ]
 }
