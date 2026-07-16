@@ -271,12 +271,12 @@
 
         /* Базовый контейнер баннера */
         .status-banner {
-            padding: 5px 20px !important;
+            padding: 0px 20px !important;
             border-radius: 10px !important;
             margin-bottom: 30px !important;
             margin-top: 10px !important;
-            border-left: 4px solid var(--accent) !important;
-            background: rgba(255, 170, 0, 0.03) !important; /* Легкий оттенок акцентного цвета */
+            border-left: 3px solid var(--accent) !important;
+            background: rgba(255, 170, 0, 0.02) !important; /* Легкий оттенок акцентного цвета */
             font-family: 'Montserrat', sans-serif !important;
             position: relative !important;
             overflow: hidden !important;
@@ -285,31 +285,28 @@
         /* Заголовок баннера */
         .status-banner h3 {
             margin: 0 0 6px 0 !important;
-            font-size: 0.85rem !important;
-            color: var(--accent) !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
-            font-family: 'Minecraft', sans-serif !important;
+            font-size: 0.8rem !important;
         }
 
         /* Текст баннера */
         .status-banner p {
             margin: 0 !important;
-            font-size: 0.8rem !important;
+            font-size: 0.7rem !important;
             color: var(--text-dim) !important;
             line-height: 1.5 !important;
+            text-align: left !important;
         }
 
         /* Вариации цветов для разных состояний */
         .status-banner.outdated { 
     border-left-color: #f55 !important; 
-            background: rgba(255, 85, 85, 0.03) !important;
+            background: rgba(255, 85, 85, 0.02) !important;
         }
         .status-banner.outdated h3 { color: #f55 !important; }
 
         .status-banner.not-ready { 
             border-left-color: #fa0 !important; 
-            background: rgba(255, 170, 0, 0.03) !important;
+            background: rgba(255, 170, 0, 0.02) !important;
         }
 
 
@@ -552,6 +549,7 @@
                                     <div class="folder-content-wrapper">
                                         <a href="/archive/legends">Главная Legends</a>
                                         <a href="/archive/legends/pixieas_archive">Архивы Пиксии</a>
+                                        <a href="/archive/legends/elements">Элементы</a>
                                         <div class="wiki-folder">
                                             <div class="folder-title" onclick="toggleFolder(this)">Персонажи</div>
                                             <div class="folder-content">
