@@ -328,22 +328,23 @@ async function renderSearchPage() {
 // ==========================================
 function initSearch() {
     const searchInput = document.getElementById('wiki-search');
-    if (!searchInput) return;
+    const treeContainer = document.querySelector('.wiki-tree');
+    if (!searchInput || !treeContainer) return;
 
+    // Создаем или получаем фантомную ссылку
     let phantomLink = document.querySelector('.phantom-search-link');
     if (!phantomLink) {
         phantomLink = document.createElement('a');
         phantomLink.className = 'phantom-search-link';
-        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
-        searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
+        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem; margin-bottom:10px;';
+        treeContainer.prepend(phantomLink);
     }
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-        const folders = document.querySelectorAll('.wiki-folder');
+        const allElements = treeContainer.querySelectorAll('.wiki-folder, .wiki-tree > .folder-content > .folder-content-wrapper > a');
 
-        // Фантомная ссылка
+        // Управление фантомной ссылкой
         if (query.length > 0) {
             phantomLink.textContent = `Все результаты для «${query}»`;
             phantomLink.style.display = 'block';
@@ -352,33 +353,45 @@ function initSearch() {
             phantomLink.style.display = 'none';
         }
 
-        // 1. Фильтруем ссылки
-        links.forEach(link => {
-            const text = link.textContent;
-            const isMatch = text.toLowerCase().includes(query);
-            
-            if (query === '' || isMatch) {
-                link.classList.remove('search-hidden');
-                // Подсветка
-                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = query !== '' ? text.replace(regex, '<span class="sidebar-match">$1</span>') : text;
-            } else {
-                link.classList.add('search-hidden');
+        // 1. Сбрасываем все состояния
+        treeContainer.querySelectorAll('.wiki-folder, a').forEach(el => {
+            el.style.display = '';
+            el.classList.remove('open');
+            if (el.tagName === 'A') {
+                el.innerHTML = el.getAttribute('data-original-text') || el.textContent;
+                if (!el.hasAttribute('data-original-text')) el.setAttribute('data-original-text', el.textContent);
             }
         });
 
-        // 2. Фильтруем папки (с учетом вложенности)
-        folders.forEach(folder => {
-            // Ищем любые вложенные ссылки, которые НЕ скрыты
-            const hasVisibleChildren = folder.querySelector('a:not(.search-hidden)');
-            
-            if (query !== '' && !hasVisibleChildren) {
-                folder.classList.add('search-hidden');
-                folder.classList.remove('open');
+        // 2. Если пустой запрос — выходим
+        if (query === '') return;
+
+        // 3. Фильтруем ссылки
+        const allLinks = treeContainer.querySelectorAll('a:not(.phantom-search-link)');
+        allLinks.forEach(link => {
+            const text = link.getAttribute('data-original-text').toLowerCase();
+            if (text.includes(query)) {
+                // Подсветка
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = link.getAttribute('data-original-text').replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                folder.classList.remove('search-hidden');
-                if (query !== '') folder.classList.add('open');
-                else folder.classList.remove('open');
+                link.style.display = 'none';
+            }
+        });
+
+        // 4. Скрытие папок (идем снизу вверх)
+        const allFolders = Array.from(treeContainer.querySelectorAll('.wiki-folder')).reverse();
+        allFolders.forEach(folder => {
+            // Если внутри папки нет ни одной видимой ссылки и ни одной видимой подпапки — скрываем её
+            const hasVisibleLinks = Array.from(folder.querySelectorAll(':scope > .folder-content > .folder-content-wrapper > a'))
+                                         .some(a => a.style.display !== 'none');
+            const hasVisibleFolders = Array.from(folder.querySelectorAll(':scope > .folder-content > .folder-content-wrapper > .wiki-folder'))
+                                           .some(f => f.style.display !== 'none');
+
+            if (!hasVisibleLinks && !hasVisibleFolders) {
+                folder.style.display = 'none';
+            } else {
+                folder.classList.add('open');
             }
         });
     });
