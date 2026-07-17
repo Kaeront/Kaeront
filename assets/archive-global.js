@@ -8,29 +8,28 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    const path = decodeURIComponent(window.location.pathname);
+    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
     
-    // 1. Поиск имеет приоритет
-    if (path.includes('/archive/search')) return 'search';
-
-    // 2. Красивый корень
-    if (path === '/archive' || path === '/archive/') return 'index';
-
-    // 3. Остальное
+    // Если путь "index", считаем его корнем
+    if (path === 'index') return 'index'; 
+    if (window.location.pathname.includes('/search')) return 'search';
+    
     const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    if (pageParam) return pageParam;
-
-    return path.replace(/^\/archive\//, '').replace(/\/$/, '') || 'index';
+    return urlParams.get('page') || (path || 'index');
 }
 
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
-    const path = window.location.pathname;
-    // Принудительно убираем /index
-    if (path.endsWith('/index') || path.endsWith('/index.html')) {
-        const newPath = path.replace(/\/index(\.html)?$/, '');
-        window.history.replaceState(null, '', newPath || '/archive');
+    // 1. Убираем /index из пути
+    if (window.location.pathname.endsWith('/index')) {
+        window.history.replaceState(null, '', window.location.pathname.replace('/index', ''));
+    }
+    
+    // 2. Обрабатываем ?page=
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    if (page) {
+        window.history.replaceState(null, '', `/archive/${page}`);
     }
 }
 
@@ -88,38 +87,24 @@ async function renderSearchPage() {
 
 async function loadArticle() {
     const routeName = getCleanRoute();
-
-    // 1. ПРИОРИТЕТ: Если роутер определил, что это поиск, вызываем рендер и выходим
     if (routeName === 'search') {
-        try {
-            await renderSearchPage();
-        } catch (error) {
-            contentContainer.innerHTML = `<h1>Ошибка загрузки поиска</h1><p>Не удалось инициализировать интерфейс поиска.</p>`;
-        }
-        return; // ВАЖНО: прекращаем выполнение, чтобы не пытаться делать fetch для search.md
+        renderSearchPage();
+        return;
     }
 
-    // 2. ОБЫЧНЫЙ РЕНДЕР: Загрузка MD-файла
     const filePath = `/archive/${routeName}.md`;
     try {
         const response = await fetch(filePath);
-        if (!response.ok) throw new Error('File not found');
-        
+        if (!response.ok) throw new Error();
         let markdownText = await response.text();
-        
-        // Обработка баннеров статуса
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
         if (statusMatch && statusMatch[1]) {
-            statusMatch[1].split(',').forEach(id => { 
-                if (STATUS_BANNERS[id.trim()]) bannersHtml += STATUS_BANNERS[id.trim()]; 
-            });
+            statusMatch[1].split(',').forEach(id => { if (STATUS_BANNERS[id.trim()]) bannersHtml += STATUS_BANNERS[id.trim()]; });
             markdownText = markdownText.replace(statusMatch[0], '');
         }
-        
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
     } catch (error) {
-        // Ошибка отображается только если это не поиск
         contentContainer.innerHTML = `<h1>Статья не найдена</h1><p>Документ <code>${routeName}.md</code> отсутствует.</p>`;
     }
 }
@@ -180,16 +165,22 @@ function initSearch() {
 }
 
 async function performTransition(targetUrl) {
-    // 1. Обновляем URL
-    window.history.pushState(null, null, targetUrl);
-    
-    // 2. Запускаем загрузку/рендер
     appContainer.classList.add('scale-down');
-    await loadArticle(); // Ждем завершения поиска или загрузки файла
+    await new Promise(r => setTimeout(r, 150));
+
+    // Обновляем URL
+    window.history.pushState(null, null, targetUrl);
+
+    // ВАЖНО: вызываем loadArticle(), которая сама поймет, 
+    // что мы на /search и вызовет renderSearchPage()
+    await loadArticle();
+    
     updateActiveSidebarLink();
     window.scrollTo(0, 0);
     appContainer.classList.remove('scale-down');
 }
+
+
 
 function updateActiveSidebarLink() {
     const currentRoute = getCleanRoute();
@@ -222,10 +213,16 @@ window.addEventListener('popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    handleUrlSync(); // Исправляем URL сразу
+    handleUrlSync(); 
     initSearch();
     await loadArticle();
     updateActiveSidebarLink();
+    
+    // ДОБАВИТЬ ЭТО: Если мы зашли прямо на /search?q=..., 
+    // а renderSearchPage не успел отрисовать список, вызываем его принудительно
+    if (getCleanRoute() === 'search') {
+        await renderSearchPage();
+    }
 
     const loader = document.getElementById('loader-wrapper');
     if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 300); }
