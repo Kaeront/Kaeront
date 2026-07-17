@@ -1,34 +1,6 @@
 {
   "cleanUrls": true,
-  "redirects": [
-    {
-      "source": "/news-style",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/news-style/:path*",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
-      "source": "/archive/index",
-      "destination": "/archive",
-      "permanent": true
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/news/:id",
-      "destination": "/news-style"
-    },
-    {
-      "source": "/archive/assets/:path*",
-      "destination": "/archive/assets/:path*"
-    },
-    {
-      "source": "/archive/:path*",
-      "destination": "/archive/index.html"
-    }
+    { "source": "/archive/:path*", "destination": "/archive/index.html" }
   ]
 }
