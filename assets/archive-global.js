@@ -331,51 +331,44 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Сохраняем исходный текст в data-атрибуты при первой инициализации
-    const allLinks = document.querySelectorAll('.wiki-tree a');
-    allLinks.forEach(link => {
-        if (!link.hasAttribute('data-text')) {
-            link.setAttribute('data-text', link.textContent);
-        }
+    // Сохраняем оригинальные тексты ссылок при первой загрузке
+    const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
+    links.forEach(link => {
+        if (!link.dataset.original) link.dataset.original = link.textContent;
     });
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const allLinks = document.querySelectorAll('.wiki-tree a');
+        const allLinks = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const allFolders = document.querySelectorAll('.wiki-folder');
 
-        // 1. Скрываем/показываем ссылки
+        // 1. Фильтр ссылок и хайлайт
         allLinks.forEach(link => {
-            const originalText = link.getAttribute('data-text');
-            const isMatch = originalText.toLowerCase().includes(query);
-
+            const original = link.dataset.original;
             if (query === '') {
-                link.style.display = '';
-                link.innerHTML = originalText;
-            } else if (isMatch) {
-                link.style.display = '';
-                // Подсветка
-                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = originalText.replace(regex, '<span class="sidebar-match">$1</span>');
+                link.innerHTML = original;
+                link.classList.remove('search-hidden');
+            } else if (original.toLowerCase().includes(query)) {
+                link.classList.remove('search-hidden');
+                // Хайлайт
+                const regex = new RegExp(`(${query})`, 'gi');
+                link.innerHTML = original.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.style.display = 'none';
+                link.classList.add('search-hidden');
             }
         });
 
-        // 2. Скрываем/показываем папки
+        // 2. Фильтр папок (не трогаем класс open, только скрываем)
         allFolders.forEach(folder => {
-            // Ищем внутри этой папки ссылки, которые сейчас видны
-            const visibleLinks = Array.from(folder.querySelectorAll('a')).filter(a => a.style.display !== 'none');
-            
             if (query === '') {
-                folder.style.display = '';
-                folder.classList.remove('open');
+                folder.classList.remove('search-hidden');
             } else {
-                if (visibleLinks.length > 0) {
-                    folder.style.display = '';
-                    folder.classList.add('open'); // Раскрываем папку, если внутри есть совпадение
+                // Ищем видимые ссылки ТОЛЬКО внутри этой папки
+                const visible = folder.querySelectorAll('a:not(.search-hidden)');
+                if (visible.length === 0) {
+                    folder.classList.add('search-hidden');
                 } else {
-                    folder.style.display = 'none';
+                    folder.classList.remove('search-hidden');
                 }
             }
         });
