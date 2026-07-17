@@ -69,7 +69,7 @@ const STATUS_BANNERS = {
         <div class="status-banner unofficial-unverified">
             <h3>Неофициальный контент</h3>
             <p>Некоторые элементы этой статьи собраны сообществом и еще не перепроверены командой Kaeront. Статья носит ознакомительный характер.</p>
-        </div>`
+        </div>`,
     'guide': `
         <div class="status-banner guide">
             <h3>Это — руководство</h3>
