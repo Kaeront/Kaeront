@@ -326,47 +326,57 @@ async function renderSearchPage() {
 // ==========================================
 // 3. Быстрый поиск и подсветка в сайдбаре
 // ==========================================
-// Вызываем эту функцию один раз при загрузке JS
 function initSearch() {
-    const sidebarContainer = document.querySelector('.sidebar-tree-container');
     const searchInput = document.getElementById('wiki-search');
-    
     if (!searchInput) return;
 
-    // Используем делегирование: слушаем ввод на самом поле
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const tree = document.querySelector('.wiki-tree');
-        if (!tree) return;
+    // Фантомная ссылка для быстрого перехода
+    let phantomLink = document.querySelector('.phantom-search-link');
+    if (!phantomLink) {
+        phantomLink = document.createElement('a');
+        phantomLink.className = 'phantom-search-link';
+        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
+        searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
+    }
 
-        const allLinks = tree.querySelectorAll('a:not(.phantom-search-link)');
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const links = document.querySelectorAll('.wiki-tree a');
+        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        allLinks.forEach(link => {
-            // Берем чистый текст из DOM
-            const text = link.textContent || "";
-            const isMatch = text.toLowerCase().includes(query);
+        // Управление фантомной ссылкой
+        if (query.length > 0) {
+            phantomLink.textContent = `Все результаты для «${query}»`;
+            phantomLink.style.display = 'block';
+            phantomLink.onclick = () => { 
+                performTransition('/archive/search?q=' + encodeURIComponent(query)); 
+            };
+        } else {
+            phantomLink.style.display = 'none';
+        }
 
-            if (query === "") {
+        // Фильтрация ссылок
+        links.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            if (query === '' || text.includes(query)) {
                 link.classList.remove('search-hidden');
-                link.innerHTML = text; // Убираем хайлайт
-            } else if (isMatch) {
-                link.classList.remove('search-hidden');
-                // Добавляем хайлайт
+                // Подсветка (если нужно)
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
+                link.innerHTML = query !== '' ? link.textContent.replace(regex, '<span class="sidebar-match">$1</span>') : link.textContent;
             } else {
                 link.classList.add('search-hidden');
             }
         });
 
-        // Скрываем пустые папки
-        const folders = tree.querySelectorAll('.wiki-folder');
-        folders.forEach(folder => {
-            const visibleLinks = folder.querySelectorAll('a:not(.search-hidden)');
-            if (query !== "" && visibleLinks.length === 0) {
-                folder.classList.add('search-hidden');
+        // Авто-свертывание и скрытие пустых папок
+        folders.forEach(f => {
+            const hasVisibleLinks = f.querySelectorAll('a:not(.search-hidden)').length > 0;
+            if (query !== '') {
+                f.style.display = hasVisibleLinks ? '' : 'none';
+                if (hasVisibleLinks) f.classList.add('open');
             } else {
-                folder.classList.remove('search-hidden');
+                f.style.display = '';
+                f.classList.remove('open');
             }
         });
     });
