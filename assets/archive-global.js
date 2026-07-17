@@ -326,50 +326,46 @@ async function renderSearchPage() {
 // ==========================================
 // 3. Быстрый поиск и подсветка в сайдбаре
 // ==========================================
-
 function initSearch() {
+    const sidebarContainer = document.querySelector('.sidebar-tree-container');
     const searchInput = document.getElementById('wiki-search');
+    
     if (!searchInput) return;
 
-    // Сохраняем оригинальные тексты ссылок при первой загрузке
-    const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-    links.forEach(link => {
-        if (!link.dataset.original) link.dataset.original = link.textContent;
-    });
+    // Используем делегирование: слушаем ввод на самом поле
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const tree = document.querySelector('.wiki-tree');
+        if (!tree) return;
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        const allLinks = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-        const allFolders = document.querySelectorAll('.wiki-folder');
+        const allLinks = tree.querySelectorAll('a:not(.phantom-search-link)');
 
-        // 1. Фильтр ссылок и хайлайт
         allLinks.forEach(link => {
-            const original = link.dataset.original;
-            if (query === '') {
-                link.innerHTML = original;
+            // Берем чистый текст из DOM
+            const text = link.textContent || "";
+            const isMatch = text.toLowerCase().includes(query);
+
+            if (query === "") {
                 link.classList.remove('search-hidden');
-            } else if (original.toLowerCase().includes(query)) {
+                link.innerHTML = text; // Убираем хайлайт
+            } else if (isMatch) {
                 link.classList.remove('search-hidden');
-                // Хайлайт
-                const regex = new RegExp(`(${query})`, 'gi');
-                link.innerHTML = original.replace(regex, '<span class="sidebar-match">$1</span>');
+                // Добавляем хайлайт
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
                 link.classList.add('search-hidden');
             }
         });
 
-        // 2. Фильтр папок (не трогаем класс open, только скрываем)
-        allFolders.forEach(folder => {
-            if (query === '') {
-                folder.classList.remove('search-hidden');
+        // Скрываем пустые папки
+        const folders = tree.querySelectorAll('.wiki-folder');
+        folders.forEach(folder => {
+            const visibleLinks = folder.querySelectorAll('a:not(.search-hidden)');
+            if (query !== "" && visibleLinks.length === 0) {
+                folder.classList.add('search-hidden');
             } else {
-                // Ищем видимые ссылки ТОЛЬКО внутри этой папки
-                const visible = folder.querySelectorAll('a:not(.search-hidden)');
-                if (visible.length === 0) {
-                    folder.classList.add('search-hidden');
-                } else {
-                    folder.classList.remove('search-hidden');
-                }
+                folder.classList.remove('search-hidden');
             }
         });
     });
