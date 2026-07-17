@@ -370,12 +370,13 @@ function initSearch() {
 
         // Авто-свертывание и скрытие пустых папок
         folders.forEach(f => {
-            const hasVisibleLinks = f.querySelectorAll('a:not(.search-hidden)').length > 0;
+            const hasVisibleLinks = f.querySelector('a:not(.search-hidden)');
+            
             if (query !== '') {
-                f.style.display = hasVisibleLinks ? '' : 'none';
+                f.classList.toggle('search-hidden', !hasVisibleLinks);
                 if (hasVisibleLinks) f.classList.add('open');
             } else {
-                f.style.display = '';
+                f.classList.remove('search-hidden');
                 f.classList.remove('open');
             }
         });
