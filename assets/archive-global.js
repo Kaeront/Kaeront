@@ -8,31 +8,28 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    let currentPath = decodeURIComponent(window.location.pathname + window.location.search);
-
-    if (currentPath.includes('/search')) return 'search';
+    // Если в URL есть 'search', возвращаем 'search' до обработки параметров
+    if (window.location.pathname.includes('/search')) return 'search';
 
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    let path = currentPath.replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
+    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
 
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
-    if (window.location.search.includes('%3F')) {
-        const fixedUrl = window.location.href.replace('%3F', '?');
-        window.history.replaceState(null, '', fixedUrl);
-    }
-
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
+    
+    // Если есть page, переписываем на красивый URL /archive/page
     if (page) {
         window.history.replaceState(null, '', `/archive/${page}`);
     }
+    // Если это search, ничего не трогаем, чтобы не стереть ?q=
 }
 
 const STATUS_BANNERS = {
@@ -124,12 +121,16 @@ function initSearch() {
 async function performTransition(targetUrl) {
     appContainer.classList.add('scale-down');
     await new Promise(r => setTimeout(r, 150));
+    
+    // Если это не поиск, применяем чистый URL, иначе оставляем как есть с ?q=
     window.history.pushState(null, null, targetUrl);
+    
     await loadArticle();
     updateActiveSidebarLink();
     window.scrollTo(0, 0);
     appContainer.classList.remove('scale-down');
 }
+
 
 function updateActiveSidebarLink() {
     const currentRoute = getCleanRoute();
