@@ -351,6 +351,7 @@ function initSearch() {
             phantomLink.style.display = 'none';
         }
 
+        // Фильтрация ссылок
         links.forEach(link => {
             const text = link.textContent;
             const isMatch = text.toLowerCase().includes(query);
@@ -364,6 +365,7 @@ function initSearch() {
             }
         });
 
+        // Скрытие папок, если внутри нет видимых ссылок
         folders.forEach(f => {
             const hasVisible = Array.from(f.querySelectorAll('a')).some(a => a.style.display !== 'none');
             f.style.display = (query === '' || hasVisible) ? '' : 'none';
@@ -491,41 +493,38 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     appContainer.classList.add('scale-down');
 
-    // 1. Сначала обрабатываем редирект для ?page=, НЕ затрагивая другие параметры
-    const params = new URLSearchParams(window.location.search);
-    const page = params.get('page');
+    // 1. Обработка редиректа ?page= БЕЗ удаления других параметров
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
     
     if (page) {
-        // Заменяем только если это page, оставляя остальные параметры (если они вдруг есть) нетронутыми
-        window.history.replaceState(null, null, `/archive/${page}`);
+        // Создаем новые параметры, исключая page, чтобы сохранить остальные (например q)
+        urlParams.delete('page');
+        const remainingParams = urlParams.toString();
+        const newUrl = `/archive/${page}` + (remainingParams ? `?${remainingParams}` : '');
+        window.history.replaceState(null, null, newUrl);
     }
 
-    // 2. Инициализируем поиск в сайдбаре ДО загрузки статьи
+    // 2. Инициализация поиска ДО загрузки статьи
     initSearch();
 
-    // 3. Загружаем контент
+    // 3. Загрузка контента
     await loadArticle();
     updateActiveSidebarLink();
 
-    // 4. Восстанавливаем значение в поле поиска, если мы на странице поиска
-    // (loadArticle уже вызвал renderSearchPage, поэтому input уже в DOM)
-    if (window.location.pathname.includes('/archive/search')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const query = urlParams.get('q');
-        const mainInput = document.querySelector('.search-input-field');
-        if (mainInput && query) {
-            mainInput.value = query;
-        }
+    // 4. Восстановление строки поиска, если мы на странице поиска
+    const query = new URLSearchParams(window.location.search).get('q');
+    const mainInput = document.querySelector('.search-input-field');
+    if (mainInput && query) {
+        mainInput.value = query;
     }
 
-    // 5. Скрываем лоадер
+    // 5. Финализация
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
         setTimeout(() => loader.style.visibility = 'hidden', 300);
     }
 
-    setTimeout(() => {
-        appContainer.classList.remove('scale-down');
-    }, 100);
+    setTimeout(() => appContainer.classList.remove('scale-down'), 100);
 });
