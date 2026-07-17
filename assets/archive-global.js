@@ -10,10 +10,13 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 function getCleanRoute() {
     const path = decodeURIComponent(window.location.pathname);
     
-    // Принудительно возвращаем 'index' для корня архива
-    if (path === '/archive' || path === '/archive/') return 'index';
-    if (path.includes('/search')) return 'search';
+    // 1. Поиск имеет приоритет
+    if (path.includes('/archive/search')) return 'search';
 
+    // 2. Красивый корень
+    if (path === '/archive' || path === '/archive/') return 'index';
+
+    // 3. Остальное
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
@@ -24,16 +27,10 @@ function getCleanRoute() {
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
     const path = window.location.pathname;
-    
-    // Если пользователь зашел на /archive/index, перенаправляем на /archive
-    if (path === '/archive/index' || path === '/archive/index.html') {
-        window.history.replaceState(null, '', '/archive');
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const page = urlParams.get('page');
-    if (page) {
-        window.history.replaceState(null, '', `/archive/${page}`);
+    // Принудительно убираем /index
+    if (path.endsWith('/index') || path.endsWith('/index.html')) {
+        const newPath = path.replace(/\/index(\.html)?$/, '');
+        window.history.replaceState(null, '', newPath || '/archive');
     }
 }
 
@@ -91,24 +88,38 @@ async function renderSearchPage() {
 
 async function loadArticle() {
     const routeName = getCleanRoute();
+
+    // 1. ПРИОРИТЕТ: Если роутер определил, что это поиск, вызываем рендер и выходим
     if (routeName === 'search') {
-        await renderSearchPage();
-        return;
+        try {
+            await renderSearchPage();
+        } catch (error) {
+            contentContainer.innerHTML = `<h1>Ошибка загрузки поиска</h1><p>Не удалось инициализировать интерфейс поиска.</p>`;
+        }
+        return; // ВАЖНО: прекращаем выполнение, чтобы не пытаться делать fetch для search.md
     }
 
+    // 2. ОБЫЧНЫЙ РЕНДЕР: Загрузка MD-файла
     const filePath = `/archive/${routeName}.md`;
     try {
         const response = await fetch(filePath);
-        if (!response.ok) throw new Error();
+        if (!response.ok) throw new Error('File not found');
+        
         let markdownText = await response.text();
+        
+        // Обработка баннеров статуса
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
         if (statusMatch && statusMatch[1]) {
-            statusMatch[1].split(',').forEach(id => { if (STATUS_BANNERS[id.trim()]) bannersHtml += STATUS_BANNERS[id.trim()]; });
+            statusMatch[1].split(',').forEach(id => { 
+                if (STATUS_BANNERS[id.trim()]) bannersHtml += STATUS_BANNERS[id.trim()]; 
+            });
             markdownText = markdownText.replace(statusMatch[0], '');
         }
+        
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
     } catch (error) {
+        // Ошибка отображается только если это не поиск
         contentContainer.innerHTML = `<h1>Статья не найдена</h1><p>Документ <code>${routeName}.md</code> отсутствует.</p>`;
     }
 }
@@ -169,15 +180,13 @@ function initSearch() {
 }
 
 async function performTransition(targetUrl) {
-    appContainer.classList.add('scale-down');
-    
-    // Обновляем историю
+    // 1. Обновляем URL
     window.history.pushState(null, null, targetUrl);
     
-    // Обязательно ждем завершения загрузки статьи (или рендера поиска)
-    await loadArticle();
+    // 2. Запускаем загрузку/рендер
+    appContainer.classList.add('scale-down');
+    await loadArticle(); // Ждем завершения поиска или загрузки файла
     updateActiveSidebarLink();
-    
     window.scrollTo(0, 0);
     appContainer.classList.remove('scale-down');
 }
