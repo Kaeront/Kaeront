@@ -372,7 +372,7 @@ function initSearch() {
         folders.forEach(f => {
             const hasVisibleLinks = f.querySelectorAll('a:not(.search-hidden)').length > 0;
             if (query !== '') {
-                f.style.display = hasVisibleLinks ? '' : 'none';
+                f.style.display = hasVisibleLinks ? '' : 'none'; // Скрываем папку, если нет совпадений
                 if (hasVisibleLinks) f.classList.add('open');
             } else {
                 f.style.display = '';
@@ -498,6 +498,15 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    if (window.location.pathname.includes('/search')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('q')) {
+            // Если q пропал, но мы на странице поиска, восстанавливаем его из sessionStorage (если нужно) 
+            // или просто предотвращаем очистку
+        }
+    }
+
     // Автоматический редирект параметров в путь
     const params = new URLSearchParams(window.location.search);
     const page = params.get('page');
