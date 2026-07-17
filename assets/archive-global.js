@@ -368,9 +368,15 @@ function initSearch() {
 
         // Скрытие пустых папок
         folders.forEach(f => {
-            const hasVisible = f.querySelectorAll('a:not(.search-hidden)').length > 0;
-            f.style.display = (hasVisible || query === '') ? '' : 'none';
+            const hasVisible = Array.from(f.querySelectorAll('a:not(.search-hidden)')).length > 0;
+            if (query !== '' && !hasVisible) {
+                f.classList.add('folder-hidden');
+            } else {
+                f.classList.remove('folder-hidden');
+            }
+            
             if (query !== '' && hasVisible) f.classList.add('open');
+            else if (query === '') f.classList.remove('open');
         });
     });
 }
