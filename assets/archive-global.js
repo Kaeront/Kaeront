@@ -326,40 +326,42 @@ async function renderSearchPage() {
 // ==========================================
 // 3. Быстрый поиск и подсветка в сайдбаре
 // ==========================================
+// Вызываем эту функцию один раз при загрузке JS
 function initSearch() {
+    const sidebarContainer = document.querySelector('.sidebar-tree-container');
     const searchInput = document.getElementById('wiki-search');
+    
     if (!searchInput) return;
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
+    // Используем делегирование: слушаем ввод на самом поле
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
         const tree = document.querySelector('.wiki-tree');
         if (!tree) return;
 
         const allLinks = tree.querySelectorAll('a:not(.phantom-search-link)');
-        const allFolders = tree.querySelectorAll('.wiki-folder');
 
         allLinks.forEach(link => {
-            // Берем оригинальный текст (нужно убедиться, что он не искажен span-ами)
-            const text = link.getAttribute('data-text') || link.textContent;
-            if (!link.hasAttribute('data-text')) link.setAttribute('data-text', text);
-
+            // Берем чистый текст из DOM
+            const text = link.textContent || "";
             const isMatch = text.toLowerCase().includes(query);
 
             if (query === "") {
                 link.classList.remove('search-hidden');
-                link.innerHTML = text;
+                link.innerHTML = text; // Убираем хайлайт
             } else if (isMatch) {
                 link.classList.remove('search-hidden');
+                // Добавляем хайлайт
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
                 link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
                 link.classList.add('search-hidden');
-                link.innerHTML = text;
             }
         });
 
-        allFolders.forEach(folder => {
-            // Проверяем, есть ли видимые ссылки внутри этой папки
+        // Скрываем пустые папки
+        const folders = tree.querySelectorAll('.wiki-folder');
+        folders.forEach(folder => {
             const visibleLinks = folder.querySelectorAll('a:not(.search-hidden)');
             if (query !== "" && visibleLinks.length === 0) {
                 folder.classList.add('search-hidden');
