@@ -423,19 +423,10 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    let phantomLink = document.querySelector('.phantom-search-link') || document.createElement('a');
-    phantomLink.className = 'phantom-search-link';
-    phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
-    if (!phantomLink.parentNode) searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
-
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
-
-        phantomLink.style.display = query.length > 0 ? 'block' : 'none';
-        phantomLink.textContent = `Все результаты для «${query}»`;
-        phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
+        const links = document.querySelectorAll('.wiki-tree a');
+        const folders = document.querySelectorAll('.wiki-folder');
 
         links.forEach(link => {
             const isMatch = link.textContent.toLowerCase().includes(query);
