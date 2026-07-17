@@ -174,6 +174,7 @@ const injectHTML = {
                 <h4>Проект</h4>
                 <ul class="footer-links">
                     <li><a href="/news">Новости</a></li>
+                    <li><a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a></li>
                     <li><a href="/donate">Пожертвовать</a></li>
                 </ul>
             </div>
