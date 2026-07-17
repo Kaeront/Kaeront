@@ -78,7 +78,7 @@
         /* --- ПОИСК СТАТЕЙ --- */
         .sidebar-search-wrapper {
             position: relative !important;
-            padding: 15px 15px 12px 15px !important;
+            padding: 8px 15px !important;
             width: 100% !important;
             box-sizing: border-box !important;
             display: block !important;
@@ -91,7 +91,7 @@
             width: 100% !important;
             background: #0a0a0a !important;
             border: 1px solid #1a1a1a !important;
-            border-radius: 4px !important;
+            border-radius: 8px !important;
             padding: 8px 12px !important;
             box-sizing: border-box !important;
             color: #fff !important;
@@ -120,7 +120,7 @@
             font-weight: bold !important;
         }
 
-        /* --- НОВЫЙ КОНТЕЙНЕР ДЛЯ ДЕРЕВА --- */
+        /* --- КОНТЕЙНЕР ДЛЯ ДЕРЕВА --- */
         .sidebar-tree-container {
             flex: 1 !important;
             width: 100% !important;
@@ -162,7 +162,7 @@
             display: flex !important;
             justify-content: space-between !important;
             align-items: center !important;
-            padding: 6px 10px !important;
+            padding: 4px 10px !important;
             background: rgba(255, 255, 255, 0.02) !important;
             border-left: 2px solid transparent !important;
             user-select: none !important;
@@ -209,7 +209,7 @@
             transition: grid-template-rows 0.25s cubic-bezier(0.25, 1, 0.5, 1), 
                         opacity 0.2s ease,
                         visibility 0.2s ease !important;
-            padding-left: 8px !important; 
+            padding-left: 4px !important; 
         }
 
         .wiki-folder.open > .folder-content {
@@ -523,13 +523,12 @@
             <!-- Дерево навигации -->
             <nav class="wiki-tree">
 
-                <a href="/archive/index" class="active">Главная архива</a>
-
                 <!-- Папка О Проекте -->
                 <div class="wiki-folder">
                     <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
                     <div class="folder-content">
                         <div class="folder-content-wrapper">
+                            <a href="/archive/index" class="active">Главная архива</a>
                             <a href="/archive/contacts" class="active">Контакты</a>
                             <div class="wiki-folder">
                                 <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
