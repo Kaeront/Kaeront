@@ -489,24 +489,27 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Сначала инициализируем инструменты поиска, чтобы они были готовы
-    initSearch();
-    
-    // 2. Загружаем основной контент (статью или страницу поиска)
     appContainer.classList.add('scale-down');
+
+    // 1. Сначала обрабатываем редирект для ?page=, НЕ затрагивая другие параметры
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
+    
+    if (page) {
+        // Заменяем только если это page, оставляя остальные параметры (если они вдруг есть) нетронутыми
+        window.history.replaceState(null, null, `/archive/${page}`);
+    }
+
+    // 2. Инициализируем поиск в сайдбаре ДО загрузки статьи
+    initSearch();
+
+    // 3. Загружаем контент
     await loadArticle();
     updateActiveSidebarLink();
 
-    // 3. Только теперь, если мы на /index или /archive/index, аккуратно убираем лишнее
-    // Мы НЕ трогаем параметры ?q= или ?page=, поэтому они останутся в URL
-    const path = window.location.pathname;
-    if (path.endsWith('/index') || path.endsWith('/index.html')) {
-        const newPath = path.replace(/\/index(\.html)?$/, '');
-        window.history.replaceState(null, null, newPath || '/archive');
-    }
-
-    // 4. Если мы на странице поиска, восстанавливаем значение в поле ввода
-    if (window.location.pathname.includes('/search')) {
+    // 4. Восстанавливаем значение в поле поиска, если мы на странице поиска
+    // (loadArticle уже вызвал renderSearchPage, поэтому input уже в DOM)
+    if (window.location.pathname.includes('/archive/search')) {
         const urlParams = new URLSearchParams(window.location.search);
         const query = urlParams.get('q');
         const mainInput = document.querySelector('.search-input-field');
@@ -515,11 +518,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 5. Скрываем лоадер и убираем анимацию
+    // 5. Скрываем лоадер
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
-        setTimeout(() => { loader.style.visibility = 'hidden'; }, 300);
+        setTimeout(() => loader.style.visibility = 'hidden', 300);
     }
 
     setTimeout(() => {
