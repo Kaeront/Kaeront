@@ -33,15 +33,6 @@ function getCleanRoute() {
     }
 }
 
-function handleUrlSync() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const page = urlParams.get('page');
-    if (page) {
-        // Принудительно меняем URL на красивый вид без перезагрузки
-        window.history.replaceState(null, '', `/archive/${page}`);
-    }
-}
-
 /* --- КОНФИГУРАЦИЯ СТАТУСОВ СТРАНИЦ --- */
 const STATUS_BANNERS = {
     'dev': `
@@ -197,7 +188,6 @@ style.textContent = `
         padding: 1px 3px !important;
         border-radius: 2px !important;
     }
-    .search-hidden { display: none !important; }
 `;
 document.head.appendChild(style);
 
@@ -364,24 +354,16 @@ function initSearch() {
 
         // Фильтрация ссылок
         links.forEach(link => {
-            const text = link.textContent;
-            const isMatch = query === '' || text.toLowerCase().includes(query);
-
-            if (isMatch) {
+            const text = link.textContent.toLowerCase();
+            if (query === '' || text.includes(query)) {
                 link.classList.remove('search-hidden');
-                // Подсветка
-                if (query !== '') {
-                    const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-                    link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
-                } else {
-                    link.innerHTML = text;
-                }
+                // Подсветка (если нужно)
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = query !== '' ? link.textContent.replace(regex, '<span class="sidebar-match">$1</span>') : link.textContent;
             } else {
                 link.classList.add('search-hidden');
             }
         });
-
-
 
         // Авто-свертывание и скрытие пустых папок
         folders.forEach(f => {
