@@ -90,7 +90,7 @@
 <td style="background-color: #222; color: #fa0; font-weight: bold; padding: 10px;">Терра</td>
 <td><a href="/archive/elements/scorched">Раскалённый</a></td>
 <td><a href="/archive/elements/mud">Грязь</a></td>
-<td><a href="/archive/elements/dust">Пыль</a></td>
+<td><a href="/archive/elements/swirl">Рассеивание</a></td>
 <td><a href="/archive/elements/magnetite">Магнетит</a></td>
 <td><a href="/archive/elements/entangled">Запутан</a></td>
 <td><a href="/archive/elements/shattered">Разбит</a></td>
