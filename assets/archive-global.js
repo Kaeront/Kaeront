@@ -13,7 +13,7 @@ function getCleanRoute() {
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    const path = window.location.pathname.replace(/^\/archive/, '').replace(/^\//, '');
+    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
@@ -71,19 +71,35 @@ function initSearch() {
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-        const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
+        const folders = document.querySelectorAll('.wiki-folder');
 
+        // Управление фантомной ссылкой
         phantomLink.style.display = query.length > 0 ? 'block' : 'none';
         phantomLink.textContent = `Все результаты для «${query}»`;
         phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
 
+        // Фильтрация ссылок
         links.forEach(link => {
-            const isMatch = link.textContent.toLowerCase().includes(query);
-            link.style.display = (query === '' || isMatch) ? '' : 'none';
+            const originalText = link.dataset.originalText || link.textContent;
+            if (!link.dataset.originalText) link.dataset.originalText = originalText;
+            
+            const isMatch = originalText.toLowerCase().includes(query);
+            
+            if (query === '') {
+                link.innerHTML = originalText;
+                link.classList.remove('search-hidden');
+            } else if (isMatch) {
+                link.classList.remove('search-hidden');
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = originalText.replace(regex, '<span class="search-match">$1</span>');
+            } else {
+                link.classList.add('search-hidden');
+            }
         });
 
+        // Авто-открытие/скрытие папок
         folders.forEach(f => {
-            const hasVisible = Array.from(f.querySelectorAll('a')).some(a => a.style.display !== 'none');
+            const hasVisible = Array.from(f.querySelectorAll('a:not(.search-hidden)')).length > 0;
             f.style.display = (query === '' || hasVisible) ? '' : 'none';
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
@@ -117,9 +133,12 @@ function updateActiveSidebarLink() {
 
 document.body.addEventListener('click', e => {
     const link = e.target.closest('a');
-    if (link && (link.getAttribute('href')?.startsWith('/archive') || link.getAttribute('href')?.startsWith('#'))) {
-        e.preventDefault();
-        performTransition(link.getAttribute('href'));
+    if (link) {
+        const href = link.getAttribute('href');
+        if (href && (href.startsWith('/archive') || href.startsWith('#'))) {
+            e.preventDefault();
+            performTransition(href);
+        }
     }
 });
 
