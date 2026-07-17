@@ -2,51 +2,44 @@
 const appContainer = document.getElementById('wiki-app');
 const contentContainer = document.getElementById('wiki-content');
 
+// ГЛАВНОЕ: Читаем путь правильно
 function getCleanRoute() {
     const path = window.location.pathname;
     if (path === '/archive' || path === '/archive/') return 'index';
+    // Убираем /archive/ из начала пути
     return path.replace(/^\/archive\//, '').split('?')[0] || 'index';
 }
 
-function updateActiveSidebarLink() {
-    const current = getCleanRoute();
-    document.querySelectorAll('.wiki-tree a').forEach(link => {
-        const href = link.getAttribute('href') || '';
-        const isMatch = href.includes(current) && current !== 'index';
-        link.classList.toggle('active', isMatch || (current === 'index' && href === '/archive'));
-        if (isMatch) {
-            let parent = link.closest('.wiki-folder');
-            while (parent) { parent.classList.add('open'); parent = parent.parentElement.closest('.wiki-folder'); }
-        }
-    });
+async function loadArticle() {
+    const route = getCleanRoute();
+    if (route === 'search') {
+        renderSearchPage();
+        return;
+    }
+
+    try {
+        const response = await fetch(`/archive/${route}.md`);
+        if (!response.ok) throw new Error('404');
+        const text = await response.text();
+        contentContainer.innerHTML = marked.parse(text);
+    } catch (e) {
+        contentContainer.innerHTML = '<h1>404: Страница не найдена</h1>';
+    }
 }
 
-function initSearch() {
-    const input = document.getElementById('wiki-search');
-    if (!input) return;
-    input.addEventListener('input', (e) => {
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll('.wiki-tree a').forEach(a => {
-            const match = a.textContent.toLowerCase().includes(q);
-            a.style.display = (q === '' || match) ? '' : 'none';
-        });
-        document.querySelectorAll('.wiki-folder').forEach(f => {
-            const has = Array.from(f.querySelectorAll('a')).some(a => a.style.display !== 'none');
-            f.style.display = (q === '' || has) ? '' : 'none';
-            if (q !== '' && has) f.classList.add('open');
-        });
-    });
-}
-
-async function performTransition(url) {
-    window.history.pushState(null, null, url);
-    await loadArticle();
-    updateActiveSidebarLink();
-    window.scrollTo(0, 0);
-}
-
+// Запуск при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    initSearch();
     loadArticle();
     updateActiveSidebarLink();
+});
+
+// Перехват кликов
+document.body.addEventListener('click', e => {
+    const link = e.target.closest('a');
+    if (link && link.pathname.startsWith('/archive')) {
+        e.preventDefault();
+        window.history.pushState(null, null, link.pathname);
+        loadArticle();
+        updateActiveSidebarLink();
+    }
 });
