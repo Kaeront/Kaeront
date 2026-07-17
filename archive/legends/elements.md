@@ -54,7 +54,7 @@
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
-<td><a href="/archive/elements/swirl">Рассеивание</a></td>
+<td><a href="/archive/elements/crystallize">Кристаллизация</a></td>
 </tr>
 <tr>
 <td style="background-color: #222; color: #a0a; font-weight: bold; padding: 10px;">Фулгор</td>
