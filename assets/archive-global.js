@@ -59,7 +59,7 @@ const STATUS_BANNERS = {
         <div class="status-banner final">
             <h3>Статья завершена</h3>
             <p>Эта статья больше не будет обновляться. Возможны лишь небольшие исправления и корректировки текста и ссылок.</p>
-        </div>`
+        </div>`,
     'unofficial-verified': `
         <div class="status-banner unofficial">
             <h3>Подтверждено</h3>
