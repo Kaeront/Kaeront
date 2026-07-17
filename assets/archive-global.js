@@ -9,13 +9,15 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 
 // 1. ИСПРАВЛЕННЫЙ ПУТЬ: Теперь он корректно обрабатывает параметры
 function getCleanRoute() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    if (pageParam) return pageParam;
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
+    if (window.location.pathname.includes('/archive/search') || params.has('q')) return 'search';
+    if (page) return page;
 
-    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
+    let path = window.location.pathname.replace(/^\/archive/, '').replace(/^\//, '');
     return (path === '' || path === 'index') ? 'index' : path;
 }
+
 
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL: Исправляет состояние после перезагрузки
 function handleUrlSync() {
@@ -71,35 +73,29 @@ function initSearch() {
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
-        const folders = document.querySelectorAll('.wiki-folder');
-
-        // Управление фантомной ссылкой
+        
         phantomLink.style.display = query.length > 0 ? 'block' : 'none';
         phantomLink.textContent = `Все результаты для «${query}»`;
         phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
 
-        // Фильтрация ссылок
         links.forEach(link => {
             const originalText = link.dataset.originalText || link.textContent;
             if (!link.dataset.originalText) link.dataset.originalText = originalText;
             
             const isMatch = originalText.toLowerCase().includes(query);
+            link.style.display = (query === '' || isMatch) ? '' : 'none';
             
-            if (query === '') {
-                link.innerHTML = originalText;
-                link.classList.remove('search-hidden');
-            } else if (isMatch) {
-                link.classList.remove('search-hidden');
+            if (query !== '' && isMatch) {
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = originalText.replace(regex, '<span class="search-match">$1</span>');
+                link.innerHTML = originalText.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.classList.add('search-hidden');
+                link.innerHTML = originalText;
             }
         });
 
-        // Авто-открытие/скрытие папок
-        folders.forEach(f => {
-            const hasVisible = Array.from(f.querySelectorAll('a:not(.search-hidden)')).length > 0;
+        // Жесткая проверка: если в папке нет видимых ссылок, скрываем папку
+        document.querySelectorAll('.wiki-folder').forEach(f => {
+            const hasVisible = Array.from(f.querySelectorAll('a:not(.search-hidden)')).some(a => a.style.display !== 'none');
             f.style.display = (query === '' || hasVisible) ? '' : 'none';
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
@@ -148,6 +144,17 @@ window.addEventListener('popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    // Если URL содержит закодированные символы, декодируем их, но оставляем структуру
+    const path = decodeURIComponent(window.location.pathname);
+    
+    // Авто-пуш: если есть ?page=, приводим к чистому URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('page')) {
+        const page = urlParams.get('page');
+        window.history.replaceState(null, '', `/archive/${page}`);
+    }
+
     handleUrlSync(); // Исправляем URL сразу
     initSearch();
     await loadArticle();
