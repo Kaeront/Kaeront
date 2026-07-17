@@ -423,47 +423,28 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Ссылка "Все результаты"
-    let phantomLink = document.querySelector('.phantom-search-link');
-    if (!phantomLink) {
-        phantomLink = document.createElement('a');
-        phantomLink.className = 'phantom-search-link';
-        phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
-        searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
-    }
+    let phantomLink = document.querySelector('.phantom-search-link') || document.createElement('a');
+    phantomLink.className = 'phantom-search-link';
+    phantomLink.style.cssText = 'display:none; padding:10px; color:var(--accent); cursor:pointer; font-size:0.7rem;';
+    if (!phantomLink.parentNode) searchInput.parentNode.insertBefore(phantomLink, searchInput.nextSibling);
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const links = document.querySelectorAll('.wiki-tree a');
+        const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        // Управление фантомной ссылкой
-        if (query.length > 0) {
-            phantomLink.textContent = `Все результаты для «${query}»`;
-            phantomLink.style.display = 'block';
-            phantomLink.onclick = () => { 
-                performTransition('/archive/search?q=' + encodeURIComponent(query)); 
-            };
-        } else {
-            phantomLink.style.display = 'none';
-        }
+        phantomLink.style.display = query.length > 0 ? 'block' : 'none';
+        phantomLink.textContent = `Все результаты для «${query}»`;
+        phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
 
-        // Фильтрация сайдбара
         links.forEach(link => {
-            const text = link.textContent;
-            if (query && text.toLowerCase().includes(query)) {
-                link.classList.remove('search-hidden');
-                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
-            } else {
-                link.classList.remove('search-hidden');
-                link.innerHTML = text;
-            }
+            const isMatch = link.textContent.toLowerCase().includes(query);
+            link.style.display = (query === '' || isMatch) ? '' : 'none';
         });
 
         folders.forEach(f => {
-            const hasVisible = f.querySelectorAll('a:not(.search-hidden)').length > 0;
-            f.style.display = (hasVisible || query === '') ? '' : 'none';
+            const hasVisible = Array.from(f.querySelectorAll('a')).some(a => a.style.display !== 'none');
+            f.style.display = (query === '' || hasVisible) ? '' : 'none';
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
         });
