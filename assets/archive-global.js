@@ -8,30 +8,29 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    // Сначала проверяем путь, если там есть /search
-    if (window.location.pathname.includes('/search')) return 'search';
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get('page');
-    if (pageParam) return pageParam;
-
-    // Убираем только /archive и начальный слэш
     let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
-    return (path === '' || path === 'index') ? 'index' : path;
+    
+    // Если путь "index", считаем его корнем
+    if (path === 'index') return 'index'; 
+    if (window.location.pathname.includes('/search')) return 'search';
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('page') || (path || 'index');
 }
-
-
 
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
+    // 1. Убираем /index из пути
+    if (window.location.pathname.endsWith('/index')) {
+        window.history.replaceState(null, '', window.location.pathname.replace('/index', ''));
+    }
+    
+    // 2. Обрабатываем ?page=
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
-    
-    // Если есть page, переписываем на красивый URL /archive/page
     if (page) {
         window.history.replaceState(null, '', `/archive/${page}`);
     }
-    // Если это search, ничего не трогаем, чтобы не стереть ?q=
 }
 
 const STATUS_BANNERS = {
@@ -168,15 +167,19 @@ function initSearch() {
 async function performTransition(targetUrl) {
     appContainer.classList.add('scale-down');
     await new Promise(r => setTimeout(r, 150));
-    
-    // Если это не поиск, применяем чистый URL, иначе оставляем как есть с ?q=
+
+    // Обновляем URL
     window.history.pushState(null, null, targetUrl);
-    
+
+    // ВАЖНО: вызываем loadArticle(), которая сама поймет, 
+    // что мы на /search и вызовет renderSearchPage()
     await loadArticle();
+    
     updateActiveSidebarLink();
     window.scrollTo(0, 0);
     appContainer.classList.remove('scale-down');
 }
+
 
 
 function updateActiveSidebarLink() {
@@ -210,10 +213,16 @@ window.addEventListener('popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-    handleUrlSync(); // Исправляем URL сразу
+    handleUrlSync(); 
     initSearch();
     await loadArticle();
     updateActiveSidebarLink();
+    
+    // ДОБАВИТЬ ЭТО: Если мы зашли прямо на /search?q=..., 
+    // а renderSearchPage не успел отрисовать список, вызываем его принудительно
+    if (getCleanRoute() === 'search') {
+        await renderSearchPage();
+    }
 
     const loader = document.getElementById('loader-wrapper');
     if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 300); }
