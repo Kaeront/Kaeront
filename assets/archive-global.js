@@ -188,6 +188,9 @@ style.textContent = `
         padding: 1px 3px !important;
         border-radius: 2px !important;
     }
+
+    .search-hidden { display: none !important; }
+
 `;
 document.head.appendChild(style);
 
@@ -451,14 +454,17 @@ function initSearch() {
 
         links.forEach(link => {
             const text = link.textContent;
-            // Используем textContent для проверки, чтобы не искать внутри тегов <span>
-            if (query && text.toLowerCase().includes(query)) {
+            const isMatch = text.toLowerCase().includes(query);
+            
+            if (query === '' || isMatch) {
                 link.classList.remove('search-hidden');
+                link.style.display = ''; // Показываем
+                // Подсветка
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
+                link.innerHTML = query !== '' ? text.replace(regex, '<span class="sidebar-match">$1</span>') : text;
             } else {
-                link.classList.remove('search-hidden');
-                link.innerHTML = text; // Очистка
+                link.classList.add('search-hidden');
+                link.style.display = 'none'; // Скрываем
             }
         });
 
@@ -492,6 +498,12 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Автоматический редирект параметров в путь
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
+    if (page) {
+        window.history.replaceState(null, null, `/archive/${page}`);
+    }
     appContainer.classList.add('scale-down');
     
     // Загружаем контент
