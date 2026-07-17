@@ -331,39 +331,52 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
+    // Сохраняем исходный текст в data-атрибуты при первой инициализации
+    const allLinks = document.querySelectorAll('.wiki-tree a');
+    allLinks.forEach(link => {
+        if (!link.hasAttribute('data-text')) {
+            link.setAttribute('data-text', link.textContent);
+        }
+    });
+
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        
-        // 1. Находим ВСЕ ссылки и ВСЕ папки
         const allLinks = document.querySelectorAll('.wiki-tree a');
         const allFolders = document.querySelectorAll('.wiki-folder');
 
-        // 2. Скрываем/показываем ссылки
+        // 1. Скрываем/показываем ссылки
         allLinks.forEach(link => {
-            const text = link.textContent.toLowerCase();
-            if (query === '' || text.includes(query)) {
-                link.classList.remove('search-hidden');
+            const originalText = link.getAttribute('data-text');
+            const isMatch = originalText.toLowerCase().includes(query);
+
+            if (query === '') {
+                link.style.display = '';
+                link.innerHTML = originalText;
+            } else if (isMatch) {
+                link.style.display = '';
+                // Подсветка
+                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                link.innerHTML = originalText.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.classList.add('search-hidden');
+                link.style.display = 'none';
             }
         });
 
-        // 3. Скрываем/показываем папки
+        // 2. Скрываем/показываем папки
         allFolders.forEach(folder => {
-            // Ищем, есть ли в этой папке (включая все вложенные) хоть одна видимая ссылка
-            const visibleLinks = folder.querySelectorAll('a:not(.search-hidden)');
+            // Ищем внутри этой папки ссылки, которые сейчас видны
+            const visibleLinks = Array.from(folder.querySelectorAll('a')).filter(a => a.style.display !== 'none');
             
-            if (query !== '') {
-                if (visibleLinks.length > 0) {
-                    folder.classList.remove('search-hidden');
-                    folder.classList.add('open'); // Авто-раскрытие при поиске
-                } else {
-                    folder.classList.add('search-hidden');
-                }
-            } else {
-                // Если поиск пуст — возвращаем всё как было
-                folder.classList.remove('search-hidden');
+            if (query === '') {
+                folder.style.display = '';
                 folder.classList.remove('open');
+            } else {
+                if (visibleLinks.length > 0) {
+                    folder.style.display = '';
+                    folder.classList.add('open'); // Раскрываем папку, если внутри есть совпадение
+                } else {
+                    folder.style.display = 'none';
+                }
             }
         });
     });
