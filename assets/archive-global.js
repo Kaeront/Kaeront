@@ -8,16 +8,18 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    // Если в URL есть 'search', возвращаем 'search' до обработки параметров
+    // Сначала проверяем путь, если там есть /search
     if (window.location.pathname.includes('/search')) return 'search';
 
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
+    // Убираем только /archive и начальный слэш
+    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
     return (path === '' || path === 'index') ? 'index' : path;
 }
+
 
 
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
@@ -38,6 +40,51 @@ const STATUS_BANNERS = {
     'not-ready': `<div class="status-banner not-ready"><h3>Статья не готова</h3><p>Контент на ранней стадии.</p></div>`,
     'outdated': `<div class="status-banner outdated"><h3>Статья могла устареть</h3><p>Требует сверки.</p></div>`
 };
+
+async function renderSearchPage() {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q') || '';
+
+    contentContainer.innerHTML = `
+        <h1>Поиск по архиву</h1>
+        <input type="text" class="search-input-field" value="${escapeHtml(query)}" placeholder="Поиск...">
+        <div id="results-list"></div>
+    `;
+
+    const input = contentContainer.querySelector('.search-input-field');
+    input.addEventListener('keydown', (e) => { 
+        if (e.key === 'Enter') {
+            performTransition('/archive/search?q=' + encodeURIComponent(input.value.trim())); 
+        } 
+    });
+
+    if (!query.trim()) return;
+
+    // ВАША ЛОГИКА ПОИСКА (из вашего прошлого сообщения)
+    const list = document.getElementById('results-list');
+    const links = Array.from(document.querySelectorAll('.wiki-tree a'));
+    const results = [];
+    const lowerQuery = query.toLowerCase().trim();
+
+    for (const link of links) {
+        const href = link.getAttribute('href');
+        if (!href || href.includes('search')) continue;
+        try {
+            const res = await fetch(`${href}.md`);
+            if (!res.ok) continue;
+            const text = await res.text();
+            if (text.toLowerCase().includes(lowerQuery)) {
+                results.push({ title: link.textContent.trim(), href: href });
+            }
+        } catch (e) {}
+    }
+    list.innerHTML = results.map(r => `
+        <div class="search-result-card" onclick="performTransition('${r.href}')">
+            <h3>${escapeHtml(r.title)}</h3>
+        </div>
+    `).join('');
+}
+
 
 async function loadArticle() {
     const routeName = getCleanRoute();
