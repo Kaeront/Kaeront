@@ -7,17 +7,25 @@ marked.setOptions({ breaks: true, gfm: true });
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-// Улучшенная функция получения маршрута
+// 1. ИСПРАВЛЕННЫЙ ПУТЬ: Теперь он корректно обрабатывает параметры
 function getCleanRoute() {
-    const params = new URLSearchParams(window.location.search);
-    const pageParam = params.get('page');
+    const urlParams = new URLSearchParams(window.location.search);
+    const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
     const path = window.location.pathname.replace(/^\/archive/, '').replace(/^\//, '');
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
-/* --- КОНФИГУРАЦИЯ СТАТУСОВ --- */
+// 2. АВТОМАТИЧЕСКИЙ ПУШ URL: Исправляет состояние после перезагрузки
+function handleUrlSync() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page');
+    if (page) {
+        window.history.replaceState(null, '', `/archive/${page}`);
+    }
+}
+
 const STATUS_BANNERS = {
     'dev': `<div class="status-banner dev"><h3>В разработке</h3><p>Идёт активное создание контента.</p></div>`,
     'no-images': `<div class="status-banner no-images"><h3>Планируются иллюстрации</h3><p>Страница содержит только текст.</p></div>`,
@@ -27,37 +35,30 @@ const STATUS_BANNERS = {
 
 async function loadArticle() {
     const routeName = getCleanRoute();
-
-    // 1. Умный пуш URL: если есть ?page=, меняем адрес на чистый путь
-    if (window.location.search.includes('page=')) {
-        window.history.replaceState(null, null, `/archive/${routeName}`);
-    }
-
     if (routeName === 'search') {
         renderSearchPage();
         return;
     }
 
+    const filePath = `/archive/${routeName}.md`;
     try {
-        const response = await fetch(`/archive/${routeName}.md`);
-        if (!response.ok) throw new Error('404');
+        const response = await fetch(filePath);
+        if (!response.ok) throw new Error();
         let markdownText = await response.text();
-        
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
         if (statusMatch && statusMatch[1]) {
-            statusMatch[1].split(',').forEach(s => { if(STATUS_BANNERS[s.trim()]) bannersHtml += STATUS_BANNERS[s.trim()]; });
+            statusMatch[1].split(',').forEach(id => { if (STATUS_BANNERS[id.trim()]) bannersHtml += STATUS_BANNERS[id.trim()]; });
             markdownText = markdownText.replace(statusMatch[0], '');
         }
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
-    } catch (e) {
-        contentContainer.innerHTML = `<h1>Статья не найдена</h1><p>Документ <code>${routeName}.md</code> не существует.</p>`;
+    } catch (error) {
+        contentContainer.innerHTML = `<h1>Статья не найдена</h1><p>Документ <code>${routeName}.md</code> отсутствует.</p>`;
     }
 }
 
-// ==========================================
-// Логика поиска и сайдбара
-// ==========================================
+// --- ПОИСК И САЙДБАР ---
+
 function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
@@ -72,19 +73,13 @@ function initSearch() {
         const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
-        phantomLink.style.display = query ? 'block' : 'none';
+        phantomLink.style.display = query.length > 0 ? 'block' : 'none';
         phantomLink.textContent = `Все результаты для «${query}»`;
         phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
 
         links.forEach(link => {
             const isMatch = link.textContent.toLowerCase().includes(query);
             link.style.display = (query === '' || isMatch) ? '' : 'none';
-            if (query && isMatch) {
-                const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = link.textContent.replace(regex, '<span class="sidebar-match">$1</span>');
-            } else {
-                link.innerHTML = link.textContent;
-            }
         });
 
         folders.forEach(f => {
@@ -107,24 +102,47 @@ async function performTransition(targetUrl) {
 }
 
 function updateActiveSidebarLink() {
-    const current = getCleanRoute();
+    const currentRoute = getCleanRoute();
     document.querySelectorAll('.wiki-tree a').forEach(link => {
-        const href = link.getAttribute('href') || '';
-        const match = href.includes(current) && current !== 'index';
-        link.classList.toggle('active', match);
-        if (match) {
+        const route = link.getAttribute('href')?.replace('/archive', '').replace('/', '') || 'index';
+        link.classList.toggle('active', route === currentRoute);
+        if (route === currentRoute) {
             let p = link.closest('.wiki-folder');
             while(p) { p.classList.add('open'); p = p.parentElement.closest('.wiki-folder'); }
         }
     });
 }
 
-// Запуск
+// --- ПЕРЕХВАТЫ ---
+
+document.body.addEventListener('click', e => {
+    const link = e.target.closest('a');
+    if (link && (link.getAttribute('href')?.startsWith('/archive') || link.getAttribute('href')?.startsWith('#'))) {
+        e.preventDefault();
+        performTransition(link.getAttribute('href'));
+    }
+});
+
+window.addEventListener('popstate', async () => {
+    await loadArticle();
+    updateActiveSidebarLink();
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
+    handleUrlSync(); // Исправляем URL сразу
     initSearch();
     await loadArticle();
     updateActiveSidebarLink();
+    
     const loader = document.getElementById('loader-wrapper');
     if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 300); }
-    appContainer.classList.remove('scale-down');
 });
+
+// --- СТИЛИ ---
+const style = document.createElement('style');
+style.textContent = `
+    .search-hidden { display: none !important; }
+    .sidebar-match { font-weight: bold; color: #ff9900; background: rgba(255, 153, 0, 0.1); }
+    .wiki-folder { transition: max-height 0.3s ease; }
+`;
+document.head.appendChild(style);
