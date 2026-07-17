@@ -8,29 +8,36 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    let currentPath = decodeURIComponent(window.location.pathname + window.location.search);
+    // Проверка на наличие параметров поиска в строке
+    if (window.location.pathname.includes('/search') || window.location.search.includes('q=')) {
+        return 'search';
+    }
 
-    if (currentPath.includes('/search')) return 'search';
-    
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    let path = currentPath.replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
+    let path = decodeURIComponent(window.location.pathname)
+        .replace(/^\/archive/, '')
+        .replace(/^\//, '')
+        .split('?')[0];
+
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
-
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
+    // 1. Исправляем кодировку %3F (если есть)
     if (window.location.search.includes('%3F')) {
         const fixedUrl = window.location.href.replace('%3F', '?');
         window.history.replaceState(null, '', fixedUrl);
     }
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
-    if (page) {
+    
+    // 2. Если есть страница - меняем путь, но если есть ?q= - НЕ ТРОГАЕМ!
+    if (page && !urlParams.has('q')) {
         window.history.replaceState(null, '', `/archive/${page}`);
     }
 }
