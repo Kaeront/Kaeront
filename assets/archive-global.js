@@ -7,18 +7,27 @@ marked.setOptions({ breaks: true, gfm: true });
 
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
-// 1. ИСПРАВЛЕННЫЙ ПУТЬ: Теперь он корректно обрабатывает параметры
 function getCleanRoute() {
+    let currentPath = decodeURIComponent(window.location.pathname + window.location.search);
+
+    if (currentPath.includes('/search')) return 'search';
+    
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    let path = decodeURIComponent(window.location.pathname).replace(/^\/archive/, '').replace(/^\//, '');
+    let path = currentPath.replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
-// 2. АВТОМАТИЧЕСКИЙ ПУШ URL: Исправляет состояние после перезагрузки
+
+// 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
+    if (window.location.search.includes('%3F')) {
+        const fixedUrl = window.location.href.replace('%3F', '?');
+        window.history.replaceState(null, '', fixedUrl);
+    }
+    
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
     if (page) {
@@ -98,9 +107,14 @@ function initSearch() {
         });
 
         // Авто-открытие/скрытие папок
-        folders.forEach(f => {
+                folders.forEach(f => {
             const hasVisible = Array.from(f.querySelectorAll('a:not(.search-hidden)')).length > 0;
-            f.style.display = (query === '' || hasVisible) ? '' : 'none';
+            if (query !== '' && !hasVisible) {
+                f.classList.add('folder-hidden');
+            } else {
+                f.classList.remove('folder-hidden');
+            }
+            
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
         });
@@ -161,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 const style = document.createElement('style');
 style.textContent = `
     .search-hidden { display: none !important; }
+    .folder-hidden { display: none !important; }
     .sidebar-match { font-weight: bold; color: #ff9900; background: rgba(255, 153, 0, 0.1); }
-    .wiki-folder { transition: max-height 0.3s ease; }
 `;
 document.head.appendChild(style);
