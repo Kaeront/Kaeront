@@ -8,26 +8,21 @@ marked.setOptions({ breaks: true, gfm: true });
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 
 function getCleanRoute() {
-    // Проверка на наличие параметров поиска в строке
-    if (window.location.pathname.includes('/search') || window.location.search.includes('q=')) {
-        return 'search';
-    }
+    let currentPath = decodeURIComponent(window.location.pathname + window.location.search);
+
+    if (currentPath.includes('/search')) return 'search';
 
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get('page');
     if (pageParam) return pageParam;
 
-    let path = decodeURIComponent(window.location.pathname)
-        .replace(/^\/archive/, '')
-        .replace(/^\//, '')
-        .split('?')[0];
-
+    let path = currentPath.replace(/^\/archive/, '').replace(/^\//, '').split('?')[0];
     return (path === '' || path === 'index') ? 'index' : path;
 }
 
+
 // 2. АВТОМАТИЧЕСКИЙ ПУШ URL
 function handleUrlSync() {
-    // 1. Исправляем кодировку %3F (если есть)
     if (window.location.search.includes('%3F')) {
         const fixedUrl = window.location.href.replace('%3F', '?');
         window.history.replaceState(null, '', fixedUrl);
@@ -35,9 +30,7 @@ function handleUrlSync() {
 
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
-    
-    // 2. Если есть страница - меняем путь, но если есть ?q= - НЕ ТРОГАЕМ!
-    if (page && !urlParams.has('q')) {
+    if (page) {
         window.history.replaceState(null, '', `/archive/${page}`);
     }
 }
@@ -98,9 +91,9 @@ function initSearch() {
         links.forEach(link => {
             const originalText = link.dataset.originalText || link.textContent;
             if (!link.dataset.originalText) link.dataset.originalText = originalText;
-            
+
             const isMatch = originalText.toLowerCase().includes(query);
-            
+
             if (query === '') {
                 link.innerHTML = originalText;
                 link.classList.remove('search-hidden');
@@ -121,7 +114,7 @@ function initSearch() {
             } else {
                 f.classList.remove('folder-hidden');
             }
-            
+
             if (query !== '' && hasVisible) f.classList.add('open');
             else if (query === '') f.classList.remove('open');
         });
@@ -173,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initSearch();
     await loadArticle();
     updateActiveSidebarLink();
-    
+
     const loader = document.getElementById('loader-wrapper');
     if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.style.visibility = 'hidden', 300); }
 });
