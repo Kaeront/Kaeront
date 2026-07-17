@@ -423,7 +423,6 @@ function initSearch() {
     const searchInput = document.getElementById('wiki-search');
     if (!searchInput) return;
 
-    // Ссылку "Все результаты" вынесем в глобальную область, чтобы не дублировать
     let phantomLink = document.querySelector('.phantom-search-link');
     if (!phantomLink) {
         phantomLink = document.createElement('a');
@@ -434,38 +433,48 @@ function initSearch() {
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const links = document.querySelectorAll('.wiki-tree a');
+        const links = document.querySelectorAll('.wiki-tree a:not(.phantom-search-link)');
         const folders = document.querySelectorAll('.wiki-tree .wiki-folder');
 
+        // Логика "Все результаты"
         if (query.length > 0) {
             phantomLink.textContent = `Все результаты для «${query}»`;
             phantomLink.style.display = 'block';
-            phantomLink.onclick = () => { performTransition('/archive/search?q=' + encodeURIComponent(query)); };
+            phantomLink.onclick = () => performTransition('/archive/search?q=' + encodeURIComponent(query));
         } else {
             phantomLink.style.display = 'none';
         }
 
+        // 1. Фильтруем ссылки
         links.forEach(link => {
             const text = link.textContent;
             const isMatch = text.toLowerCase().includes(query);
             
-            if (query === '' || isMatch) {
-                link.classList.remove('search-hidden');
-                link.style.display = ''; // Показываем
-                // Подсветка
+            // Управляем видимостью напрямую через display
+            link.style.display = (query === '' || isMatch) ? '' : 'none';
+            
+            // Подсветка текста
+            if (query !== '' && isMatch) {
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                link.innerHTML = query !== '' ? text.replace(regex, '<span class="sidebar-match">$1</span>') : text;
+                link.innerHTML = text.replace(regex, '<span class="sidebar-match">$1</span>');
             } else {
-                link.classList.add('search-hidden');
-                link.style.display = 'none'; // Скрываем
+                link.innerHTML = text;
             }
         });
 
-        // Скрытие пустых папок
+        // 2. Фильтруем папки
         folders.forEach(f => {
-            const hasVisible = f.querySelectorAll('a:not(.search-hidden)').length > 0;
-            f.style.display = (hasVisible || query === '') ? '' : 'none';
-            if (query !== '' && hasVisible) f.classList.add('open');
+            // Ищем внутри папки ссылки, которые не скрыты
+            const visibleLinks = Array.from(f.querySelectorAll('a')).filter(a => a.style.display !== 'none');
+            const hasVisible = visibleLinks.length > 0;
+            
+            f.style.display = (query === '' || hasVisible) ? '' : 'none';
+            
+            if (query !== '' && hasVisible) {
+                f.classList.add('open');
+            } else if (query === '') {
+                f.classList.remove('open');
+            }
         });
     });
 }
