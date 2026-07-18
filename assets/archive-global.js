@@ -173,6 +173,7 @@ style.textContent = `
         font-size: 1.2rem !important;
     }
     .search-result-card p {
+        margin: 0 !important;
         color: #888;
         font-size: 0.8rem !important;
         line-height: 1.5;
