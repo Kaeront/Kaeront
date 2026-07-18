@@ -252,7 +252,7 @@ async function renderSearchPage() {
 
     if (!query.trim()) return;
     const list = document.getElementById('results-list');
-    list.innerHTML = '<p style="transition: 0.3s">Ищу совпадения по базам данных...</p>';
+    list.innerHTML = '<p>Ищу совпадения по базам данных...</p>';
 
     const links = Array.from(document.querySelectorAll('.wiki-tree a'));
     const results = [];
@@ -312,7 +312,7 @@ async function renderSearchPage() {
     }
 
     if (results.length === 0) {
-        list.innerHTML = '<p style="transition: 0.3s">Ничего не найдено. Попробуйте изменить запрос.</p>';
+        list.innerHTML = '<p>Ничего не найдено. Попробуйте изменить запрос.</p>';
     } else {
         list.innerHTML = results.map(r => `
             <div class="search-result-card" onclick="performTransition('${r.href}')">
