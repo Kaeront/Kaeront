@@ -73,7 +73,7 @@ const globalStyles = `
     }
 
     body::-webkit-scrollbar-thumb {
-        background: linear-gradient(-90deg,rgba(255, 170, 0, 0.2) 0%, rgba(255, 170, 0, 0) 100%);
+        background-color: #333;
         border-radius: 8px;
         z-index: 100000;
     }
