@@ -49,8 +49,8 @@
         .wiki-layout {
             display: flex !important;
             margin-top: var(--safe-nav-height) !important;
-            height: 100vh !important; 
-            min-height: 100vh !important;
+            height: calc(100vh - var(--safe-nav-height)) !important;
+            min-height: calc(100vh - var(--safe-nav-height)) !important;
             position: relative !important;
             width: 100% !important;
             box-sizing: border-box !important;
@@ -408,7 +408,7 @@
             .wiki-layout {
                 flex-direction: column !important;
                 height: auto !important;
-                min-height: calc(100vh - var(--safe-nav-height)) !important;
+                min-height: auto !important;
                 overflow: visible !important;
             }
             .wiki-sidebar {
