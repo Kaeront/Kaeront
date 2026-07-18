@@ -368,7 +368,6 @@
             margin-bottom: 20px !important;
             position: relative !important;
             border-radius: 20px !important;
-            contain: paint !important;
         }
         .markdown-body table::after {
             content: "" !important;
@@ -382,6 +381,10 @@
         }
         .markdown-body table::-webkit-scrollbar {
             height: 5px;
+        }
+        .markdown-body table tbody, .markdown-body table thead {
+            display: block !important;
+            width: 100% !important;
         }
         .markdown-body table::-webkit-scrollbar-thumb {
             background-color: #333;
