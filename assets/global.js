@@ -75,6 +75,12 @@ const globalStyles = `
     body::-webkit-scrollbar-thumb {
         background-color: #fa0;
         border-radius: 8px;
+        z-index: 100000;
+    }
+
+    body::-webkit-scrollbar-track {
+        background-color: #000;
+        border-radius: 8px;
     }
 
     .a, button {
