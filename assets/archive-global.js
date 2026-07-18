@@ -158,7 +158,7 @@ style.textContent = `
     .search-result-card {
         border: 1px solid #141414;
         background: #080808;
-        padding: 10px 20px;
+        padding: 20px;
         margin-bottom: 10px;
         cursor: pointer;
         border-radius: 10px;
@@ -166,15 +166,15 @@ style.textContent = `
     }
     .search-result-card:hover {
         border-color: #444;
-        box-shadow: 0 0 16px #fa0;
+        box-shadow: 0 0 24px rgba(255, 170, 0, 0.25);
         transform: translateY(-5px);
     }
     .search-result-card h3 {
-        margin: 10px 0 0 0 !important;
+        margin: 0 !important;
         font-size: 1.2rem !important;
     }
     .search-result-card p {
-        margin: 0 0 5px 0 !important;
+        margin: 0 !important;
         color: #888;
         font-size: 0.8rem !important;
         line-height: 1.5;
