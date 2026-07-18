@@ -69,12 +69,12 @@ const globalStyles = `
     }
 
     body::-webkit-scrollbar {
-        width: 5px;
+        width: 8px;
     }
 
-    body::-webkit-scrollbar-track {
+    body::-webkit-scrollbar-thumb {
         background-color: #fa0;
-        border-radius: 5px;
+        border-radius: 8px;
     }
 
     .a, button {
