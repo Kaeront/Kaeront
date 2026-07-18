@@ -69,12 +69,12 @@ const globalStyles = `
     }
 
     body::-webkit-scrollbar {
-        width: 8px;
+        width: 7px;
     }
 
     body::-webkit-scrollbar-thumb {
-        background-color: #fa0;
-        border-radius: 8px;
+        background: linear-gradient(-90deg,rgba(255, 170, 0, 1) 0%, rgba(255, 170, 0, 0) 100%);
+        border-radius: 7px;
         z-index: 100000;
     }
 
