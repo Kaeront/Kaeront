@@ -116,7 +116,7 @@ async function loadArticle() {
     } catch (error) {
         contentContainer.innerHTML = `
             <h1>Статья не найдена</h1>
-            <p>Документ <code>${routeName}.md</code> ещё не создан или находится в разработке.<br><h3>Советуем:</h2><ul><li>Обновить страницу</li><li>Проверить подключение к интернету</li><li>Обратиться в <a href="/archive/contacts">контакты поддержки</a>, если проблема сохраняется</li></ul></p>
+            <p>Документ <code>${routeName}.md</code> ещё не создан или находится в разработке.<br><h3>Советуем:</h2><ul><li>Поискать в <a href="/archive/search">расширенном поиске</a></li><li>Обновить страницу</li><li>Проверить подключение к интернету</li><li>Обратиться в <a href="/archive/contacts">контакты поддержки</a>, если проблема сохраняется</li></ul></p>
         `;
     }
 }
@@ -156,8 +156,8 @@ style.textContent = `
 
     /* Карточки результатов */
     .search-result-card {
-        border: 1px solid #141414;
-        background: #080808;
+        border: 1px solid #202020;
+        background: #0d0d0d;
         padding: 20px;
         margin-bottom: 10px;
         cursor: pointer;
@@ -165,8 +165,8 @@ style.textContent = `
         transition: transform 0.25s ease, border-color 0.25s ease; box-shadow 0.25s ease;
     }
     .search-result-card:hover {
-        border-color: #444;
-        box-shadow: 0 0 24px rgba(255, 170, 0, 0.25);
+        border-color: #aaa;
+        box-shadow: 0 0 24px rgba(255, 170, 0, 0.5);
         transform: translateY(-5px);
     }
     .search-result-card h3 {
@@ -239,8 +239,8 @@ async function renderSearchPage() {
     
     contentContainer.innerHTML = `
         <h1>Расширенный поиск по архиву</h1>
-        <p>Расширенный поиск позволяет искать по полному тексту всех доступных материалов. Система анализирует содержимое всех файлов, предоставляя контекстные сниппеты с выделением найденных совпадений.</p>
-        <h6><i>Она ещё новенькая и может ошибаться, но мы будем развивать её.</i></h6>
+        <p style="font-size: 0.8em !important;">Расширенный поиск позволяет искать по полному тексту всех доступных материалов. Система анализирует содержимое всех файлов, предоставляя контекстные сниппеты с выделением найденных совпадений.</p>
+        <h6><i>Оно ещё новенькое и может ошибаться и медлить, но мы будем развивать это.</i></h6>
         <input type="text" class="search-input-field" value="${escapeHtml(query)}" placeholder="Что вы хотите найти?">
         <div id="results-list"></div>
     `;
