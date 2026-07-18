@@ -138,8 +138,9 @@
         }
 
         .sidebar-tree-container::-webkit-scrollbar-thumb {
-            background-color: #00000080;
+            background-color: #000;
             border-radius: 4px;
+            z-index: 400;
         }
 
         /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
@@ -293,6 +294,7 @@
         #wiki-app::-webkit-scrollbar-thumb {
             background-color: #fa0;
             border-radius: 7px;
+            z-index: 400;
         }
 
         /* --- СОСТОЯНИЕ SCALE-DOWN --- */
@@ -379,11 +381,12 @@
             border-radius: 20px !important;
         }
         .markdown-body table::-webkit-scrollbar {
-            height: 2px;
+            height: 4px;
         }
-        .markdown-body table::-webkit-scrollbar-track {
+        .markdown-body table::-webkit-scrollbar-thumb {
             background-color: #00000080;
-            border-radius: 2px;
+            border-radius: 4px;
+            z-index: 400;
         }
         .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 5px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
 
