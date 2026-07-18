@@ -405,14 +405,10 @@
                 overflow: auto !important;
                 height: auto !important;
             }
-            .sidebar-tree-container {
-                flex: none !important;
-                height: auto !important;
-            }
             .wiki-layout {
                 flex-direction: column !important;
                 height: auto !important;
-                min-height: auto !important;
+                min-height: calc(100vh - var(--safe-nav-height)) !important;
                 overflow: visible !important;
             }
             .wiki-sidebar {
