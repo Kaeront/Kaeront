@@ -68,6 +68,15 @@ const globalStyles = `
         min-height: 100vh;
     }
 
+    body::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    body::-webkit-scrollbar-track {
+        background-color: #fa0;
+        border-radius: 5px;
+    }
+
     .a, button {
         cursor: url('/assets/pointer.png'), pointer;
     }
