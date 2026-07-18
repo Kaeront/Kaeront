@@ -139,6 +139,7 @@ style.textContent = `
     /* Стили для поля ввода */
     .search-input-field {
         width: 100%;
+        box-sizing: border-box; 
         padding: 12px;
         background: #0d0d0d;
         border: 1px solid #222;
@@ -161,18 +162,17 @@ style.textContent = `
         margin-bottom: 15px;
         cursor: pointer;
         border-radius: 10px;
-        transition: transform 0.15s ease, border-color 0.15s ease;
+        transition: transform 0.25s ease, border-color 0.25s ease;
     }
     .search-result-card:hover {
         border-color: #222;
         transform: translateY(-5px);
     }
     .search-result-card h3 {
-        margin: 0 0 10px 0 !important;
+        margin: 5px 0 !important;
         font-size: 1.2rem !important;
     }
     .search-result-card p {
-        margin: 0;
         color: #888;
         font-size: 0.8rem !important;
         line-height: 1.5;
