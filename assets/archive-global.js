@@ -129,7 +129,7 @@ style.textContent = `
     /* Подсветка в карточках результатов поиска */
     mark.search-match {
         font-weight: bold !important;
-        color: #ff9900 !important; /* Ваш акцентный цвет Kaeront */
+        color: #fa0 !important;
         background: rgba(255, 153, 0, 0.2) !important;
         padding: 0 4px !important;
         border-radius: 3px !important;
@@ -145,45 +145,43 @@ style.textContent = `
         color: #fff;
         margin-bottom: 25px;
         font-family: inherit;
-        border-radius: 4px;
+        border-radius: 10px;
         transition: border-color 0.2s ease;
     }
     .search-input-field:focus {
-        border-color: #ff9900;
+        border-color: #fa0;
         outline: none;
     }
 
     /* Карточки результатов */
     .search-result-card {
-        border: 1px solid #1a1a1a;
-        background: #050505;
-        padding: 20px;
+        border: 1px solid #141414;
+        background: #080808;
+        padding: 10px 20px;
         margin-bottom: 15px;
         cursor: pointer;
-        border-radius: 4px;
+        border-radius: 10px;
         transition: transform 0.15s ease, border-color 0.15s ease;
     }
     .search-result-card:hover {
-        border-color: #333;
-        transform: translateY(-2px);
+        border-color: #222;
+        transform: translateY(-5px);
     }
     .search-result-card h3 {
-        margin: 0 0 10px 0;
-        color: #ff9900;
-        font-size: 1.2rem;
+        margin: 0 0 10px 0 !important;
+        font-size: 1.2rem !important;
     }
     .search-result-card p {
         margin: 0;
         color: #888;
-        font-size: 0.95rem;
+        font-size: 0.8rem !important;
         line-height: 1.5;
     }
 
     /* Подсветка совпадений в сайдбаре */
     .sidebar-match {
         font-weight: bold !important;
-        color: #ff9900 !important; /* Яркий акцентный цвет */
-        text-shadow: 0 0 8px rgba(255, 153, 0, 0.4) !important;
+        color: #fa0 !important;
         background: rgba(255, 153, 0, 0.1) !important;
         padding: 1px 3px !important;
         border-radius: 2px !important;
