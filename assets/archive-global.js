@@ -159,7 +159,7 @@ style.textContent = `
         border: 1px solid #141414;
         background: #080808;
         padding: 10px 20px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         cursor: pointer;
         border-radius: 10px;
         transition: transform 0.25s ease, border-color 0.25s ease;
@@ -169,7 +169,7 @@ style.textContent = `
         transform: translateY(-5px);
     }
     .search-result-card h3 {
-        margin: 5px 0 !important;
+        margin: 10px 0 0 0 !important;
         font-size: 1.2rem !important;
     }
     .search-result-card p {
