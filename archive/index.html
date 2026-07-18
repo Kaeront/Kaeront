@@ -226,7 +226,7 @@
             display: flex !important;
             flex-direction: column !important;
             gap: 2px !important;
-            border-left: 1px dashed #1a1a1a !important; 
+            border-left: 1px dotted #1a1a1a !important; 
             padding-left: 5px !important;
         }
 
@@ -331,23 +331,24 @@
         .markdown-body h1 { font-family: 'Minecraft', sans-serif !important; color: var(--accent) !important; margin-top: 25px !important; margin-bottom: 25px !important; font-size: 1.8rem !important; text-shadow: 0.125em 0.125em #3E2A00; }
         .markdown-body h2 { font-family: 'Minecraft', sans-serif !important; color: #fff !important; margin-top: 35px !important; border-bottom: 1px solid #1a1a1a !important; padding-bottom: 8px !important; font-size: 1.3rem !important; text-shadow: 0.125em 0.125em #3F3F3F; }
         .markdown-body h3 { font-family: 'Minecraft', sans-serif !important; font-weight: 400 !important; color: #fff !important; margin-top: 25px !important; font-size: 1rem !important; text-shadow: 0.125em 0.125em #3F3F3F; }
-        .markdown-body h6 { color: var(--text-dim) !important; }
+        .markdown-body h6 { color: var(--text-dim) !important; font-weight: }
         .markdown-body p, .markdown-body li { color: var(--text-dim) !important; text-align: justify !important; margin-bottom: 20px !important; hyphens: auto !important; -webkit-hyphens: auto !important; word-break: break-word !important; overflow-wrap: break-word !important; }
         .markdown-body a { color: var(--accent) !important; text-decoration: none !important; transition: 0.3s !important; }
         .markdown-body a:hover { text-decoration: underline !important; }
         .markdown-body table {
             display: block !important;
-            background: #000 !important;
+            background: #0d0d0d !important;
             width: 100% !important;
             overflow-x: auto !important;
             white-space: nowrap !important;
             margin-bottom: 20px !important;
             scrollbar-width: thin !important;
             padding: 0 5px !important;
-            mask-image: linear-gradient(to right, transparent, black 5px, black calc(100% - 5px), transparent) !important;
-            -webkit-mask-image: linear-gradient(to right, transparent, black 5px, black calc(100% - 5px), transparent) !important;
+            border-radius: 10px !important;
+            mask-image: linear-gradient(to right, transparent, black 10px, black calc(100% - 10px), transparent) !important;
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black calc(100% - 10px), transparent) !important;
         }
-        .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 3px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
+        .markdown-body code { background: #141414 !important; padding: 3px 6px !important; border-radius: 5px !important; font-family: monospace !important; font-size: 0.85rem !important; color: var(--accent) !important; }
 
 
         /* Базовый контейнер баннера */
@@ -385,6 +386,8 @@
         .status-banner.outdated { border-inline-color: #f55 !important; background: rgba(255, 85, 85, 0.05) !important; }
         .status-banner.not-ready { border-inline-color: #ff5 !important; background: rgba(255, 255, 85, 0.05) !important; }
         .status-banner.no-images { border-inline-color: #55f !important; background: rgba(85, 85, 255, 0.05) !important; }
+        .status-banner.guide { border-inline-color: #5f5 !important; background: rgba(85, 255, 85, 0.05) !important; }
+        .status-banner.unofficial-verified { border-inline-color: #0a0 !important; background: rgba(0, 170, 0, 0.05) !important; }
 
 
         /* Адаптивность для мобильных */
