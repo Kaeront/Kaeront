@@ -101,12 +101,17 @@ async function loadArticle() {
         if (statusMatch && statusMatch[1]) {
             const statusString = statusMatch[1];
             const statusList = statusString.split(',').map(s => s.trim());
-            
+
             statusList.forEach(id => {
                 if (STATUS_BANNERS[id]) {
                     bannersHtml += STATUS_BANNERS[id];
                 }
             });
+
+            // Оборачиваем в контейнер всегда, если есть хотя бы один баннер
+            if (bannersHtml !== '') {
+                bannersHtml = `<div class="status-banners-container">${bannersHtml}</div>`;
+            }
 
             markdownText = markdownText.replace(statusMatch[0], '');
         }
