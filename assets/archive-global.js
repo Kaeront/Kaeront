@@ -482,12 +482,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         mainInput.value = query;
     }
 
-    // 5. Финализация
-    const loader = document.getElementById('loader-wrapper');
-    if (loader) {
-        loader.style.opacity = '0';
-        setTimeout(() => loader.style.visibility = 'hidden', 300);
-    }
-
     setTimeout(() => appContainer.classList.remove('scale-down'), 100);
 });
