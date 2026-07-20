@@ -83,8 +83,8 @@ const globalStyles = `
         border-radius: 8px;
     }
 
-    body::#speed-popup.active {
-        margin-top: 40px !important;
+    body #speed-popup.active {
+        margin-top: 20px !important;
     }
 
     .a, button {
