@@ -141,7 +141,7 @@ const globalStyles = `
 
     /* Состояние: Нет подключения (Красный) */
     #speed-popup.offline {
-        background: #D12424;
+        background: #FF5555;
         color: #fff;
     }
 
