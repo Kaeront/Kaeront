@@ -67,6 +67,7 @@ const globalStyles = `
         flex-direction: column;
         min-height: 100vh;
         will-change: padding-top;
+        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body::-webkit-scrollbar {
@@ -101,6 +102,7 @@ const globalStyles = `
         transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
         will-change: margin-top;
+        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     nav.scrolled {
         background: rgba(10, 10, 10, 0.7); 
@@ -152,12 +154,10 @@ const globalStyles = `
     }
 
     body:has(#speed-popup.active) {
-        padding-top: 20px !important;
-        transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 20px !important;
     }
     body:has(#speed-popup.active) nav {
         margin-top: 20px !important;
-        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 `;
 
