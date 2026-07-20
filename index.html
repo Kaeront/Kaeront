@@ -230,7 +230,7 @@
             cursor: url('/assets/grab.png'), grab;
             user-select: none;
             touch-action: pan-y;
-            mask-image: linear-gradient(to right, transparent, black 20vw, black calc(100% - 80vw), transparent) !important; -webkit-mask-image: linear-gradient(to right, transparent, black 20vw, black calc(100% - 80vw), transparent) !important;
+            mask-image: linear-gradient(to right, transparent, black 30vw, black calc(100% - 30vw), transparent) !important; -webkit-mask-image: linear-gradient(to right, transparent, black 30vw, black calc(100% - 30vw), transparent) !important;
         }
         
         .why-us-container:active { 
@@ -340,7 +340,7 @@
             justify-content: center;
             overflow-y: auto;
             opacity: 0; 
-            transition: opacity 0.5s ease;
+            transition: opacity 0.3s ease;
             will-change: opacity;
         }
         .modal-overlay.show-flex { display: flex; pointer-events: auto; }
@@ -355,7 +355,7 @@
             padding: 40px 30px;
             position: relative;
             transform: translate3d(0, 100px, 0);
-            transition: transform 0.5s ease-out;
+            transition: transform 0.3s ease;
             will-change: transform;
             backface-visibility: hidden;
         }
