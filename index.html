@@ -345,6 +345,10 @@
         }
         .modal-overlay.show-flex { display: flex; pointer-events: auto; }
         .modal-overlay.active { opacity: 1; }
+        html:has(.modal-overlay.active), body:has(.modal-overlay.active) {
+            overflow: hidden !important;
+        }
+
         #modal-l *::selection { color: #000; background: #FF55FF; }
         #modal-l .close-btn:hover { color: #FF55FF; }
         .modal-window {
@@ -697,7 +701,7 @@
                      <div class="status-dot status-offline"></div>
                      <span class="status-text-offline">Загрузка...</span>
                 </div>
-            <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха. Готов к долгому пути?</p>
+            <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха.</p>
             <div class="modal-grid">
                 <div class="modal-left">
                     <div class="dropdown" id="r1"><button class="dropdown-btn" onclick="toggleDropdown('r1')">1. Общие положения <span>+</span></button><div class="dropdown-content">1.1. Сервер «Kaeront: Survival» предоставляет возможность игры в Minecraft<br>1.2. Администрация оставляет за собой право изменять правила<br>1.3. Игрок обязан ознакомиться с правилами до начала игры<br>1.4. Незнание правил не освобождает от ответственности</div></div>
@@ -919,7 +923,7 @@ window.onclick = function(e) {
 requestAnimationFrame(animate);
 
 async function updateKaerontStatus() {
-    const apiQuery = "https://teramont.net/api/mcstatus?server=play.kaeront.ru&type=java";
+    const apiQuery = "https://obsidian-mc.ru/api/monitoring/v1/servers/qB699aJ641/status/play.kaeront.ru";
     
     try {
         const response = await fetch(apiQuery);
