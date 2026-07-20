@@ -152,7 +152,7 @@ const globalStyles = `
 
 const injectHTML = {
     dev: `
-    <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100vh; padding: 0 0.1vh; opacity:0.3; z-index: 30000; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
+    <div id="dev-banner" style="user-select: none; pointer-events: none; bottom: 2%; position: fixed; width: 100vh; margin: 0; padding: 0 0.1vh; opacity:0.3; z-index: 30000; box-sizing: border-box; justify-content: center; align-items: center; text-align: center;">
       <p style="font-family: 'Montserrat', sans-serif; color: #888; font-size: 1vh;">
         <span style="font-family: 'Minecraft', sans-serif; color: #FFAA00;">Проект в разработке!</span> Серверы работают в тестовом режиме и временно могут быть недоступны. Пожалуйста, вернитесь к нам после официального релиза.
       </p>
