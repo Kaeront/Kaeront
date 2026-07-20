@@ -269,8 +269,8 @@ const toggleSpeedPopup = (show, type = 'slow') => {
 
             // Форсируем микро-таймаут для плавного CSS-перехода
             setTimeout(() => {
-                document.documentElement.style.paddingTop = '0px';
-                if (nav) nav.style.top = '0px';
+                document.documentElement.style.paddingTop = '20px';
+                if (nav) nav.style.top = '20px';
                 popup.classList.add('active');
             }, 50);
         } else {
