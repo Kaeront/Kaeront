@@ -127,7 +127,7 @@ const globalStyles = `
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 600; letter-spacing: 0.1em;
+        font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 600; letter-spacing: 0.05em;
         transform: translateY(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
         user-select: none;
@@ -265,8 +265,8 @@ const toggleSpeedPopup = (show, type = 'slow') => {
 
             // Форсируем микро-таймаут для плавного CSS-перехода
             setTimeout(() => {
-                document.documentElement.style.paddingTop = '25px';
-                if (nav) nav.style.top = '25px';
+                document.documentElement.style.paddingTop = '20px';
+                if (nav) nav.style.top = '20px';
                 popup.classList.add('active');
             }, 50);
         } else {
