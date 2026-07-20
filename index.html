@@ -222,14 +222,14 @@
         }
         
         .why-us-container { 
-            width: 100%; 
-            overflow: hidden; 
-            padding: 10px 0; 
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            padding: 10px 0;
             cursor: url('/assets/grab.png'), grab;
             user-select: none;
             touch-action: pan-y;
-            mask-image: linear-gradient(to right, transparent, black clamp(0px, 2vw, 1200px), black calc(100% - clamp(0px, 2vw, 1200px)), transparent) !important;
-            -webkit-mask-image: linear-gradient(to right, transparent, black clamp(0px, 2vw, 1200px), black calc(100% - clamp(0px, 2vw, 1200px)), transparent) !important;
+            mask-image: linear-gradient(to bottom, transparent, black max(100%,80vw), black min(100%,80vw), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black max(100%,80vw), black min(100%,80vw), transparent) !important;
         }
         
         .why-us-container:active { 
