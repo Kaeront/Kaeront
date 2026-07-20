@@ -83,10 +83,6 @@ const globalStyles = `
         border-radius: 8px;
     }
 
-    body #speed-popup.active {
-        padding-top: 20px !important;
-    }
-
     .a, button {
         cursor: url('/assets/pointer.png'), pointer;
     }
