@@ -228,8 +228,8 @@
             cursor: url('/assets/grab.png'), grab;
             user-select: none;
             touch-action: pan-y;
-            mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important;
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important;
+            mask-image: linear-gradient(to right, transparent, black clamp(0px, 2vw, 1200px), black calc(100% - clamp(0px, 2vw, 1200px)), transparent) !important;
+            -webkit-mask-image: linear-gradient(to right, transparent, black clamp(0px, 2vw, 1200px), black calc(100% - clamp(0px, 2vw, 1200px)), transparent) !important;
         }
         
         .why-us-container:active { 
