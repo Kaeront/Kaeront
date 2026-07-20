@@ -953,7 +953,7 @@ async function updateKaerontStatus() {
                     if (dot) dot.className = "status-dot status-online";
                     if (textSpan) {
                         textSpan.className = "status-text-online";
-                        textSpan.innerText = `В сети (${data.players.online} чел.)`;
+                        textSpan.innerText = `В сети (${data.players.num} чел.)`;
                     }
                 } else {
                     if (dot) dot.className = "status-dot status-offline";
