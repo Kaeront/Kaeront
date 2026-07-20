@@ -167,11 +167,11 @@ style.textContent = `
         margin-bottom: 10px;
         cursor: pointer;
         border-radius: 10px;
-        transition: transform 0.25s ease, border-color 0.25s ease; box-shadow 0.25s ease;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
     .search-result-card:hover {
         border-color: #aaa;
-        box-shadow: 0 0 24px rgba(255, 170, 0, 0.5);
+        box-shadow: 0 0 24px rgba(255, 170, 0, 0.25);
         transform: translateY(-5px);
     }
     .search-result-card h3 {
