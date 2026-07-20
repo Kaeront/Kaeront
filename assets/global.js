@@ -66,6 +66,7 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        will-change: transform;
     }
 
     body::-webkit-scrollbar {
@@ -147,6 +148,15 @@ const globalStyles = `
 
     #speed-popup.active { 
         transform: translateY(0); 
+    }
+
+    body #speed-popup.active {
+        padding-top: 20px !important;
+        transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    nav #speed-popup.active {
+        padding-top: 20px !important;
+        transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 `;
 
@@ -265,15 +275,11 @@ const toggleSpeedPopup = (show, type = 'slow') => {
 
             // Форсируем микро-таймаут для плавного CSS-перехода
             setTimeout(() => {
-                document.documentElement.style.paddingTop = '20px';
-                if (nav) nav.style.top = '20px';
                 popup.classList.add('active');
             }, 50);
         } else {
             if (popup) {
                 popup.classList.remove('active');
-                document.documentElement.style.paddingTop = '0px';
-                if (nav) nav.style.top = '0px';
                 setTimeout(() => popup.remove(), 300); // Чистим DOM после скрытия
             }
         }
