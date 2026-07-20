@@ -123,11 +123,11 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 25px;
+        position: fixed; top: 0; left: 0; width: 100%; height: 20px;
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 600;
+        font-family: 'Montserrat', sans-serif; font-size: 0.5rem; font-weight: 600;
         transform: translateY(-100%); 
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
         user-select: none;
@@ -135,13 +135,13 @@ const globalStyles = `
     
     /* Состояние: Медленный интернет (Оранжево-желтый) */
     #speed-popup.slow {
-        background: #FFAA00;
+        background: #fa0;
         color: #000;
     }
 
     /* Состояние: Нет подключения (Красный) */
     #speed-popup.offline {
-        background: #FF5555;
+        background: #a00;
         color: #fff;
     }
 
@@ -256,10 +256,10 @@ const toggleSpeedPopup = (show, type = 'slow') => {
 
             // Настраиваем контент и классы в зависимости от типа ошибки
             if (type === 'offline') {
-                popup.innerHTML = `<span>Подключение к интернету отсутствует. Проверьте соединение.</span>`;
+                popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
                 popup.className = 'offline'; // Вешаем красный стиль
             } else {
-                popup.innerHTML = `<span>Ой-ой! Зафиксировано медленное соединение!</span>`;
+                popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
                 popup.className = 'slow'; // Вешаем желтый стиль
             }
 
