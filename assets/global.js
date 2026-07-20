@@ -66,7 +66,7 @@ const globalStyles = `
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        will-change: transform;
+        will-change: padding-top;
     }
 
     body::-webkit-scrollbar {
@@ -100,6 +100,7 @@ const globalStyles = `
         align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
         transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
+        will-change: margin-top;
     }
     nav.scrolled {
         background: rgba(10, 10, 10, 0.7); 
@@ -150,13 +151,13 @@ const globalStyles = `
         transform: translateY(0); 
     }
 
-    body #speed-popup.active {
+    body:has(#speed-popup.active) {
         padding-top: 20px !important;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    nav #speed-popup.active {
-        padding-top: 20px !important;
-        transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    body:has(#speed-popup.active) nav {
+        margin-top: 20px !important;
+        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 `;
 
