@@ -77,11 +77,16 @@
 
         /* Враппер логотипа */
         .sidebar-logo-wrapper {
-            padding: 15px 15px 10px 15px !important;
+            padding: 10px !important;
             font-family: 'Minecraft', sans-serif !important;
             font-weight: 700 !important;
             font-size: 0.9rem !important;
-            color: #333 !important;
+            color: #111 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            user-select: none;
+            text-decoration: none;
         }
 
         /* --- ПОИСК СТАТЕЙ --- */
@@ -571,9 +576,9 @@
 
 <div class="wiki-layout">
     <aside class="wiki-sidebar">
-        <div class="sidebar-logo-wrapper">
+        <a class="sidebar-logo-wrapper" href="/archive">
             Архив <span style="font-weight: 400;">⚡︎</span>
-        </div>
+        </a>
 
         <div class="sidebar-search-wrapper">
             <input type="text" id="wiki-search" class="sidebar-search" placeholder="Поиск по архиву..." autocomplete="off">
@@ -588,7 +593,7 @@
                     <div class="folder-title" onclick="toggleFolder(this)">О Проекте</div>
                     <div class="folder-content">
                         <div class="folder-content-wrapper">
-                            <a href="/archive/index" class="active">Главная архива</a>
+                            <a href="/archive" class="active">Главная архива</a>
                             <a href="/archive/contacts" class="active">Контакты</a>
                             <div class="wiki-folder">
                                 <div class="folder-title" onclick="toggleFolder(this)">Правила серверов</div>
