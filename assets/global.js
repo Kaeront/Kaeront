@@ -83,10 +83,14 @@ const globalStyles = `
         border-radius: 8px;
     }
 
+    body::#speed-popup.active {
+        margin-top: 20px;
+    }
+
     .a, button {
         cursor: url('/assets/pointer.png'), pointer;
     }
-        
+
     body {
         cursor: url('/assets/cursor.png'), auto;
     }
@@ -127,9 +131,9 @@ const globalStyles = `
         color: #fff;
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
-        font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 600; letter-spacing: 0.05em;
+        font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
         transform: translateY(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
     }
     
