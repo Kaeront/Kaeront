@@ -100,7 +100,9 @@
             z-index: 110 !important;
             background: rgb(15, 15, 15);
             border-radius: 0 0 20px 20px !important;
-            box-shadow: inset 0 -1px 0 0 #333 !important;
+            box-shadow: inset 0 0 0 1px #1a1a1a !important;
+            clip-path: inset(calc(100% - 20px) -1px -1px -1px);
+
         }
 
         .sidebar-search {
@@ -579,7 +581,7 @@
 <div class="wiki-layout">
     <aside class="wiki-sidebar">
         <a class="sidebar-logo-wrapper" href="/archive">
-            📖  <b>Архив</b>  ⚡︎
+            📖<b>Архив</b>
         </a>
 
         <div class="sidebar-search-wrapper">
