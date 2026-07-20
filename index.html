@@ -354,12 +354,12 @@
             width: 95%; max-width: 700px;
             padding: 40px 30px;
             position: relative;
-            transform: translate3d(0, 100px, 0);
+            transform: translate3d(0, 50px, 0) scale(0.95);
             transition: transform 0.3s ease;
             will-change: transform;
             backface-visibility: hidden;
         }
-        .modal-overlay.active .modal-window { transform: translate3d(0, 0, 0); }
+        .modal-overlay.active .modal-window { transform: translate3d(0, 0, 0) scale(1); }
         .modal-window::-webkit-scrollbar { width: 5px; }
         .modal-window::-webkit-scrollbar-thumb { background-color: #333; border-radius: 5px; }
         .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: url('/assets/pointer.png'), pointer; z-index: 100; transition: 0.3s; }
