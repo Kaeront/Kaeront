@@ -84,7 +84,7 @@ const globalStyles = `
     }
 
     body::#speed-popup.active {
-        margin-top: 20px;
+        margin-top: 20px !important;
     }
 
     .a, button {
