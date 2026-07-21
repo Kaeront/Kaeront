@@ -30,7 +30,7 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': authHeader || ''
+                'X-Internal-Token': process.env.INTERNAL_API_KEY
             },
             body: JSON.stringify(req.body)
         });
