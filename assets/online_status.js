@@ -2,7 +2,6 @@
     let lastActivityTime = Date.now();
     const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 минуты бездействия = AFK
 
-    // Фиксируем любую активность пользователя
     function resetActivity() {
         lastActivityTime = Date.now();
     }
@@ -15,25 +14,18 @@
         const token = localStorage.getItem('kaeront_access_token');
         if (!token) return;
 
-        // Если вкладка свернута/скрыта — не пингуем
-        if (document.hidden) {
-            console.log('[Status Ping] Skipped: Tab is hidden');
-            return;
-        }
+        if (document.hidden) return;
 
-        // Если пользователь не двигал мышью/клавиатурой больше 2 минут — не пингуем (AFK)
         const isIdle = (Date.now() - lastActivityTime) > IDLE_TIMEOUT_MS;
-        if (isIdle) {
-            console.log('[Status Ping] Skipped: User is idle/AFK');
-            return;
-        }
+        if (isIdle) return;
 
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const uuid = payload.sub;
             if (!uuid) return;
 
-            await fetch(`/api/v1/users/${uuid}/status`, {
+            // Используем существующий прокси-рут Vercel v1!
+            const res = await fetch(`/api/v1/users/${uuid}/status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,13 +34,32 @@
                 body: JSON.stringify({ site_online: true })
             });
 
-            console.log(`[Status Ping] Active ping sent for ${uuid}`);
+            // 1. Аккаунт забанен (FastAPI вернул 403)
+            if (res.status === 403) {
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                } else if (typeof checkActiveSession === 'function') {
+                    checkActiveSession();
+                }
+                return;
+            }
+
+            // 2. Сессия отозвана / token_version не совпал (FastAPI вернул 401)
+            if (res.status === 401) {
+                localStorage.removeItem('kaeront_access_token');
+                if (window.location.pathname === '/login' && typeof checkActiveSession === 'function') {
+                    checkActiveSession();
+                } else {
+                    window.location.reload();
+                }
+            }
+
         } catch (err) {
             console.error('[Status Ping] Error:', err);
         }
     }
 
-    // Первый запуск сразу
+    // Запускаем сразу при загрузке
     sendStatusPing();
 
     // Пингуем каждые 30 секунд
