@@ -6,6 +6,10 @@
     <title>Вход — Kaeront</title>
     <script src="/assets/global.js" defer></script>
     <style>
+        :root {
+            --nav-hide: 38px;
+        }
+
         .auth-container {
             max-width: 420px;
             margin: 80px auto;
@@ -18,8 +22,7 @@
             font-family: system-ui, -apple-system, sans-serif;
         }
         .code-box {
-            background: #0d0d11;
-            border: 1px dashed #444452;
+            border: 1px dashed #555;
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
@@ -45,8 +48,8 @@
         .timer-text { color: #888; font-size: 14px; }
         .expired-box {
             background: rgba(255, 71, 87, 0.1);
-            border: 1px solid #ff4757;
-            color: #ff4757;
+            border: 1px solid #f55;
+            color: #f55;
             padding: 15px;
             border-radius: 8px;
         }
@@ -109,7 +112,7 @@
 
 <div class="auth-container">
     <h2 style="color: #fa0; font-family: 'Minecraft', sans-serif;">Авторизация Kaeront</h2>
-    <p style="color: #aaa; font-size: 14px;">Войдите в аккаунт через игровой сервер Minecraft.<br><br><b style="color: #f55">Уважаемые стримеры и видеомейкеры! Пожалуйста, перед тем как приступить, отключите запись экрана (если она у вас идёт). На сервере мы дадим отмашку, как только её можно будет включить!</b></p>
+    <p style="color: #aaa; font-size: 14px;">Войдите в аккаунт через игровой сервер Minecraft.<br><br><b style="color: #f55">Уважаемые стримеры и видеомейкеры! Пожалуйста, перед тем как приступить, отключите запись экрана (если она у вас идёт). На сервере мы дадим отмашку, как только её можно будет включить!</b><br><br>Регистрируясь или выполняя вход на игровой сервер, вы автоматически принимаете условия <a href="/terms" target="_blank">Пользовательского соглашения</a> и <a href="/privacy" target="_blank">Политики конфиденциальности и обработки персональных данных</a>.</p>
 
     <!-- Состояние 1: Кнопка генерации -->
     <div id="step-start">
@@ -127,7 +130,7 @@
     <!-- Состояние 3: Код просрочен -->
     <div id="step-expired" style="display: none;">
         <div class="expired-box">
-            <b>Время действия кода истекло!</b><br><br>
+            <b style="color: #f55; font-family: 'Minecraft', sans-serif;">Время действия кода истекло!</b><br><br>
             <button class="btn-auth" onclick="location.reload()">Обновить страницу</button>
         </div>
     </div>
@@ -135,8 +138,8 @@
     <!-- Состояние 4: Успешный вход -->
     <div id="step-success" style="display: none;">
         <div class="success-box">
-            <h3 style="margin: 0 0 10px 0;">Успешно!</h3>
-            <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">...</b>!</p>
+            <h3 style="margin: 0 0 10px 0;">Успешный вход!</h3>
+            <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">игрок</b>!<br>Вы можете покинуть эту страницу и пользоваться нашими сервисами на сайте!</p>
         </div>
     </div>
 </div>
