@@ -278,6 +278,11 @@ const setupHead = () => {
     const style = document.createElement('style')
     style.innerHTML = globalStyles;
     document.head.appendChild(style);
+
+    const statusScript = document.createElement('script');
+    statusScript.src = '/assets/online_status.js';
+    statusScript.defer = true;
+    document.head.appendChild(statusScript);
 };
 
 // Динамическое управление поп-апом интернета
