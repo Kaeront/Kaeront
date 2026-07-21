@@ -24,12 +24,12 @@
   ],
   "rewrites": [
     {
-      "source": "/user/((?!.*\\.).*)",
-      "destination": "/user/index.html"
+      "source": "/user",
+      "destination": "/user.html"
     },
     {
-      "source": "/user",
-      "destination": "/user/index.html"
+      "source": "/user/:match*",
+      "destination": "/user.html"
     },
     {
       "source": "/news/:id",
