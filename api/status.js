@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   if (!apiUrl || !apiKey) {
     return res.status(500).json({ 
-      error: 'Environment variables are not configured in Vercel!' 
+      error: 'Environment variables are missing on Vercel' 
     });
   }
 
@@ -25,12 +25,20 @@ export default async function handler(req, res) {
       },
     });
 
-    const data = await response.json();
+    const text = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { result: text };
+    }
+
     return res.status(response.status).json(data);
   } catch (error) {
     return res.status(500).json({ 
-      error: 'Failed to reach VDS backend', 
+      error: 'Proxy execution error', 
       details: error.message 
     });
   }
-}
+};
