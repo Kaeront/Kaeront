@@ -98,7 +98,6 @@
 let pollInterval = null;
 let timerInterval = null;
 
-// При загрузке проверяем сохраненное состояние
 document.addEventListener("DOMContentLoaded", () => {
     checkActiveSession();
 });
@@ -118,7 +117,7 @@ async function startAuthProcess() {
             alert('Ошибка сервера при генерации кода.');
         }
     } catch (e) {
-        alert('Не удалось связаться с сервером Vercel.');
+        alert('Не удалось связаться с сервером.');
     }
 }
 
@@ -142,10 +141,7 @@ function showCodeState(code, expireTimestamp) {
     document.getElementById('step-code').style.display = 'block';
     document.getElementById('command-display').innerText = `/link ${code}`;
 
-    // Запуск таймера обратного отсчета
     startTimer(expireTimestamp);
-
-    // Запуск поллинга (проверка статуса каждые 4 секунды)
     startPolling(code);
 }
 
@@ -176,18 +172,8 @@ function startPolling(code) {
             const res = await fetch(`/api/status?code=${code}`);
             const data = await res.json();
 
-            // Если бэкенд вернул статус LINKED
-            if (data.status === 'LINKED' || data.authenticated) {
-                const userUuid = data.uuid || data.user_id;
-                handleSuccess(userUuid);
-                return;
-            }
-
-            // Если бэкенд удаляет запись после связывания и отдаёт 404
-            if (res.status === 404) {
-                // Если UUID передан в теле ответа 404 или сохранён в куки/сессии
-                const userUuid = data.uuid || data.user_id || "Зафиксирован";
-                handleSuccess(userUuid);
+            if (res.ok && data.status === 'LINKED') {
+                handleSuccess(data);
                 return;
             }
 
@@ -195,7 +181,6 @@ function startPolling(code) {
                 handleExpired();
                 return;
             }
-
         } catch (e) {
             console.error("Ошибка при проверке статуса кода:", e);
         }
@@ -205,24 +190,27 @@ function startPolling(code) {
     pollInterval = setInterval(check, 4000);
 }
 
-function handleSuccess(uuid) {
+function handleSuccess(data) {
     clearInterval(pollInterval);
     clearInterval(timerInterval);
     clearAuthStorage();
 
-    // Сохраняем именно UUID игрока для сессии на сайте
-    if (uuid && uuid !== "Зафиксирован") {
-        localStorage.setItem('kaeront_user_uuid', uuid);
+    // СОХРАНЯЕМ БЕЗОПАСНЫЙ JWT ТОКЕН
+    if (data.access_token) {
+        localStorage.setItem('kaeront_access_token', data.access_token);
     }
 
-    showSuccessState(uuid);
+    const displayName = data.username || "Игрок";
+    showSuccessState(displayName);
 }
 
-function showSuccessState(uuid) {
-    document.getElementById('step-code').style.display = 'none';
-    document.getElementById('step-success').style.display = 'block';
-    document.getElementById('user-display').innerText = uuid;
+function handleExpired() {
+    clearInterval(pollInterval);
+    clearInterval(timerInterval);
+    clearAuthStorage();
+    showExpiredState();
 }
+
 function clearAuthStorage() {
     localStorage.removeItem('kaeront_code');
     localStorage.removeItem('kaeront_expire');
@@ -235,6 +223,7 @@ function showExpiredState() {
 }
 
 function showSuccessState(username) {
+    document.getElementById('step-start').style.display = 'none';
     document.getElementById('step-code').style.display = 'none';
     document.getElementById('step-success').style.display = 'block';
     document.getElementById('user-display').innerText = username;
