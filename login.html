@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — Kaeront</title>
+    <script src="/assets/global.js" defer></script>
+    <style>
+        .auth-container {
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 25px;
+            background: #18181c;
+            border: 1px solid #2d2d35;
+            border-radius: 12px;
+            color: #ffffff;
+            text-align: center;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .code-box {
+            background: #0d0d11;
+            border: 1px dashed #444452;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 22px;
+            font-weight: bold;
+            color: #55ff55;
+            letter-spacing: 1px;
+            user-select: all;
+        }
+        .btn-auth {
+            background: #5865f2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-auth:hover { background: #4752c4; }
+        .timer-text { color: #888899; font-size: 14px; }
+        .expired-box {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid #ff4757;
+            color: #ff4757;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .success-box {
+            background: rgba(46, 213, 115, 0.1);
+            border: 1px solid #2ed573;
+            color: #2ed573;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Авторизация Kaeront</h2>
+    <p style="color: #aaa; font-size: 14px;">Вход в аккаунт через игровой сервер Minecraft</p>
+
+    <!-- Состояние 1: Кнопка генерации -->
+    <div id="step-start">
+        <button class="btn-auth" onclick="startAuthProcess()">Получить код для входа</button>
+    </div>
+
+    <!-- Состояние 2: Отображение кода и таймер -->
+    <div id="step-code" style="display: none;">
+        <p style="font-size: 14px; margin-bottom: 5px;">Зайдите на сервер и введите команду в чат:</p>
+        <div class="code-box" id="command-display">/link ...</div>
+        <p class="timer-text">Код действителен: <b id="timer-count">05:00</b></p>
+        <p style="font-size: 12px; color: #666;">Ожидание подтверждения с сервера...</p>
+    </div>
+
+    <!-- Состояние 3: Код просрочен -->
+    <div id="step-expired" style="display: none;">
+        <div class="expired-box">
+            <b>Время действия кода истекло!</b><br><br>
+            <button class="btn-auth" onclick="location.reload()">Обновить страницу</button>
+        </div>
+    </div>
+
+    <!-- Состояние 4: Успешный вход -->
+    <div id="step-success" style="display: none;">
+        <div class="success-box">
+            <h3 style="margin: 0 0 10px 0;">Успешно!</h3>
+            <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">...</b>!</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let pollInterval = null;
+let timerInterval = null;
+
+// При загрузке проверяем сохраненное состояние
+document.addEventListener("DOMContentLoaded", () => {
+    checkActiveSession();
+});
+
+async function startAuthProcess() {
+    try {
+        const response = await fetch('/api/generate', { method: 'POST' });
+        const data = await response.json();
+
+        if (data.code) {
+            const expireTimestamp = Date.now() + (data.expires_in_seconds * 1000);
+            localStorage.setItem('kaeront_code', data.code);
+            localStorage.setItem('kaeront_expire', expireTimestamp);
+
+            showCodeState(data.code, expireTimestamp);
+        } else {
+            alert('Ошибка сервера при генерации кода.');
+        }
+    } catch (e) {
+        alert('Не удалось связаться с сервером Vercel.');
+    }
+}
+
+function checkActiveSession() {
+    const savedCode = localStorage.getItem('kaeront_code');
+    const savedExpire = localStorage.getItem('kaeront_expire');
+
+    if (savedCode && savedExpire) {
+        if (Date.now() > parseInt(savedExpire)) {
+            clearAuthStorage();
+            showExpiredState();
+        } else {
+            showCodeState(savedCode, parseInt(savedExpire));
+        }
+    }
+}
+
+function showCodeState(code, expireTimestamp) {
+    document.getElementById('step-start').style.display = 'none';
+    document.getElementById('step-expired').style.display = 'none';
+    document.getElementById('step-code').style.display = 'block';
+    document.getElementById('command-display').innerText = `/link ${code}`;
+
+    // Запуск таймера обратного отсчета
+    startTimer(expireTimestamp);
+
+    // Запуск поллинга (проверка статуса каждые 4 секунды)
+    startPolling(code);
+}
+
+function startTimer(expireTimestamp) {
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        const remaining = expireTimestamp - Date.now();
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            clearInterval(pollInterval);
+            clearAuthStorage();
+            showExpiredState();
+        } else {
+            const m = Math.floor(remaining / 60000);
+            const s = Math.floor((remaining % 60000) / 1000);
+            document.getElementById('timer-count').innerText = 
+                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+    }, 1000);
+}
+
+function startPolling(code) {
+    if (pollInterval) clearInterval(pollInterval);
+
+    // Первичный запрос и далее каждые 4 секунды
+    const check = async () => {
+        try {
+            const res = await fetch(`/api/status?code=${code}`);
+            const data = await res.json();
+
+            if (data.status === 'LINKED') {
+                // ПОБЕДА! Сервер привязал аккаунт
+                clearInterval(pollInterval);
+                clearInterval(timerInterval);
+                clearAuthStorage();
+                
+                // Показываем успех
+                showSuccessState(data.username);
+            } else if (data.status === 'EXPIRED') {
+                clearInterval(pollInterval);
+                clearInterval(timerInterval);
+                clearAuthStorage();
+                showExpiredState();
+            }
+        } catch (e) {
+            console.error("Ошибка при проверке статуса кодов:", e);
+        }
+    };
+
+    check();
+    pollInterval = setInterval(check, 4000);
+}
+
+function clearAuthStorage() {
+    localStorage.removeItem('kaeront_code');
+    localStorage.removeItem('kaeront_expire');
+}
+
+function showExpiredState() {
+    document.getElementById('step-start').style.display = 'none';
+    document.getElementById('step-code').style.display = 'none';
+    document.getElementById('step-expired').style.display = 'block';
+}
+
+function showSuccessState(username) {
+    document.getElementById('step-code').style.display = 'none';
+    document.getElementById('step-success').style.display = 'block';
+    document.getElementById('user-display').innerText = username;
+}
+</script>
+
+</body>
+</html>
