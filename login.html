@@ -197,28 +197,31 @@ async function checkActiveSession() {
 
     if (token) {
         try {
+            // 1. Извлекаем UUID прямо из JWT (payload.sub)
             const payload = JSON.parse(atob(token.split('.')[1]));
-            // Проверяем валидность токена
+            const userUuid = payload.sub;
+
+            // Проверяем срок годности самого токена
             if (payload.exp * 1000 > Date.now()) {
-                const verifyRes = await fetch('/api/v1/user/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                // 2. Стучимся в реальный существующий эндпоинт проверки профиля
+                const verifyRes = await fetch(`/api/users/${userUuid}`);
                 
                 if (verifyRes.ok) {
                     const userData = await verifyRes.json();
+                    
+                    // ХАРД-БЛОКИРОВКА СТРАНИЦЫ ЛОГИНА:
+                    // Показываем UI "Вы уже вошли", блокируя генерацию новых кодов
                     showAlreadyLoggedInState(userData);
                     return;
-                } else {
+                } else if (verifyRes.status === 403) {
                     const errData = await verifyRes.json().catch(() => ({}));
-                    const errorDetail = errData.detail;
-
-                    if (verifyRes.status === 403 && typeof errorDetail === 'object' && errorDetail.error === 'ACCOUNT_BANNED') {
-                        showBannedState(errorDetail.message);
+                    if (errData.detail && errData.detail.error === 'ACCOUNT_BANNED') {
+                        showBannedState(errData.detail.message);
                         return;
-                    } else {
-                        // Токен невалиден / версия сброшена — очищаем устаревший токен
-                        clearAuthStorage();
                     }
+                } else if (verifyRes.status === 404) {
+                    // Если пользователя с таким UUID нет в базе — сбрасываем
+                    clearAuthStorage();
                 }
             } else {
                 clearAuthStorage();
@@ -228,7 +231,7 @@ async function checkActiveSession() {
         }
     }
 
-    // Если авторизации нет — проверяем незавершенную генерацию /link кода
+    // Если токена нет или он сброшен — проверяем незавершенную привязку /link
     const savedCode = localStorage.getItem('kaeront_code');
     const savedExpire = localStorage.getItem('kaeront_expire');
 
@@ -301,7 +304,6 @@ function handleSuccess(data) {
     clearInterval(pollInterval);
     clearInterval(timerInterval);
     
-    // Очищаем только временный код генерации, НЕ трогая новый access_token
     localStorage.removeItem('kaeront_code');
     localStorage.removeItem('kaeront_expire');
 
@@ -312,12 +314,12 @@ function handleSuccess(data) {
     const displayName = data.username || "Игрок";
     showSuccessState(displayName);
     
-    // ВМЕСТО location.reload() — перенаправляем прямо в профиль юзера!
+    // ПРЯМОЙ РЕДИРЕКТ НА HTML-СТРАНИЦУ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ!
     setTimeout(() => {
         if (data.uuid) {
-            window.location.href = `/user/${data.uuid}`;
+            window.location.href = `/users/${data.uuid}`;
         } else {
-            window.location.href = '/user/me';
+            window.location.href = '/';
         }
     }, 1200);
 }
@@ -365,7 +367,7 @@ function showBannedState(message) {
     }
 }
 
-// Новый UX-экран: "Вы уже авторизованы"
+// Хард-блокировка: UX для авторизованного пользователя
 function showAlreadyLoggedInState(userData) {
     hideAllSteps();
     let loggedBox = document.getElementById('step-already-logged');
@@ -376,10 +378,10 @@ function showAlreadyLoggedInState(userData) {
         loggedBox.style.borderColor = '#fa0';
         loggedBox.style.background = 'rgba(255, 170, 0, 0.1)';
         loggedBox.innerHTML = `
-            <h3 style="margin: 0 0 10px 0; color: #fa0; font-family: 'Minecraft', sans-serif;">Вы уже вошли!</h3>
-            <p style="color: #fff; margin: 0 0 15px 0;">Вы авторизованы как <b style="color: #fa0;">${userData.username || 'Игрок'}</b>.</p>
+            <h3 style="margin: 0 0 10px 0; color: #fa0; font-family: 'Minecraft', sans-serif;">Вы уже авторизованы</h3>
+            <p style="color: #fff; margin: 0 0 15px 0;">Вы вошли как <b style="color: #fa0;">${userData.username || 'Игрок'}</b>.</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-auth" onclick="window.location.href='/user/${userData.uuid}'">В профиль</button>
+                <button class="btn-auth" onclick="window.location.href='/users/${userData.uuid}'">Мой профиль</button>
                 <button class="btn-auth" style="background: #333; color: #fff;" onclick="clearAuthStorage(); location.reload();">Выйти</button>
             </div>
         `;
