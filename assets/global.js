@@ -405,8 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startNetworkMonitoring();
-    verifySessionStatus();
-    setInterval(verifySessionStatus, 60000);
 });
 
 // Логика скрытия загрузочного экрана
@@ -423,60 +421,4 @@ window.addEventListener('load', () => {
             loader.remove();
         }, 500);
     }
-})
-
-// Автоматическая проверка состояния аккаунта (бан / invalid session)
-async function verifySessionStatus() {
-    const token = localStorage.getItem('kaeront_access_token');
-    if (!token) return;
-
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const userUuid = payload.sub;
-
-        // Если токен истёк по времени
-        if (!payload.exp || payload.exp * 1000 <= Date.now()) {
-            handleSessionInvalidation();
-            return;
-        }
-
-        // Делаем фоновый запрос к бэкенду с заголовком авторизации
-        const res = await fetch(`/api/users/${userUuid}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        // 1. Аккаунт забанен
-        if (res.status === 403) {
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login';
-            } else if (typeof checkActiveSession === 'function') {
-                checkActiveSession(); // Если мы уже на /login, перезапускаем отрисовку
-            }
-            return;
-        }
-
-        // 2. Сессия отозвана / токен невалиден / игрок не найден
-        if (res.status === 401 || res.status === 404) {
-            handleSessionInvalidation();
-        }
-
-    } catch (e) {
-        // Ошибки сети игнорируем, чтобы не выбивать пользователя при сбоях связи
-    }
-}
-
-// Вспомогательная функция очистки и редиректа
-function handleSessionInvalidation() {
-    localStorage.removeItem('kaeront_access_token');
-    if (window.location.pathname === '/login') {
-        if (typeof checkActiveSession === 'function') {
-            checkActiveSession();
-        } else {
-            window.location.reload();
-        }
-    } else {
-        window.location.reload(); // Перезагружаем страницу, чтобы обновить шапку
-    }
-};
+});
