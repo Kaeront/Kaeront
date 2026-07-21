@@ -24,6 +24,10 @@
   ],
   "rewrites": [
     {
+      "source": "/user/:path((?!.*\\.).*)",
+      "destination": "/user.html"
+    },
+    {
       "source": "/news/:id",
       "destination": "/news-style"
     },
@@ -34,10 +38,6 @@
     {
       "source": "/archive/((?!.*\\.).*)",
       "destination": "/archive/index.html"
-    },
-    {
-      "source": "/user/:path((?!assets|images).*)",
-      "destination": "/user.html"
     }
   ]
 }
