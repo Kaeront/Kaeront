@@ -175,14 +175,15 @@ const globalStyles = `
         color: var(--accent);
     }
     .nav-user-head {
-        width: 20px;
-        height: 20px;
-        border-radius: 3px;
+        width: 16px;
+        height: 16px;
+        border-radius: 2px;
         image-rendering: pixelated;
+        image-rendering: crisp-edges;
         border: 1px solid #333;
         transition: 0.3s;
         display: inline-block;
-        vertical-align: middle;
+        vertical-align: -3px;
     }
     .nav-user-head:hover {
         border-color: var(--accent);
