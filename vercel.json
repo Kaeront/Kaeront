@@ -24,7 +24,11 @@
   ],
   "rewrites": [
     {
-      "source": "/user/:path*",
+      "source": "/user/((?!.*\\.).*)",
+      "destination": "/user/index.html"
+    },
+    {
+      "source": "/user",
       "destination": "/user/index.html"
     },
     {
