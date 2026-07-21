@@ -162,17 +162,9 @@ const globalStyles = `
 
     /* Стили для кнопки профиля в шапке */
     .nav-auth-icon {
-        color: var(--text-dim);
-        font-size: 1rem;
-        text-decoration: none;
-        transition: 0.3s;
-        line-height: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .nav-auth-icon:hover {
-        color: var(--accent);
+        font-size: 24px !important;
+        font-family: 'Uniform Upper' !important;
+        font-weight: 400 !important;
     }
     .nav-user-head {
         width: 24px;
@@ -195,7 +187,7 @@ const injectHTML = {
     `,
 
     nav: (() => {
-        let authElement = `<a href="/login" class="nav-auth-icon" title="Войти">👤</a>`;
+        let authElement = `<a href="/login" class="nav-auth-icon" title="Войти">👤︎</a>`;
         const token = localStorage.getItem('kaeront_access_token');
         if (token) {
             try {
