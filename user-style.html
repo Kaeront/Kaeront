@@ -61,12 +61,50 @@
             font-family: monospace;
             font-size: 0.85rem;
             color: var(--text-dim);
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             user-select: all;
             background: #050505;
             padding: 4px 10px;
             border-radius: 4px;
             border: 1px solid #111;
+        }
+
+        /* Стили для двойного статуса онлайна */
+        .status-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+        }
+
+        .status-dot.online {
+            background: #55ff55;
+            box-shadow: 0 0 8px rgba(85, 255, 85, 0.5);
+        }
+
+        .status-dot.offline {
+            background: #ff5555;
         }
 
         .namemc-btn {
@@ -119,7 +157,6 @@
         async function loadUserProfile() {
             const card = document.getElementById('user-card');
             
-            // Вытаскиваем параметр из URL (например, /user/kam1r -> kam1r)
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             const queryTarget = pathParts[pathParts.length - 1];
 
@@ -129,16 +166,22 @@
             }
 
             try {
-                // Запрос к публичному Mojang API (через ashcon)
-                const mojangRes = await fetch(`https://api.ashcon.app/mojang/v2/user/${encodeURIComponent(queryTarget)}`);
-                if (!mojangRes.ok) {
-                    throw new Error("Игрок с таким лицензионным аккаунтом не найден.");
+                // Запрос к PlayerDB API
+                const playerRes = await fetch(`https://playerdb.co/api/player/minecraft/${encodeURIComponent(queryTarget)}`);
+                if (!playerRes.ok) {
+                    throw new Error("Игрок не найден в базе.");
                 }
-                const mojangData = await mojangRes.json();
+                const playerData = await playerRes.json();
 
-                const username = mojangData.username;
-                const uuid = mojangData.uuid;
-                const avatarUrl = `https://mc-heads.net/avatar/${uuid}/128`;
+                if (!playerData.success || !playerData.data || !playerData.data.player) {
+                    throw new Error("Игрок с таким ником или UUID не найден.");
+                }
+
+                const player = playerData.data.player;
+                const username = player.username;
+                const uuid = player.id;
+                const rawId = player.raw_id;
+                const avatarUrl = `https://crafthead.net/avatar/${rawId}/128`;
                 const nameMcUrl = `https://namemc.com/profile/${uuid}`;
 
                 let registeredText = '';
@@ -159,7 +202,23 @@
                         }
                     }
                 } catch (e) {
-                    // Игрок не найден в локальной базе Kaeront — бейдж не выводится
+                    // Локальная база недоступна или игрок не найден
+                }
+
+                // Имитация/проверка статусов (сайт и сервер)
+                // Здесь можно заменить на реальные эндпоинты, если они появятся в API бэкенда
+                let siteOnline = true; 
+                let serverOnline = false;
+
+                try {
+                    const statusRes = await fetch(`/api/users/${uuid}/status`);
+                    if (statusRes.ok) {
+                        const statusData = await statusRes.json();
+                        siteOnline = statusData.site_online ?? true;
+                        serverOnline = statusData.server_online ?? false;
+                    }
+                } catch (e) {
+                    // Fallback при отсутствии эндпоинта статусов
                 }
 
                 card.innerHTML = `
@@ -169,6 +228,16 @@
                     </div>
                     <h1 class="user-name">${username}</h1>
                     <div class="user-uuid">${uuid}</div>
+                    <div class="status-container">
+                        <div class="status-badge">
+                            <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
+                            На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                        </div>
+                        <div class="status-badge">
+                            <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
+                            На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                        </div>
+                    </div>
                     <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="namemc-btn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                         Посмотреть на NameMC
