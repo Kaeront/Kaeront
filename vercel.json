@@ -24,7 +24,7 @@
   ],
   "rewrites": [
     {
-      "source": "/user/:path((?!.*\\.).*)",
+      "source": "/user/:match*",
       "destination": "/user.html"
     },
     {
