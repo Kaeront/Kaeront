@@ -63,6 +63,13 @@
             padding: 20px;
             border-radius: 8px;
         }
+        .banned-box {
+            background: rgba(235, 47, 6, 0.15);
+            border: 1px solid #eb2f06;
+            color: #ff5252;
+            padding: 20px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +116,7 @@
     body { overflow: hidden !important; }
 </style>
 </noscript>
-    
+
 <div id="dev-inject"></div>
 <div id="nav-inject"></div>
 
@@ -142,7 +149,16 @@
     <div id="step-success" style="display: none;">
         <div class="success-box">
             <h3 style="margin: 0 0 10px 0;">Успешный вход!</h3>
-            <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">игрок</b>!<br>Вы можете покинуть эту страницу и пользоваться нашими сервисами на сайте!</p>
+            <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">игрок</b>!<br>Перенаправление в личный кабинет...</p>
+        </div>
+    </div>
+
+    <!-- Состояние 5: Бан на сайте (Новый UX-блок) -->
+    <div id="step-banned" style="display: none;">
+        <div class="banned-box">
+            <h3 style="margin: 0 0 10px 0; font-family: 'Minecraft', sans-serif; color: #ff5252;">Доступ ограничен</h3>
+            <p id="ban-reason-text" style="color: #fff; margin: 0 0 15px 0; font-size: 14px;">Ваш аккаунт заблокирован на веб-ресурсе проекта.</p>
+            <button class="btn-auth" onclick="clearAuthStorage(); location.reload();">Понятно</button>
         </div>
     </div>
 </div>
@@ -192,8 +208,17 @@ async function checkActiveSession() {
                     window.location.href = `/user/${userData.uuid}`;
                     return;
                 } else {
-                    // Токен просрочен, отозван или аккаунт забанен на сайте
-                    clearAuthStorage();
+                    // Тонкая UX-диагностика ошибки от бэкенда
+                    const errData = await verifyRes.json().catch(() => ({}));
+                    const errorDetail = errData.detail;
+
+                    if (verifyRes.status === 403 && typeof errorDetail === 'object' && errorDetail.error === 'ACCOUNT_BANNED') {
+                        showBannedState(errorDetail.message);
+                        return;
+                    } else {
+                        // Для истекших токенов, аннулированных сессий (выход с других устройств)
+                        clearAuthStorage();
+                    }
                 }
             } else {
                 clearAuthStorage();
@@ -313,6 +338,21 @@ function showSuccessState(username) {
     document.getElementById('step-code').style.display = 'none';
     document.getElementById('step-success').style.display = 'block';
     document.getElementById('user-display').innerText = username;
+}
+
+function showBannedState(message) {
+    document.getElementById('step-start').style.display = 'none';
+    document.getElementById('step-code').style.display = 'none';
+    document.getElementById('step-expired').style.display = 'none';
+    document.getElementById('step-success').style.display = 'none';
+    
+    const bannedBox = document.getElementById('step-banned');
+    if (bannedBox) {
+        bannedBox.style.display = 'block';
+        if (message) {
+            document.getElementById('ban-reason-text').innerText = message;
+        }
+    }
 }
 </script>
 </body>
