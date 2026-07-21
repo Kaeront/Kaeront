@@ -125,7 +125,7 @@
     <p style="color: #aaa; font-size: 14px;">Войдите в аккаунт через игровой сервер Minecraft.<br><br><b style="color: #f55">Уважаемые стримеры и видеомейкеры! Пожалуйста, перед тем как приступить, отключите запись экрана (если она у вас идёт). На сервере мы дадим отмашку, как только её можно будет включить!</b><br><br>Регистрируясь или выполняя вход на игровой сервер, вы автоматически принимаете условия <a href="/terms" target="_blank">Пользовательского соглашения</a> и <a href="/privacy" target="_blank">Политики конфиденциальности и обработки персональных данных</a>.</p>
 
     <!-- Состояние 1: Кнопка генерации -->
-    <div id="step-start">
+    <div id="step-start" style="display: none;">
         <button class="btn-auth" onclick="startAuthProcess()">Приступить</button>
     </div>
 
@@ -174,6 +174,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function startAuthProcess() {
+    // ЗАЩИТА: Если токен уже лежит в хранилище, не даем генерировать код
+    if (localStorage.getItem('kaeront_access_token')) {
+        return;
+    }
+
     try {
         const response = await fetch('/api/generate', { method: 'POST' });
         const data = await response.json();
@@ -197,22 +202,16 @@ async function checkActiveSession() {
 
     if (token) {
         try {
-            // 1. Извлекаем UUID прямо из JWT (payload.sub)
             const payload = JSON.parse(atob(token.split('.')[1]));
             const userUuid = payload.sub;
 
-            // Проверяем срок годности самого токена
             if (payload.exp * 1000 > Date.now()) {
-                // 2. Стучимся в реальный существующий эндпоинт проверки профиля
                 const verifyRes = await fetch(`/api/users/${userUuid}`);
                 
                 if (verifyRes.ok) {
                     const userData = await verifyRes.json();
-                    
-                    // ХАРД-БЛОКИРОВКА СТРАНИЦЫ ЛОГИНА:
-                    // Показываем UI "Вы уже вошли", блокируя генерацию новых кодов
                     showAlreadyLoggedInState(userData);
-                    return;
+                    return; // Завершаем выполнение, НЕ показывая #step-start
                 } else if (verifyRes.status === 403) {
                     const errData = await verifyRes.json().catch(() => ({}));
                     if (errData.detail && errData.detail.error === 'ACCOUNT_BANNED') {
@@ -220,7 +219,6 @@ async function checkActiveSession() {
                         return;
                     }
                 } else if (verifyRes.status === 404) {
-                    // Если пользователя с таким UUID нет в базе — сбрасываем
                     clearAuthStorage();
                 }
             } else {
@@ -242,6 +240,10 @@ async function checkActiveSession() {
         } else {
             showCodeState(savedCode, parseInt(savedExpire));
         }
+    } else {
+        // ТОЛЬКО ТЕПЕРЬ безопасно показываем кнопку "Приступить" для гостей!
+        hideAllSteps();
+        document.getElementById('step-start').style.display = 'block';
     }
 }
 
