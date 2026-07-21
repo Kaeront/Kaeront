@@ -193,7 +193,7 @@ const injectHTML = {
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 if (payload.exp * 1000 > Date.now() && payload.sub) {
-                    authElement = `<a href="/user/${payload.sub}" title="Профиль"><img src="https://mc-heads.net/avatar/${payload.sub}/20" class="nav-user-head" alt="Профиль"></a>`;
+                    authElement = `<a href="/user/${payload.sub}" title="Профиль"><img src="https://crafthead.net/avatar/${payload.sub}/24" class="nav-user-head" alt="Профиль"></a>`;
                 } else {
                     localStorage.removeItem('kaeront_access_token');
                 }
