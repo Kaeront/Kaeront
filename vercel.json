@@ -28,8 +28,8 @@
       "destination": "/user.html"
     },
     {
-      "source": "/user/((?!.*\\.).*)*",
-      "destination": "/user.html"
+      "source": "/user/((?!.*\\.).*)",
+      "destination": "/user"
     },
     {
       "source": "/news/:id",
