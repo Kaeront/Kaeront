@@ -198,6 +198,7 @@ async function checkActiveSession() {
     if (token) {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
+            // Проверяем валидность токена
             if (payload.exp * 1000 > Date.now()) {
                 const verifyRes = await fetch('/api/v1/user/me', {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -205,10 +206,9 @@ async function checkActiveSession() {
                 
                 if (verifyRes.ok) {
                     const userData = await verifyRes.json();
-                    window.location.href = `/user/${userData.uuid}`;
+                    showAlreadyLoggedInState(userData);
                     return;
                 } else {
-                    // Тонкая UX-диагностика ошибки от бэкенда
                     const errData = await verifyRes.json().catch(() => ({}));
                     const errorDetail = errData.detail;
 
@@ -216,7 +216,7 @@ async function checkActiveSession() {
                         showBannedState(errorDetail.message);
                         return;
                     } else {
-                        // Для истекших токенов, аннулированных сессий (выход с других устройств)
+                        // Токен невалиден / версия сброшена — очищаем устаревший токен
                         clearAuthStorage();
                     }
                 }
@@ -228,6 +228,7 @@ async function checkActiveSession() {
         }
     }
 
+    // Если авторизации нет — проверяем незавершенную генерацию /link кода
     const savedCode = localStorage.getItem('kaeront_code');
     const savedExpire = localStorage.getItem('kaeront_expire');
 
@@ -242,8 +243,7 @@ async function checkActiveSession() {
 }
 
 function showCodeState(code, expireTimestamp) {
-    document.getElementById('step-start').style.display = 'none';
-    document.getElementById('step-expired').style.display = 'none';
+    hideAllSteps();
     document.getElementById('step-code').style.display = 'block';
     document.getElementById('command-display').innerText = `/link ${code}`;
 
@@ -300,7 +300,10 @@ function startPolling(code) {
 function handleSuccess(data) {
     clearInterval(pollInterval);
     clearInterval(timerInterval);
-    clearAuthStorage();
+    
+    // Очищаем только временный код генерации, НЕ трогая новый access_token
+    localStorage.removeItem('kaeront_code');
+    localStorage.removeItem('kaeront_expire');
 
     if (data.access_token) {
         localStorage.setItem('kaeront_access_token', data.access_token);
@@ -309,9 +312,14 @@ function handleSuccess(data) {
     const displayName = data.username || "Игрок";
     showSuccessState(displayName);
     
+    // ВМЕСТО location.reload() — перенаправляем прямо в профиль юзера!
     setTimeout(() => {
-        location.reload();
-    }, 1000);
+        if (data.uuid) {
+            window.location.href = `/user/${data.uuid}`;
+        } else {
+            window.location.href = '/user/me';
+        }
+    }, 1200);
 }
 
 function handleExpired() {
@@ -327,25 +335,27 @@ function clearAuthStorage() {
     localStorage.removeItem('kaeront_access_token');
 }
 
+function hideAllSteps() {
+    const steps = ['step-start', 'step-code', 'step-expired', 'step-success', 'step-banned', 'step-already-logged'];
+    steps.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+}
+
 function showExpiredState() {
-    document.getElementById('step-start').style.display = 'none';
-    document.getElementById('step-code').style.display = 'none';
+    hideAllSteps();
     document.getElementById('step-expired').style.display = 'block';
 }
 
 function showSuccessState(username) {
-    document.getElementById('step-start').style.display = 'none';
-    document.getElementById('step-code').style.display = 'none';
+    hideAllSteps();
     document.getElementById('step-success').style.display = 'block';
     document.getElementById('user-display').innerText = username;
 }
 
 function showBannedState(message) {
-    document.getElementById('step-start').style.display = 'none';
-    document.getElementById('step-code').style.display = 'none';
-    document.getElementById('step-expired').style.display = 'none';
-    document.getElementById('step-success').style.display = 'none';
-    
+    hideAllSteps();
     const bannedBox = document.getElementById('step-banned');
     if (bannedBox) {
         bannedBox.style.display = 'block';
@@ -353,6 +363,29 @@ function showBannedState(message) {
             document.getElementById('ban-reason-text').innerText = message;
         }
     }
+}
+
+// Новый UX-экран: "Вы уже авторизованы"
+function showAlreadyLoggedInState(userData) {
+    hideAllSteps();
+    let loggedBox = document.getElementById('step-already-logged');
+    if (!loggedBox) {
+        loggedBox = document.createElement('div');
+        loggedBox.id = 'step-already-logged';
+        loggedBox.className = 'success-box';
+        loggedBox.style.borderColor = '#fa0';
+        loggedBox.style.background = 'rgba(255, 170, 0, 0.1)';
+        loggedBox.innerHTML = `
+            <h3 style="margin: 0 0 10px 0; color: #fa0; font-family: 'Minecraft', sans-serif;">Вы уже вошли!</h3>
+            <p style="color: #fff; margin: 0 0 15px 0;">Вы авторизованы как <b style="color: #fa0;">${userData.username || 'Игрок'}</b>.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-auth" onclick="window.location.href='/user/${userData.uuid}'">В профиль</button>
+                <button class="btn-auth" style="background: #333; color: #fff;" onclick="clearAuthStorage(); location.reload();">Выйти</button>
+            </div>
+        `;
+        document.querySelector('.auth-container').appendChild(loggedBox);
+    }
+    loggedBox.style.display = 'block';
 }
 </script>
 </body>
