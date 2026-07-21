@@ -24,13 +24,13 @@
             border-radius: 8px;
             margin: 20px 0;
             font-size: 22px;
-            font-weight: bold;
-            color: #55ff55;
-            letter-spacing: 1px;
+            font-weight: 400;
+            color: #fa0;
+            font-family: 'Minecraft', sans-serif;
             user-select: all;
         }
         .btn-auth {
-            background: #5865f2;
+            background: #fa0;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -39,6 +39,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.2s;
+            font-family: 'Minecraft', sans-serif;
         }
         .btn-auth:hover { background: #4752c4; }
         .timer-text { color: #888899; font-size: 14px; }
@@ -59,10 +60,13 @@
     </style>
 </head>
 <body>
+    
+<div id="dev-inject"></div>
+<div id="nav-inject"></div>
 
 <div class="auth-container">
-    <h2>Авторизация Kaeront</h2>
-    <p style="color: #aaa; font-size: 14px;">Вход в аккаунт через игровой сервер Minecraft</p>
+    <h2 style="color: #fa0; font-family: 'Minecraft', sans-serif;">Авторизация Kaeront</h2>
+    <p style="color: #aaa; font-size: 14px;">Войдите в аккаунт через игровой сервер Minecraft.<br><b>Уважаемые стримеры и видеомейкеры! Пожалуйста, перед тем как приступить, отключите запись экрана (если она у вас идёт). На сервере мы дадим отмашку, как только её можно будет включить!</b></p>
 
     <!-- Состояние 1: Кнопка генерации -->
     <div id="step-start">
@@ -71,10 +75,10 @@
 
     <!-- Состояние 2: Отображение кода и таймер -->
     <div id="step-code" style="display: none;">
-        <p style="font-size: 14px; margin-bottom: 5px;">Зайдите на сервер и введите команду в чат:</p>
+        <p style="font-size: 14px; margin-bottom: 5px;">Зайдите на наш Minecraft-сервер (play.kaeront.ru) и введите команду в чат:</p>
         <div class="code-box" id="command-display">/link ...</div>
-        <p class="timer-text">Код действителен: <b id="timer-count">05:00</b></p>
-        <p style="font-size: 12px; color: #666;">Ожидание подтверждения с сервера...</p>
+        <p class="timer-text">Код действителен ещё <b id="timer-count">--:--</b>!</p>
+        <p style="font-size: 12px; color: #666;">Мы ожидаем подтверждения с сервера...</p>
     </div>
 
     <!-- Состояние 3: Код просрочен -->
@@ -93,6 +97,8 @@
         </div>
     </div>
 </div>
+
+<div id="footer-inject"></div>
 
 <script>
 let pollInterval = null;
