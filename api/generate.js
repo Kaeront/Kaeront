@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -23,7 +23,6 @@ export default async function handler(req, res) {
 
     const text = await response.text();
 
-    // Безопасно пытаемся распарсить как JSON, иначе отдаем как текст/объект
     let data;
     try {
       data = JSON.parse(text);
@@ -38,4 +37,4 @@ export default async function handler(req, res) {
       details: error.message 
     });
   }
-}
+};
