@@ -110,7 +110,7 @@ const globalStyles = `
         border-bottom: 1.5px solid #1a1a1a;
     }
     .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; font-weight: 700; }
-    .nav-links { display: flex; gap: 10px; }
+    .nav-links { display: flex; gap: 10px; align-items: center; }
     .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
     .nav-links a:hover { color: var(--accent); }
     .nav-links a span { display: inline-block; vertical-align: middle; line-height: 1; }
@@ -175,15 +175,10 @@ const globalStyles = `
         color: var(--accent);
     }
     .nav-user-head {
-        width: 16px;
-        height: 16px;
-        border-radius: 2px;
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
+        width: 24px;
+        height: 24px;
         border: 1px solid #333;
         transition: 0.3s;
-        display: inline-block;
-        vertical-align: -3px;
     }
     .nav-user-head:hover {
         border-color: var(--accent);
