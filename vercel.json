@@ -28,7 +28,7 @@
       "destination": "/user.html"
     },
     {
-      "source": "/user/:match*",
+      "source": "/user/((?!.*\\.).*)*",
       "destination": "/user.html"
     },
     {
