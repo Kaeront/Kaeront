@@ -1,25 +1,36 @@
-(function() {
-    async function pingSitePresence() {
+(function initOnlineStatus() {
+    async function sendStatusPing() {
+        const token = localStorage.getItem('kaeront_access_token');
+        if (!token) {
+            console.log('[Status Ping] Skipped: No access token in localStorage');
+            return;
+        }
+
         try {
-            const token = localStorage.getItem('kaeront_access_token');
-            if (!token) return;
-
+            // Расшифровываем UUID из JWT (payload)
             const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload.exp * 1000 < Date.now() || !payload.sub) return;
+            const uuid = payload.sub;
 
-            await fetch(`/api/v1/users/${payload.sub}/status`, {
+            if (!uuid) return;
+
+            const res = await fetch(`/api/v1/users/${uuid}/status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-Internal-Token': process.env.INTERNAL_API_KEY
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ server_online: false })
             });
-        } catch (e) {
-            // Игнорируем фоновые ошибки сети
+
+            console.log(`[Status Ping] Sent status ping for ${uuid}. Response:`, res.status);
+        } catch (err) {
+            console.error('[Status Ping] Failed to send status:', err);
         }
     }
 
-    pingSitePresence();
-    setInterval(pingSitePresence, 60000);
+    // Первый запуск сразу
+    sendStatusPing();
+
+    // Запуск каждые 60 секунд
+    setInterval(sendStatusPing, 60000);
 })();
