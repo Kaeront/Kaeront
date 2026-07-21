@@ -159,6 +159,34 @@ const globalStyles = `
     body:has(#speed-popup.active) nav {
         margin-top: 20px !important;
     }
+
+    /* Стили для кнопки профиля в шапке */
+    .nav-auth-icon {
+        color: var(--text-dim);
+        font-size: 1rem;
+        text-decoration: none;
+        transition: 0.3s;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .nav-auth-icon:hover {
+        color: var(--accent);
+    }
+    .nav-user-head {
+        width: 20px;
+        height: 20px;
+        border-radius: 3px;
+        image-rendering: pixelated;
+        border: 1px solid #333;
+        transition: 0.3s;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .nav-user-head:hover {
+        border-color: var(--accent);
+    }
 `;
 
 const injectHTML = {
@@ -170,16 +198,33 @@ const injectHTML = {
     </div>
     `,
 
-    nav: `    
-    <nav id="smart-nav">
-        <a href="/" class="nav-logo">Kaeront</a>
-        <div class="nav-links">
-            <a href="/servers">Сервера</a>
-            <a href="/news">Новости</a>
-            <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a>
-            <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
-        </div>
-    </nav>`,
+    nav: (() => {
+        let authElement = `<a href="/login" class="nav-auth-icon" title="Войти">👤</a>`;
+        const token = localStorage.getItem('kaeront_access_token');
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.exp * 1000 > Date.now() && payload.sub) {
+                    authElement = `<a href="/user/${payload.sub}" title="Профиль"><img src="https://mc-heads.net/avatar/${payload.sub}/20" class="nav-user-head" alt="Профиль"></a>`;
+                } else {
+                    localStorage.removeItem('kaeront_access_token');
+                }
+            } catch (e) {
+                localStorage.removeItem('kaeront_access_token');
+            }
+        }
+        return `  
+        <nav id="smart-nav">
+            <a href="/" class="nav-logo">Kaeront</a>
+            <div class="nav-links">
+                <a href="/servers">Сервера</a>
+                <a href="/news">Новости</a>
+                <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a>
+                <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
+                ${authElement}
+            </div>
+        </nav>`;
+    })(),
 
     footer: `
     <footer>
