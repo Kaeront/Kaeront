@@ -171,28 +171,33 @@ function startTimer(expireTimestamp) {
 function startPolling(code) {
     if (pollInterval) clearInterval(pollInterval);
 
-    // Первичный запрос и далее каждые 4 секунды
     const check = async () => {
         try {
             const res = await fetch(`/api/status?code=${code}`);
             const data = await res.json();
 
-            if (data.status === 'LINKED') {
-                // ПОБЕДА! Сервер привязал аккаунт
-                clearInterval(pollInterval);
-                clearInterval(timerInterval);
-                clearAuthStorage();
-                
-                // Показываем успех
-                showSuccessState(data.username);
-            } else if (data.status === 'EXPIRED') {
-                clearInterval(pollInterval);
-                clearInterval(timerInterval);
-                clearAuthStorage();
-                showExpiredState();
+            // Если бэкенд вернул статус LINKED
+            if (data.status === 'LINKED' || data.authenticated) {
+                const userUuid = data.uuid || data.user_id;
+                handleSuccess(userUuid);
+                return;
             }
+
+            // Если бэкенд удаляет запись после связывания и отдаёт 404
+            if (res.status === 404) {
+                // Если UUID передан в теле ответа 404 или сохранён в куки/сессии
+                const userUuid = data.uuid || data.user_id || "Зафиксирован";
+                handleSuccess(userUuid);
+                return;
+            }
+
+            if (data.status === 'EXPIRED') {
+                handleExpired();
+                return;
+            }
+
         } catch (e) {
-            console.error("Ошибка при проверке статуса кодов:", e);
+            console.error("Ошибка при проверке статуса кода:", e);
         }
     };
 
@@ -200,6 +205,24 @@ function startPolling(code) {
     pollInterval = setInterval(check, 4000);
 }
 
+function handleSuccess(uuid) {
+    clearInterval(pollInterval);
+    clearInterval(timerInterval);
+    clearAuthStorage();
+
+    // Сохраняем именно UUID игрока для сессии на сайте
+    if (uuid && uuid !== "Зафиксирован") {
+        localStorage.setItem('kaeront_user_uuid', uuid);
+    }
+
+    showSuccessState(uuid);
+}
+
+function showSuccessState(uuid) {
+    document.getElementById('step-code').style.display = 'none';
+    document.getElementById('step-success').style.display = 'block';
+    document.getElementById('user-display').innerText = uuid;
+}
 function clearAuthStorage() {
     localStorage.removeItem('kaeront_code');
     localStorage.removeItem('kaeront_expire');
