@@ -17,7 +17,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const targetUrl = `${apiUrl.replace(/\/$/, '')}/api/v1/auth/status?code=${encodeURIComponent(code)}`;
+    // Передаем код в ПУТИ (path parameter), как определено в FastAPI
+    const targetUrl = `${apiUrl.replace(/\/$/, '')}/api/v1/auth/status/${encodeURIComponent(code)}`;
 
     const response = await fetch(targetUrl, {
       method: 'GET',
@@ -35,7 +36,6 @@ module.exports = async (req, res) => {
       data = { raw: text };
     }
 
-    // Возвращаем РЕАЛЬНЫЙ статус и РЕАЛЬНЫЕ данные от FastAPI бэкенда!
     return res.status(response.status).json(data);
   } catch (err) {
     return res.status(500).json({ error: 'Proxy status error', message: err.message });
