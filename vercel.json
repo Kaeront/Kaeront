@@ -36,7 +36,7 @@
       "destination": "/archive/index.html"
     },
     {
-      "source": "/user/:path*",
+      "source": "/user/:match*",
       "destination": "/user/index.html"
     }
   ]
