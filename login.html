@@ -121,7 +121,28 @@ async function startAuthProcess() {
     }
 }
 
-function checkActiveSession() {
+async function checkActiveSession() {
+    const token = localStorage.getItem('kaeront_access_token');
+
+    // Если токен есть — проверяем его на бэкенде или валидируем exp
+    if (token) {
+        try {
+            // Парсим payload без библиотек, чтобы узнать expiry
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.exp * 1000 > Date.now()) {
+                // Игрок уже авторизован! Перенаправляем на его профиль
+                window.location.href = `/user/${payload.sub}`;
+                return;
+            } else {
+                // Токен истёк — чистим storage
+                localStorage.removeItem('kaeront_access_token');
+            }
+        } catch (e) {
+            localStorage.removeItem('kaeront_access_token');
+        }
+    }
+
+    // Если токена нет или он просрочен — стандартная логика временного кода /link
     const savedCode = localStorage.getItem('kaeront_code');
     const savedExpire = localStorage.getItem('kaeront_expire');
 
