@@ -44,6 +44,7 @@
             height: 128px;
             border-radius: 8px;
             image-rendering: pixelated;
+            image-rendering: crisp-edges;
             border: 2px solid #222;
             background: #000;
         }
@@ -118,7 +119,7 @@
         async function loadUserProfile() {
             const card = document.getElementById('user-card');
             
-            // Извлекаем никнейм или UUID из URL-пути (например, /user/KAmir)
+            // Вытаскиваем параметр из URL (например, /user/kam1r -> kam1r)
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             const queryTarget = pathParts[pathParts.length - 1];
 
@@ -128,7 +129,7 @@
             }
 
             try {
-                // 1. Запрос к публичному Mojang API
+                // Запрос к публичному Mojang API (через ashcon)
                 const mojangRes = await fetch(`https://api.ashcon.app/mojang/v2/user/${encodeURIComponent(queryTarget)}`);
                 if (!mojangRes.ok) {
                     throw new Error("Игрок с таким лицензионным аккаунтом не найден.");
@@ -140,14 +141,12 @@
                 const avatarUrl = `https://mc-heads.net/avatar/${uuid}/128`;
                 const nameMcUrl = `https://namemc.com/profile/${uuid}`;
 
-                // 2. Проверка регистрации на бэкенде Kaeront
                 let registeredText = '';
                 try {
                     const dbRes = await fetch(`/api/users/${uuid}`);
                     if (dbRes.ok) {
                         const dbData = await dbRes.json();
                         if (dbData && dbData.registered_at) {
-                            // Форматируем дату по местному часовому поясу браузера
                             const regDate = new Date(dbData.registered_at);
                             const formattedDate = regDate.toLocaleString(undefined, {
                                 year: 'numeric',
@@ -160,10 +159,9 @@
                         }
                     }
                 } catch (e) {
-                    // Если пользователь не найден в БД сервера — блок просто пропускается
+                    // Игрок не найден в локальной базе Kaeront — бейдж не выводится
                 }
 
-                // 3. Рендеринг карточки
                 card.innerHTML = `
                     ${registeredText}
                     <div class="user-avatar-wrapper">
