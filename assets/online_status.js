@@ -11,7 +11,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'X-Internal-Token': process.env.INTERNAL_API_KEY
                 },
                 body: JSON.stringify({ server_online: false })
             });
