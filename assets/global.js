@@ -479,4 +479,4 @@ function handleSessionInvalidation() {
     } else {
         window.location.reload(); // Перезагружаем страницу, чтобы обновить шапку
     }
-});
+};
