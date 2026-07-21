@@ -247,7 +247,7 @@
         .why-card { 
             background: rgb(20, 20, 20); 
             border-left: 3px solid var(--accent); 
-            padding: 10px 15px;
+            padding: 15px;
             width: 260px; 
             flex-shrink: 0; 
             box-sizing: border-box;
@@ -259,7 +259,7 @@
             font-family: 'Minecraft', sans-serif;
             font-size: 0.9rem;
             color: var(--accent);
-            margin: 0 0 5px;
+            margin: 0;
             font-weight: 400;
         }
         
@@ -272,7 +272,9 @@
 
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0px 20px; width: 100%; box-sizing: border-box; }
-   
+
+
+        .server-cards-container { height: 300px; overflow-y: auto; mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important;}
         .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; text-transform: uppercase; text-align: center; margin: 50px 0px 20px; }
         .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: url('/assets/pointer.png'), pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
@@ -379,10 +381,6 @@
         .btn-apply:hover { background: #fff; color: var(--accent); box-shadow: 0 0 20px var(--accent); }
         .tech-box { background: #050505; padding: 15px; border: 1px solid #222; font-size: 0.85rem; line-height: 1.8; }
         .tech-box span { color: var(--accent); }
-
-        /* --- MORE SERVERS BUTTON --- */
-        .servers-btn { background: #1e1e1e; color: var(--text-main); padding: 15px; text-decoration: none; font-family: 'Minecraft'; font-size: 0.8rem; display: block; text-align: center; width: 300px; margin: 0px auto 40px; transition: 0.3s; border: 3px solid rgba(255, 255, 255, 0.1); }
-        .servers-btn:hover { background: var(--accent); color: #000; }
 
         /* --- NEWS SECTION --- */
         .news-container {
@@ -676,7 +674,7 @@
             </div>
 
         </div>
-        <div>
+        <div class="server-cards-container">
             <div class="section-header">Игры</div>
             <div class="server-card" onclick="openModal('modal-l')" style="border-left: 4px solid; border-image: linear-gradient(to bottom, #AA00AA, #FF55FF) 1; background-image: linear-gradient(to bottom, rgba(170,0,170,0.05), rgba(255,85,255,0.05));">
                 <div style="font-family: 'Minecraft', sans-serif;color: #FF55FF;margin-bottom: 10px;font-size: 8px">—НОВОЕ—</div>
