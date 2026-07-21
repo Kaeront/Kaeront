@@ -1,36 +1,56 @@
-(function initOnlineStatus() {
+(function initSmartOnlineStatus() {
+    let lastActivityTime = Date.now();
+    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 минуты бездействия = AFK
+
+    // Фиксируем любую активность пользователя
+    function resetActivity() {
+        lastActivityTime = Date.now();
+    }
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+        window.addEventListener(event, resetActivity, { passive: true });
+    });
+
     async function sendStatusPing() {
         const token = localStorage.getItem('kaeront_access_token');
-        if (!token) {
-            console.log('[Status Ping] Skipped: No access token in localStorage');
+        if (!token) return;
+
+        // Если вкладка свернута/скрыта — не пингуем
+        if (document.hidden) {
+            console.log('[Status Ping] Skipped: Tab is hidden');
+            return;
+        }
+
+        // Если пользователь не двигал мышью/клавиатурой больше 2 минут — не пингуем (AFK)
+        const isIdle = (Date.now() - lastActivityTime) > IDLE_TIMEOUT_MS;
+        if (isIdle) {
+            console.log('[Status Ping] Skipped: User is idle/AFK');
             return;
         }
 
         try {
-            // Расшифровываем UUID из JWT (payload)
             const payload = JSON.parse(atob(token.split('.')[1]));
             const uuid = payload.sub;
-
             if (!uuid) return;
 
-            const res = await fetch(`/api/v1/users/${uuid}/status`, {
+            await fetch(`/api/v1/users/${uuid}/status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ server_online: false })
+                body: JSON.stringify({ site_online: true })
             });
 
-            console.log(`[Status Ping] Sent status ping for ${uuid}. Response:`, res.status);
+            console.log(`[Status Ping] Active ping sent for ${uuid}`);
         } catch (err) {
-            console.error('[Status Ping] Failed to send status:', err);
+            console.error('[Status Ping] Error:', err);
         }
     }
 
     // Первый запуск сразу
     sendStatusPing();
 
-    // Запуск каждые 60 секунд
-    setInterval(sendStatusPing, 60000);
+    // Пингуем каждые 30 секунд
+    setInterval(sendStatusPing, 30000);
 })();
