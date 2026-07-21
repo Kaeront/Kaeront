@@ -316,10 +316,10 @@ function handleSuccess(data) {
     const displayName = data.username || "Игрок";
     showSuccessState(displayName);
     
-    // ПРЯМОЙ РЕДИРЕКТ НА HTML-СТРАНИЦУ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ!
+    // ПРЯМОЙ РЕДИРЕКТ НА HTML-СТРАНИЦУ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ
     setTimeout(() => {
         if (data.uuid) {
-            window.location.href = `/users/${data.uuid}`;
+            window.location.href = `/user/${data.username}`;
         } else {
             window.location.href = '/';
         }
@@ -383,7 +383,7 @@ function showAlreadyLoggedInState(userData) {
             <h3 style="margin: 0 0 10px 0; color: #fa0; font-family: 'Minecraft', sans-serif;">Вы уже авторизованы</h3>
             <p style="color: #fff; margin: 0 0 15px 0;">Вы вошли как <b style="color: #fa0;">${userData.username || 'Игрок'}</b>.</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="btn-auth" onclick="window.location.href='/users/${userData.uuid}'">Мой профиль</button>
+                <button class="btn-auth" onclick="window.location.href='/user/${userData.username}'">Мой профиль</button>
                 <button class="btn-auth" style="background: #333; color: #fff;" onclick="clearAuthStorage(); location.reload();">Выйти</button>
             </div>
         `;
