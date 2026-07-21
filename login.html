@@ -10,8 +10,10 @@
             --nav-hide: 38px;
         }
 
+        a { color: #fa0 }
+
         .auth-container {
-            max-width: 420px;
+            max-width: 600px;
             margin: 80px auto;
             padding: 25px;
             background: #111;
@@ -29,6 +31,7 @@
             font-size: 22px;
             font-weight: 400;
             color: #fa0;
+            text-shadow: 0.125em 0.125em #3E2A00;
             font-family: 'Minecraft', sans-serif;
             user-select: all;
         }
@@ -47,16 +50,16 @@
         .btn-auth:hover { background: #fff; color: #fa0; box-shadow: 0 0 15px #fa0; }
         .timer-text { color: #888; font-size: 14px; }
         .expired-box {
-            background: rgba(255, 71, 87, 0.1);
+            background: rgba(255, 85, 85, 0.1);
             border: 1px solid #f55;
             color: #f55;
             padding: 15px;
             border-radius: 8px;
         }
         .success-box {
-            background: rgba(46, 213, 115, 0.1);
-            border: 1px solid #2ed573;
-            color: #2ed573;
+            background: rgba(85, 255, 85, 0.1);
+            border: 1px solid #5f5;
+            color: #5f5;
             padding: 20px;
             border-radius: 8px;
         }
@@ -111,7 +114,7 @@
 <div id="nav-inject"></div>
 
 <div class="auth-container">
-    <h2 style="color: #fa0; font-family: 'Minecraft', sans-serif;">Авторизация Kaeront</h2>
+    <h2 style="color: #fa0; font-family: 'Minecraft', sans-serif;">Авторизация Kaeront 🆕</h2>
     <p style="color: #aaa; font-size: 14px;">Войдите в аккаунт через игровой сервер Minecraft.<br><br><b style="color: #f55">Уважаемые стримеры и видеомейкеры! Пожалуйста, перед тем как приступить, отключите запись экрана (если она у вас идёт). На сервере мы дадим отмашку, как только её можно будет включить!</b><br><br>Регистрируясь или выполняя вход на игровой сервер, вы автоматически принимаете условия <a href="/terms" target="_blank">Пользовательского соглашения</a> и <a href="/privacy" target="_blank">Политики конфиденциальности и обработки персональных данных</a>.</p>
 
     <!-- Состояние 1: Кнопка генерации -->
@@ -176,25 +179,30 @@ async function startAuthProcess() {
 async function checkActiveSession() {
     const token = localStorage.getItem('kaeront_access_token');
 
-    // Если токен есть — проверяем его на бэкенде или валидируем exp
     if (token) {
         try {
-            // Парсим payload без библиотек, чтобы узнать expiry
             const payload = JSON.parse(atob(token.split('.')[1]));
             if (payload.exp * 1000 > Date.now()) {
-                // Игрок уже авторизован! Перенаправляем на его профиль
-                window.location.href = `/user/${payload.sub}`;
-                return;
+                const verifyRes = await fetch('/api/v1/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (verifyRes.ok) {
+                    const userData = await verifyRes.json();
+                    window.location.href = `/user/${userData.uuid}`;
+                    return;
+                } else {
+                    // Токен просрочен, отозван или аккаунт забанен на сайте
+                    clearAuthStorage();
+                }
             } else {
-                // Токен истёк — чистим storage
-                localStorage.removeItem('kaeront_access_token');
+                clearAuthStorage();
             }
         } catch (e) {
-            localStorage.removeItem('kaeront_access_token');
+            clearAuthStorage();
         }
     }
 
-    // Если токена нет или он просрочен — стандартная логика временного кода /link
     const savedCode = localStorage.getItem('kaeront_code');
     const savedExpire = localStorage.getItem('kaeront_expire');
 
@@ -223,16 +231,17 @@ function startTimer(expireTimestamp) {
 
     timerInterval = setInterval(() => {
         const remaining = expireTimestamp - Date.now();
+        const timerCount = document.getElementById('timer-count');
+        
         if (remaining <= 0) {
             clearInterval(timerInterval);
             clearInterval(pollInterval);
             clearAuthStorage();
             showExpiredState();
-        } else {
+        } else if (timerCount) {
             const m = Math.floor(remaining / 60000);
             const s = Math.floor((remaining % 60000) / 1000);
-            document.getElementById('timer-count').innerText = 
-                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            timerCount.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
     }, 1000);
 }
@@ -268,13 +277,16 @@ function handleSuccess(data) {
     clearInterval(timerInterval);
     clearAuthStorage();
 
-    // СОХРАНЯЕМ БЕЗОПАСНЫЙ JWT ТОКЕН
     if (data.access_token) {
         localStorage.setItem('kaeront_access_token', data.access_token);
     }
 
     const displayName = data.username || "Игрок";
     showSuccessState(displayName);
+    
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
 }
 
 function handleExpired() {
@@ -287,6 +299,7 @@ function handleExpired() {
 function clearAuthStorage() {
     localStorage.removeItem('kaeront_code');
     localStorage.removeItem('kaeront_expire');
+    localStorage.removeItem('kaeront_access_token');
 }
 
 function showExpiredState() {
@@ -302,6 +315,5 @@ function showSuccessState(username) {
     document.getElementById('user-display').innerText = username;
 }
 </script>
-
 </body>
 </html>
