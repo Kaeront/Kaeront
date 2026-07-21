@@ -24,8 +24,8 @@
   ],
   "rewrites": [
     {
-      "source": "/user/:match*",
-      "destination": "/user.html"
+      "source": "/user/:path*",
+      "destination": "/user/index.html"
     },
     {
       "source": "/news/:id",
