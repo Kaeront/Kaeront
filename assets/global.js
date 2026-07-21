@@ -423,7 +423,7 @@ window.addEventListener('load', () => {
             loader.remove();
         }, 500);
     }
-}
+})
 
 // Автоматическая проверка состояния аккаунта (бан / invalid session)
 async function verifySessionStatus() {
