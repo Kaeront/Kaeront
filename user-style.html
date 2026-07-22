@@ -104,24 +104,31 @@
             background: #ff5555;
         }
 
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .link-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             background: #121212;
             border: 1px solid #282828;
-            color: var(--text-main);
+            color: var(--text-main, #ececec);
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 6px;
             font-size: 0.8rem;
             font-weight: 600;
-            transition: var(--transition);
+            transition: var(--transition, all 0.2s ease);
         }
 
         .link-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            border-color: var(--accent, #ffaa00);
+            color: var(--accent, #ffaa00);
             transform: translateY(-2px);
         }
 
@@ -133,49 +140,49 @@
     </style>
 </head>
 <body>
-<!-- Loading Screen -->
-<div id="loader-wrapper" style="position: fixed; user-select: none; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s; animation: hideLoaderNoJS 0.5s forwards;">
-    <div style="position: relative; text-align: center; width: 100%;">
-        <!-- Основной текст (исчезает через 5 секунд) -->
-        <div style="font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
-            <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
-        </div>
-        <!-- Текст ошибки -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); opacity: 0; animation: fadeInText 0.3s forwards; animation-delay: 5s; line-height: 0.3;">
-            «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> всё ещё идёт.</span>
+    <!-- Loading Screen -->
+    <div id="loader-wrapper" style="position: fixed; user-select: none; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s; animation: hideLoaderNoJS 0.5s forwards;">
+        <div style="position: relative; text-align: center; width: 100%;">
+            <!-- Основной текст (исчезает через 5 секунд) -->
+            <div style="font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
+                <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
+            </div>
+            <!-- Текст ошибки -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); opacity: 0; animation: fadeInText 0.3s forwards; animation-delay: 5s; line-height: 0.3;">
+                «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> всё ещё идёт.</span>
+            </div>
         </div>
     </div>
-</div>
-
-<script>
-    // Мгновенная блокировка авто-скрытия, если JS разрешен
-    (function() {
-        const loader = document.getElementById('loader-wrapper');
-        if (loader) {
-            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
-            loader.style.animation = 'none';
-        }
-    })();
-</script>
-
-<style>
-    /* Блокировка скролла по умолчанию */
-    body { overflow: hidden; }
-    /* Анимация для случая, когда JavaScript отключен */
-    @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
-    @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
-    @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
-</style>
-<noscript>
-<div style=" position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; color: white; user-select: none; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif; box-sizing: border-box; overflow: hidden;">
-    <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
-    <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯</p>
-</div>
-
-<style>
-    body { overflow: hidden !important; }
-</style>
-</noscript>
+    
+    <script>
+        // Мгновенная блокировка авто-скрытия, если JS разрешен
+        (function() {
+            const loader = document.getElementById('loader-wrapper');
+            if (loader) {
+                // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+                loader.style.animation = 'none';
+            }
+        })();
+    </script>
+    
+    <style>
+        /* Блокировка скролла по умолчанию */
+        body { overflow: hidden; }
+        /* Анимация для случая, когда JavaScript отключен */
+        @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+    <noscript>
+    <div style=" position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; color: white; user-select: none; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif; box-sizing: border-box; overflow: hidden;">
+        <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
+        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯</p>
+    </div>
+    
+    <style>
+        body { overflow: hidden !important; }
+    </style>
+    </noscript>
 
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
@@ -196,7 +203,6 @@
 
         async function loadUserProfile() {
             const card = document.getElementById('user-card');
-            
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             const queryTarget = pathParts[pathParts.length - 1];
 
@@ -206,13 +212,10 @@
             }
 
             try {
-                // 1. Запрос к PlayerDB
                 const playerRes = await fetch(`https://playerdb.co/api/player/minecraft/${encodeURIComponent(queryTarget)}`);
-                if (!playerRes.ok) {
-                    throw new Error("Игрок не найден в базе.");
-                }
+                if (!playerRes.ok) throw new Error("Игрок не найден в базе.");
+                
                 const playerData = await playerRes.json();
-
                 if (!playerData.success || !playerData.data || !playerData.data.player) {
                     throw new Error("Игрок с таким ником или UUID не найден.");
                 }
@@ -228,21 +231,15 @@
                 let siteOnline = false;
                 let serverOnline = false;
 
-                // 2. Данные из базы Kaeront (через наш Vercel Proxy / VDS)
                 try {
                     const dbRes = await fetch(`/api/users/${uuid}`);
                     if (dbRes.ok) {
                         const dbData = await dbRes.json();
                         if (dbData) {
                             if (dbData.registered_at) {
-                                // Парсим UTC дату и форматируем в локальный часовой пояс клиента
                                 const regDate = new Date(dbData.registered_at.includes('Z') ? dbData.registered_at : dbData.registered_at + 'Z'); 
                                 const formattedDate = regDate.toLocaleString(undefined, {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
+                                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                                 });
                                 registeredText = `<div class="registered-badge">На kaeront.ru с ${formattedDate}</div>`;
                             }
@@ -271,49 +268,47 @@
                             На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
                         </div>
                     </div>
-                    <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                        Посмотреть на NameMC
-                    </a>
+                    <div class="profile-actions" id="profile-actions">
+                        <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Посмотреть на NameMC
+                        </a>
+                    </div>
                 `;
+
+                renderSettingsButton(uuid);
 
             } catch (err) {
                 card.innerHTML = `<div class="error-card">${err.message}</div>`;
             }
-            // Кнопка настроек
-            function renderSettingsButton(profileUuid) {
-                const token = localStorage.getItem('kaeront_access_token');
-                if (!token) return;
-            
-                try {
-                    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-                    
-                    // Сравниваем UUID из токена с UUID текущего профиля
-                    if (payload.sub && payload.sub.toLowerCase() === profileUuid.toLowerCase()) {
-                        // Находим контейнер с кнопкой NameMC
-                        const namemcBtn = document.querySelector('a[href*="namemc.com"]');
-                        const parentContainer = namemcBtn ? namemcBtn.parentElement : document.querySelector('.status-container');
-            
-                        if (parentContainer && !document.getElementById('btn-to-settings')) {
-                            const settingsBtn = document.createElement('a');
-                            settingsBtn.id = 'btn-to-settings';
-                            settingsBtn.href = '/settings';
-                            settingsBtn.className = 'link-btn';
-                            settingsBtn.style.marginTop = '10px';
-                            settingsBtn.style.display = 'inline-flex';
-                            settingsBtn.style.alignItems = 'center';
-                            settingsBtn.style.justifyContent = 'center';
-                            settingsBtn.style.gap = '8px';
-                            settingsBtn.innerHTML = `
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                                Настройки
-                            `;
-                            parentContainer.appendChild(settingsBtn);
-                        }
+        }
+
+        function renderSettingsButton(profileUuid) {
+            const token = localStorage.getItem('kaeront_access_token');
+            if (!token) return;
+
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+
+                if (payload.sub && payload.sub.toLowerCase() === profileUuid.toLowerCase()) {
+                    const actionsContainer = document.getElementById('profile-actions');
+
+                    if (actionsContainer && !document.getElementById('btn-to-settings')) {
+                        const settingsBtn = document.createElement('a');
+                        settingsBtn.id = 'btn-to-settings';
+                        settingsBtn.href = '/settings';
+                        settingsBtn.className = 'link-btn';
+                        settingsBtn.innerHTML = `
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            Настройки
+                        `;
+                        actionsContainer.appendChild(settingsBtn);
                     }
-                } catch (e) {
-                    console.error("Ошибка проверки владельца профиля:", e);
                 }
+            } catch (e) {
+                console.error("Ошибка проверки владельца профиля:", e);
             }
         }
     </script>
