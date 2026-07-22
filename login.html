@@ -198,41 +198,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function startAuthProcess() {
-    // ЗАЩИТА: Если токен уже лежит в хранилище, не даем генерировать код
     if (localStorage.getItem('kaeront_access_token')) {
         return;
     }
 
     try {
-        const response = await fetch('/api/generate', { method: 'POST' });
+        // Передаем User-Agent браузера пользователя при генерации кода
+        const response = await fetch('/api/generate', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_agent: navigator.userAgent
+            })
+        });
 
-        // 1. Проверяем, что бэкенд вернул HTTP 200 OK
         if (!response.ok) {
-            if (response.status === 502 || response.status === 504) {
-                alert('Сервер авторизации временно недоступен (502 Bad Gateway). Попробуйте через пару секунд.');
-            } else {
-                alert(`Ошибка сервера (${response.status}).`);
-            }
-            return;
-        }
-
-        // 2. Проверяем, что ответ — действительно JSON, а не HTML Cloudflare
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            alert('Сервер вернул некорректный ответ. Попробуйте обновить страницу.');
+            alert(`Ошибка сервера (${response.status}).`);
             return;
         }
 
         const data = await response.json();
-
         if (data && data.code) {
             const expireTimestamp = Date.now() + (data.expires_in_seconds * 1000);
             localStorage.setItem('kaeront_code', data.code);
             localStorage.setItem('kaeront_expire', expireTimestamp);
 
             showCodeState(data.code, expireTimestamp);
-        } else {
-            alert('Ошибка: Не удалось получить код авторизации.');
         }
     } catch (e) {
         console.error("Auth process error:", e);
