@@ -13,9 +13,13 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Получаем реальный IP и User-Agent пользователя с сайта
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
-    const userAgent = req.headers['user-agent'] || 'Браузер';
+    
+    // БЕРЕМ user_agent ИЗ ТЕЛА ЗАПРОСА С ФРОНТЕНДА (navigator.userAgent)
+    // Если его нет в body, пробуем заголовок браузера
+    const userAgent = (req.body && req.body.user_agent) 
+      || req.headers['user-agent'] 
+      || 'Неизвестный браузер';
 
     const response = await fetch(`${apiUrl}/api/v1/auth/generate`, {
       method: 'POST',
