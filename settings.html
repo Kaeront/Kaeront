@@ -16,7 +16,7 @@
         }
 
         .page-container {
-            max-width: 1100px;
+            max-width: 1050px;
             margin: 120px auto 60px;
             padding: 0 20px;
             box-sizing: border-box;
@@ -67,7 +67,7 @@
             border: none;
             text-align: left;
             box-sizing: border-box;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
         }
 
         .ks-nav-item:hover {
@@ -89,13 +89,23 @@
             border-radius: 12px;
             padding: 32px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            min-height: 420px;
+            box-sizing: border-box;
+            position: relative;
         }
 
+        /* Плавное переключение вкладок */
         .ks-tab-panel {
             display: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
+
         .ks-tab-panel.active {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .ks-header {
@@ -180,10 +190,6 @@
             color: #ccc;
         }
 
-        .ks-table tr:last-child td {
-            border-bottom: none;
-        }
-
         .ks-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -227,6 +233,62 @@
             color: #fff;
         }
 
+        /* Модальное окно подтверждения */
+        .ks-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .ks-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ks-modal {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+
+        .ks-modal-overlay.active .ks-modal {
+            transform: scale(1);
+        }
+
+        .ks-modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 10px 0;
+        }
+
+        .ks-modal-desc {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 0 0 20px 0;
+            line-height: 1.4;
+        }
+
+        .ks-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
         @media (max-width: 768px) {
             .settings-grid {
                 grid-template-columns: 1fr;
@@ -248,13 +310,9 @@
             try {
                 const base64Url = token.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join('')));
-
+                const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
                 const uuid = payload.sub;
 
-                // Проверка сессии
                 const res = await fetch(`/api/v1/users/${uuid}/status`, {
                     method: 'POST',
                     headers: {
@@ -287,7 +345,6 @@
     <div class="page-container">
         <div class="settings-grid">
             
-            <!-- Левое меню -->
             <aside class="ks-sidebar">
                 <div class="ks-sidebar-title">Настройки</div>
                 <div class="ks-nav-list">
@@ -296,7 +353,6 @@
                 </div>
             </aside>
 
-            <!-- Основной контент -->
             <main class="ks-content">
                 
                 <!-- Вкладка 1: Основное -->
@@ -314,7 +370,7 @@
                         <a id="profile-link" href="#" class="ks-btn ks-btn-sec">Профиль</a>
                     </div>
 
-                    <button class="ks-btn ks-btn-sec" onclick="logoutSingle()">Выйти с этого устройства</button>
+                    <button class="ks-btn ks-btn-sec" onclick="promptLogout('single')">Выйти с этого устройства</button>
                 </div>
 
                 <!-- Вкладка 2: Безопасность -->
@@ -329,7 +385,7 @@
                         <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: #777;">
                             Завершить все открытые сеансы на всех устройствах.
                         </p>
-                        <button class="ks-btn ks-btn-danger" onclick="logoutAll()">Завершить все сессии</button>
+                        <button class="ks-btn ks-btn-danger" onclick="promptLogout('all')">Завершить все сессии</button>
                     </div>
 
                     <div>
@@ -338,7 +394,7 @@
                             <table class="ks-table">
                                 <thead>
                                     <tr>
-                                        <th>Код авторизации</th>
+                                        <th>IP-Адрес / Устройство</th>
                                         <th>Дата и время</th>
                                         <th>Статус</th>
                                     </tr>
@@ -357,80 +413,151 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения действий -->
+    <div class="ks-modal-overlay" id="confirm-modal" onclick="closeModal()">
+        <div class="ks-modal">
+            <div class="ks-modal-title" id="modal-title">Подтверждение</div>
+            <div class="ks-modal-desc" id="modal-desc">Вы уверены, что хотите выполнить это действие?</div>
+            <div class="ks-modal-actions">
+                <button class="ks-btn ks-btn-sec" onclick="closeModal()">Отмена</button>
+                <button class="ks-btn ks-btn-danger" id="modal-confirm-btn">Выйти</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/assets/global.js"></script>
     <script>
         function switchTab(tabId, btn) {
-            document.querySelectorAll('.ks-tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
+            const currentTab = document.querySelector('.ks-tab-panel.active');
+            const targetTab = document.getElementById(tabId);
             
-            document.getElementById(tabId).classList.add('active');
+            if (currentTab === targetTab) return;
+
+            document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+
+            if (currentTab) {
+                currentTab.style.opacity = '0';
+                currentTab.style.transform = 'translateY(6px)';
+                setTimeout(() => {
+                    currentTab.classList.remove('active');
+                    targetTab.classList.add('active');
+                    setTimeout(() => {
+                        targetTab.style.opacity = '1';
+                        targetTab.style.transform = 'translateY(0)';
+                    }, 20);
+                }, 200);
+            } else {
+                targetTab.classList.add('active');
+                targetTab.style.opacity = '1';
+                targetTab.style.transform = 'translateY(0)';
+            }
         }
 
         async function initSettings(uuid, token) {
             document.getElementById('display-uuid').textContent = uuid;
 
-            // Загрузка пользователя (с фоллбэком на PlayerDB)
+            // 1. Установка правильной ссылки на профиль
             try {
                 let username = null;
+
+                // Запрос в VDS / FastAPI
                 const res = await fetch(`/api/v1/users/${uuid}`);
                 if (res.ok) {
                     const data = await res.json();
                     username = data.username || data.name;
                 }
 
+                // Запасной вариант — PlayerDB
                 if (!username) {
                     const pdb = await fetch(`https://playerdb.co/api/player/minecraft/${uuid}`);
                     if (pdb.ok) {
                         const pdbData = await pdb.json();
-                        username = pdbData.data.player.username;
+                        username = pdbData?.data?.player?.username;
                     }
                 }
 
-                const finalName = username || "Игрок";
-                document.getElementById('display-username').textContent = finalName;
-                document.getElementById('profile-link').href = `/user/${finalName}`;
+                const profileTarget = username || uuid;
+                document.getElementById('display-username').textContent = username || "Игрок";
+                document.getElementById('profile-link').href = `/user/${profileTarget}`;
             } catch (e) {
-                console.error("User fetch error:", e);
+                console.error("Ошибка загрузки никнейма:", e);
                 document.getElementById('display-username').textContent = "Игрок";
                 document.getElementById('profile-link').href = `/user/${uuid}`;
             }
 
-            // Загрузка истории входов
+            // 2. Подгрузка истории авторизаций
             try {
-                const res = await fetch(`/api/v1/users/${uuid}/login-history`, {
+                let historyData = null;
+
+                // Пробуем каноничный API
+                let res = await fetch(`/api/v1/users/${uuid}/history`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                
+                if (!res.ok) {
+                    res = await fetch(`/api/users/${uuid}/login-history`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                }
+
                 if (res.ok) {
                     const data = await res.json();
-                    const history = data.history || data;
-                    renderHistory(Array.isArray(history) ? history : []);
-                } else {
-                    document.getElementById('history-rows').innerHTML = 
-                        `<tr><td colspan="3" style="text-align: center; color: #666;">Записей истории пока нет</td></tr>`;
+                    historyData = Array.isArray(data) ? data : (data.history || data.logins || []);
                 }
+
+                renderHistory(historyData);
             } catch (e) {
-                console.error("History fetch error:", e);
-                document.getElementById('history-rows').innerHTML = 
-                    `<tr><td colspan="3" style="text-align: center; color: #ff5555;">Не удалось загрузить историю</td></tr>`;
+                console.error("Ошибка загрузки истории:", e);
+                renderHistory(null);
             }
         }
 
         function renderHistory(items) {
             const tbody = document.getElementById('history-rows');
-            if (!items.length) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Записей истории не найдено</td></tr>`;
+            if (!items || !items.length) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Записи в истории отсутствуют</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = items.map(item => `
                 <tr>
-                    <td style="font-family: monospace; font-weight: 600; color: #fff;">${item.code || '—'}</td>
-                    <td>${item.created_at ? new Date(item.created_at).toLocaleString('ru-RU') : '—'}</td>
+                    <td style="font-family: monospace; font-weight: 600; color: #fff;">${item.ip || item.device || item.code || 'Текущее устройство'}</td>
+                    <td>${item.created_at || item.timestamp ? new Date(item.created_at || item.timestamp).toLocaleString('ru-RU') : '—'}</td>
                     <td><span class="ks-badge">${item.status || 'Успешно'}</span></td>
                 </tr>
             `).join('');
         }
+
+        // Логика модального окна
+        let pendingAction = null;
+
+        function promptLogout(type) {
+            const modal = document.getElementById('confirm-modal');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+
+            if (type === 'single') {
+                title.textContent = 'Выйти из аккаунта?';
+                desc.textContent = 'Вам потребуется повторно ввести данные для входа на этом устройстве.';
+                pendingAction = logoutSingle;
+            } else if (type === 'all') {
+                title.textContent = 'Завершить все сессии?';
+                desc.textContent = 'Вы выйдете из профиля абсолютно на всех подключенных устройствах.';
+                pendingAction = logoutAll;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('confirm-modal').classList.remove('active');
+            pendingAction = null;
+        }
+
+        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+            if (pendingAction) pendingAction();
+        });
 
         function logoutSingle() {
             localStorage.removeItem('kaeront_access_token');
