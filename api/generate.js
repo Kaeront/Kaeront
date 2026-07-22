@@ -13,11 +13,21 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // 1. Безопасный парсинг req.body (если Vercel прислал его строкой)
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        body = {};
+      }
+    }
+
+    // 2. Достаем IP и User-Agent
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
     
-    // БЕРЕМ user_agent ИЗ ТЕЛА ЗАПРОСА С ФРОНТЕНДА (navigator.userAgent)
-    // Если его нет в body, пробуем заголовок браузера
-    const userAgent = (req.body && req.body.user_agent) 
+    // Приоритет: тело от фронтенда -> заголовок браузера -> дефолт
+    const userAgent = (body && body.user_agent) 
       || req.headers['user-agent'] 
       || 'Неизвестный браузер';
 
@@ -25,8 +35,7 @@ module.exports = async (req, res) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Internal-Token': apiKey,
-        'User-Agent': userAgent
+        'X-Internal-Token': apiKey
       },
       body: JSON.stringify({
         ip: clientIp,
