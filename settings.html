@@ -401,7 +401,7 @@
         // Парсинг User-Agent
         function parseDeviceName(uaString, fallbackDevice) {
             if (!uaString || uaString.includes('Java')) {
-                return 'Браузер';
+                return 'Неизвестный браузер';
             }
         
             let os = '';
@@ -411,7 +411,7 @@
             else if (uaString.includes('iPhone') || uaString.includes('iPad')) os = 'iOS';
             else if (uaString.includes('Linux')) os = 'Linux';
         
-            let browser = 'Браузер';
+            let browser = 'Неизвестный браузер';
             if (uaString.includes('Edg/')) browser = 'Edge';
             else if (uaString.includes('YaBrowser/')) browser = 'Yandex';
             else if (uaString.includes('OPR/') || uaString.includes('Opera')) browser = 'Opera';
