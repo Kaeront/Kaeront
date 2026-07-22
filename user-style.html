@@ -28,10 +28,9 @@
         .registered-badge {
             font-family: 'Minecraft', sans-serif;
             color: var(--accent);
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             margin-bottom: 15px;
             letter-spacing: 0.05em;
-            text-transform: uppercase;
         }
 
         .user-avatar-wrapper {
@@ -246,7 +245,7 @@
                                     hour: '2-digit',
                                     minute: '2-digit'
                                 });
-                                registeredText = `<div class="registered-badge">Зарегистрирован на Kaeront с: ${formattedDate}</div>`;
+                                registeredText = `<div class="registered-badge">На kaeront.ru с ${formattedDate}</div>`;
                             }
                             siteOnline = dbData.site_online ?? false;
                             serverOnline = dbData.server_online ?? false;
@@ -281,6 +280,37 @@
 
             } catch (err) {
                 card.innerHTML = `<div class="error-card">${err.message}</div>`;
+            }
+            const token = localStorage.getItem('kaeront_access_token');
+            if (token) {
+                try {
+                    // Декодируем JWT payload
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+            
+                    const payload = JSON.parse(jsonPayload);
+                    
+                    // Если UUID текущего профиля совпадает с sub из JWT
+                    if (payload.sub && payload.sub.toLowerCase() === uuid.toLowerCase()) {
+                        const statusContainer = card.querySelector('.status-container');
+                        if (statusContainer) {
+                            const settingsBtn = document.createElement('a');
+                            settingsBtn.href = '/settings';
+                            settingsBtn.className = 'namemc-btn';
+                            settingsBtn.style.marginTop = '10px';
+                            settingsBtn.innerHTML = `
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                Настройки профиля
+                            `;
+                            statusContainer.parentNode.insertBefore(settingsBtn, statusContainer.nextSibling);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Ошибка парсинга токена", e);
+                }
             }
         }
     </script>
