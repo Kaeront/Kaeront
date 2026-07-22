@@ -13,13 +13,13 @@ export default async function handler(req, res) {
 
     const { uuid } = req.query;
     const authHeader = req.headers.authorization;
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
     if (!uuid) {
         return res.status(400).json({ error: 'UUID is required' });
     }
 
     const apiUrl = process.env.KAERONT_API_URL;
-
     if (!apiUrl) {
         return res.status(500).json({ error: 'Server configuration error' });
     }
@@ -27,7 +27,8 @@ export default async function handler(req, res) {
     try {
         const headers = {
             'Content-Type': 'application/json',
-            'X-Internal-Token': process.env.INTERNAL_API_KEY
+            'X-Internal-Token': process.env.INTERNAL_API_KEY || '',
+            'X-Forwarded-For': clientIp || ''
         };
 
         if (authHeader) {
