@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Настройки — Kaeront</title>
     
-    <!-- 1. Скрываем всё содержимое страницы по умолчанию -->
+    <!-- 1. Скрываем тело страницы до успешной проверки -->
     <style>
         body {
             display: none;
@@ -88,39 +88,54 @@
         }
     </style>
 
-    <!-- 2. Бесшовный Guard-скрипт (выполняется до рендеринга DOM) -->
+    <!-- 2. Надежная проверка сессии через Vercel Proxy -->
     <script>
         (async function checkAuthGuard() {
             const token = localStorage.getItem('kaeront_access_token');
             
-            // Если токена нет вовсе — мгновенный редирект
             if (!token) {
                 window.location.replace('/login');
                 return;
             }
 
             try {
-                // Валидируем токен через эндпоинт /api/v1/user/me (пройдет через Vercel proxy)
-                const res = await fetch('/api/user/me', {
-                    method: 'GET',
+                // Извлекаем UUID из JWT токена
+                const base64Url = token.split('.')[1];
+                if (!base64Url) throw new Error("Invalid token format");
+
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+
+                const payload = JSON.parse(jsonPayload);
+                const uuid = payload.sub;
+
+                if (!uuid) throw new Error("UUID not found in token");
+
+                // Делаем вызов к существующему рабочему Vercel-руту
+                const res = await fetch(`/api/v1/users/${uuid}/status`, {
+                    method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
-                    }
+                    },
+                    body: JSON.stringify({ site_online: true })
                 });
 
+                // Если 200 OK — сессия полностью валидна, отображаем страницу
                 if (res.ok) {
-                    // Токен валиден — показываем страницу после загрузки DOM
                     document.addEventListener('DOMContentLoaded', () => {
                         document.body.style.display = 'block';
                     });
                 } else {
-                    // Токен просрочен, аннулирован или юзер забанен
+                    // Токен невалиден / забанен / просрочен
                     localStorage.removeItem('kaeront_access_token');
                     window.location.replace('/login');
                 }
             } catch (err) {
-                console.error("Ошибка проверки сессии:", err);
-                // При сбое сети или сервера редиректим на логин ради безопасности
+                console.error("Auth Guard Error:", err);
+                localStorage.removeItem('kaeront_access_token');
                 window.location.replace('/login');
             }
         })();
