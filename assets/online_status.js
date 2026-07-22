@@ -1,6 +1,6 @@
 (function initSmartOnlineStatus() {
     let lastActivityTime = Date.now();
-    const IDLE_TIMEOUT_MS = 2 * 60 * 1000; // 2 минуты бездействия = AFK
+    const IDLE_TIMEOUT_MS = 1 * 60 * 1000; // минуты бездействия для AFK
 
     function resetActivity() {
         lastActivityTime = Date.now();
@@ -36,6 +36,11 @@
 
             // 1. Аккаунт забанен (FastAPI вернул 403)
             if (res.status === 403) {
+                const data = await res.json().catch(() => ({}));
+                
+                // 🔑 ОЧИЩАЕМ ТОКЕН, чтобы не было зацикливания!
+                localStorage.removeItem('kaeront_access_token');
+
                 if (window.location.pathname !== '/login') {
                     window.location.href = '/login';
                 } else if (typeof checkActiveSession === 'function') {
@@ -62,6 +67,6 @@
     // Запускаем сразу при загрузке
     sendStatusPing();
 
-    // Пингуем каждые 30 секунд
-    setInterval(sendStatusPing, 30000);
+    // Пингуем каждые 15 секунд
+    setInterval(sendStatusPing, 15000);
 })();
