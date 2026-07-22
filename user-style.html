@@ -228,6 +228,8 @@
                 const nameMcUrl = `https://namemc.com/profile/${uuid}`;
 
                 let registeredText = '';
+                let registeredText = '';
+                let isRegistered = false; // Флаг регистрации
                 let siteOnline = false;
                 let serverOnline = false;
 
@@ -237,6 +239,7 @@
                         const dbData = await dbRes.json();
                         if (dbData) {
                             if (dbData.registered_at) {
+                                isRegistered = true; // Подтверждаем, что юзер зарегистрирован
                                 const regDate = new Date(dbData.registered_at.includes('Z') ? dbData.registered_at : dbData.registered_at + 'Z'); 
                                 const formattedDate = regDate.toLocaleString(undefined, {
                                     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -251,6 +254,14 @@
                     console.error("Не удалось забрать данные Kaeront API", e);
                 }
 
+                // Формируем плашку статуса "На сайте" с учетом регистрации
+                const siteStatusHTML = isRegistered ? `
+                    <div class="status-badge">
+                        <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
+                        На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
                     ${registeredText}
                     <div class="user-avatar-wrapper">
@@ -259,10 +270,7 @@
                     <h1 class="user-name">${username}</h1>
                     <div class="user-uuid">${uuid}</div>
                     <div class="status-container">
-                        <div class="status-badge">
-                            <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
-                            На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
-                        </div>
+                        ${siteStatusHTML}
                         <div class="status-badge">
                             <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
                             На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
