@@ -25,13 +25,19 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Пробрасываем запрос с JWT-токеном пользователя напрямую на FastAPI бэкенд
+        // Формируем заголовки и пробрасываем Authorization, если он передавался
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Internal-Token': process.env.INTERNAL_API_KEY
+        };
+
+        if (authHeader) {
+            headers['Authorization'] = authHeader; // 🔑 ВОТ ЭТА СТРОКА РЕШАЕТ ВСЁ!
+        }
+
         const response = await fetch(`${apiUrl}/api/v1/users/${uuid}/status`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Internal-Token': process.env.INTERNAL_API_KEY
-            },
+            headers: headers,
             body: JSON.stringify(req.body)
         });
 
