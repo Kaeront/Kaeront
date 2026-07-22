@@ -104,7 +104,7 @@
             background: #ff5555;
         }
 
-        .namemc-btn {
+        .link-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -119,7 +119,7 @@
             transition: var(--transition);
         }
 
-        .namemc-btn:hover {
+        .link-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
             transform: translateY(-2px);
@@ -271,7 +271,7 @@
                             На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
                         </div>
                     </div>
-                    <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="namemc-btn">
+                    <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                         Посмотреть на NameMC
                     </a>
@@ -280,32 +280,35 @@
             } catch (err) {
                 card.innerHTML = `<div class="error-card">${err.message}</div>`;
             }
-            // Находим JWT токен
-            const token = localStorage.getItem('kaeront_access_token');
-            if (token) {
+            // Кнопка настроек
+            function renderSettingsButton(profileUuid) {
+                const token = localStorage.getItem('kaeront_access_token');
+                if (!token) return;
+            
                 try {
-                    const base64Url = token.split('.')[1];
-                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                    }).join(''));
+                    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    
+                    // Сравниваем UUID из токена с UUID текущего профиля
+                    if (payload.sub && payload.sub.toLowerCase() === profileUuid.toLowerCase()) {
+                        // Находим контейнер с кнопкой NameMC
+                        const namemcBtn = document.querySelector('a[href*="namemc.com"]');
+                        const parentContainer = namemcBtn ? namemcBtn.parentElement : document.querySelector('.status-container');
             
-                    const payload = JSON.parse(jsonPayload);
-            
-                    // Если открыта собственная страница
-                    if (payload.sub && payload.sub.toLowerCase() === uuid.toLowerCase()) {
-                        const userCard = document.getElementById('user-card');
-                        if (userCard && !document.getElementById('btn-to-settings')) {
+                        if (parentContainer && !document.getElementById('btn-to-settings')) {
                             const settingsBtn = document.createElement('a');
                             settingsBtn.id = 'btn-to-settings';
                             settingsBtn.href = '/settings';
-                            settingsBtn.className = 'namemc-btn';
-                            settingsBtn.style.marginTop = '15px';
+                            settingsBtn.className = 'link-btn';
+                            settingsBtn.style.marginTop = '10px';
+                            settingsBtn.style.display = 'inline-flex';
+                            settingsBtn.style.alignItems = 'center';
+                            settingsBtn.style.justifyContent = 'center';
+                            settingsBtn.style.gap = '8px';
                             settingsBtn.innerHTML = `
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                                Настройки профиля
+                                Настройки
                             `;
-                            userCard.appendChild(settingsBtn);
+                            parentContainer.appendChild(settingsBtn);
                         }
                     }
                 } catch (e) {
