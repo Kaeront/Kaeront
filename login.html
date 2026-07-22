@@ -148,7 +148,7 @@
     <!-- Состояние 4: Успешный вход -->
     <div id="step-success" style="display: none;">
         <div class="success-box">
-            <h3 style="margin: 0 0 10px 0;">Успешный вход!</h3>
+            <h3 style="margin: 0 0 10px 0; font-family: 'Minecraft', sans-serif;">Успешный вход!</h3>
             <p style="color: #fff; margin: 0;">Добро пожаловать, <b id="user-display">игрок</b>!<br>Перенаправление в личный кабинет...</p>
         </div>
     </div>
@@ -296,10 +296,15 @@ function startPolling(code) {
                 clearInterval(timerInterval);
                 clearAuthStorage();
 
-                // Достаем текст причины бана из JSON
-                const banMsg = (data.detail && data.detail.message) 
-                    ? data.detail.message 
-                    : "Ваш аккаунт заблокирован на веб-ресурсе проекта.";
+                let banMsg = "Ваш аккаунт заблокирован на веб-ресурсе проекта.";
+                
+                if (data.detail) {
+                    if (data.detail.message) {
+                        banMsg = data.detail.message;
+                    } else if (data.detail.username) {
+                        banMsg = `${data.detail.username}, ваш аккаунт заблокирован на веб-ресурсе проекта.`;
+                    }
+                }
                 
                 showBannedState(banMsg);
                 return;
