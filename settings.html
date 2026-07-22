@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Настройки — Kaeront</title>
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+        .settings-card {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .settings-title {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .btn-logout {
+            background: #1a1a1a;
+            color: #ccc;
+            border-color: #333;
+        }
+        .btn-logout:hover {
+            background: #252525;
+            color: #fff;
+        }
+        .btn-danger {
+            background: rgba(255, 85, 85, 0.1);
+            color: #ff5555;
+            border-color: rgba(255, 85, 85, 0.3);
+        }
+        .btn-danger:hover {
+            background: #ff5555;
+            color: #fff;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav-inject"></div>
+
+    <main class="settings-container">
+        <div class="settings-card">
+            <h1 class="settings-title">Настройки аккаунта</h1>
+            <div class="btn-group">
+                <button class="btn btn-logout" onclick="logoutSingle()">Выйти с этого устройства</button>
+                <button class="btn btn-danger" onclick="openModal()">Завершить все сессии</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-card">
+            <h3 style="color: #ff5555; margin-top: 0;">Внимание!</h3>
+            <p style="color: #aaa; font-size: 0.9rem;">Вы уверены, что хотите выйти из всех устройств? Ваша текущая сессия также будет завершена.</p>
+            <div class="modal-actions">
+                <button class="btn btn-logout" onclick="closeModal()">Отмена</button>
+                <button class="btn btn-danger" onclick="logoutAll()">Завершить всё</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/global.js"></script>
+    <script>
+        function openModal() { document.getElementById('confirmModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('confirmModal').style.display = 'none'; }
+
+        function clearAuthAndRedirect() {
+            localStorage.removeItem('kaeront_access_token');
+            window.location.href = '/login';
+        }
+
+        async function logoutSingle() {
+            const token = localStorage.getItem('kaeront_access_token');
+            if (token) {
+                try {
+                    await fetch('/api/user/logout-single', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (e) { console.error(e); }
+            }
+            clearAuthAndRedirect();
+        }
+
+        async function logoutAll() {
+            const token = localStorage.getItem('kaeront_access_token');
+            if (token) {
+                try {
+                    await fetch('/api/user/logout-all', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (e) { console.error(e); }
+            }
+            clearAuthAndRedirect();
+        }
+    </script>
+</body>
+</html>
