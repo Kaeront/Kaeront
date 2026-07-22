@@ -7,25 +7,26 @@
     <style>
         body {
             display: none; /* Скрыто до Auth-Guard */
-            background-color: #080808;
+            background-color: #080808 !important;
             color: #ececec;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
         }
 
-        /* Главный контейнер (Лейаут из скрина: Сайдбар + Контент) */
+        /* Контейнер настроек */
         .settings-layout {
-            max-width: 1100px;
-            margin: 100px auto 60px;
+            max-width: 1000px;
+            margin: 120px auto 60px;
             padding: 0 20px;
             display: grid;
-            grid-template-columns: 240px 1fr;
+            grid-template-columns: 220px 1fr;
             gap: 24px;
-            min-height: 550px;
+            min-height: 500px;
+            box-sizing: border-box;
         }
 
-        /* ---------------- СЛЕВА: Сайдбар ---------------- */
+        /* Сайдбар */
         .settings-sidebar {
             background: rgba(15, 15, 15, 0.85);
             border: 1px solid #1f1f1f;
@@ -33,15 +34,15 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             height: fit-content;
         }
 
         .sidebar-group-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #555;
+            color: #666;
             font-weight: 700;
             margin-bottom: 8px;
             padding-left: 8px;
@@ -50,14 +51,13 @@
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
-        .nav-item {
+        .settings-nav-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
+            padding: 10px 14px;
             border-radius: 8px;
             color: #888;
             font-size: 0.9rem;
@@ -65,29 +65,30 @@
             cursor: pointer;
             transition: all 0.15s ease;
             background: transparent;
-            border: none;
+            border: 1px solid transparent;
             width: 100%;
             text-align: left;
+            box-sizing: border-box;
         }
 
-        .nav-item:hover {
+        .settings-nav-btn:hover {
             background: rgba(255, 255, 255, 0.04);
             color: #fff;
         }
 
-        .nav-item.active {
+        .settings-nav-btn.active {
             background: #1c1c1e;
             color: #fff;
             font-weight: 600;
-            border: 1px solid #2a2a2c;
+            border-color: #2a2a2c;
         }
 
-        /* ---------------- СПРАВА: Контентная часть ---------------- */
+        /* Контентная часть */
         .settings-content {
             background: rgba(15, 15, 15, 0.85);
             border: 1px solid #1f1f1f;
             border-radius: 12px;
-            padding: 28px;
+            padding: 32px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
@@ -106,7 +107,7 @@
 
         .panel-title {
             font-family: 'Minecraft', sans-serif;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             color: #fff;
             margin: 0 0 6px 0;
         }
@@ -117,12 +118,12 @@
             margin: 0;
         }
 
-        /* Юзер-инфо блок */
+        /* Блок пользователя */
         .user-profile-box {
             background: #0d0d0d;
             border: 1px solid #1a1a1a;
             border-radius: 10px;
-            padding: 16px;
+            padding: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -132,22 +133,22 @@
         .user-details {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .user-name {
             font-family: 'Minecraft', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #fff;
         }
 
         .user-uuid {
             font-family: monospace;
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: #555;
         }
 
-        /* Таблица истории входов (в стиле UI из референса) */
+        /* Таблица истории */
         .history-table-wrapper {
             border: 1px solid #1f1f1f;
             border-radius: 8px;
@@ -196,7 +197,7 @@
         }
 
         /* Кнопки */
-        .btn {
+        .btn-set {
             padding: 10px 18px;
             border-radius: 6px;
             font-weight: 600;
@@ -208,32 +209,32 @@
             display: inline-block;
         }
 
-        .btn-secondary {
+        .btn-set-secondary {
             background: #141414;
             color: #ccc;
             border-color: #222;
         }
-        .btn-secondary:hover {
+        .btn-set-secondary:hover {
             background: #1f1f1f;
             color: #fff;
         }
 
-        .btn-logout {
+        .btn-set-logout {
             background: #1a1a1a;
             color: #ccc;
             border-color: #2e2e2e;
         }
-        .btn-logout:hover {
+        .btn-set-logout:hover {
             background: #282828;
             color: #fff;
         }
 
-        .btn-danger {
+        .btn-set-danger {
             background: rgba(255, 85, 85, 0.08);
             color: #ff5555;
             border-color: rgba(255, 85, 85, 0.25);
         }
-        .btn-danger:hover {
+        .btn-set-danger:hover {
             background: #ff5555;
             color: #fff;
         }
@@ -273,6 +274,7 @@
         @media (max-width: 768px) {
             .settings-layout {
                 grid-template-columns: 1fr;
+                margin-top: 90px;
             }
         }
     </style>
@@ -309,6 +311,7 @@
 
                 if (res.ok) {
                     window.currentUserUuid = uuid;
+                    window.authToken = token;
                     document.addEventListener('DOMContentLoaded', () => {
                         document.body.style.display = 'block';
                         initSettingsPage(uuid, token);
@@ -335,10 +338,10 @@
             <div>
                 <div class="sidebar-group-title">Настройки</div>
                 <nav class="sidebar-nav">
-                    <button class="nav-item active" onclick="switchTab('tab-general', this)">
+                    <button class="settings-nav-btn active" onclick="switchTab('tab-general', this)">
                         <span>Основное</span>
                     </button>
-                    <button class="nav-item" onclick="switchTab('tab-security', this)">
+                    <button class="settings-nav-btn" onclick="switchTab('tab-security', this)">
                         <span>Безопасность</span>
                     </button>
                 </nav>
@@ -360,11 +363,11 @@
                         <span class="user-name" id="display-username">Загрузка...</span>
                         <span class="user-uuid" id="display-uuid">...</span>
                     </div>
-                    <a id="profile-link" href="#" class="btn btn-secondary">Профиль</a>
+                    <a id="profile-link" href="#" class="btn-set btn-set-secondary">Профиль</a>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <button class="btn btn-logout" onclick="openModal('singleLogoutModal')">
+                    <button class="btn-set btn-set-logout" onclick="openModal('singleLogoutModal')">
                         Выйти с этого устройства
                     </button>
                 </div>
@@ -382,7 +385,7 @@
                     <p style="font-size: 0.85rem; color: #666; margin-bottom: 14px;">
                         Если вы подозрительно себя чувствуете или потеряли доступ к одному из устройств, вы можете завершить все сеансы.
                     </p>
-                    <button class="btn btn-danger" onclick="openModal('allLogoutModal')">
+                    <button class="btn-set btn-set-danger" onclick="openModal('allLogoutModal')">
                         Завершить все сессии
                     </button>
                 </div>
@@ -417,8 +420,8 @@
             <h3 style="color: #fff; margin-top: 0;">Выход из аккаунта</h3>
             <p style="color: #888; font-size: 0.88rem;">Вы действительно хотите выйти на этом устройстве?</p>
             <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('singleLogoutModal')">Отмена</button>
-                <button class="btn btn-logout" onclick="logoutSingle()">Выйти</button>
+                <button class="btn-set btn-set-secondary" onclick="closeModal('singleLogoutModal')">Отмена</button>
+                <button class="btn-set btn-set-logout" onclick="logoutSingle()">Выйти</button>
             </div>
         </div>
     </div>
@@ -429,47 +432,57 @@
             <h3 style="color: #ff5555; margin-top: 0;">Сброс всех сессий</h3>
             <p style="color: #888; font-size: 0.88rem;">Это аннулирует доступ на <b>всех устройствах</b>. Вам потребуется заново войти через Minecraft.</p>
             <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('allLogoutModal')">Отмена</button>
-                <button class="btn btn-danger" onclick="logoutAll()">Завершить всё</button>
+                <button class="btn-set btn-set-secondary" onclick="closeModal('allLogoutModal')">Отмена</button>
+                <button class="btn-set btn-set-danger" onclick="logoutAll()">Завершить всё</button>
             </div>
         </div>
     </div>
 
     <script src="/assets/global.js"></script>
     <script>
-        // Переключение между вкладками
         function switchTab(tabId, btnEl) {
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.settings-nav-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
             btnEl.classList.add('active');
         }
 
-        // Модалки + Закрытие по оверлею
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleOverlayClick(e, id) {
             if (e.target === document.getElementById(id)) closeModal(id);
         }
 
-        // Инициализация
         async function initSettingsPage(uuid, token) {
             document.getElementById('display-uuid').textContent = uuid;
             
-            // 1. Получаем профиль
+            // 1. Получаем ник пользователя из API (v1)
             try {
-                const res = await fetch(`/api/users/${uuid}`);
+                const res = await fetch(`/api/v1/users/${uuid}`);
                 if (res.ok) {
                     const data = await res.json();
-                    if (data.username) {
+                    if (data && data.username) {
                         document.getElementById('display-username').textContent = data.username;
                         document.getElementById('profile-link').href = `/user/${data.username}`;
+                    } else {
+                        // Если в базе нет username, берем через PlayerDB по UUID
+                        const pdb = await fetch(`https://playerdb.co/api/player/minecraft/${uuid}`);
+                        if (pdb.ok) {
+                            const pdbData = await pdb.json();
+                            const uname = pdbData.data.player.username;
+                            document.getElementById('display-username').textContent = uname;
+                            document.getElementById('profile-link').href = `/user/${uname}`;
+                        }
                     }
                 }
-            } catch (e) { console.error("Profile fetch error:", e); }
+            } catch (e) {
+                console.error("Profile fetch error:", e);
+                document.getElementById('display-username').textContent = "Игрок";
+                document.getElementById('profile-link').href = `/user/${uuid}`;
+            }
 
-            // 2. Получаем историю входов
+            // 2. Загружаем историю входов
             try {
                 const res = await fetch(`/api/v1/users/${uuid}/login-history`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -479,16 +492,18 @@
                     renderHistoryTable(data.history || []);
                 } else {
                     document.getElementById('history-rows').innerHTML = 
-                        `<tr><td colspan="3" style="text-align: center; color: #555;">История временно недоступна</td></tr>`;
+                        `<tr><td colspan="3" style="text-align: center; color: #888;">История входов пуста или недоступна</td></tr>`;
                 }
             } catch (e) {
                 console.error("History error:", e);
+                document.getElementById('history-rows').innerHTML = 
+                    `<tr><td colspan="3" style="text-align: center; color: #ff5555;">Ошибка загрузки истории</td></tr>`;
             }
         }
 
         function renderHistoryTable(history) {
             const tbody = document.getElementById('history-rows');
-            if (history.length === 0) {
+            if (!history || history.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #555;">Записей входа не найдено</td></tr>`;
                 return;
             }
@@ -511,7 +526,7 @@
             const token = localStorage.getItem('kaeront_access_token');
             if (token) {
                 try {
-                    await fetch('/api/user/logout-single', {
+                    await fetch('/api/v1/user/logout-single', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
@@ -524,7 +539,7 @@
             const token = localStorage.getItem('kaeront_access_token');
             if (token) {
                 try {
-                    await fetch('/api/user/logout-all', {
+                    await fetch('/api/v1/user/logout-all', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
