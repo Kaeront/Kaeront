@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Настройки — Kaeront</title>
+    
+    <!-- 1. Скрываем всё содержимое страницы по умолчанию -->
     <style>
+        body {
+            display: none;
+        }
+
         .settings-container {
             max-width: 600px;
             margin: 120px auto 60px;
@@ -36,6 +42,7 @@
             cursor: pointer;
             border: 1px solid transparent;
             transition: all 0.2s ease;
+            font-size: 0.9rem;
         }
         .btn-logout {
             background: #1a1a1a;
@@ -80,6 +87,44 @@
             margin-top: 20px;
         }
     </style>
+
+    <!-- 2. Бесшовный Guard-скрипт (выполняется до рендеринга DOM) -->
+    <script>
+        (async function checkAuthGuard() {
+            const token = localStorage.getItem('kaeront_access_token');
+            
+            // Если токена нет вовсе — мгновенный редирект
+            if (!token) {
+                window.location.replace('/login');
+                return;
+            }
+
+            try {
+                // Валидируем токен через эндпоинт /api/v1/user/me (пройдет через Vercel proxy)
+                const res = await fetch('/api/user/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    // Токен валиден — показываем страницу после загрузки DOM
+                    document.addEventListener('DOMContentLoaded', () => {
+                        document.body.style.display = 'block';
+                    });
+                } else {
+                    // Токен просрочен, аннулирован или юзер забанен
+                    localStorage.removeItem('kaeront_access_token');
+                    window.location.replace('/login');
+                }
+            } catch (err) {
+                console.error("Ошибка проверки сессии:", err);
+                // При сбое сети или сервера редиректим на логин ради безопасности
+                window.location.replace('/login');
+            }
+        })();
+    </script>
 </head>
 <body>
     <div id="nav-inject"></div>
@@ -107,12 +152,17 @@
 
     <script src="/assets/global.js"></script>
     <script>
-        function openModal() { document.getElementById('confirmModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('confirmModal').style.display = 'none'; }
+        function openModal() { 
+            document.getElementById('confirmModal').style.display = 'flex'; 
+        }
+        
+        function closeModal() { 
+            document.getElementById('confirmModal').style.display = 'none'; 
+        }
 
         function clearAuthAndRedirect() {
             localStorage.removeItem('kaeront_access_token');
-            window.location.href = '/login';
+            window.location.replace('/login');
         }
 
         async function logoutSingle() {
@@ -123,7 +173,9 @@
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error("Logout single error:", e); 
+                }
             }
             clearAuthAndRedirect();
         }
@@ -136,7 +188,9 @@
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error("Logout all error:", e); 
+                }
             }
             clearAuthAndRedirect();
         }
