@@ -22,7 +22,6 @@ module.exports = async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Internal-Token': apiKey,
-        'X-Forwarded-For': clientIp,
         'User-Agent': userAgent
       },
       body: JSON.stringify({
