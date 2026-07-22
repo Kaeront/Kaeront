@@ -196,129 +196,144 @@
     <div id="footer-inject"></div>
 
     <script src="/assets/global.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            loadUserProfile();
-        });
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadUserProfile();
+});
 
-        async function loadUserProfile() {
-            const card = document.getElementById('user-card');
-            const pathParts = window.location.pathname.split('/').filter(Boolean);
-            const queryTarget = pathParts[pathParts.length - 1];
+async function loadUserProfile() {
+    const card = document.getElementById('user-card');
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const queryTarget = pathParts[pathParts.length - 1];
 
-            if (!queryTarget || queryTarget === 'user') {
-                card.innerHTML = `<div class="error-card">Пользователь не указан</div>`;
-                return;
-            }
+    // Вспомогательная функция для скрытия экранов загрузки
+    const hideLoader = () => {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        }
+        document.body.style.overflow = 'auto'; // Возвращаем скролл
+    };
 
-            try {
-                const playerRes = await fetch(`https://playerdb.co/api/player/minecraft/${encodeURIComponent(queryTarget)}`);
-                if (!playerRes.ok) throw new Error("Игрок не найден в базе.");
-                
-                const playerData = await playerRes.json();
-                if (!playerData.success || !playerData.data || !playerData.data.player) {
-                    throw new Error("Игрок с таким ником или UUID не найден.");
-                }
+    if (!queryTarget || queryTarget === 'user') {
+        card.innerHTML = `<div class="error-card">Пользователь не указан</div>`;
+        hideLoader();
+        return;
+    }
 
-                const player = playerData.data.player;
-                const username = player.username;
-                const uuid = player.id;
-                const rawId = player.raw_id;
-                const avatarUrl = `https://crafthead.net/avatar/${rawId}/128`;
-                const nameMcUrl = `https://namemc.com/profile/${uuid}`;
+    try {
+        const playerRes = await fetch(`https://playerdb.co/api/player/minecraft/${encodeURIComponent(queryTarget)}`);
+        if (!playerRes.ok) throw new Error("Игрок не найден в базе Minecraft.");
+        
+        const playerData = await playerRes.json();
+        if (!playerData.success || !playerData.data || !playerData.data.player) {
+            throw new Error("Игрок с таким ником или UUID не найден.");
+        }
 
-                let registeredText = '';
-                let registeredText = '';
-                let isRegistered = false; // Флаг регистрации
-                let siteOnline = false;
-                let serverOnline = false;
+        const player = playerData.data.player;
+        const username = player.username;
+        const uuid = player.id;
+        const rawId = player.raw_id;
+        const avatarUrl = `https://crafthead.net/avatar/${rawId}/128`;
+        const nameMcUrl = `https://namemc.com/profile/${uuid}`;
 
-                try {
-                    const dbRes = await fetch(`/api/users/${uuid}`);
-                    if (dbRes.ok) {
-                        const dbData = await dbRes.json();
-                        if (dbData) {
-                            if (dbData.registered_at) {
-                                isRegistered = true; // Подтверждаем, что юзер зарегистрирован
-                                const regDate = new Date(dbData.registered_at.includes('Z') ? dbData.registered_at : dbData.registered_at + 'Z'); 
-                                const formattedDate = regDate.toLocaleString(undefined, {
-                                    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                                });
-                                registeredText = `<div class="registered-badge">На kaeront.ru с ${formattedDate}</div>`;
-                            }
-                            siteOnline = dbData.site_online ?? false;
-                            serverOnline = dbData.server_online ?? false;
-                        }
+        let registeredText = '';
+        let isRegistered = false;
+        let siteOnline = false;
+        let serverOnline = false;
+
+        // Безопасное получение данных с Kaeront API
+        try {
+            const dbRes = await fetch(`/api/users/${uuid}`);
+            if (dbRes.ok) {
+                const dbData = await dbRes.json();
+                if (dbData) {
+                    if (dbData.registered_at) {
+                        isRegistered = true;
+                        const regDate = new Date(dbData.registered_at.includes('Z') ? dbData.registered_at : dbData.registered_at + 'Z'); 
+                        const formattedDate = regDate.toLocaleString(undefined, {
+                            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                        registeredText = `<div class="registered-badge">На kaeront.ru с ${formattedDate}</div>`;
                     }
-                } catch (e) {
-                    console.error("Не удалось забрать данные Kaeront API", e);
+                    siteOnline = dbData.site_online ?? false;
+                    serverOnline = dbData.server_online ?? false;
                 }
+            }
+        } catch (e) {
+            console.warn("Игрок не зарегистрирован на Kaeront или API недоступно:", e);
+        }
 
-                // Формируем плашку статуса "На сайте" с учетом регистрации
-                const siteStatusHTML = isRegistered ? `
-                    <div class="status-badge">
-                        <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
-                        На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
-                    </div>
-                ` : '';
+        // Статус "На сайте" только для зарегистрированных пользователей
+        const siteStatusHTML = isRegistered ? `
+            <div class="status-badge">
+                <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
+                На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
+            </div>
+        ` : '';
 
-                card.innerHTML = `
-                    ${registeredText}
-                    <div class="user-avatar-wrapper">
-                        <img src="${avatarUrl}" alt="${username}" class="user-avatar">
-                    </div>
-                    <h1 class="user-name">${username}</h1>
-                    <div class="user-uuid">${uuid}</div>
-                    <div class="status-container">
-                        ${siteStatusHTML}
-                        <div class="status-badge">
-                            <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
-                            На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
-                        </div>
-                    </div>
-                    <div class="profile-actions" id="profile-actions">
-                        <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                            Посмотреть на NameMC
-                        </a>
-                    </div>
+        card.innerHTML = `
+            ${registeredText}
+            <div class="user-avatar-wrapper">
+                <img src="${avatarUrl}" alt="${username}" class="user-avatar">
+            </div>
+            <h1 class="user-name">${username}</h1>
+            <div class="user-uuid">${uuid}</div>
+            <div class="status-container">
+                ${siteStatusHTML}
+                <div class="status-badge">
+                    <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
+                    На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                </div>
+            </div>
+            <div class="profile-actions" id="profile-actions">
+                <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    Посмотреть на NameMC
+                </a>
+            </div>
+        `;
+
+        renderSettingsButton(uuid);
+
+    } catch (err) {
+        card.innerHTML = `<div class="error-card">${err.message}</div>`;
+    } finally {
+        // Лоадер убирается ВСЕГДА, даже если была ошибка
+        hideLoader();
+    }
+}
+
+function renderSettingsButton(profileUuid) {
+    const token = localStorage.getItem('kaeront_access_token');
+    if (!token) return;
+
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+
+        if (payload.sub && payload.sub.toLowerCase() === profileUuid.toLowerCase()) {
+            const actionsContainer = document.getElementById('profile-actions');
+
+            if (actionsContainer && !document.getElementById('btn-to-settings')) {
+                const settingsBtn = document.createElement('a');
+                settingsBtn.id = 'btn-to-settings';
+                settingsBtn.href = '/settings';
+                settingsBtn.className = 'link-btn';
+                settingsBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Настройки
                 `;
-
-                renderSettingsButton(uuid);
-
-            } catch (err) {
-                card.innerHTML = `<div class="error-card">${err.message}</div>`;
+                actionsContainer.appendChild(settingsBtn);
             }
         }
-
-        function renderSettingsButton(profileUuid) {
-            const token = localStorage.getItem('kaeront_access_token');
-            if (!token) return;
-
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-
-                if (payload.sub && payload.sub.toLowerCase() === profileUuid.toLowerCase()) {
-                    const actionsContainer = document.getElementById('profile-actions');
-
-                    if (actionsContainer && !document.getElementById('btn-to-settings')) {
-                        const settingsBtn = document.createElement('a');
-                        settingsBtn.id = 'btn-to-settings';
-                        settingsBtn.href = '/settings';
-                        settingsBtn.className = 'link-btn';
-                        settingsBtn.innerHTML = `
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                            Настройки
-                        `;
-                        actionsContainer.appendChild(settingsBtn);
-                    }
-                }
-            } catch (e) {
-                console.error("Ошибка проверки владельца профиля:", e);
-            }
-        }
-    </script>
+    } catch (e) {
+        console.error("Ошибка проверки владельца профиля:", e);
+    }
+}
+</script>
 </body>
 </html>
