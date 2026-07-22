@@ -284,11 +284,28 @@ function startPolling(code) {
             const res = await fetch(`/api/status?code=${code}`);
             const data = await res.json();
 
+            // 1. Успешная привязка — входим
             if (res.ok && data.status === 'LINKED') {
                 handleSuccess(data);
                 return;
             }
 
+            // 2. Аккаунт ЗАБАНЕН (FastAPI вернул 403 Forbidden)
+            if (res.status === 403) {
+                clearInterval(pollInterval);
+                clearInterval(timerInterval);
+                clearAuthStorage();
+
+                // Достаем текст причины бана из JSON
+                const banMsg = (data.detail && data.detail.message) 
+                    ? data.detail.message 
+                    : "Ваш аккаунт заблокирован на веб-ресурсе проекта.";
+                
+                showBannedState(banMsg);
+                return;
+            }
+
+            // 3. Код истек
             if (data.status === 'EXPIRED') {
                 handleExpired();
                 return;
