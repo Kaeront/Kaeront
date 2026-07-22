@@ -94,7 +94,6 @@
             position: relative;
         }
 
-        /* Плавное переключение вкладок */
         .ks-tab-panel {
             display: none;
             opacity: 0;
@@ -394,7 +393,7 @@
                             <table class="ks-table">
                                 <thead>
                                     <tr>
-                                        <th>IP-Адрес / Устройство</th>
+                                        <th>Устройство / IP</th>
                                         <th>Дата и время</th>
                                         <th>Статус</th>
                                     </tr>
@@ -413,9 +412,9 @@
         </div>
     </div>
 
-    <!-- Модальное окно подтверждения действий -->
+    <!-- Модальное окно -->
     <div class="ks-modal-overlay" id="confirm-modal" onclick="closeModal()">
-        <div class="ks-modal">
+        <div class="ks-modal" onclick="event.stopPropagation()">
             <div class="ks-modal-title" id="modal-title">Подтверждение</div>
             <div class="ks-modal-desc" id="modal-desc">Вы уверены, что хотите выполнить это действие?</div>
             <div class="ks-modal-actions">
@@ -457,18 +456,15 @@
         async function initSettings(uuid, token) {
             document.getElementById('display-uuid').textContent = uuid;
 
-            // 1. Установка правильной ссылки на профиль
+            // 1. Получение публичного профиля
             try {
                 let username = null;
-
-                // Запрос в VDS / FastAPI
-                const res = await fetch(`/api/v1/users/${uuid}`);
+                const res = await fetch(`/api/users/${uuid}`);
                 if (res.ok) {
                     const data = await res.json();
-                    username = data.username || data.name;
+                    username = data.username;
                 }
 
-                // Запасной вариант — PlayerDB
                 if (!username) {
                     const pdb = await fetch(`https://playerdb.co/api/player/minecraft/${uuid}`);
                     if (pdb.ok) {
@@ -486,30 +482,21 @@
                 document.getElementById('profile-link').href = `/user/${uuid}`;
             }
 
-            // 2. Подгрузка истории авторизаций
+            // 2. Загрузка истории входов через Vercel Serverless Proxy
             try {
-                let historyData = null;
-
-                // Пробуем каноничный API
-                let res = await fetch(`/api/v1/users/${uuid}/history`, {
+                const res = await fetch(`/api/v1/users/${uuid}/login-history`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
-                if (!res.ok) {
-                    res = await fetch(`/api/users/${uuid}/login-history`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                }
 
                 if (res.ok) {
                     const data = await res.json();
-                    historyData = Array.isArray(data) ? data : (data.history || data.logins || []);
+                    renderHistory(data.history || []);
+                } else {
+                    renderHistory([]);
                 }
-
-                renderHistory(historyData);
             } catch (e) {
                 console.error("Ошибка загрузки истории:", e);
-                renderHistory(null);
+                renderHistory([]);
             }
         }
 
@@ -520,16 +507,23 @@
                 return;
             }
 
-            tbody.innerHTML = items.map(item => `
-                <tr>
-                    <td style="font-family: monospace; font-weight: 600; color: #fff;">${item.ip || item.device || item.code || 'Текущее устройство'}</td>
-                    <td>${item.created_at || item.timestamp ? new Date(item.created_at || item.timestamp).toLocaleString('ru-RU') : '—'}</td>
-                    <td><span class="ks-badge">${item.status || 'Успешно'}</span></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = items.map(item => {
+                const deviceText = item.device || 'Устройство';
+                const ipText = item.ip ? ` (${item.ip})` : '';
+
+                return `
+                    <tr>
+                        <td style="color: #fff; font-weight: 500;">
+                            ${deviceText} <span style="color: #555; font-size: 0.75rem; font-family: monospace;">${ipText}</span>
+                        </td>
+                        <td>${item.created_at ? new Date(item.created_at).toLocaleString('ru-RU') : '—'}</td>
+                        <td><span class="ks-badge">${item.status || 'Успешно'}</span></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // Логика модального окна
+        // Логика выходов и модального окна
         let pendingAction = null;
 
         function promptLogout(type) {
@@ -568,11 +562,13 @@
             const token = localStorage.getItem('kaeront_access_token');
             if (token) {
                 try {
-                    await fetch('/api/v1/user/logout-all', {
+                    await fetch('/api/v1/user/logout', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                } catch (e) {}
+                } catch (e) {
+                    console.error("Logout error:", e);
+                }
             }
             localStorage.removeItem('kaeront_access_token');
             window.location.replace('/login');
