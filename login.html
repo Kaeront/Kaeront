@@ -296,16 +296,24 @@ function startPolling(code) {
                 clearInterval(timerInterval);
                 clearAuthStorage();
 
+                // Лог для отладки в консоли (F12) -> сразу увидишь, что пришло!
+                console.log("[Ban Response Data]:", data);
+
                 let banMsg = "Ваш аккаунт заблокирован на веб-ресурсе проекта.";
-                
-                if (data.detail) {
-                    if (data.detail.message) {
-                        banMsg = data.detail.message;
-                    } else if (data.detail.username) {
-                        banMsg = `${data.detail.username}, ваш аккаунт заблокирован на веб-ресурсе проекта.`;
+
+                // Достаем detail, даже если он пришел объектом или вложенной структурой
+                const detail = data.detail || data;
+
+                if (typeof detail === 'object' && detail !== null) {
+                    if (detail.message) {
+                        banMsg = detail.message;
+                    } else if (detail.username) {
+                        banMsg = `${detail.username}, ваш аккаунт заблокирован на веб-ресурсе проекта Kaeront.`;
                     }
+                } else if (typeof detail === 'string' && detail.length > 0) {
+                    banMsg = detail;
                 }
-                
+
                 showBannedState(banMsg);
                 return;
             }
