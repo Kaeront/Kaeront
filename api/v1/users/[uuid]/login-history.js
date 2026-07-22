@@ -1,32 +1,48 @@
 export default async function handler(req, res) {
-    const { uuid } = req.query;
-    const userAuthHeader = req.headers.authorization;
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (!userAuthHeader) {
-        return res.status(401).json({ error: "Unauthorized: Missing user token" });
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
     }
 
-    const VDS_URL = process.env.KAERONT_API_URL;
-    const INTERNAL_KEY = process.env.INTERNAL_API_KEY;
+    if (req.method !== 'GET') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-    if (!VDS_URL) {
-        return res.status(500).json({ error: "Server Configuration Error: KAERONT_API_URL is missing" });
+    const { uuid } = req.query;
+    const authHeader = req.headers.authorization;
+
+    if (!uuid) {
+        return res.status(400).json({ error: 'UUID is required' });
+    }
+
+    const apiUrl = process.env.KAERONT_API_URL;
+
+    if (!apiUrl) {
+        return res.status(500).json({ error: 'Server configuration error' });
     }
 
     try {
-        const response = await fetch(`${VDS_URL}/api/v1/users/${uuid}/login-history`, {
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Internal-Token': process.env.INTERNAL_API_KEY
+        };
+
+        if (authHeader) {
+            headers['Authorization'] = authHeader;
+        }
+
+        const response = await fetch(`${apiUrl}/api/v1/users/${uuid}/login-history`, {
             method: 'GET',
-            headers: {
-                'Authorization': userAuthHeader,
-                'X-Internal-Key': INTERNAL_KEY || '',
-                'Content-Type': 'application/json'
-            }
+            headers: headers
         });
 
         const data = await response.json();
         return res.status(response.status).json(data);
     } catch (error) {
-        console.error("Vercel Proxy History Error:", error);
-        return res.status(500).json({ error: "Internal Proxy Error" });
+        console.error('Vercel History Proxy Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 }
