@@ -210,6 +210,8 @@
             background: #1a1a1a;
             color: #ccc;
             border-color: #333;
+            font-family: 'Minecraft', sans-serif;
+            font-weight: bold;
         }
         .ks-btn-sec:hover {
             background: #252525;
@@ -220,6 +222,8 @@
             background: rgba(255, 85, 85, 0.1);
             color: #ff5555;
             border-color: rgba(255, 85, 85, 0.3);
+            font-family: 'Minecraft', sans-serif;
+            font-weight: normal;
         }
         .ks-btn-danger:hover {
             background: #ff5555;
@@ -267,6 +271,8 @@
             font-weight: 700;
             color: #fff;
             margin: 0 0 10px 0;
+            font-family: 'Minecraft', sans-serif;
+            font-weight: bold;
         }
 
         .ks-modal-desc {
@@ -371,7 +377,7 @@
                         <a id="profile-link" href="#" class="ks-btn ks-btn-sec">Профиль</a>
                     </div>
 
-                    <button class="ks-btn ks-btn-sec" onclick="promptLogout('single')">Выйти из аккаунта</button>
+                    <button class="ks-btn ks-btn-danger" onclick="promptLogout('single')">Выйти из аккаунта</button>
                 </div>
 
                 <!-- Вкладка 2: Безопасность -->
@@ -382,7 +388,7 @@
                     </div>
 
                     <div style="margin-bottom: 30px;">
-                        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: #fff;">Активные сессии</h3>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Активные сессии</h3>
                         <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: #777;">
                             Завершить все открытые сеансы на всех устройствах.
                         </p>
@@ -390,7 +396,7 @@
                     </div>
 
                     <div>
-                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff;">История успешных входов</h3>
+                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">История успешных входов (до 15)</h3>
                         <div class="ks-table-container">
                             <table class="ks-table">
                                 <thead>
@@ -630,11 +636,11 @@
 
             if (type === 'single') {
                 title.textContent = 'Выйти из аккаунта?';
-                desc.textContent = 'Вам потребуется повторно авторизоваться на этом устройстве/браузере.';
+                desc.textContent = 'Вам потребуется повторно авторизоваться на этом браузере.';
                 pendingAction = logoutSingle;
             } else if (type === 'all') {
                 title.textContent = 'Завершить все сессии?';
-                desc.textContent = 'Вы выйдете из аккаунта абсолютно на всех браузерах или подключенных устройствах.';
+                desc.textContent = 'Вы выйдете из аккаунта абсолютно на всех браузерах или подключенных устройствах, включая этот.';
                 pendingAction = logoutAll;
             }
 
