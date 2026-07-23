@@ -248,7 +248,7 @@
             background: rgb(20, 20, 20); 
             border-left: 3px solid var(--accent); 
             padding: 15px;
-            width: 260px; 
+            width: 270px; 
             flex-shrink: 0; 
             box-sizing: border-box;
             transition: background 0.3s ease; 
@@ -271,7 +271,7 @@
         }
 
         /* --- SERVER CARDS --- */
-        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 30px 0; width: 100%; box-sizing: border-box; height: 600px; overflow-y: auto; mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 30px 0; width: 100%; box-sizing: border-box; height: 600px; overflow-y: auto; scrollbar-width: none; mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; }
         .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; text-transform: uppercase; text-align: center; margin: 50px 0px 20px; }
         .section-header { font-family: 'Minecraft'; font-size: 1rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background: rgba(17,17,17,0.5); border-left: 4px solid var(--accent); padding: 30px; cursor: url('/assets/pointer.png'), pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
@@ -636,14 +636,14 @@
         <div class="why-card"><h4>Долгие вайпы</h4><p>Редко происходят вайпы. Ваши постройки не исчезнут на следующей неделе.</p></div>
         <div class="why-card"><h4>Стабильность</h4><p>Плавная игра на серверах с минимальным количеством пинга.</p></div>
         <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
-        <div class="why-card"><h4>Доступность</h4><p>Наши серверы предоставляют бесплатную игру.</p></div>
+        <div class="why-card"><h4>Доступность</h4><p>Наши серверы предоставляют бесплатную игру. Имеете лицензию — можете играть.</p></div>
         <div class="why-card"><h4>Поддержка</h4><p>Быстрые и вежливые контакты связи проекта.</p></div>
         <div class="why-card"><h4>Профессионализм</h4><p>Подходим с максимальной, взрослой ответственностью к технической и организационной стороне.</p></div>
         <div class="why-card"><h4>Комьюнити</h4><p>Адекватная, дружелюбная среда и строгий отбор игроков.</p></div>
         <div class="why-card"><h4>Долгие вайпы</h4><p>Редко происходят вайпы. Ваши постройки не исчезнут на следующей неделе.</p></div>
         <div class="why-card"><h4>Стабильность</h4><p>Плавная игра на серверах с минимальным количеством пинга.</p></div>
         <div class="why-card"><h4>Нет P2W</h4><p>Никакого доната на привилегии. Все игроки равны.</p></div>
-        <div class="why-card"><h4>Доступность</h4><p>Наши серверы предоставляют бесплатную игру.</p></div>
+        <div class="why-card"><h4>Доступность</h4><p>Наши серверы предоставляют бесплатную игру. Имеете лицензию — можете играть.</p></div>
         <div class="why-card"><h4>Поддержка</h4><p>Быстрые и вежливые контакты связи проекта.</p></div>
         <div class="why-card"><h4>Профессионализм</h4><p>Подходим с максимальной, взрослой ответственностью к технической и организационной стороне.</p></div>
     </div>
@@ -907,8 +907,8 @@ function updateOpacity() {
     });
 }
 
-let targetAutoSpeed = 0.5;
-let currentAutoSpeed = 0.5;
+let targetAutoSpeed = 1;
+let currentAutoSpeed = 1;
 
 function animate() {
     const unitWidth = getUnitWidth();
