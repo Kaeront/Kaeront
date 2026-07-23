@@ -48,30 +48,6 @@
             text-transform: uppercase;
         }
         .btn-auth:hover { background: #fff; color: #fa0; box-shadow: 0 0 15px #fa0; }
-        .btn-logout {
-            background: #333;
-            color: #f55;
-            border: none;
-            padding: 12px 24px;
-            font-size: 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, scale 0.2s ease !important;
-            font-family: 'Minecraft', sans-serif;
-            text-transform: uppercase;
-        }
-        .btn-logout:hover { background: #f55; color: #000; animation: shake 0.3s infinite linear; }
-        @keyframes shake {
-            0% { transform: translate(1px, 0px); }
-            12.5% { transform: translate(0.707px, 0.707px); }
-            25% { transform: translate(0px, 1px); rotate: -0.5deg; }
-            37.5% { transform: translate(-0.707px, 0.707px); }
-            50% { transform: translate(-1px, 0px); }
-            62.5% { transform: translate(-0.707px, -0.707px); }
-            75% { transform: translate(0px, -1px); rotate: 0.5deg; }
-            87.5% { transform: translate(0.707px, -0.707px); }
-            100% { transform: translate(1px, 0px); }
-        }
         .timer-text { color: #888; font-size: 14px; }
         .expired-box {
             background: rgba(255, 85, 85, 0.1);
@@ -461,7 +437,6 @@ function showAlreadyLoggedInState(userData) {
             <p style="color: #fff; margin: 0 0 15px 0;">Вы вошли как <b style="color: #fa0;">${userData.username || 'Игрок'}</b>.</p>
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="btn-auth" onclick="window.location.href='/user/${userData.username}'">Мой профиль</button>
-                <button class="btn-logout" onclick="clearAuthStorage(); location.reload();">Выйти</button>
             </div>
         `;
         document.querySelector('.auth-container').appendChild(loggedBox);
