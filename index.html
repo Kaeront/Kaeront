@@ -907,8 +907,8 @@ function updateOpacity() {
     });
 }
 
-let targetAutoSpeed = 1;
-let currentAutoSpeed = 1;
+let targetAutoSpeed = 0.75;
+let currentAutoSpeed = 0.75;
 
 function animate() {
     const unitWidth = getUnitWidth();
@@ -966,7 +966,7 @@ window.addEventListener('touchmove', moveDrag, {passive: true});
 window.addEventListener('touchend', endDrag);
 
 scrollContainer.addEventListener('mouseenter', () => targetAutoSpeed = 0);
-scrollContainer.addEventListener('mouseleave', () => targetAutoSpeed = 0.5);
+scrollContainer.addEventListener('mouseleave', () => targetAutoSpeed = 0.75);
 
 window.onclick = function(e) { 
     if (e.target.classList.contains('modal-overlay')) {
