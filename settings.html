@@ -604,7 +604,8 @@
             }
 
             tbody.innerHTML = items.map(item => {
-                const deviceText = parseDeviceName(item.user_agent, item.device);
+                // Берём то, что уже красиво распарсил FastAPI на бэкенде
+                const deviceText = item.device || parseDeviceName(item.user_agent);
                 const ipText = item.ip ? ` (${item.ip})` : '';
                 const localTime = formatLocalDate(item.created_at || item.timestamp);
 
