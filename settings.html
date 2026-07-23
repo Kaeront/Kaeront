@@ -6,9 +6,14 @@
     <title>Настройки — Kaeront</title>
     
     <style>
-         :root {
+        :root {
             --nav-hide: 38px;
         }
+
+        html {
+            height: 100%;
+        }
+
         body {
             display: none; /* Скрыто до валидации токена */
             background-color: #080808 !important;
@@ -16,6 +21,15 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
+            min-height: 100vh;
+            /* Flexbox гарантирует, что footer всегда будет прижат к низу страницы */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Запрет скролла при открытом модальном окне с защитой от !important */
+        body.modal-open {
+            overflow: hidden !important;
         }
 
         .page-container {
@@ -23,9 +37,10 @@
             margin: 120px auto 60px;
             padding: 0 20px;
             box-sizing: border-box;
+            flex: 1 0 auto; /* Растягивает контейнер, чтобы футер прижимался вниз */
+            width: 100%;
         }
 
-        /* Зафиксированные колонки сетки предотвращают сдвиги ширины */
         .settings-grid {
             display: grid;
             grid-template-columns: 240px 670px;
@@ -52,6 +67,8 @@
             font-weight: 700;
             margin-bottom: 12px;
             padding-left: 8px;
+            font-family: 'Minecraft', sans-serif;
+            font-weight: bold;
         }
 
         .ks-nav-list {
@@ -88,7 +105,7 @@
             border: 1px solid #333;
         }
 
-        /* Основной блок контента с автоматической подстройкой высоты */
+        /* 2. ПЛАВНЫЙ КОНТЕЙНЕР КОНТЕНТА И АНИМАЦИЯ ВЫСОТЫ */
         .ks-content {
             background: rgba(18, 18, 18, 0.85);
             border: 1px solid #222;
@@ -97,18 +114,23 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             width: 670px;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            /* Плавный переход высоты */
+            transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Автоматическая высота: неактивный таб полностью убирается из DOM-потока */
         .ks-tab-panel {
             display: none;
             opacity: 0;
-            transition: opacity 0.2s ease-in-out;
+            transform: translateY(6px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .ks-tab-panel.active {
             display: block;
             opacity: 1;
+            transform: translateY(0);
         }
 
         .ks-header {
@@ -130,7 +152,6 @@
             margin: 0;
         }
 
-        /* Карточка пользователя */
         .ks-user-box {
             background: #111;
             border: 1px solid #252525;
@@ -160,7 +181,6 @@
             color: #666;
         }
 
-        /* Таблица истории */
         .ks-table-container {
             border: 1px solid #222;
             border-radius: 8px;
@@ -193,7 +213,6 @@
             color: #ccc;
         }
 
-        /* Кнопки */
         .ks-btn {
             padding: 10px 18px;
             border-radius: 6px;
@@ -272,7 +291,6 @@
             color: #fff;
             margin: 0 0 10px 0;
             font-family: 'Minecraft', sans-serif;
-            font-weight: bold;
         }
 
         .ks-modal-desc {
@@ -353,14 +371,14 @@
         <div class="settings-grid">
             
             <aside class="ks-sidebar">
-                <div class="ks-sidebar-title">Настройки</div>
+                <div class="ks-sidebar-title">нᴀстᴘойᴋи (βeta)</div>
                 <div class="ks-nav-list">
                     <button class="ks-nav-item active" onclick="switchTab('tab-general', this)">Основное</button>
                     <button class="ks-nav-item" onclick="switchTab('tab-security', this)">Безопасность</button>
                 </div>
             </aside>
 
-            <main class="ks-content">
+            <main class="ks-content" id="ks-content-box">
                 
                 <!-- Вкладка 1: Основное -->
                 <div id="tab-general" class="ks-tab-panel active">
@@ -438,12 +456,16 @@
         let CURRENT_UUID = null;
         let CURRENT_TOKEN = null;
 
-        // Переключение табов с автоматической корректировкой высоты
+        // ПЛАВНАЯ СМЕНА ВЫСОТЫ И ПЕРЕХОД ТАБОВ
         function switchTab(tabId, btn) {
+            const container = document.getElementById('ks-content-box');
             const currentTab = document.querySelector('.ks-tab-panel.active');
             const targetTab = document.getElementById(tabId);
             
             if (currentTab === targetTab) return;
+
+            // Зафиксировать текущую высоту перед переключением
+            container.style.height = `${container.offsetHeight}px`;
 
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -451,7 +473,18 @@
             if (currentTab) {
                 currentTab.classList.remove('active');
             }
+
+            // Включаем целевую вкладку
             targetTab.classList.add('active');
+
+            // Вычисляем высоту нового контента и анимируем контейнер
+            const newHeight = targetTab.offsetHeight + 64; // 64px = padding (top: 32px + bottom: 32px)
+            container.style.height = `${newHeight}px`;
+
+            // После завершения анимации возвращаем auto, чтобы реактивный контент тянулся при изменении окна
+            setTimeout(() => {
+                container.style.height = 'auto';
+            }, 350);
         }
 
         // Парсинг User-Agent
@@ -460,7 +493,6 @@
                 return 'Неизвестный браузер';
             }
         
-            // 1. ОС
             let os = '';
             if (uaString.includes('Windows')) os = 'Windows';
             else if (uaString.includes('Mac OS') || uaString.includes('Macintosh')) os = 'macOS';
@@ -468,7 +500,6 @@
             else if (uaString.includes('iPhone') || uaString.includes('iPad')) os = 'iOS';
             else if (uaString.includes('Linux')) os = 'Linux';
         
-            // 2. Браузер (проверки без строгих слешей для надежности)
             let browser = '';
             if (uaString.includes('Brave') || uaString.includes('brave')) browser = 'Brave';
             else if (uaString.includes('Edg')) browser = 'Edge';
@@ -478,13 +509,9 @@
             else if (uaString.includes('Chrome')) browser = 'Chrome';
             else if (uaString.includes('Safari')) browser = 'Safari';
         
-            if (browser && os) {
-                return `${browser} (${os})`;
-            } else if (browser) {
-                return browser;
-            } else if (os) {
-                return `Браузер (${os})`;
-            }
+            if (browser && os) return `${browser} (${os})`;
+            if (browser) return browser;
+            if (os) return `Браузер (${os})`;
         
             return fallbackDevice || 'Неизвестный браузер';
         }
@@ -492,7 +519,6 @@
         function formatLocalDate(dateStr) {
             if (!dateStr) return '—';
             try {
-                // Добавляем 'Z', если строка ISO не содержит указания UTC
                 let isoStr = dateStr;
                 if (!isoStr.endsWith('Z') && !isoStr.includes('+')) {
                     isoStr += 'Z';
@@ -539,7 +565,7 @@
                 });
 
                 if (res.ok) {
-                    document.body.style.display = 'block';
+                    document.body.style.display = 'flex'; // Поддержка flex для футера
                     initSettings();
                 } else {
                     localStorage.removeItem('kaeront_access_token');
@@ -552,13 +578,11 @@
             }
         })();
 
-        // Загрузка данных страницы
         async function initSettings() {
             if (!CURRENT_UUID || !CURRENT_TOKEN) return;
 
             document.getElementById('display-uuid').textContent = CURRENT_UUID;
 
-            // 1. Получение ника и формирования ссылки профиля
             try {
                 let username = null;
                 const res = await fetch(`/api/v1/users/${CURRENT_UUID}`);
@@ -584,7 +608,6 @@
                 document.getElementById('profile-link').href = `/user/${CURRENT_UUID}`;
             }
 
-            // 2. История авторизаций
             try {
                 const res = await fetch(`/api/v1/users/${CURRENT_UUID}/login-history`, {
                     headers: { 'Authorization': `Bearer ${CURRENT_TOKEN}` }
@@ -610,7 +633,6 @@
             }
 
             tbody.innerHTML = items.map(item => {
-                // Берём то, что уже красиво распарсил FastAPI на бэкенде
                 const deviceText = item.device || parseDeviceName(item.user_agent);
                 const ipText = item.ip ? ` (${item.ip})` : '';
                 const localTime = formatLocalDate(item.created_at || item.timestamp);
@@ -626,7 +648,7 @@
             }).join('');
         }
 
-        // Модальные окна и процедура выхода
+        // МОДАЛЬНЫЕ ОКНА И БЛОКИРОВКА СКРОЛЛА
         let pendingAction = null;
 
         function promptLogout(type) {
@@ -645,10 +667,12 @@
             }
 
             modal.classList.add('active');
+            document.body.classList.add('modal-open'); // Блокировка скролла
         }
 
         function closeModal() {
             document.getElementById('confirm-modal').classList.remove('active');
+            document.body.classList.remove('modal-open'); // Разблокировка скролла
             pendingAction = null;
         }
 
