@@ -66,7 +66,7 @@ window.allNews = [
                 id: "30-03-2026",
                 date: "30 марта, 2026 года",
                 title: "Присоединение к Kaeront",
-                tags: [{n: "Важное", c: "tag-red"}, {n: "Сайт", c: "tag-blue"}, {n: "Серверы", c: "tag-blue"}],
+                tags: [{n: "Сайт", c: "tag-blue"}, {n: "Серверы", c: "tag-blue"}],
                 content: "К Kaeront присоединились прочие Minecraft-проекты от KAmir, такие как: FYGHTING, STRYKE и Matchmaking. Прошлые новости этих проектов уже дополняются в страницу с новостями <a href=\"news\">kaeront.ru/news</a>."
             },
             {
