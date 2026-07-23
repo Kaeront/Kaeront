@@ -83,13 +83,18 @@
             border-radius: 8px;
             color: #aaa;
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 400;
             cursor: pointer;
             background: transparent;
-            border: none;
+            border: 1px solid transparent;
             text-align: left;
             box-sizing: border-box;
-            transition: all 0.2s ease;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .ks-nav-item:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
         }
 
         .ks-nav-item:hover {
@@ -98,10 +103,10 @@
         }
 
         .ks-nav-item.active {
-            background: #222;
+            background: #2a2a2a;
             color: #fff;
-            font-weight: 600;
-            border: 1px solid #333;
+            font-weight: 700;
+            border-color: #383838;
         }
 
         /* 2. ПЛАВНЫЙ КОНТЕЙНЕР КОНТЕНТА И АНИМАЦИЯ ВЫСОТЫ */
@@ -115,21 +120,18 @@
             box-sizing: border-box;
             position: relative;
             overflow: hidden;
-            /* Плавный переход высоты */
-            transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: height 0.2s cubic-bezier(0.2, 0, 0, 1);
         }
 
         .ks-tab-panel {
             display: none;
             opacity: 0;
-            transform: translateY(6px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.15s ease-in-out;
         }
 
         .ks-tab-panel.active {
             display: block;
             opacity: 1;
-            transform: translateY(0);
         }
 
         .ks-header {
@@ -463,27 +465,43 @@
             
             if (currentTab === targetTab) return;
 
-            // Зафиксировать текущую высоту перед переключением
-            container.style.height = `${container.offsetHeight}px`;
-
+            // 1. Моментально переключаем активную кнопку в сайдбаре
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
+            // 2. Зафиксировать высоту перед началом анимации
+            container.style.height = `${container.offsetHeight}px`;
+
+            // 3. Плавно тушим текущую вкладку
             if (currentTab) {
-                currentTab.classList.remove('active');
+                currentTab.style.opacity = '0';
             }
 
-            // Включаем целевую вкладку
-            targetTab.classList.add('active');
-
-            // Вычисляем высоту нового контента и анимируем контейнер
-            const newHeight = targetTab.offsetHeight + 64; // 64px = padding (top: 32px + bottom: 32px)
-            container.style.height = `${newHeight}px`;
-
-            // После завершения анимации возвращаем auto, чтобы реактивный контент тянулся при изменении окна
+            // Ждем 120ms (пока текущая вкладка станет прозрачной)
             setTimeout(() => {
-                container.style.height = 'auto';
-            }, 350);
+                if (currentTab) {
+                    currentTab.classList.remove('active');
+                }
+
+                // Включаем целевую вкладку (пока с opacity: 0)
+                targetTab.style.opacity = '0';
+                targetTab.classList.add('active');
+
+                // Пересчитываем высоту и плавно меняем её
+                const newHeight = targetTab.offsetHeight + 64; // 64px = padding top/bottom
+                container.style.height = `${newHeight}px`;
+
+                // Проявляем новую вкладку
+                requestAnimationFrame(() => {
+                    targetTab.style.opacity = '1';
+                });
+
+                // Возвращаем auto по завершении переходов
+                setTimeout(() => {
+                    container.style.height = 'auto';
+                }, 200);
+
+            }, 120);
         }
 
         // Парсинг User-Agent
