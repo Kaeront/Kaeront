@@ -203,14 +203,22 @@ async function startAuthProcess() {
     }
 
     try {
-        // Передаем User-Agent браузера пользователя при генерации кода
+        // Определение точного браузера
+        let customUa = navigator.userAgent;
+        if (navigator.userAgentData && navigator.userAgentData.brands) {
+            const brands = navigator.userAgentData.brands.map(b => b.brand);
+            if (brands.includes("Brave")) {
+                customUa += " Brave";
+            }
+        }
+
         const response = await fetch('/api/generate', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user_agent: navigator.userAgent
+                user_agent: customUa
             })
         });
 
@@ -232,7 +240,7 @@ async function startAuthProcess() {
         alert('Не удалось связаться с сервером.');
     }
 }
-    
+
 async function checkActiveSession() {
     const token = localStorage.getItem('kaeront_access_token');
 
