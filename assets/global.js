@@ -99,10 +99,9 @@ const globalStyles = `
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
         align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
-        transition: var(--transition), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
-        will-change: margin-top;
-        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: background, backdrop-filter, border-bottom, margin-top;
+        transition: background 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
     }
     nav.scrolled {
         background: rgba(10, 10, 10, 0.7); 
