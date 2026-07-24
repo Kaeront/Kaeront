@@ -63,6 +63,7 @@
             box-sizing: border-box;
             position: relative;
             overflow: hidden;
+            counter-reset: current var(--donated) goal var(--donate-goal);
         }
 
         @keyframes move-stripes {
@@ -138,7 +139,6 @@
         .donate-goal-text {
             font-size: 0.7rem;
             color: var(--text-main);
-            counter-reset: goal var(--donate-goal);
         }
         
         .donate-goal-counter::before {
@@ -206,7 +206,6 @@
             font-size: 0.65rem;
             color: #fff;
             text-shadow: 1px 1px 2px #000;
-            counter-reset: current var(--donated) goal var(--donate-goal);
         }
         
         .donate-progress-text::before {
