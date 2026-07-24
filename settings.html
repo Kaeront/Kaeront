@@ -622,186 +622,124 @@
 
     <script src="/assets/global.js"></script>
     <script>
-    class Spoiler {
-        constructor(el) {
-            this.container = el;
-            this.content = el.querySelector('.ks-spoiler-content');
-            
-            this.canvas = document.createElement('canvas');
-            this.canvas.className = 'ks-spoiler-canvas';
-            this.container.appendChild(this.canvas);
-            
-            this.ctx = this.canvas.getContext('2d');
-            this.particles = [];
-            this.animId = null;
-            this.isRevealed = false;
-            this.isRunning = false;
-    
-            this.init();
-        }
-    
-        init() {
-            this.resize();
-            this.createParticles();
-    
-            // Клик переключает состояние (раскрыть / замазать)
-            this.container.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.toggle();
-            });
-    
-            window.addEventListener('resize', () => {
-                if (!this.isRevealed) {
-                    this.resize();
-                    this.createParticles();
-                }
-            });
-        }
-    
-        // Запуск цикла анимации
-        start() {
-            if (this.isRevealed || this.isRunning) return;
-            this.isRunning = true;
-            this.loop();
-        }
-    
-        // Остановка цикла анимации (для экономии ресурсов ПК)
-        stop() {
-            this.isRunning = false;
-            if (this.animId) {
-                cancelAnimationFrame(this.animId);
+        class Spoiler {
+            constructor(el) {
+                this.container = el;
+                this.content = el.querySelector('.ks-spoiler-content');
+                
+                this.canvas = document.createElement('canvas');
+                this.canvas.className = 'ks-spoiler-canvas';
+                this.container.appendChild(this.canvas);
+                
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
                 this.animId = null;
+                this.isRevealed = false;
+        
+                this.init();
             }
-        }
-    
-        toggle(forceState) {
-            this.isRevealed = forceState !== undefined ? forceState : !this.isRevealed;
-    
-            // Отменяем текущую анимацию перед изменением состояния, чтобы избежать фризов
-            this.stop();
-    
-            if (this.isRevealed) {
-                this.container.classList.add('revealed');
-            } else {
-                this.container.classList.remove('revealed');
+        
+            init() {
                 this.resize();
                 this.createParticles();
-                
-                // Запускаем анимацию только если вкладка "Безопасность" сейчас активна
-                const securityTab = document.getElementById('tab-security');
-                if (securityTab && securityTab.classList.contains('active')) {
-                    this.start();
-                }
-            }
-        }
-    
-        resize() {
-            const rect = this.container.getBoundingClientRect();
-            this.width = rect.width || 100;
-            this.height = rect.height || 20;
-            
-            const dpr = window.devicePixelRatio || 1;
-            this.canvas.width = this.width * dpr;
-            this.canvas.height = this.height * dpr;
-            this.ctx.scale(dpr, dpr);
-        }
-    
-        createParticles() {
-            this.particles = [];
-            const density = 0.2; // Слегка уменьшили плотность для еще лучшей производительности
-            const count = Math.floor(this.width * this.height * density);
-    
-            for (let i = 0; i < count; i++) {
-                this.particles.push({
-                    x: Math.random() * this.width,
-                    y: Math.random() * this.height,
-                    size: Math.random() * 1.5 + 1,
-                    vx: (Math.random() - 0.5) * 0.6,
-                    vy: (Math.random() - 0.5) * 0.6,
-                    alpha: Math.random(),
-                    alphaSpeed: (Math.random() - 0.5) * 0.04
+                this.loop();
+        
+                // Клик переключает состояние (раскрыть / замазать)
+                this.container.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Чтобы не срабатывали лишние события
+                    this.toggle();
+                });
+        
+                window.addEventListener('resize', () => {
+                    if (!this.isRevealed) {
+                        this.resize();
+                        this.createParticles();
+                    }
                 });
             }
-        }
-    
-        loop() {
-            if (!this.isRunning || this.isRevealed) return;
-    
-            this.ctx.clearRect(0, 0, this.width, this.height);
-    
-            for (let p of this.particles) {
-                p.x += p.vx;
-                p.y += p.vy;
-    
-                if (p.x < 0 || p.x > this.width) p.vx *= -1;
-                if (p.y < 0 || p.y > this.height) p.vy *= -1;
-    
-                p.alpha += p.alphaSpeed;
-                if (p.alpha <= 0.2 || p.alpha >= 1) p.alphaSpeed *= -1;
-    
-                this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
-                this.ctx.fillRect(p.x, p.y, p.size, p.size);
-            }
-    
-            this.animId = requestAnimationFrame(() => this.loop());
-        }
-    }
-    
-    // ПЛАВНАЯ СМЕНА ВЫСОТЫ И ПЕРЕХОД ТАБОВ
-    function switchTab(tabId, btn) {
-        const container = document.getElementById('ks-content-box');
-        const currentTab = document.querySelector('.ks-tab-panel.active');
-        const targetTab = document.getElementById(tabId);
         
-        if (currentTab === targetTab) return;
-    
-        // Управление анимацией партиклов при смене вкладок
-        if (tabId === 'tab-security') {
-            // Если перешли в "Безопасность" — запускаем частицы
-            activeIpSpoilers.forEach(spoiler => spoiler.start());
-        } else {
-            // Если ушли из "Безопасность" — полностью останавливаем анимацию для разгрузки ПК
-            activeIpSpoilers.forEach(spoiler => spoiler.stop());
-        }
-    
-        // 1. Моментально переключаем активную кнопку в сайдбаре
-        document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    
-        // 2. Зафиксировать высоту перед началом анимации
-        container.style.height = `${container.offsetHeight}px`;
-    
-        // 3. Плавно тушим текущую вкладку
-        if (currentTab) {
-            currentTab.style.opacity = '0';
-        }
-    
-        // Ждем 120ms (пока текущая вкладка станет прозрачной)
-        setTimeout(() => {
-            if (currentTab) {
-                currentTab.classList.remove('active');
+            toggle(forceState) {
+                // Если передан forceState (true/false) — используем его, иначе инвертируем
+                this.isRevealed = forceState !== undefined ? forceState : !this.isRevealed;
+        
+                if (this.isRevealed) {
+                    this.container.classList.add('revealed');
+                    setTimeout(() => cancelAnimationFrame(this.animId), 400);
+                } else {
+                    this.container.classList.remove('revealed');
+                    this.resize();
+                    this.createParticles();
+                    cancelAnimationFrame(this.animId);
+                    this.loop();
+                }
             }
-    
-            // Включаем целевую вкладку (пока с opacity: 0)
-            targetTab.style.opacity = '0';
-            targetTab.classList.add('active');
-    
-            // Пересчитываем высоту и плавно меняем её
-            const newHeight = targetTab.offsetHeight + 80;
-            container.style.height = `${newHeight}px`;
-    
-            // Проявляем новую вкладку
-            requestAnimationFrame(() => {
-                targetTab.style.opacity = '1';
-            });
-    
-            // Возвращаем auto по завершении переходов
-            setTimeout(() => {
-                container.style.height = 'auto';
-            }, 200);
-    
-        }, 120);
-    }
+        
+            resize() {
+                const rect = this.container.getBoundingClientRect();
+                this.width = rect.width || 100;
+                this.height = rect.height || 20;
+                
+                const dpr = window.devicePixelRatio || 1;
+                this.canvas.width = this.width * dpr;
+                this.canvas.height = this.height * dpr;
+                this.ctx.scale(dpr, dpr);
+            }
+        
+            createParticles() {
+                this.particles = [];
+                const density = 0.25; 
+                const count = Math.floor(this.width * this.height * density);
+        
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.width,
+                        y: Math.random() * this.height,
+                        size: Math.random() * 1.5 + 1,
+                        vx: (Math.random() - 0.5) * 0.6,
+                        vy: (Math.random() - 0.5) * 0.6,
+                        alpha: Math.random(),
+                        alphaSpeed: (Math.random() - 0.5) * 0.04
+                    });
+                }
+            }
+        
+            loop() {
+                if (this.isRevealed) return;
+        
+                this.ctx.clearRect(0, 0, this.width, this.height);
+        
+                for (let p of this.particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+        
+                    if (p.x < 0 || p.x > this.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.height) p.vy *= -1;
+        
+                    p.alpha += p.alphaSpeed;
+                    if (p.alpha <= 0.2 || p.alpha >= 1) p.alphaSpeed *= -1;
+        
+                    this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
+                    this.ctx.fillRect(p.x, p.y, p.size, p.size);
+                }
+        
+                this.animId = requestAnimationFrame(() => this.loop());
+            }
+        }
+
+        function toggleAllIPs(btn) {
+            if (!activeIpSpoilers.length) return;
+        
+            // Проверяем, раскрыт ли сейчас хотя бы один спойлер
+            const isAnyRevealed = activeIpSpoilers.some(s => s.isRevealed);
+        
+            // Если хоть один раскрыт — скрываем все. Если все закрыты — раскрываем все.
+            const targetState = !isAnyRevealed;
+        
+            activeIpSpoilers.forEach(spoiler => spoiler.toggle(targetState));
+        
+            // Меняем текст кнопки
+            btn.textContent = targetState ? 'Скрыть IP' : 'Показать IP';
+        }
 
         let CURRENT_UUID = null;
         let CURRENT_TOKEN = null;
