@@ -39,22 +39,37 @@
         #offer-check { display: none; }
         
         .custom-box {
-            width: 18px; height: 18px; border: 2px solid #333;
-            display: grid; place-items: center; transition: 0.2s; flex-shrink: 0;
+            width: 18px; 
+            height: 18px; 
+            border: 2px solid #333;
+            transition: 0.2s; 
+            flex-shrink: 0;
             box-sizing: border-box;
+            position: relative; 
         }
+        
         .custom-box::after {
-            content: ""; width: 10px; height: 10px; 
-            background: var(--accent); opacity: 0; transition: 0.2s;
+            content: ""; 
+            width: 60%; 
+            height: 60%; 
+            background: var(--accent); 
+            opacity: 0; 
+            transition: 0.2s;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
-
+        
         /* Состояния при чеке */
-        #offer-check:checked + .checkbox-container .custom-box { border-color: var(--accent); }
-        #offer-check:checked + .checkbox-container .custom-box::after { opacity: 1; }
-
-        .checkbox-text { color: var(--text-dim); font-size: 0.75rem; line-height: 1.4; }
-        .checkbox-text a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed; }
-
+        #offer-check:checked + .checkbox-container .custom-box { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.3); 
+        }
+        
+        #offer-check:checked + .checkbox-container .custom-box::after { 
+            opacity: 1; 
+        }
         /* --- ANIMATED BUTTON --- */
         .btn-wrapper {
             display: inline-block; text-decoration: none;
