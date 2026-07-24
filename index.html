@@ -144,6 +144,7 @@
         .donate-goal-counter::before {
             content: counter(goal) " ₽";
             font-weight: bold;
+            color: var(--accent);
         }
 
         .donate-goal span {
@@ -618,7 +619,7 @@
 <div class="donate-banner">
     <div class="donate-info">
         <div class="donate-title">Сбор на мощное железо</div>
-        <div class="donate-goal-text">
+        <div class="donate-goal">
             Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать 
             <span class="donate-goal-counter"></span>
             . Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.
@@ -627,8 +628,8 @@
             <div class="donate-progress-bar"></div>
             <div class="donate-progress-text"></div>
         </div>
-        <a href="/donate" class="donate-btn-small">ПОДДЕРЖАТЬ</a>
     </div>
+    <a href="/donate" class="donate-btn-small">ПОДДЕРЖАТЬ</a>
 </div>
 
     <header id="hero-header">
