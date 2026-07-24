@@ -49,19 +49,21 @@
             width: 18px; 
             height: 18px; 
             border: 2px solid #333;
-            display: grid; 
-            place-items: center; 
             transition: 0.2s; 
             flex-shrink: 0;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        /* Внутренний маркер */
         .custom-box::after {
             content: ""; 
-            width: 10px; 
-            height: 10px; 
+            flex-grow: 1;
+            height: 100%;
+            border: 2px solid transparent; 
             background: var(--accent); 
+            background-clip: padding-box;
             opacity: 0; 
             transition: 0.2s;
         }
@@ -70,10 +72,10 @@
         #offer-check:checked + .checkbox-container .custom-box { 
             border-color: var(--accent); 
         }
-        
         #offer-check:checked + .checkbox-container .custom-box::after { 
             opacity: 1; 
         }
+
 
         /* --- ANIMATED BUTTON --- */
         .btn-wrapper {
