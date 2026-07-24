@@ -633,8 +633,9 @@
                 
                 this.ctx = this.canvas.getContext('2d');
                 this.particles = [];
-                this.animId = null;
                 this.isRevealed = false;
+                this.width = 0;
+                this.height = 0;
         
                 this.init();
             }
@@ -642,36 +643,30 @@
             init() {
                 this.resize();
                 this.createParticles();
-                this.loop();
         
-                // Клик переключает состояние (раскрыть / замазать)
+                // Клик с надежной защитой от фризов при спаме
                 this.container.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Чтобы не срабатывали лишние события
+                    e.stopPropagation();
                     this.toggle();
-                });
-        
-                window.addEventListener('resize', () => {
-                    if (!this.isRevealed) {
-                        this.resize();
-                        this.createParticles();
-                    }
                 });
             }
         
             toggle(forceState) {
-                // Если передан forceState (true/false) — используем его, иначе инвертируем
-                this.isRevealed = forceState !== undefined ? forceState : !this.isRevealed;
+                const nextState = forceState !== undefined ? forceState : !this.isRevealed;
+                if (this.isRevealed === nextState) return;
+        
+                this.isRevealed = nextState;
         
                 if (this.isRevealed) {
                     this.container.classList.add('revealed');
-                    setTimeout(() => cancelAnimationFrame(this.animId), 400);
                 } else {
                     this.container.classList.remove('revealed');
                     this.resize();
                     this.createParticles();
-                    cancelAnimationFrame(this.animId);
-                    this.loop();
                 }
+        
+                // Уведомляем менеджер об изменении состояния
+                SpoilerManager.checkState();
             }
         
             resize() {
@@ -682,6 +677,7 @@
                 const dpr = window.devicePixelRatio || 1;
                 this.canvas.width = this.width * dpr;
                 this.canvas.height = this.height * dpr;
+                this.ctx.imageSmoothingEnabled = false;
                 this.ctx.scale(dpr, dpr);
             }
         
@@ -703,12 +699,13 @@
                 }
             }
         
-            loop() {
+            render() {
                 if (this.isRevealed) return;
         
                 this.ctx.clearRect(0, 0, this.width, this.height);
         
-                for (let p of this.particles) {
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
                     p.x += p.vx;
                     p.y += p.vy;
         
@@ -721,23 +718,88 @@
                     this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
                     this.ctx.fillRect(p.x, p.y, p.size, p.size);
                 }
-        
-                this.animId = requestAnimationFrame(() => this.loop());
             }
         }
+        
+        // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ (Централизованный кадр)
+        const SpoilerManager = {
+            spoilers: [],
+            animFrameId: null,
+            isTabSecurityActive: false,
+        
+            register(el) {
+                const instance = new Spoiler(el);
+                this.spoilers.push(instance);
+                this.checkState();
+                return instance;
+            },
+        
+            clear() {
+                this.stopLoop();
+                this.spoilers = [];
+            },
+        
+            // Определение: нужно ли тратить ресурсы ПК на анимацию right now
+            shouldAnimate() {
+                if (!this.isTabSecurityActive || document.hidden) return false;
+                return this.spoilers.some(s => !s.isRevealed);
+            },
+        
+            checkState() {
+                if (this.shouldAnimate()) {
+                    this.startLoop();
+                } else {
+                    this.stopLoop();
+                }
+            },
+        
+            startLoop() {
+                if (this.animFrameId) return; // Уже запущен
+                const loop = () => {
+                    for (let i = 0; i < this.spoilers.length; i++) {
+                        if (!this.spoilers[i].isRevealed) {
+                            this.spoilers[i].render();
+                        }
+                    }
+                    this.animFrameId = requestAnimationFrame(loop);
+                };
+                this.animFrameId = requestAnimationFrame(loop);
+            },
+        
+            stopLoop() {
+                if (this.animFrameId) {
+                    cancelAnimationFrame(this.animFrameId);
+                    this.animFrameId = null;
+                }
+            },
+        
+            setCurrentTab(tabId) {
+                this.isTabSecurityActive = (tabId === 'tab-security');
+                this.checkState();
+            },
+        
+            resizeAll() {
+                this.spoilers.forEach(s => {
+                    if (!s.isRevealed) {
+                        s.resize();
+                        s.createParticles();
+                    }
+                });
+            }
+        };
 
+        // Сборщик событий изменений окна и активности вкладки браузера
+        window.addEventListener('resize', () => SpoilerManager.resizeAll());
+        document.addEventListener('visibilitychange', () => SpoilerManager.checkState());
+        
+        // ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ВСЕХ IP
         function toggleAllIPs(btn) {
-            if (!activeIpSpoilers.length) return;
+            if (!SpoilerManager.spoilers.length) return;
         
-            // Проверяем, раскрыт ли сейчас хотя бы один спойлер
-            const isAnyRevealed = activeIpSpoilers.some(s => s.isRevealed);
-        
-            // Если хоть один раскрыт — скрываем все. Если все закрыты — раскрываем все.
+            const isAnyRevealed = SpoilerManager.spoilers.some(s => s.isRevealed);
             const targetState = !isAnyRevealed;
         
-            activeIpSpoilers.forEach(spoiler => spoiler.toggle(targetState));
-        
-            // Меняем текст кнопки
+            SpoilerManager.spoilers.forEach(s => s.toggle(targetState));
             btn.textContent = targetState ? 'Скрыть IP' : 'Показать IP';
         }
 
@@ -751,43 +813,38 @@
             const targetTab = document.getElementById(tabId);
             
             if (currentTab === targetTab) return;
-
-            // 1. Моментально переключаем активную кнопку в сайдбаре
+        
+            // Уведомляем SpoilerManager о смене вкладки
+            SpoilerManager.setCurrentTab(tabId);
+        
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
-            // 2. Зафиксировать высоту перед началом анимации
+        
             container.style.height = `${container.offsetHeight}px`;
-
-            // 3. Плавно тушим текущую вкладку
+        
             if (currentTab) {
                 currentTab.style.opacity = '0';
             }
-
-            // Ждем 120ms (пока текущая вкладка станет прозрачной)
+        
             setTimeout(() => {
                 if (currentTab) {
                     currentTab.classList.remove('active');
                 }
-
-                // Включаем целевую вкладку (пока с opacity: 0)
+        
                 targetTab.style.opacity = '0';
                 targetTab.classList.add('active');
-
-                // Пересчитываем высоту и плавно меняем её
+        
                 const newHeight = targetTab.offsetHeight + 80;
                 container.style.height = `${newHeight}px`;
-
-                // Проявляем новую вкладку
+        
                 requestAnimationFrame(() => {
                     targetTab.style.opacity = '1';
                 });
-
-                // Возвращаем auto по завершении переходов
+        
                 setTimeout(() => {
                     container.style.height = 'auto';
                 }, 200);
-
+        
             }, 120);
         }
 
@@ -929,12 +986,13 @@
             }
         }
 
-        // Массив для хранения всех инстансов спойлеров IP в таблице
+        // РЕНДЕР ИСТОРИИ
         let activeIpSpoilers = [];
-        
+
         function renderHistory(items) {
             const tbody = document.getElementById('history-rows');
-            activeIpSpoilers = []; // Очищаем старые ссылки
+            SpoilerManager.clear();
+            activeIpSpoilers = [];
         
             if (!Array.isArray(items) || !items.length) {
                 tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Была оборвана связь с Kaeront.</td></tr>`;
@@ -946,7 +1004,6 @@
                 const ipText = item.ip ? `${item.ip}` : '—';
                 const localTime = formatLocalDate(item.created_at || item.timestamp);
         
-                // Если IP есть — оборачиваем в спойлер
                 const formattedIp = item.ip 
                     ? `<span class="ks-spoiler ip-spoiler"><span class="ks-spoiler-content">${ipText}</span></span>` 
                     : '—';
@@ -960,12 +1017,12 @@
                 `;
             }).join('');
         
-            // Инициализируем партиклы для всех сгенерированных IP
+            // Инициализируем спойлеры через менеджер
             document.querySelectorAll('.ip-spoiler').forEach(el => {
-                activeIpSpoilers.push(new Spoiler(el));
+                const inst = SpoilerManager.register(el);
+                activeIpSpoilers.push(inst);
             });
         
-            // Сбрасываем кнопку массового переключения
             const globalBtn = document.getElementById('toggle-all-ip-btn');
             if (globalBtn) globalBtn.textContent = 'Показать IP';
         }
