@@ -31,19 +31,30 @@
 
         /* --- CUSTOM CHECKBOX --- */
         .checkbox-container {
-            display: flex; align-items: center; gap: 12px; cursor: url('pointer.png'), pointer;
-            text-align: left; user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: url('pointer.png'), pointer;
+            text-align: left;
+            user-select: none;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        
+        /* Стили для ссылок внутри чекбокса */
+        .checkbox-container a {
+            color: var(--accent);
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        
+        .checkbox-container a:hover {
+            color: #fff;
         }
         
         /* Скрытый инпут */
         #offer-check { display: none; }
-        
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
         
         .custom-box {
             width: 18px; 
@@ -59,11 +70,9 @@
         
         .custom-box::after {
             content: ""; 
-            flex-grow: 1;
-            height: 100%;
-            border: 2px solid transparent; 
+            width: 10px;
+            height: 10px;
             background: var(--accent); 
-            background-clip: padding-box;
             opacity: 0; 
             transition: 0.2s;
         }
@@ -71,7 +80,9 @@
         /* Состояния при чеке */
         #offer-check:checked + .checkbox-container .custom-box { 
             border-color: var(--accent); 
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.2);
         }
+        
         #offer-check:checked + .checkbox-container .custom-box::after { 
             opacity: 1; 
         }
