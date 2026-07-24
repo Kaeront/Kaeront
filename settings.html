@@ -272,6 +272,10 @@
             visibility: visible;
         }
 
+        html:has(.ks-modal-overlay.active), body:has(.ks-modal-overlay.active) {
+            overflow: hidden !important;
+        }
+
         .ks-modal {
             background: #111;
             border: 1px solid #2a2a2a;
