@@ -19,7 +19,6 @@
             display: none; /* Скрыто до валидации токена */
             background-color: #080808 !important;
             color: #ececec;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -308,6 +307,68 @@
             justify-content: flex-end;
         }
 
+        /* Стили для круглой кнопки подсказки (интегрированные) */
+        .info-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background-color: #0080ff;
+            color: #fff;
+            border-radius: 50%;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            font-style: italic;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .info-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .info-btn .tooltip {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px) scale(0.9);
+            width: 220px;
+            padding: 10px 14px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            font-size: 13px;
+            font-weight: normal;
+            font-style: normal;
+            border-radius: 6px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            cursor: default;
+        }
+
+        .info-btn .tooltip a {
+            color: #3b9bff;
+            text-decoration: underline;
+        }
+
+        .info-btn .tooltip a:hover {
+            color: #70b5ff;
+        }
+
+        .info-btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         @media (max-width: 960px) {
             .settings-grid {
                 gap: 10px;
@@ -428,7 +489,15 @@
                                 <thead>
                                     <tr>
                                         <th>Устройство</th>
-                                        <th>IP</th>
+                                        <th>
+                                            IP
+                                            <div class="info-btn">
+                                                i
+                                                <div class="tooltip">
+                                                    Это тестовая подсказка, в которой есть <a href="." target="_blank">настоящая ссылка</a>.
+                                                </div>
+                                            </div>
+                                        </th>
                                         <th>Дата и время</th>
                                     </tr>
                                 </thead>
