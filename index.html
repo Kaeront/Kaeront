@@ -135,9 +135,14 @@
             color: var(--accent);
         }
 
-        .donate-goal {
+        .donate-goal-text {
             font-size: 0.7rem;
             color: var(--text-main);
+            counter-reset: goal var(--donate-goal);
+        }
+        
+        .donate-goal-text::before {
+            content: "Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать <b>" counter(goal) "₽</b>. Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.";
         }
 
         .donate-goal span {
@@ -230,7 +235,7 @@
             cursor: url('/assets/grab.png'), grab;
             user-select: none;
             touch-action: pan-y;
-            mask-image: linear-gradient(to right, transparent, black 30vw, black calc(100% - 30vw), transparent) !important; -webkit-mask-image: linear-gradient(to right, transparent, black 30vw, black calc(100% - 30vw), transparent) !important;
+            mask-image: linear-gradient(to right, transparent, black 200px, black calc(100% - 200px), transparent) !important; -webkit-mask-image: linear-gradient(to right, transparent, black 200px, black calc(100% - 200px), transparent) !important;
         }
         
         .why-us-container:active { 
@@ -613,7 +618,7 @@
     <div class="donate-banner">
         <div class="donate-info">
             <div class="donate-title">Сбор на мощное железо</div>
-            <div class="donate-goal">Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать <b>25000₽</b>. Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.</div>
+            <div class="donate-goal-text"></div>
         <div class="donate-progress">
             <div class="donate-progress-bar"></div>
             <div class="donate-progress-text"></div>
@@ -888,24 +893,6 @@ function getUnitWidth() {
 
 let currentX = getUnitWidth();
 scrollContainer.scrollLeft = currentX;
-
-function updateOpacity() {
-    const containerCenter = scrollContainer.offsetWidth / 2;
-    const cards = track.querySelectorAll('.why-card');
-    
-    cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const distanceFromCenter = Math.abs(containerCenter - cardCenter);
-        
-        if (distanceFromCenter < 180) {
-            const ratio = 1 - (distanceFromCenter / 180);
-            card.style.transform = `scale(${1 + (ratio * 0.2)})`;
-        } else {
-            card.style.transform = `scale(1)`;
-        }
-    });
-}
 
 let targetAutoSpeed = 0.75;
 let currentAutoSpeed = 0.75;
