@@ -310,10 +310,16 @@
 
         @media (max-width: 960px) {
             .settings-grid {
+                gap: 10px;
                 grid-template-columns: 1fr;
+            }
+            .ks-sidebar {
+                width: 100%;
+                border-radius: 40px 40px 20px 20px;
             }
             .ks-content {
                 width: 100%;
+                border-radius: 20px 20px 40px 40px;
             }
             .page-container {
                 margin-top: 90px;
@@ -490,7 +496,7 @@
                 targetTab.classList.add('active');
 
                 // Пересчитываем высоту и плавно меняем её
-                const newHeight = targetTab.offsetHeight + 64; // 64px = padding top/bottom
+                const newHeight = targetTab.offsetHeight + 0; // 0 для проверки 24.07.2026 15:42 мск
                 container.style.height = `${newHeight}px`;
 
                 // Проявляем новую вкладку
