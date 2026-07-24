@@ -141,8 +141,9 @@
             counter-reset: goal var(--donate-goal);
         }
         
-        .donate-goal-text::before {
-            content: "Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать <b>" counter(goal) "₽</b>. Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.";
+        .donate-goal-counter::before {
+            content: counter(goal) " ₽";
+            font-weight: bold;
         }
 
         .donate-goal span {
@@ -204,7 +205,6 @@
             font-size: 0.65rem;
             color: #fff;
             text-shadow: 1px 1px 2px #000;
-            pointer-events: none;
             counter-reset: current var(--donated) goal var(--donate-goal);
         }
         
@@ -615,15 +615,21 @@
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
 
-    <div class="donate-banner">
-        <div class="donate-info">
-            <div class="donate-title">Сбор на мощное железо</div>
-            <div class="donate-goal-text"></div>
+<div class="donate-banner">
+    <div class="donate-info">
+        <div class="donate-title">Сбор на мощное железо</div>
+        <div class="donate-goal-text">
+            Для стабильной работы всех наших серверов 24/7 и расширения памяти сервера нам необходимо собрать 
+            <span class="donate-goal-counter"></span>
+            . Даже ваша малейшая поддержка поможет Kaeront стать быстрее, надёжнее и доступнее для всех.
+        </div>
         <div class="donate-progress">
             <div class="donate-progress-bar"></div>
             <div class="donate-progress-text"></div>
         </div>
-        </div>
+    </div>
+</div>
+
         
         <a href="/donate" class="donate-btn-small">ПОДДЕРЖАТЬ</a>
     </div>
