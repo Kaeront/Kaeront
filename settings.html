@@ -322,30 +322,34 @@
             text-transform: none !important;
             letter-spacing: 0 !important;
         }
-        
+
         .info-btn:hover {
             color: var(--accent);
         }
-        
+
+        /* Невидимый мостик, закрывающий зазор между кнопкой и тултипом */
         .info-btn::after {
             content: '';
             position: absolute;
             bottom: 100%;
-            left: -10px;
-            right: -10px;
-            height: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 15px; /* Высота зоны перекрытия зазора */
+            background: transparent;
             display: none;
         }
-        
-        .info-btn:hover::after {
+
+        .info-btn:hover::after,
+        .info-btn:has(.tooltip:hover)::after {
             display: block;
         }
-        
+
         .info-btn .tooltip {
             position: absolute;
-            bottom: 130%;
+            bottom: 135%; /* Чуть выше подняли, чтобы был небольшой зазор */
             left: 50%;
-            transform: translateX(-50%) translateY(8px) scale(0.95);
+            transform: translateX(-50%) translateY(10px) scale(0.9);
             width: 220px;
             padding: 10px 14px;
             background-color: #333;
@@ -357,28 +361,33 @@
             border-radius: 6px;
             visibility: hidden;
             opacity: 0;
-            transition: opacity 0.2s ease 0.05s, transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.05s, visibility 0.2s ease 0.05s;
+            /* Добавлена задержка на исчезновение (0.15s), чтобы плашка не дергалась */
+            transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s, 
+                        transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s, 
+                        visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s;
             z-index: 10;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             cursor: default;
         }
-        
+
         .info-btn .tooltip a {
             color: #3b9bff;
             text-decoration: underline;
         }
-        
+
         .info-btn .tooltip a:hover {
             color: #70b5ff;
         }
-        
-        .info-btn:hover .tooltip {
+
+        /* Срабатывание при наведении на кнопку ИЛИ на сам тултип */
+        .info-btn:hover .tooltip,
+        .info-btn .tooltip:hover {
             visibility: visible;
             opacity: 1;
-            transform: translateX(-50%) translateY(0) scale(1);
+            transform: translateX(-50%) translateY(0);
+            /* При появлении задержку убираем, чтобы открывалось мгновенно */
             transition-delay: 0s; 
         }
-
         @media (max-width: 960px) {
             .settings-grid {
                 gap: 10px;
@@ -499,15 +508,7 @@
                                 <thead>
                                     <tr>
                                         <th>Устройство</th>
-                                        <th>
-                                            IP
-                                            <div class="info-btn">
-                                                i
-                                                <div class="tooltip">
-                                                    Это тестовая подсказка, в которой есть <a href="." target="_blank">настоящая ссылка</a>.
-                                                </div>
-                                            </div>
-                                        </th>
+                                        <th>IP <div class="info-btn">ⓘ<div class="tooltip">Это тестовая подсказка, в которой есть <a href="." target="_blank">настоящая ссылка</a>.</div></div></th>
                                         <th>Дата и время</th>
                                     </tr>
                                 </thead>
