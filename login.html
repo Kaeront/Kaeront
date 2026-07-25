@@ -31,10 +31,13 @@
             margin: 20px 0;
             font-size: 22px;
             font-weight: 400;
-            color: #fa0;
+            color: #aaa;
             text-shadow: 0.125em 0.125em #3E2A00;
             font-family: 'Minecraft', sans-serif;
             user-select: all;
+        }
+        .code-box span {
+            color: #5ff;
         }
         .btn-auth {
             background: #fa0;
@@ -133,7 +136,7 @@
     <!-- Состояние 2: Отображение кода и таймер -->
     <div id="step-code" style="display: none;">
         <p style="font-size: 14px; margin-bottom: 5px;">Зайдите на наш Minecraft-сервер (play.kaeront.ru) и введите команду в чат:</p>
-        <div class="code-box" id="command-display">/link ...</div>
+        <div class="code-box" id="command-display">/link <span>...</span></div>
         <p class="timer-text">Код действителен ещё <b id="timer-count">--:--</b>!</p>
         <p style="font-size: 12px; color: #666;">Мы ожидаем подтверждения с сервера...</p>
     </div>
@@ -271,7 +274,7 @@ async function checkActiveSession() {
 function showCodeState(code, expireTimestamp) {
     hideAllSteps();
     document.getElementById('step-code').style.display = 'block';
-    document.getElementById('command-display').innerText = `/link ${code}`;
+    document.getElementById('command-display').innerText = `/link <span>${code}</span>`;
 
     startTimer(expireTimestamp);
     startPolling(code);
