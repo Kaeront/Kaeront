@@ -138,7 +138,7 @@
     <div id="step-code" style="display: none;">
         <p style="font-size: 14px; margin-bottom: 5px;">Зайдите на наш Minecraft-сервер (play.kaeront.ru) и введите команду в чат:</p>
         <div class="code-box" id="command-display">/link <span>...</span></div>
-        <p class="timer-text">Код действителен ещё <b id="timer-count">--:--</b>!</p>
+        <p class="timer-text">Код действителен ещё <b id="timer-count">-:--</b>!</p>
         <p style="font-size: 12px; color: #666;">Мы ожидаем подтверждения с сервера...</p>
     </div>
 
@@ -296,7 +296,7 @@ function startTimer(expireTimestamp) {
         } else if (timerCount) {
             const m = Math.floor(remaining / 60000);
             const s = Math.floor((remaining % 60000) / 1000);
-            timerCount.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            timerCount.innerText = `${String(m).padStart(1, '0')}:${String(s).padStart(2, '0')}`;
         }
     }, 1000);
 }
@@ -357,7 +357,7 @@ function startPolling(code) {
     };
 
     check();
-    pollInterval = setInterval(check, 4000);
+    pollInterval = setInterval(check, 3000);
 }
 
 function handleSuccess(data) {
