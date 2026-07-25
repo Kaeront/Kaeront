@@ -683,14 +683,14 @@
         
             createParticles() {
                 this.particles = [];
-                const density = 0.03; 
+                const density = 0.01; 
                 const count = Math.floor(this.width * this.height * density);
         
                 for (let i = 0; i < count; i++) {
                     this.particles.push({
                         x: Math.random() * this.width,
                         y: Math.random() * this.height,
-                        size: Math.random() * 1.1 + 0.7,
+                        size: Math.random() * 1.5 + 1,
                         vx: (Math.random() - 0.5) * 0.6,
                         vy: (Math.random() - 0.5) * 0.6,
                         alpha: Math.random(),
