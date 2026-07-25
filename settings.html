@@ -587,7 +587,7 @@
                                         <th>
                                             IP
                                             <div class="info-btn">ⓘ<div class="tooltip">IP-адрес того, кто находился в игре и привязал аккаунт по команде /link, а не того, кто сгенерировал код на сайте.</div></div>
-                                            <button type="button" id="toggle-all-ip-btn" class="ks-ip-toggle-btn" onclick="toggleAllIPs(this)">Показать IP</button>
+                                            <button type="button" id="toggle-all-ip-btn" class="ks-ip-toggle-btn" onclick="toggleAllIPs(this)">Расскрыть</button>
                                         </th>
                                         <th>Дата и время</th>
                                     </tr>
@@ -683,7 +683,7 @@
         
             createParticles() {
                 this.particles = [];
-                const density = 0.07; 
+                const density = 0.05; 
                 const count = Math.floor(this.width * this.height * density);
         
                 for (let i = 0; i < count; i++) {
@@ -802,7 +802,7 @@
             const targetState = !isAnyRevealed;
         
             SpoilerManager.spoilers.forEach(s => s.toggle(targetState));
-            btn.textContent = targetState ? 'Скрыть IP' : 'Показать IP';
+            btn.textContent = targetState ? 'Скрыть' : 'Расскрыть';
         }
 
         let CURRENT_UUID = null;
@@ -1026,7 +1026,7 @@
             });
         
             const globalBtn = document.getElementById('toggle-all-ip-btn');
-            if (globalBtn) globalBtn.textContent = 'Показать IP';
+            if (globalBtn) globalBtn.textContent = 'Расскрыть';
         }
 
         // МОДАЛЬНЫЕ ОКНА И БЛОКИРОВКА СКРОЛЛА
