@@ -327,7 +327,6 @@
             justify-content: center !important;
             font-size: 1.2em !important;
             font-weight: normal !important;
-            cursor: pointer !important;
             transition: color 0.3s ease !important;
             vertical-align: middle !important;
             font-family: 'Uniform', serif !important;
@@ -364,7 +363,7 @@
             transform: translateX(-50%) translateY(10px) scale(0.9);
             width: 220px;
             padding: 10px;
-            background-color: #333;
+            background-color: #222;
             color: #fff;
             text-align: center;
             font-size: 11px;
@@ -372,10 +371,10 @@
             border-radius: 10px;
             visibility: hidden;
             opacity: 0;
-            /* Добавлена задержка на исчезновение (0.15s), чтобы плашка не дергалась */
-            transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s, 
-                        transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s, 
-                        visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.15s;
+            /* Добавлена задержка на исчезновение (0.1s), чтобы плашка не дергалась */
+            transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
+                        transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
+                        visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s;
             z-index: 10;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             cursor: default;
