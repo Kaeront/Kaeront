@@ -274,7 +274,7 @@ async function checkActiveSession() {
 function showCodeState(code, expireTimestamp) {
     hideAllSteps();
     document.getElementById('step-code').style.display = 'block';
-    document.getElementById('command-display').innerText = `/link <span>${code}</span>`;
+    document.getElementById('command-display').innerHTML = `/link <span>${code}</span>`;
 
     startTimer(expireTimestamp);
     startPolling(code);
