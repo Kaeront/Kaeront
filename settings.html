@@ -642,7 +642,6 @@
                 this.resize();
                 this.createParticles();
         
-                // Клик с надежной защитой от фризов при спаме
                 this.container.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.toggle();
@@ -663,7 +662,6 @@
                     this.createParticles();
                 }
         
-                // Уведомляем менеджер об изменении состояния
                 SpoilerManager.checkState();
             }
         
@@ -688,15 +686,35 @@
                     this.particles.push({
                         x: Math.random() * this.width,
                         y: Math.random() * this.height,
-                        size: Math.random() * 1.25,
+                        size: Math.random() * 1.25 + 0.5,
                         vx: (Math.random() - 0.5) * 0.2,
                         vy: (Math.random() - 0.5) * 0.2,
                         alpha: Math.random(),
                         alphaSpeed: (Math.random() - 0.5) * 0.1
                     });
                 }
+        
+                // Если анимация отключена из-за слабой видеокарты — рисуем статичную картинку
+                if (SpoilerManager.isLowFps) {
+                    this.renderStatic();
+                }
             }
         
+            // Статичная отрисовка (вызывается 1 раз, движение отключено)
+            renderStatic() {
+                if (this.isRevealed) return;
+                this.ctx.clearRect(0, 0, this.width, this.height);
+        
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.2, p.alpha)})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+        
+            // Динамическая отрисовка кадров
             render() {
                 if (this.isRevealed) return;
         
@@ -721,11 +739,17 @@
             }
         }
         
-        // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ (Централизованный кадр)
+        // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ
         const SpoilerManager = {
             spoilers: [],
             animFrameId: null,
             isTabSecurityActive: false,
+            
+            // Переменные для отслеживания просадок FPS
+            isLowFps: false,
+            lastTime: null,
+            fpsCheckFrames: 0,
+            lowFpsCounter: 0,
         
             register(el) {
                 const instance = new Spoiler(el);
@@ -739,9 +763,9 @@
                 this.spoilers = [];
             },
         
-            // Определение: нужно ли тратить ресурсы ПК на анимацию right now
             shouldAnimate() {
-                if (!this.isTabSecurityActive || document.hidden) return false;
+                // Если зафиксирован лаг или мы не во вкладке "Безопасность" — анимацию НЕ запускаем
+                if (this.isLowFps || !this.isTabSecurityActive || document.hidden) return false;
                 return this.spoilers.some(s => !s.isRevealed);
             },
         
@@ -754,15 +778,46 @@
             },
         
             startLoop() {
-                if (this.animFrameId) return; // Уже запущен
-                const loop = () => {
+                if (this.animFrameId) return;
+        
+                this.lastTime = performance.now();
+                this.fpsCheckFrames = 0;
+        
+                const loop = (now) => {
+                    // Расчет времени между кадрами (детекция FPS)
+                    if (this.lastTime) {
+                        const delta = now - this.lastTime;
+                        this.fpsCheckFrames++;
+        
+                        // Если кадр рендерился дольше 35ms (менее ~28 FPS)
+                        if (delta > 35) {
+                            this.lowFpsCounter++;
+                        }
+        
+                        // Каждые 30 кадров делаем выводы
+                        if (this.fpsCheckFrames >= 30) {
+                            // Если более 5 кадров из 30 просели — переходим на статику
+                            if (this.lowFpsCounter >= 5) {
+                                this.disableAnimationDueToPerformance();
+                                return;
+                            }
+                            // Сбрасываем счетчики для следующего замера
+                            this.fpsCheckFrames = 0;
+                            this.lowFpsCounter = 0;
+                        }
+                    }
+                    this.lastTime = now;
+        
+                    // Отрисовка
                     for (let i = 0; i < this.spoilers.length; i++) {
                         if (!this.spoilers[i].isRevealed) {
                             this.spoilers[i].render();
                         }
                     }
+        
                     this.animFrameId = requestAnimationFrame(loop);
                 };
+        
                 this.animFrameId = requestAnimationFrame(loop);
             },
         
@@ -771,6 +826,15 @@
                     cancelAnimationFrame(this.animFrameId);
                     this.animFrameId = null;
                 }
+            },
+        
+            // Вызывается при падении FPS: замораживает всё в статичную картинку
+            disableAnimationDueToPerformance() {
+                this.isLowFps = true;
+                this.stopLoop();
+        
+                // Отрисовываем последний статичный кадр для всех замазанных спойлеров
+                this.spoilers.forEach(s => s.renderStatic());
             },
         
             setCurrentTab(tabId) {
@@ -787,7 +851,6 @@
                 });
             }
         };
-
         // Сборщик событий изменений окна и активности вкладки браузера
         window.addEventListener('resize', () => SpoilerManager.resizeAll());
         document.addEventListener('visibilitychange', () => SpoilerManager.checkState());
