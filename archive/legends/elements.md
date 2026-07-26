@@ -29,7 +29,7 @@
 <tr>
 <td style="background-color: #222; color: #f55; font-weight: bold; padding: 10px;">Пиро</td>
 <td style="background-color: #333; color: #555;">—</td>
-<td><a href="/archive/elements/vapor">Пар</a></td>
+<td><a href="/archive/elements/vaporize">Пар</a></td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
 <td><a href="/archive/elements/overload">Перегрузка</a></td>
 <td><a href="/archive/elements/burning">Горение</a></td>
@@ -38,10 +38,10 @@
 </tr>
 <tr>
 <td style="background-color: #222; color: #55f; font-weight: bold; padding: 10px;">Аква</td>
-<td><a href="/archive/elements/vapor">Пар</a></td>
+<td><a href="/archive/elements/vaporize">Пар</a></td>
 <td style="background-color: #333; color: #555;">—</td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
-<td><a href="/archive/elements/electrocharged">Заряжен</a></td>
+<td><a href="/archive/elements/charged">Заряжен</a></td>
 <td><a href="/archive/elements/bloom">Бутонизация</a></td>
 <td><a href="/archive/elements/frozen">Заморозка</a></td>
 <td><a href="/archive/elements/crystallize">Кристаллизация</a></td>
@@ -59,7 +59,7 @@
 <tr>
 <td style="background-color: #222; color: #a0a; font-weight: bold; padding: 10px;">Фулгор</td>
 <td><a href="/archive/elements/overload">Перегрузка</a></td>
-<td><a href="/archive/elements/electrocharged">Заряжен</a></td>
+<td><a href="/archive/elements/charged">Заряжен</a></td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
 <td style="background-color: #333; color: #555;">—</td>
 <td><a href="/archive/elements/hyperbloom">Вегетация</a></td>
@@ -68,10 +68,10 @@
 </tr>
 <tr>
 <td style="background-color: #222; color: #5f5; font-weight: bold; padding: 10px;">Флора</td>
-<td><a href="/archive/elements/burgeon">Цветение</a></td>
+<td><a href="/archive/elements/blossom">Цветение</a></td>
 <td><a href="/archive/elements/bloom">Бутонизация</a></td>
 <td><a href="/archive/elements/swirl">Рассеивание</a></td>
-<td><a href="/archive/elements/aggravate">Стимуляция</a></td>
+<td><a href="/archive/elements/stimulation">Стимуляция</a></td>
 <td style="background-color: #333; color: #555;">—</td>
 <td><a href="/archive/elements/frostbite">Обморожение</a></td>
 <td><a href="/archive/elements/crystallize">Кристаллизация</a></td>
