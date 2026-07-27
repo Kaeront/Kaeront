@@ -451,6 +451,7 @@
             font-family: 'Minecraft', sans-serif;
             transition: all 0.2s ease;
             vertical-align: middle;
+            width: 64px;
         }
         
         .ks-ip-toggle-btn:hover {
@@ -691,7 +692,7 @@
                         vx: (Math.random() - 0.5) * 0.15,
                         vy: (Math.random() - 0.5) * 0.15,
                         alpha: Math.random(),
-                        alphaSpeed: (Math.random() - 0.5) * 0.03
+                        alphaSpeed: (Math.random() - 0.5) * 0.05
                     });
                 }
         
@@ -708,7 +709,7 @@
         
                 for (let i = 0; i < this.particles.length; i++) {
                     const p = this.particles[i];
-                    this.ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.2, p.alpha)})`;
+                    this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
                     this.ctx.beginPath();
                     this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     this.ctx.fill();
