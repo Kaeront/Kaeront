@@ -258,7 +258,7 @@ async function renderSearchPage() {
 
     if (!query.trim()) return;
     const list = document.getElementById('results-list');
-    list.innerHTML = '<p>Ищу совпадения по базам данных...</p>';
+    list.innerHTML = '<p>Ищем совпадения по базам данных...</p>';
 
     const links = Array.from(document.querySelectorAll('.wiki-tree a'));
     const results = [];
