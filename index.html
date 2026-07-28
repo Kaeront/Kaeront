@@ -695,13 +695,16 @@
                 <p>RPG-приключение в полностью переработанном мире. Собирайте команду уникальных персонажей, прокачивайтесь, комбинируйте стихии и раскройте тайны великих Легенд.</p>
                 <div class="badge-dev" style="color: #FF55FF;border: 1px solid #FF55FF;background: rgba(255, 85, 255, 0.1);">В РАЗРАБОТКЕ <span style="background: #FF55FF;">5%</span></div>
             </div>
-
             <div class="server-card" onclick="openModal('modal-fy')">
                 <h3>FYGHTING</h3>
                 <p>Единственный динамичный геройский шутер в мире Minecraft. Захватывающие бои с файтерами их уникальными способностями на интересных локациях!</p>
                 <div class="badge-dev">В РАЗРАБОТКЕ <span>60%</span></div>
             </div>
-
+            <div class="server-card" onclick="openModal('modal-fy')">
+                <h3>Tridentball</h3>
+                <p>Спортивный гандбол на трезубцах. Уникальный командный геймплей.</p>
+                <div class="badge-dev">В РАЗРАБОТКЕ <span>70%</span></div>
+            </div>
             <div class="server-card" onclick="openModal('modal-br')">
                 <h3>Kaeront: Battle Royale</h3>
                 <p>Собирай ресурсы, ищи сундуки, и сразись с игроками на ограниченном поле битвы.</p>
@@ -763,9 +766,7 @@
         <div class="modal-window" style="border-image: linear-gradient(to left, #AA00AA, #FF55FF) 1; background-image: linear-gradient(-45deg, rgba(0,0,0,0.15), rgba(170,0,170,0.15), rgba(255,85,255,0.15), rgba(255,255,255,0.15)); background-size: 400% 400%; animation: gradientMove 10s ease infinite;">
             <span class="close-btn" onclick="closeModal('modal-l')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Uniform', 'Uniform Upper', serif; font-weight: 400; font-size: 28px; display: inline-flex; align-items: center; gap: 5px;"><span style="background: linear-gradient(to left, #FF5555, #FF55FF, #FF5555); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">꧁༺⊰𝔏𝔢𝔤𝔢𝔫𝔡𝔰⊱༻꧂</span><span style="font-family: 'Montserrat', sans-serif; font-size: 0.4em; color: var(--text-dim); line-height: 1;">by Kaeront</span></h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">
-                Добро пожаловать в совершенно иную реальность Kaeront. Это масштабная Action-RPG с полностью переработанной генерацией мира, кастомной архитектурой и глубокой сюжетной линией.<br><br>Вам предстоит путешествовать по загадочным регионам, переключаться между уникальными персонажами прямо во время боя, комбинировать их стихийные элементы и выстраивать идеальные синергии отряда. Разгадывайте древние головоломки, исследуйте руины ушедших цивилизаций и бросайте вызов колоссальным боссам в грандиозном приключении, которое навсегда изменит ваше представление об RPG в Minecraft.
-            </p>
+            <p style="color: var(--text-dim); line-height: 1.6;">Добро пожаловать в совершенно иную реальность Kaeront. Это масштабная Action-RPG с полностью переработанной генерацией мира, кастомной архитектурой и глубокой сюжетной линией.<br><br>Вам предстоит путешествовать по загадочным регионам, переключаться между уникальными персонажами прямо во время боя, комбинировать их стихийные элементы и выстраивать идеальные синергии отряда. Разгадывайте древние головоломки, исследуйте руины ушедших цивилизаций и бросайте вызов колоссальным боссам в грандиозном приключении, которое навсегда изменит ваше представление об RPG в Minecraft.</p>
             <span class="dev-label" style="color: #FF55FF;">РАЗРАБОТКА (5%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 5%;background: #FF55FF;box-shadow: 0 0 10px #FF55FF;"></div></div>
         </div>
@@ -775,17 +776,27 @@
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-fy')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Minecraft'; color: var(--accent);">FYGHTING</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Единственный динамичный геройский шутер в Minecraft. Выбирайте уникальных файтеров, каждый из которых обладает своим набором разрушительных способностей, и докажите своё превосходство в командных сражениях.<br>Вас ждут стремительные бои 5 на 5 на проработанных картах, где тактика и знание своего файтера значат не меньше, чем точность ударов.</p>            
+            <p style="color: var(--text-dim); line-height: 1.6;">Единственный динамичный геройский шутер в Minecraft. Выбирайте уникальных файтеров, каждый из которых обладает своим набором разрушительных способностей, и докажите своё превосходство в командных сражениях.<br>Вас ждут стремительные бои 5 на 5 на проработанных картах, где тактика и знание своего файтера значат не меньше, чем точность ударов.</p>
             <span class="dev-label">РАЗРАБОТКА (60%)</span>
             <div class="progress-container"><div class="progress-bar" style="width: 60%;"></div></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-tb">
+        <div class="modal-window">
+            <span class="close-btn" onclick="closeModal('modal-tb')">ЗАКРЫТЬ</span>
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Tridentball</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Представьте обычный гандбол, но вместо мяча у вас в руках — трезубец! Ваша задача с ним проста: забросить его в ворота противника больше раз, чем это сделает другая команда!</p>
+            <span class="dev-label">РАЗРАБОТКА (70%)</span>
+            <div class="progress-container"><div class="progress-bar" style="width: 70%;"></div></div>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal-bedrock">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-bedrock')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Kaeront: Bedrock</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Выживание на Minecraft Bedrock Edition. Описание не готово.</p>            
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Bedrock</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Выживание на Minecraft Bedrock Edition. Описание не готово.</p>
             <span class="dev-label">НА ЗАДНЕМ ПЛАНЕ</span>
         </div>
     </div>
@@ -793,8 +804,8 @@
     <div class="modal-overlay" id="modal-anarchy">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-anarchy')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Kaeront: Anarchy</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Объединяйся в команды, собирай ресурсы, строй базы и защищай себя на анархичном выживании. Описание не готово.</p>            
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Anarchy</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Объединяйся в команды, собирай ресурсы, строй базы и защищай себя на анархичном выживании. Описание не готово.</p>
             <span class="dev-label">НА ЗАДНЕМ ПЛАНЕ</span>
         </div>
     </div>
@@ -802,8 +813,8 @@
     <div class="modal-overlay" id="modal-br">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-br')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Kaeront: Battle Royale</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Собирай ресурсы, ищи сундуки, и сразись с игроками на ограниченном поле битвы. Описание не готово.</p>            
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Battle Royale</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Собирай ресурсы, ищи сундуки, и сразись с игроками на ограниченном поле битвы. Описание не готово.</p>
             <span class="dev-label">НА ЗАДНЕМ ПЛАНЕ</span>
         </div>
     </div>    
@@ -811,8 +822,8 @@
     <div class="modal-overlay" id="modal-cc">
         <div class="modal-window">
             <span class="close-btn" onclick="closeModal('modal-cc')">ЗАКРЫТЬ</span>
-            <h2 style="font-family: 'Minecraft'; color: var(--accent); font-weight: 400;">Crystal Clash</h2>
-            <p style="color: var(--text-dim); line-height: 1.6;">Масштабная командная тактическая игра, где исход сражения определяет не только скорость клика, но и выверенная командная стратегия. Вместо привычных баз здесь в центре каждой крепости сияют Аметистовые Ядра — священные источники силы вашей команды, которые нужно защищать любой ценой. Используйте способности и сражайтесь за классы с уникальными свойствами!</p>            
+            <h2 style="font-family: 'Minecraft'; color: var(--accent);">Crystal Clash</h2>
+            <p style="color: var(--text-dim); line-height: 1.6;">Масштабная командная тактическая игра, где исход сражения определяет не только скорость клика, но и выверенная командная стратегия. Вместо привычных баз здесь в центре каждой крепости сияют Аметистовые Ядра — священные источники силы вашей команды, которые нужно защищать любой ценой. Используйте способности и сражайтесь за классы с уникальными свойствами!</p>
             <span class="dev-label">ПЛАНИРУЕТСЯ</span>
         </div>
 
