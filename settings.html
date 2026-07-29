@@ -419,15 +419,10 @@
             vertical-align: bottom;
         }
 
-        .ks-spoiler.revealed {
-            --radius: 314%;
-        }
-
         /* Сам скрытый текст */
         .ks-spoiler-content {
             visibility: hidden;
             opacity: 0;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
         
         /* Когда спойлер открыт — показываем текст */
@@ -446,6 +441,10 @@
             height: 100%;
             pointer-events: none;
             z-index: 2;
+        }
+
+        .ks-spoiler.revealed .ks-spoiler-canvas {
+            --radius: 314%;
         }
 
         .ks-ip-toggle-btn {
