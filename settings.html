@@ -408,8 +408,6 @@
 
         /* Контейнер для текста с защитой от выделения */
         .ks-spoiler {
-            mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
-            -webkit-mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
             transition: --radius 0.2s ease;
             position: relative;
             display: inline-block;
@@ -434,6 +432,8 @@
 
         /* Холст для частиц */
         .ks-spoiler-canvas {
+            mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
+            -webkit-mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
             position: absolute;
             top: 0;
             left: 0;
