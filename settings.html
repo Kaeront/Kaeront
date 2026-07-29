@@ -403,7 +403,7 @@
         @property --radius {
           syntax: '<percentage>';
           inherits: false;
-          initial-value: 0%;
+          initial-value: 100%;
         }
 
         /* Контейнер для текста с защитой от выделения */
@@ -431,8 +431,8 @@
 
         /* Холст для частиц */
         .ks-spoiler-canvas {
-            mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
-            -webkit-mask-image: radial-gradient(circle, black 0%, transparent var(--radius));
+            mask-image: radial-gradient(circle, black var(--radius), transparent var(--radius));
+            -webkit-mask-image: radial-gradient(circle, black var(--radius), transparent var(--radius));
             transition: --radius 0.2s ease;
             position: absolute;
             top: 0;
@@ -444,7 +444,7 @@
         }
 
         .ks-spoiler.revealed .ks-spoiler-canvas {
-            --radius: 314%;
+            --radius: 0%;
         }
 
         .ks-ip-toggle-btn {
