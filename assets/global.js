@@ -15,64 +15,9 @@ const globalStyles = `
         --nav-height: 50px;
     }
 
-    /* --- БЛОКИРОВКА ЭКРАНА ПРИ ПЕРЕХОДЕ --- */
-    html.is-leaving, 
-    html.is-leaving body {
-        overflow: hidden !important;
-        pointer-events: none !important;
-        user-select: none !important;
-        touch-action: none !important;
-    }
-
-    /* --- КОНТЕЙНЕР ДЛЯ ЭФФЕКТА ОТДАЛЕНИЯ (SCALE & BLUR) --- */
-    #site-wrapper {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        width: 100%;
-        transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1), 
-                    filter 0.55s cubic-bezier(0.25, 1, 0.5, 1);
-        transform-origin: center 50vh; /* Центрирование строго по вертикали экрана, а не всей страницы */
-        backface-visibility: hidden;
-        will-change: transform, filter;
-    }
-
-    /* Состояние ухода: быстрое отдаление, блюр и полное затемнение контента */
-    html.is-leaving #site-wrapper {
-        transform: scale(0.92) translateZ(0);
-        filter: brightness(0.1) blur(8px);
-    }
-
-    /* --- PAGE TRANSITION OVERLAY (ПОЛНОЕ ЗАТЕМНЕНИЕ ДО ЧЕРНОГО) --- */
-    #page-transition-overlay {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        pointer-events: none; z-index: 999999;
-        background: rgba(0, 0, 0, 0);
-        transition: background 0.55s cubic-bezier(0.25, 1, 0.5, 1);
-        will-change: background;
-    }
-
-    /* Виньетка для глубокого кинематографичного эффекта */
-    #page-transition-overlay::after {
-        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at center, transparent 15%, #000000 90%);
-        opacity: 0; transition: opacity 0.55s cubic-bezier(0.25, 1, 0.5, 1);
-        pointer-events: none;
-    }
-
-    /* В финальной точке перехода экран становится абсолютно черным (#000) */
-    html.is-leaving #page-transition-overlay {
-        background: rgba(0, 0, 0, 1);
-        pointer-events: auto;
-    }
-
-    html.is-leaving #page-transition-overlay::after { opacity: 1; }
-
     html {
         padding-top: 0px;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #000;
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -80,25 +25,35 @@ const globalStyles = `
     @font-face {
         font-family: 'Uniform';
         src: url('/assets/uniform.otf') format('opentype');
-        font-weight: 400; font-style: normal; font-display: swap;
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
         font-family: 'Uniform Upper';
         src: url('/assets/uniform_upper.otf') format('opentype');
-        font-weight: 400; font-style: normal; font-display: swap;
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
     }
 
     @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft.ttf') format('truetype');
-        font-weight: 400; font-style: normal; font-display: swap; size-adjust: 130%; 
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+        size-adjust: 130%; 
     }
 
     @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft-bold.ttf') format('truetype');
-        font-weight: 700; font-style: normal; font-display: swap; size-adjust: 130%; 
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+        size-adjust: 130%; 
     }
 
     body {
@@ -106,26 +61,52 @@ const globalStyles = `
         background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         color: var(--text-main);
         font-family: 'Montserrat', sans-serif;
-        margin: 0; overflow-x: hidden;
+        margin: 0;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        will-change: padding-top;
+        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #333;
+        border-radius: 8px;
+        z-index: 100000;
+    }
+
+    body::-webkit-scrollbar-track {
+        background-color: #000;
+        border-radius: 8px;
+    }
+
+    .a, button {
+        cursor: url('/assets/pointer.png'), pointer;
+    }
+
+    body {
         cursor: url('/assets/cursor.png'), auto;
     }
 
-    body::-webkit-scrollbar { width: 8px; }
-    body::-webkit-scrollbar-thumb { background-color: #333; border-radius: 8px; z-index: 100000; }
-    body::-webkit-scrollbar-track { background-color: #000; border-radius: 8px; }
-
-    .a, button, a { cursor: url('/assets/pointer.png'), pointer; }
-
-    /* Навигация строго фиксирована на уровне окна браузера, а не внутри трансформируемого контейнера */
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-        background: transparent; backdrop-filter: blur(0px); border-bottom: 1.5px solid transparent; 
-        display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
-        user-select: none; will-change: background, backdrop-filter, border-bottom, margin-top;
+        background: transparent; backdrop-filter: blur(0px);
+        border-bottom: 1.5px solid transparent; 
+        display: flex; justify-content: space-between;
+        align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        user-select: none;
+        will-change: background, backdrop-filter, border-bottom, margin-top;
         transition: background 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
     }
     nav.scrolled {
-        background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px); border-bottom: 1.5px solid #1a1a1a;
+        background: rgba(10, 10, 10, 0.7); 
+        backdrop-filter: blur(5px);
+        border-bottom: 1.5px solid #1a1a1a;
     }
     .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; font-weight: 700; }
     .nav-links { display: flex; gap: 10px; align-items: center; }
@@ -145,21 +126,54 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 20px; color: #fff; z-index: 3001;
+        position: fixed; top: 0; left: 0; width: 100%; height: 20px;
+        color: #fff;
+        z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
-        transform: translateY(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none;
+        transform: translateY(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
     }
-    #speed-popup.slow { background: #fa0; color: #000; }
-    #speed-popup.offline { background: #a00; color: #fff; }
-    #speed-popup.active { transform: translateY(0); }
-    body:has(#speed-popup.active) { margin-top: 20px !important; }
-    body:has(#speed-popup.active) nav { margin-top: 20px !important; }
+    
+    /* Состояние: Медленный интернет (Оранжево-желтый) */
+    #speed-popup.slow {
+        background: #fa0;
+        color: #000;
+    }
+
+    /* Состояние: Нет подключения (Красный) */
+    #speed-popup.offline {
+        background: #a00;
+        color: #fff;
+    }
+
+    #speed-popup.active { 
+        transform: translateY(0); 
+    }
+
+    body:has(#speed-popup.active) {
+        margin-top: 20px !important;
+    }
+    body:has(#speed-popup.active) nav {
+        margin-top: 20px !important;
+    }
 
     /* Стили для кнопки профиля в шапке */
-    .nav-auth-icon { font-size: 24px !important; font-family: 'Uniform Upper' !important; font-weight: 400 !important; }
-    .nav-user-head { width: 24px; height: 24px; border: 1px solid #333; transition: 0.3s; }
-    .nav-user-head:hover { border-color: var(--accent); }
+    .nav-auth-icon {
+        font-size: 24px !important;
+        font-family: 'Uniform Upper' !important;
+        font-weight: 400 !important;
+    }
+    .nav-user-head {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #333;
+        transition: 0.3s;
+    }
+    .nav-user-head:hover {
+        border-color: var(--accent);
+    }
 `;
 
 const injectHTML = {
@@ -234,6 +248,7 @@ const injectHTML = {
     </footer>`
 };
 
+// Инициализация Head (Мета и Шрифты)
 const setupHead = () => {
     const metaTags = [
       { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
@@ -268,308 +283,113 @@ const setupHead = () => {
     document.head.appendChild(statusScript);
 };
 
-// --- АНИМАЦИЯ ПЕРЕХОДОВ (УСКОРЕННАЯ ДО 550мс) --- //
-
-function triggerTransition(destinationUrl) {
-    document.documentElement.classList.add('is-leaving');
-    setTimeout(() => { 
-        window.location.href = destinationUrl; 
-    }, 550);
-}
-
-document.addEventListener('click', function(e) {
-    if (e.defaultPrevented) return;
-
-    const targetLink = e.target.closest('a');
-    if (targetLink && targetLink.href) {
-        if (targetLink.hasAttribute('data-no-transition')) return;
-        
-        const href = targetLink.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:') || targetLink.protocol === 'mailto:' || targetLink.protocol === 'tel:') return;
-
-        const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
-
-        if (!isExternal) {
-            e.preventDefault();
-            triggerTransition(targetLink.href);
-        }
-    }
-});
-
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        document.documentElement.classList.remove('is-leaving');
-    }
-});
-
-// Мониторинг сети
+// Динамическое управление поп-апом интернета
 let networkDelayTimer = null;
+
 const toggleSpeedPopup = (show, type = 'slow') => {
+    // Сбрасываем предыдущий таймер ожидания медленного соединения
     clearTimeout(networkDelayTimer);
+
     const applyVisibility = () => {
         let popup = document.getElementById('speed-popup');
+        const nav = document.getElementById('smart-nav');
+
         if (show) {
             if (!popup) {
                 popup = document.createElement('div');
                 popup.id = 'speed-popup';
                 document.body.appendChild(popup);
             }
+
+            // Настраиваем контент и классы в зависимости от типа ошибки
             if (type === 'offline') {
                 popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
-                popup.className = 'offline';
+                popup.className = 'offline'; // Вешаем красный стиль
             } else {
                 popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
-                popup.className = 'slow';
+                popup.className = 'slow'; // Вешаем желтый стиль
             }
-            setTimeout(() => popup.classList.add('active'), 50);
+
+            // Форсируем микро-таймаут для плавного CSS-перехода
+            setTimeout(() => {
+                popup.classList.add('active');
+            }, 50);
         } else {
             if (popup) {
                 popup.classList.remove('active');
-                setTimeout(() => popup.remove(), 300);
+                setTimeout(() => popup.remove(), 300); // Чистим DOM после скрытия
             }
         }
     };
-    if (type === 'offline') applyVisibility();
-    else networkDelayTimer = setTimeout(applyVisibility, 1500);
+
+    if (type === 'offline') {
+        // Если интернета вообще нет — показываем плашку моментально без задержек!
+        applyVisibility();
+    } else {
+        // Если интернет просто просел по скорости — аккуратно ждем 1.5 сек перед показом
+        networkDelayTimer = setTimeout(applyVisibility, 1500);
+    }
 };
 
+// Функция оценки состояния сети
 const evaluateNetwork = () => {
-    if (!navigator.onLine) { toggleSpeedPopup(true, 'offline'); return; }
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection && (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4))) {
-        toggleSpeedPopup(true, 'slow');
+    // 1. Проверяем абсолютный офлайн
+    if (!navigator.onLine) {
+        toggleSpeedPopup(true, 'offline');
         return;
     }
-    toggleSpeedPopup(false);
-};
 
-const startNetworkMonitoring = () => {
-    evaluateNetwork();
-    window.addEventListener('offline', () => toggleSpeedPopup(true, 'offline'));
-    window.addEventListener('online', () => evaluateNetwork());
+    // 2. Проверяем просадку скорости
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection) connection.addEventListener('change', evaluateNetwork);
-};
-
-window.addEventListener('scroll', () => {
-    const nav = document.getElementById('smart-nav');
-    if (nav) {
-        const navHideThreshold = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide')) || 0;
-        if (window.scrollY >= navHideThreshold) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
-    }
-});
-
-setupHead();
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Создаем обертку #site-wrapper строго после навигации и футера, чтобы fixed-элементы остались на уровне тела документа
-    const wrapper = document.createElement('div');
-    wrapper.id = 'site-wrapper';
-    
-    // Переносим контент тела в обертку, исключая уже встроенные через инъекции элементы
-    while (document.body.firstChild) {
-        wrapper.appendChild(document.body.firstChild);
-    }
-    document.body.appendChild(wrapper);
-
-    const containers = {
-        'noscript-inject': injectHTML.noscript,
-        'nav-inject': injectHTML.nav,
-        'footer-inject': injectHTML.footer,
-        'dev-inject': injectHTML.dev
-    };
-
-    Object.entries(containers).forEach(([id, html]) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.outerHTML = html;
-        }
-    });
-
-    const overlay = document.createElement('div');
-    overlay.id = 'page-transition-overlay';
-    document.body.appendChild(overlay);
-
-    startNetworkMonitoring();
-});
-
-window.addEventListener('load', () => {
-    const loader = document.getElementById('loader-wrapper');
-    if (loader) {
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-
-        document.body.style.setProperty('overflow', 'auto', 'important');
-        document.documentElement.style.overflow = 'auto'; 
-
-        setTimeout(() => loader.remove(), 500);
-    }
-});
-и</a></li>
-                    <li><a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a></li>
-                    <li><a href="/donate">Пожертвовать</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Контакты</h4>
-                <ul class="footer-links">
-                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
-                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
-                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
-    </footer>`
-};
-
-const setupHead = () => {
-    const metaTags = [
-      { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
-      { name: 'theme-color', content: '#ffaa00' },
-      { property: 'og:locale', content: 'ru-RU' },
-      { property: 'og:url', content: 'https://kaeront.ru' },
-      { property: 'og:type', content: 'website' },
-      { property: 'og:title', content: 'Kaeront — сеть уникальных Minecraft-серверов' },
-      { property: 'og:description', content: 'Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.' },
-      { property: 'og:image', content: 'https://kaeront.ru/preview.png' },
-      { property: 'og:logo', content: 'https://kaeront.ru/palm.png' }
-    ];
-
-    metaTags.forEach(tag => {
-        const m = document.createElement('meta');
-        Object.entries(tag).forEach(([k, v]) => m.setAttribute(k, v));
-        document.head.appendChild(m);
-    });
-
-    const fonts = document.createElement('link');
-    fonts.rel = 'stylesheet';
-    fonts.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap';
-    document.head.appendChild(fonts);
-
-    const style = document.createElement('style')
-    style.innerHTML = globalStyles;
-    document.head.appendChild(style);
-
-    const statusScript = document.createElement('script');
-    statusScript.src = '/assets/online_status.js';
-    statusScript.defer = true;
-    document.head.appendChild(statusScript);
-};
-
-// --- АНИМАЦИЯ ПЕРЕХОДОВ (500мс) --- //
-
-function triggerTransition(destinationUrl) {
-    document.documentElement.classList.add('is-leaving');
-    setTimeout(() => { 
-        window.location.href = destinationUrl; 
-    }, 500);
-}
-
-document.addEventListener('click', function(e) {
-    if (e.defaultPrevented) return;
-
-    const targetLink = e.target.closest('a');
-    if (targetLink && targetLink.href) {
-        if (targetLink.hasAttribute('data-no-transition')) return;
-        
-        const href = targetLink.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:') || targetLink.protocol === 'mailto:' || targetLink.protocol === 'tel:') return;
-
-        const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
-
-        if (!isExternal) {
-            e.preventDefault();
-            triggerTransition(targetLink.href);
-        }
-    }
-});
-
-window.addEventListener('pageshow', function(event) {
-    if (event.persisted) {
-        document.documentElement.classList.remove('is-leaving');
-    }
-});
-
-// Мониторинг сети
-let networkDelayTimer = null;
-const toggleSpeedPopup = (show, type = 'slow') => {
-    clearTimeout(networkDelayTimer);
-    const applyVisibility = () => {
-        let popup = document.getElementById('speed-popup');
-        if (show) {
-            if (!popup) {
-                popup = document.createElement('div');
-                popup.id = 'speed-popup';
-                document.body.appendChild(popup);
-            }
-            if (type === 'offline') {
-                popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
-                popup.className = 'offline';
-            } else {
-                popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
-                popup.className = 'slow';
-            }
-            setTimeout(() => popup.classList.add('active'), 50);
-        } else {
-            if (popup) {
-                popup.classList.remove('active');
-                setTimeout(() => popup.remove(), 300);
-            }
-        }
-    };
-    if (type === 'offline') applyVisibility();
-    else networkDelayTimer = setTimeout(applyVisibility, 1500);
-};
-
-const evaluateNetwork = () => {
-    if (!navigator.onLine) { toggleSpeedPopup(true, 'offline'); return; }
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection && (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4))) {
-        toggleSpeedPopup(true, 'slow');
-        return;
-    }
-    toggleSpeedPopup(false);
-};
-
-const startNetworkMonitoring = () => {
-    evaluateNetwork();
-    window.addEventListener('offline', () => toggleSpeedPopup(true, 'offline'));
-    window.addEventListener('online', () => evaluateNetwork());
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection) connection.addEventListener('change', evaluateNetwork);
-};
-
-window.addEventListener('scroll', () => {
-    const nav = document.getElementById('smart-nav');
-    if (nav) {
-        const navHideThreshold = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide')) || 0;
-        if (window.scrollY >= navHideThreshold) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
-    }
-});
-
-// Инициализация и сборка структуры страницы
-setupHead();
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Создаем обертку #site-wrapper, но берем в нее ТОЛЬКО контент (не трогаем nav, footer, инъекции)
-    const wrapper = document.createElement('div');
-    wrapper.id = 'site-wrapper';
-    
-    // Переносим в обертку все дочерние узлы body, кроме уже созданных инъекций
-    Array.from(document.body.childNodes).forEach(node => {
-        // Пропускаем теги-инъекции, если они вдруг отрендерились раньше
-        if (node.nodeType === Node.ELEMENT_NODE && (node.id === 'nav-inject' || node.id === 'footer-inject' || node.id === 'dev-inject' || node.id === 'loader-wrapper')) {
+    if (connection) {
+        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4)) {
+            toggleSpeedPopup(true, 'slow');
             return;
         }
-        wrapper.appendChild(node);
-    });
-    
-    document.body.appendChild(wrapper);
+    }
 
-    // Внедряем HTML элементы (они встают прямо в body вне #site-wrapper, сохраняя честный position: fixed!)
+    // Если всё восстановилось — плавно скрываем предупреждение
+    toggleSpeedPopup(false);
+};
+
+// Живой мониторинг в реальном времени
+const startNetworkMonitoring = () => {
+    // Первичная проверка при загрузке страницы
+    evaluateNetwork();
+
+    // Мгновенная реакция на физическое отключение (без таймеров и задержек)
+    window.addEventListener('offline', () => {
+        toggleSpeedPopup(true, 'offline');
+    });
+
+    // Реакция на возвращение сети
+    window.addEventListener('online', () => {
+        evaluateNetwork();
+    });
+
+    // Отслеживание изменений скорости «на лету»
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+        connection.addEventListener('change', evaluateNetwork);
+    }
+};
+
+// Скролл навигации
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('smart-nav');
+    if (nav) {
+        const navHideThreshold = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide')) || 0;
+        if (window.scrollY >= navHideThreshold) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    }
+});
+
+// Сборка страницы
+setupHead();
+document.addEventListener('DOMContentLoaded', () => {
     const containers = {
         'noscript-inject': injectHTML.noscript,
         'nav-inject': injectHTML.nav,
@@ -579,19 +399,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Object.entries(containers).forEach(([id, html]) => {
         const el = document.getElementById(id);
-        if (el) {
-            el.outerHTML = html;
-        }
+        if (el) el.outerHTML = html;
     });
-
-    // Создаем оверлей перехода поверх всего
-    const overlay = document.createElement('div');
-    overlay.id = 'page-transition-overlay';
-    document.body.appendChild(overlay);
 
     startNetworkMonitoring();
 });
 
+// Логика скрытия загрузочного экрана
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
@@ -601,6 +415,8 @@ window.addEventListener('load', () => {
         document.body.style.setProperty('overflow', 'auto', 'important');
         document.documentElement.style.overflow = 'auto'; 
 
-        setTimeout(() => loader.remove(), 500);
+        setTimeout(() => {
+            loader.remove();
+        }, 500);
     }
 });
