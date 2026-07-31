@@ -22,26 +22,36 @@
             pointer-events: none;
             z-index: 999999;
             backdrop-filter: blur(0px);
-            background: rgba(10, 10, 10, 0);
-            transition: backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1), background 0.8s cubic-bezier(0.4, 0, 1, 1);
-            will-change: backdrop-filter, background;
+            background: rgba(10, 10, 10, 0) radial-gradient(circle, rgba(0,0,0,0) 40%, rgba(0,0,0,0.85) 100%);
+            background-blend-mode: multiply;
+            opacity: 0;
+            transition: backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1), opacity 0.8s cubic-bezier(0.4, 0, 1, 1);
+            will-change: backdrop-filter, opacity;
         }
 
-        /* Класс ухода: трансформация и блюр всего тела страницы относительно центра */
+        /* Класс ухода: полная блокировка, виньетирование и качественный блюр на всю страницу */
         body.is-leaving {
-            overflow: hidden;
+            overflow: hidden !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            user-select: none !important;
+        }
+
+        body.is-leaving #page-transition-overlay {
+            pointer-events: auto;
+            opacity: 1;
+            backdrop-filter: blur(16px);
+            background: rgba(10, 10, 10, 0.75) radial-gradient(circle, rgba(0,0,0,0) 30%, rgba(0,0,0,0.95) 100%);
+            background-blend-mode: multiply;
+        }
+
+        body.is-leaving > *:not(#loader-wrapper):not(#page-transition-overlay) {
             transform: scale(0.92) translateZ(0);
             filter: brightness(0.4);
             transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
             transform-origin: 50% 50%;
             backface-visibility: hidden;
             will-change: transform, filter;
-        }
-
-        body.is-leaving #page-transition-overlay {
-            pointer-events: auto;
-            backdrop-filter: blur(16px);
-            background: rgba(10, 10, 10, 0.85);
         }
 
         /* --- CONTENT --- */
@@ -164,10 +174,10 @@
 </head>
 <body>
 
-<!-- Оверлей для анимации перехода -->
+<!-- Оверлей для анимации перехода и виньетирования -->
 <div id="page-transition-overlay"></div>
 
-<!-- Loading Screen (Изначально чисто чёрный цвет `#000000` без opacity) -->
+<!-- Loading Screen (Абсолютно черный цвет с мгновенным стартом без моргания) -->
 <div id="loader-wrapper" style="
     position: fixed;
     user-select: none;
@@ -183,7 +193,7 @@
     z-index: 99999;
     opacity: 1;
     visibility: visible;
-    transition: background 0.4s ease, opacity 0.5s ease 0.1s, visibility 0.5s ease 0.1s;
+    transition: background 0.3s ease 0.1s, opacity 0.5s ease 0.1s, visibility 0.5s ease 0.1s;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
         
@@ -217,7 +227,7 @@
 </div>
 
 <script>
-    // 1. Через 0.1 секунды плавно переводим абсолютный чёрный в привычный фон `#0a0a0a`
+    // 1. Плавно переводим чистый чёрный цвет в фоновый `#0a0a0a` спустя 100мс
     setTimeout(() => {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
@@ -225,7 +235,7 @@
         }
     }, 100);
 
-    // 2. Скрываем лоадер по факту полной загрузки страницы
+    // 2. Скрытие лоадера при полной загрузке
     window.addEventListener('load', function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
@@ -234,7 +244,7 @@
         }
     });
 
-    // 3. Возврат назад (bfcache): сбрасываем класс ухода, чтобы страница не оставалась тёмной
+    // 3. Возврат назад (bfcache): мгновенно сбрасываем класс анимации ухода
     window.addEventListener('pageshow', function(event) {
         if (event.persisted) {
             document.body.classList.remove('is-leaving');
@@ -318,7 +328,7 @@
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
-    // Плавный перехват внутренних кликов для анимации ухода
+    // Перехват внутренних кликов для анимации перехода
     document.addEventListener('click', function(e) {
         const targetLink = e.target.closest('a');
         
