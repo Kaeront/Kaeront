@@ -12,7 +12,7 @@
             --nav-hide: 100px;
         }
 
-        /* --- PAGE TRANSITION OVERLAY & BODY EFFECTS --- */
+        /* --- PAGE TRANSITION OVERLAY & EFFECTS --- */
         #page-transition-overlay {
             position: fixed;
             top: 0;
@@ -27,33 +27,21 @@
             will-change: backdrop-filter, background;
         }
 
+        /* Класс ухода: трансформация и блюр всего тела страницы относительно центра */
         body.is-leaving {
-            overflow: hidden !important;
+            overflow: hidden;
+            transform: scale(0.92) translateZ(0);
+            filter: brightness(0.4);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
+            transform-origin: 50% 50%;
+            backface-visibility: hidden;
+            will-change: transform, filter;
         }
 
         body.is-leaving #page-transition-overlay {
             pointer-events: auto;
             backdrop-filter: blur(16px);
             background: rgba(10, 10, 10, 0.85);
-        }
-
-        /* Применяем трансформации и аппаратное ускорение напрямую к body, исключая общие врапперы */
-        body.is-leaving {
-            transform: scale(0.92) translateZ(0);
-            filter: brightness(0.4);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
-        }
-
-        body {
-            transform: scale(1) translateZ(0);
-            filter: brightness(1);
-            transition: transform 0.8s cubic-bezier(0, 0, 0.2, 1), filter 0.8s cubic-bezier(0, 0, 0.2, 1);
-            transform-origin: 50% 50%;
-            backface-visibility: hidden;
-            will-change: transform, filter;
-            background-color: #0a0a0a;
-            margin: 0;
-            overflow-x: hidden;
         }
 
         /* --- CONTENT --- */
@@ -179,7 +167,7 @@
 <!-- Оверлей для анимации перехода -->
 <div id="page-transition-overlay"></div>
 
-<!-- Loading Screen -->
+<!-- Loading Screen (Изначально чисто чёрный цвет `#000000` без opacity) -->
 <div id="loader-wrapper" style="
     position: fixed;
     user-select: none;
@@ -229,13 +217,7 @@
 </div>
 
 <script>
-    (function() {
-        const loader = document.getElementById('loader-wrapper');
-        if (loader) {
-            loader.style.animation = 'none';
-        }
-    })();
-
+    // 1. Через 0.1 секунды плавно переводим абсолютный чёрный в привычный фон `#0a0a0a`
     setTimeout(() => {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
@@ -243,6 +225,7 @@
         }
     }, 100);
 
+    // 2. Скрываем лоадер по факту полной загрузки страницы
     window.addEventListener('load', function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
@@ -251,6 +234,7 @@
         }
     });
 
+    // 3. Возврат назад (bfcache): сбрасываем класс ухода, чтобы страница не оставалась тёмной
     window.addEventListener('pageshow', function(event) {
         if (event.persisted) {
             document.body.classList.remove('is-leaving');
@@ -260,7 +244,7 @@
 
 <style>
     body { 
-        overflow: hidden;
+        overflow-x: hidden;
     }
 
     @keyframes fadeOutText {
@@ -298,10 +282,7 @@
                 Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
             </p>
         </div>
-        
-        <style>
-            body { overflow: hidden !important; }
-        </style>
+        <style>body { overflow: hidden !important; }</style>
       </noscript>
     
     <div id="dev-inject"></div>
@@ -337,6 +318,7 @@
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
+    // Плавный перехват внутренних кликов для анимации ухода
     document.addEventListener('click', function(e) {
         const targetLink = e.target.closest('a');
         
@@ -352,6 +334,7 @@
         }
     });
 
+    // Обработка кнопки оплаты с вашим условием
     link.addEventListener('click', function(e) {
         e.preventDefault();
         if(check.checked) {
