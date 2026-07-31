@@ -13,7 +13,7 @@
             --nav-hide: 100px;
         }
 
-        /* --- PAGE TRANSITION OVERLAY & EFFECTS --- */
+        /* --- PAGE TRANSITION OVERLAY & EFFECTS (GPU Accelerated) --- */
         #page-transition-overlay {
             position: fixed;
             top: 0;
@@ -24,7 +24,9 @@
             z-index: 999999;
             backdrop-filter: blur(0px);
             background: rgba(10, 10, 10, 0);
+            will-change: backdrop-filter, background;
             transition: backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1), background 0.8s cubic-bezier(0.4, 0, 1, 1);
+            transform: translateZ(0);
         }
 
         /* Класс активации анимации ухода */
@@ -39,21 +41,22 @@
         }
 
         body.is-leaving #site-wrapper {
-            transform: scale(0.92);
+            transform: scale(0.92) translateZ(0);
             filter: brightness(0.4);
             transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
         }
 
-        /* Общий контейнер для содержимого страницы, чтобы масштабировать всё тело */
+        /* Общий контейнер для содержимого страницы с аппаратным ускорением */
         #site-wrapper {
             width: 100%;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            transform: scale(1);
+            transform: scale(1) translateZ(0);
             filter: brightness(1);
+            will-change: transform, filter;
+            transform-origin: 50% 50%;
             transition: transform 0.8s cubic-bezier(0, 0, 0.2, 1), filter 0.8s cubic-bezier(0, 0, 0.2, 1);
-            transform-origin: center center;
         }
 
         /* --- CONTENT --- */
@@ -193,7 +196,8 @@
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    transition: opacity 0.5s ease, visibility 0.5s;
+    opacity: 0; /* Изначально прозрачный */
+    transition: opacity 0.4s ease, visibility 0.4s;
     animation: hideLoaderNoJS 0.5s forwards;
     animation-delay: 0.25s;
 ">
@@ -231,6 +235,11 @@
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
             loader.style.animation = 'none';
+            
+            // Проявляем лоадер ровно через 1/3 секунды (333мс) при фактическом визите
+            setTimeout(() => {
+                loader.style.opacity = '1';
+            }, 333);
         }
     })();
 </script>
@@ -279,13 +288,13 @@
         ">
             <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
             <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
-                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
+                Для корректной работы сайта kaeront.ru необходимо включить поддержку JavaScript.
             </p>
         </div>
         <style>body { overflow: hidden !important; }</style>
       </noscript>
     
-    <!-- Обертка всего контента для реализации масштабирования -->
+    <!-- Обертка всего контента -->
     <div id="site-wrapper">
         <div id="dev-inject"></div>
         <div id="nav-inject"></div>
@@ -321,15 +330,21 @@
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
-    // Перехват кликов по ссылкам внутри сайта для плавной анимации
+    // Сброс состояния страницы при возврате назад (bfcache)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            document.body.classList.remove('is-leaving');
+        }
+    });
+
+    // Перехват кликов по внутренним ссылкам
     document.addEventListener('click', function(e) {
         const targetLink = e.target.closest('a');
         
-        // Проверяем, что это внутренняя ссылка (не внешняя, без target="_blank" или якоря)
         if (targetLink && targetLink.href) {
             const href = targetLink.getAttribute('href');
             const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
-            const isAnchor = href.startsWith('#');
+            const isAnchor = href && href.startsWith('#');
 
             if (!isExternal && !isAnchor) {
                 e.preventDefault();
@@ -338,7 +353,7 @@
         }
     });
 
-    // Обработка кнопки оплаты с вашим условием чекбокса
+    // Обработка кнопки оплаты
     link.addEventListener('click', function(e) {
         e.preventDefault();
         if (check.checked) {
@@ -346,35 +361,14 @@
         }
     });
 
-    // Функция запуска анимации и последующего перехода
+    // Функция запуска анимации перехода
     function triggerTransition(destinationUrl) {
         document.body.classList.add('is-leaving');
         
-        // Время анимации совпадает с длительностью transition в CSS (800мс)
         setTimeout(() => {
             window.location.href = destinationUrl;
         }, 800);
     }
-</script>
-</body>
-</html>
-iv>
-        </div>
-    </div>
-
-    <div id="footer-inject"></div>
-
-<script>
-    const link = document.getElementById('pay-link');
-    const check = document.getElementById('offer-check');
-
-    link.addEventListener('click', function(e) {
-        if(check.checked) {
-            setTimeout(() => { 
-                window.location.href = 'https://kaeront.ru'; 
-            }, 1000);
-        }
-    });
 </script>
 </body>
 </html>
