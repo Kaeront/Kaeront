@@ -30,9 +30,9 @@ const globalStyles = `
         flex-direction: column;
         min-height: 100vh;
         width: 100%;
-        transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), 
-                    filter 0.8s cubic-bezier(0.4, 0, 1, 1);
-        transform-origin: 50% 50%;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                    filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center center;
         backface-visibility: hidden;
         will-change: transform, filter;
     }
@@ -48,7 +48,7 @@ const globalStyles = `
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         pointer-events: none; z-index: 999999;
         background: rgba(0, 0, 0, 0);
-        transition: background 0.8s cubic-bezier(0.4, 0, 1, 1);
+        transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: background;
     }
 
@@ -56,11 +56,10 @@ const globalStyles = `
     #page-transition-overlay::after {
         content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle at center, transparent 20%, #000000 100%);
-        opacity: 0; transition: opacity 0.8s cubic-bezier(0.4, 0, 1, 1);
+        opacity: 0; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         pointer-events: none;
     }
 
-    /* В финальной точке перехода экран становится абсолютно черным (#000) */
     html.is-leaving #page-transition-overlay {
         background: rgba(0, 0, 0, 1);
         pointer-events: auto;
@@ -71,7 +70,7 @@ const globalStyles = `
     html {
         padding-top: 0px;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #000; /* Чтобы за пределами scale был чистый черный цвет */
+        background-color: #000;
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -266,13 +265,13 @@ const setupHead = () => {
     document.head.appendChild(statusScript);
 };
 
-// --- АНИМАЦИЯ ПЕРЕХОДОВ --- //
+// --- АНИМАЦИЯ ПЕРЕХОДОВ (500мс) --- //
 
 function triggerTransition(destinationUrl) {
     document.documentElement.classList.add('is-leaving');
     setTimeout(() => { 
         window.location.href = destinationUrl; 
-    }, 800);
+    }, 500);
 }
 
 document.addEventListener('click', function(e) {
@@ -362,17 +361,22 @@ window.addEventListener('scroll', () => {
 setupHead();
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Создаем обертку #site-wrapper динамически, чтобы не переписывать каждый HTML-файл
+    // Создаем обертку #site-wrapper, но берем в нее ТОЛЬКО контент (не трогаем nav, footer, инъекции)
     const wrapper = document.createElement('div');
     wrapper.id = 'site-wrapper';
     
-    // Переносим все существующие элементы тела в обертку (кроме оверлея и лоадера если они есть)
-    while (document.body.firstChild) {
-        wrapper.appendChild(document.body.firstChild);
-    }
+    // Переносим в обертку все дочерние узлы body, кроме уже созданных инъекций
+    Array.from(document.body.childNodes).forEach(node => {
+        // Пропускаем теги-инъекции, если они вдруг отрендерились раньше
+        if (node.nodeType === Node.ELEMENT_NODE && (node.id === 'nav-inject' || node.id === 'footer-inject' || node.id === 'dev-inject' || node.id === 'loader-wrapper')) {
+            return;
+        }
+        wrapper.appendChild(node);
+    });
+    
     document.body.appendChild(wrapper);
 
-    // 2. Внедряем инъекции HTML
+    // Внедряем HTML элементы (они встают прямо в body вне #site-wrapper, сохраняя честный position: fixed!)
     const containers = {
         'noscript-inject': injectHTML.noscript,
         'nav-inject': injectHTML.nav,
@@ -387,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Создаем оверлей перехода поверх всего
+    // Создаем оверлей перехода поверх всего
     const overlay = document.createElement('div');
     overlay.id = 'page-transition-overlay';
     document.body.appendChild(overlay);
