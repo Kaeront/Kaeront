@@ -8,95 +8,21 @@
     <script src="/assets/global.js" defer></script>
 
     <style>
+
         :root {
             --nav-hide: 100px;
-            --accent: #FFAA00;
-            --text-main: #e0e0e0;
-            --text-dim: #888;
-        }
-
-        body { 
-            overflow-x: hidden;
-            margin: 0;
-            background: #0a0a0a;
-            font-family: sans-serif;
-        }
-
-        /* --- БЛОКИРОВКА ЭКРАНА (Pointer Events, Select, Scroll) --- */
-        html.is-leaving, 
-        html.is-leaving body {
-            overflow: hidden !important;
-            pointer-events: none !important;
-            user-select: none !important;
-            touch-action: none !important;
-        }
-
-        /* --- PAGE TRANSITION OVERLAY (VIGNETTE & BLUR) --- */
-        #page-transition-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 999999;
-            background: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(0px);
-            -webkit-backdrop-filter: blur(0px);
-            transition: background 0.8s cubic-bezier(0.4, 0, 1, 1), 
-                        backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1),
-                        -webkit-backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1);
-            will-change: background, backdrop-filter;
-        }
-
-        /* Плавное виньетирование */
-        #page-transition-overlay::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, transparent 30%, #000000 120%);
-            opacity: 0;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 1, 1);
-            will-change: opacity;
-            pointer-events: none;
-        }
-
-        /* Состояние ухода: мягкий блюр, затемнение и фокусная виньетка */
-        html.is-leaving #page-transition-overlay {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            pointer-events: auto;
-        }
-
-        html.is-leaving #page-transition-overlay::after {
-            opacity: 1;
-        }
-
-        /* --- LOADER TEXT ANIMATIONS --- */
-        @keyframes fadeOutText {
-            from { opacity: 1; }
-            to { opacity: 0; visibility: hidden; }
-        }
-
-        @keyframes fadeInText {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         /* --- CONTENT --- */
         .donation-container {
-            padding-top: calc(var(--nav-height, 60px) + 40px);
+            padding-top: calc(var(--nav-height) + 40px);
             max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex-grow: 1;
         }
         .donation-card {
             background: rgba(0,0,0,0.2); border: 1px solid #1a1a1a;
             border-top: 4px solid var(--accent); padding: 50px 40px; margin: 20px; text-align: center;
         }
-        h1 { font-family: 'Minecraft', sans-serif; font-size: 1rem; color: var(--accent); line-height: 1.2; margin-bottom: 20px; }
+        h1 { font-family: 'Minecraft'; font-size: 1rem; color: var(--accent); line-height: 1.2; margin-bottom: 20px; }
         p { color: var(--text-main); font-size: 0.8rem; line-height: 1.5; margin-bottom: 20px; }
 
         .donation-controls {
@@ -105,49 +31,98 @@
 
         /* --- CUSTOM CHECKBOX --- */
         .checkbox-container {
-            display: flex; align-items: center; gap: 12px; cursor: url('pointer.png'), pointer;
-            text-align: left; user-select: none; color: var(--text-main); font-size: 0.8rem; line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: url('pointer.png'), pointer;
+            text-align: left;
+            user-select: none;
+            color: var(--text-main);
+            font-size: 0.8rem;
+            line-height: 1.5;
         }
-        .checkbox-container a { color: var(--accent); text-decoration: underline; transition: color 0.2s ease; }
-        .checkbox-container a:hover { color: #fff; }
         
+        /* Стили для ссылок внутри чекбокса */
+        .checkbox-container a {
+            color: var(--accent);
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        
+        .checkbox-container a:hover {
+            color: #fff;
+        }
+        
+        /* Скрытый инпут */
         #offer-check { display: none; }
         
         .custom-box {
-            width: 18px; height: 18px; border: 2px solid #333; transition: 0.2s; 
-            flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+            width: 18px; 
+            height: 18px; 
+            border: 2px solid #333;
+            transition: 0.2s; 
+            flex-shrink: 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        
         .custom-box::after {
-            content: ""; width: 10px; height: 10px; background: var(--accent); opacity: 0; transition: 0.2s;
+            content: ""; 
+            width: 10px;
+            height: 10px;
+            background: var(--accent); 
+            opacity: 0; 
+            transition: 0.2s;
         }
+        
+        /* Состояния при чеке */
         #offer-check:checked + .checkbox-container .custom-box { 
-            border-color: var(--accent); box-shadow: 0 0 8px rgba(255, 170, 0, 0.2);
+            border-color: var(--accent); 
+            box-shadow: 0 0 8px rgba(255, 170, 0, 0.2);
         }
-        #offer-check:checked + .checkbox-container .custom-box::after { opacity: 1; }
+        
+        #offer-check:checked + .checkbox-container .custom-box::after { 
+            opacity: 1; 
+        }
+
 
         /* --- ANIMATED BUTTON --- */
         .btn-wrapper {
             display: inline-block; text-decoration: none;
             pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .btn-pay-action {
-            position: relative; display: flex; align-items: center; justify-content: center;
-            background: #151515; color: var(--text-dim); padding: 20px 10px; min-width: 200px; width: fit-content;
-            font-family: 'Minecraft', sans-serif; font-size: 0.75rem; border: 3px solid rgba(255, 255, 255, 0.1);
-            text-transform: uppercase; cursor: url('/not-allowed.png'), not-allowed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            background: #151515; color: var(--text-dim);
+            padding: 20px 10px;
+            min-width: 200px; width: fit-content;
+            font-family: 'Minecraft'; font-size: 0.75rem;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            cursor: url('/not-allowed.png'), not-allowed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
-        .btn-pay-action .txt-confirm, .btn-pay-action .txt-pay {
-            position: absolute; transition: all 0.3s ease, transform 0.3s ease; white-space: nowrap; user-select: none;
+
+        .btn-pay-action .txt-confirm, 
+        .btn-pay-action .txt-pay {
+            position: absolute; transition: all 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            user-select: none;
         }
         .btn-pay-action .txt-pay { opacity: 0; transform: translateY(-20px); color: #000; }
 
+        /* Логика активации через чекбокс (используем общий родительский контейнер) */
         #offer-check:checked ~ .btn-wrapper { pointer-events: auto; }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action {
             background: var(--accent); min-width: 100px; cursor: url('/pointer.png'), pointer;
         }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-confirm { opacity: 0; transform: translateY(20px); }
         #offer-check:checked ~ .btn-wrapper .btn-pay-action .txt-pay { opacity: 1; transform: translateY(0); }
+
         #offer-check:checked ~ .btn-wrapper:hover .btn-pay-action {
             background: #fff; box-shadow: 0 0 20px var(--accent);
         }
@@ -163,140 +138,164 @@
 </head>
 <body>
 
-<!-- Оверлей для анимации перехода -->
-<div id="page-transition-overlay"></div>
-
-<!-- Loading Screen (Идеально черный на старте без transition, чтобы не моргать) -->
+<!-- Loading Screen -->
 <div id="loader-wrapper" style="
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: #000000; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    z-index: 9999999; opacity: 1; visibility: visible; user-select: none; pointer-events: none;
+    position: fixed;
+    user-select: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    animation: hideLoaderNoJS 0.5s forwards;
+    animation-delay: 0.25s;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
-        <div style="color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
-            <span style="color: var(--accent);">Kaeront</span> загружается...
-        </div>
+        
+        <!-- Основной текст (исчезает через 5 секунд) -->
         <div style="
-            position: absolute; top: 0; left: 0; right: 0; color: #888; font-size: clamp(3vh, 3vw, 3vw);
-            opacity: 0; animation: fadeInText 0.3s forwards; animation-delay: 5s; line-height: 0.7;
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            animation: fadeOutText 0.3s forwards;
+            animation-delay: 5s;
+        ">
+            <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
+        </div>
+
+        <!-- Текст ошибки -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            font-family: sans-serif;
+            color: #888;
+            font-size: clamp(3vh, 3vw, 3vw);
+            opacity: 0;
+            animation: fadeInText 0.3s forwards;
+            animation-delay: 5s;
+            line-height: 0.7;
         ">
             «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br>Попробуйте обновить страницу.<br>Загрузка всё ещё идёт.</span>
         </div>
+        
     </div>
 </div>
 
 <script>
-    // Гарантируем, что браузер сначала отрисует черный лоадер (синхронно с переходом), 
-    // и только со следующего кадра добавит transition и начнет плавно переходить в серый #0a0a0a
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            const loader = document.getElementById('loader-wrapper');
-            if (loader) {
-                loader.style.transition = 'background 0.8s ease, opacity 0.5s ease 0.1s, visibility 0.5s ease 0.1s';
-                loader.style.background = '#0a0a0a';
-            }
-        });
-    });
-
-    window.addEventListener('load', function() {
+    // Мгновенная блокировка авто-скрытия, если JS разрешен
+    (function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
+            // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
+            loader.style.animation = 'none';
         }
-    });
-
-    // Сброс состояния, если пользователь возвращается свайпом (bfcache)
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            document.documentElement.classList.remove('is-leaving');
-        }
-    });
+    })();
 </script>
 
-<noscript>
-    <div style="
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-        background: #0a0a0a; color: white; user-select: none; z-index: 9999; 
-        display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        text-align: center; box-sizing: border-box; overflow: hidden;
-    ">
-        <h2 style="max-width: 80vw; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
-        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888;">
-            Для корректной работы сайта kaeront.ru необходимо включить поддержку JavaScript на вашем браузере.
-        </p>
-    </div>
-    <style>body { overflow: hidden !important; }</style>
-</noscript>
-    
-<div id="dev-inject"></div>
-<div id="nav-inject"></div>
+<style>
+    /* Блокировка скролла по умолчанию */
+    body { 
+        overflow: hidden;
+    }
 
-<div class="donation-container">
-    <div class="donation-card">
-        <h1>ПОЖЕРТВОВАНИЕ ПРОЕКТУ «KAERONT»</h1>
-        <p>Kaeront — это не просто сеть серверов, это пространство, созданное игроками для игроков. Мы стремимся обеспечить максимально качественный игровой опыт, стабильный пинг и уникальные механики.</p>
-        <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS и развитие новых режимов.</p>
+    /* Анимация для случая, когда JavaScript отключен */
+    @keyframes hideLoaderNoJS {
+        to { 
+            opacity: 0; 
+            visibility: hidden; 
+        }
+    }
 
-        <div class="donation-controls">
-            <input type="checkbox" id="offer-check">
+    @keyframes fadeOutText {
+        from { opacity: 1; }
+        to { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes fadeInText {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+
+      <noscript>
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
+            background: #0a0a0a; 
+            color: white; 
+            user-select: none;
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            font-family: sans-serif;
+            box-sizing: border-box;
+            overflow: hidden;
+        ">
+            <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
             
-            <label for="offer-check" class="checkbox-container">
-                <div class="custom-box"></div>
-                <span class="checkbox-text">Я согласен с <a href="/offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="/privacy" target="_blank">обработку персональных данных</a>.</span>
-            </label>
+            <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">
+                Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯
+            </p>
+        </div>
+        
+        <style>
+            body { overflow: hidden !important; }
+        </style>
+      </noscript>
+    
+    
+    <div id="dev-inject"></div>
+    <div id="nav-inject"></div>
 
-            <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-wrapper" id="pay-link">
-                <div class="btn-pay-action">
-                    <span class="txt-confirm">Подтвердите согласие</span>
-                    <span class="txt-pay">К оплате</span>
-                </div>
-            </a>
+    <div class="donation-container">
+        <div class="donation-card">
+            <h1>ПОЖЕРТВОВАНИЕ ПРОЕКТУ «KAERONT»</h1>
+            <p>Kaeront — это не просто сеть серверов, это пространство, созданное игроками для игроков. Мы стремимся обеспечить максимально качественный игровой опыт, стабильный пинг и уникальные механики.</p>
+            <p>Ваше добровольное пожертвование — это прямой вклад в стабильность нашей инфраструктуры. Все собранные средства направляются на оплату хостинга, защиту от DDoS и развитие новых режимов.</p>
+
+            <div class="donation-controls">
+                <input type="checkbox" id="offer-check">
+                
+                <label for="offer-check" class="checkbox-container">
+                    <div class="custom-box"></div>
+                    <span class="checkbox-text">Я согласен с <a href="/offer" target="_blank">условиями публичной оферты</a> и даю согласие на <a href="/privacy" target="_blank">обработку персональных данных</a>.</span>
+                </label>
+
+                <a href="https://pay.cloudtips.ru/p/db4c09dc" target="_blank" class="btn-wrapper" id="pay-link">
+                    <div class="btn-pay-action">
+                        <span class="txt-confirm">Подтвердите согласие</span>
+                        <span class="txt-pay">К оплате</span>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="footer-inject"></div>
+    <div id="footer-inject"></div>
 
 <script>
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
-    // Перехват кликов по ссылкам для анимации перехода
-    document.addEventListener('click', function(e) {
-        const targetLink = e.target.closest('a');
-        
-        if (targetLink && targetLink.href) {
-            const href = targetLink.getAttribute('href');
-            const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
-            const isAnchor = href.startsWith('#');
-
-            // Пропускаем внешние ссылки (включая pay-link, если он открывается в новой вкладке)
-            if (!isExternal && !isAnchor) {
-                e.preventDefault();
-                triggerTransition(targetLink.href);
-            }
-        }
-    });
-
-    // Обработка кнопки оплаты (если хотите, чтобы анимация была и при переходе на оплату в текущей вкладке,
-    // уберите target="_blank" у ссылки с id="pay-link")
     link.addEventListener('click', function(e) {
-        if (!check.checked) {
-            e.preventDefault();
-        } else if (link.target !== '_blank') {
-            e.preventDefault();
-            triggerTransition(link.href);
+        if(check.checked) {
+            setTimeout(() => { 
+                window.location.href = 'https://kaeront.ru'; 
+            }, 1000);
         }
     });
-
-    function triggerTransition(destinationUrl) {
-        // Добавляем класс блокировки на корень документа
-        document.documentElement.classList.add('is-leaving');
-        setTimeout(() => { 
-            window.location.href = destinationUrl; 
-        }, 800);
-    }
 </script>
 </body>
 </html>
