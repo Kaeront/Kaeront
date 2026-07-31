@@ -27,7 +27,23 @@
             will-change: backdrop-filter, background;
         }
 
-        /* Применяем масштабирование и фильтры прямо к body с аппаратным ускорением */
+        body.is-leaving {
+            overflow: hidden !important;
+        }
+
+        body.is-leaving #page-transition-overlay {
+            pointer-events: auto;
+            backdrop-filter: blur(16px);
+            background: rgba(10, 10, 10, 0.85);
+        }
+
+        /* Применяем трансформации и аппаратное ускорение напрямую к body, исключая общие врапперы */
+        body.is-leaving {
+            transform: scale(0.92) translateZ(0);
+            filter: brightness(0.4);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
+        }
+
         body {
             transform: scale(1) translateZ(0);
             filter: brightness(1);
@@ -37,22 +53,7 @@
             will-change: transform, filter;
             background-color: #0a0a0a;
             margin: 0;
-            overflow: hidden; /* Блокировка скролла до полной загрузки */
-        }
-
-        body.is-leaving {
-            overflow: hidden;
-        }
-
-        body.is-leaving #page-transition-overlay {
-            pointer-events: auto;
-            backdrop-filter: blur(16px);
-            background: rgba(10, 10, 10, 0.85);
-        }
-
-        body.is-leaving {
-            transform: scale(0.92) translateZ(0);
-            filter: brightness(0.4);
+            overflow-x: hidden;
         }
 
         /* --- CONTENT --- */
@@ -175,10 +176,10 @@
 </head>
 <body>
 
-<!-- Оверлей для анимации переходов -->
+<!-- Оверлей для анимации перехода -->
 <div id="page-transition-overlay"></div>
 
-<!-- Loading Screen: изначально строго черный (#000000) во весь экран без смещений -->
+<!-- Loading Screen -->
 <div id="loader-wrapper" style="
     position: fixed;
     user-select: none;
@@ -228,7 +229,13 @@
 </div>
 
 <script>
-    // 1. Через 0.1с плавно переводим глубокий черный цвет лоадера в фон сайта (#0a0a0a)
+    (function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) {
+            loader.style.animation = 'none';
+        }
+    })();
+
     setTimeout(() => {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
@@ -236,26 +243,26 @@
         }
     }, 100);
 
-    // 2. Плавное скрытие лоадера и разблокировка скролла после полной загрузки
     window.addEventListener('load', function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
             loader.style.opacity = '0';
             loader.style.visibility = 'hidden';
-            document.body.style.overflow = 'auto';
         }
     });
 
-    // Сброс анимации ухода при возврате на страницу через кнопку «Назад» (bfcache)
     window.addEventListener('pageshow', function(event) {
         if (event.persisted) {
             document.body.classList.remove('is-leaving');
-            document.body.style.overflow = 'auto';
         }
     });
 </script>
 
 <style>
+    body { 
+        overflow: hidden;
+    }
+
     @keyframes fadeOutText {
         from { opacity: 1; }
         to { opacity: 0; visibility: hidden; }
@@ -297,7 +304,6 @@
         </style>
       </noscript>
     
-    
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
 
@@ -331,7 +337,6 @@
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
-    // Перехват кликов по внутренним ссылкам сайта для плавной анимации
     document.addEventListener('click', function(e) {
         const targetLink = e.target.closest('a');
         
@@ -347,7 +352,6 @@
         }
     });
 
-    // Обработка кнопки оплаты с вашим условием чекбокса
     link.addEventListener('click', function(e) {
         e.preventDefault();
         if(check.checked) {
@@ -355,10 +359,8 @@
         }
     });
 
-    // Функция запуска анимации ухода и перехода
     function triggerTransition(destinationUrl) {
         document.body.classList.add('is-leaving');
-        
         setTimeout(() => { 
             window.location.href = destinationUrl; 
         }, 800);
