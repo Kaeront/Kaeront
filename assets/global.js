@@ -15,6 +15,42 @@ const globalStyles = `
         --nav-height: 50px;
     }
 
+    /* --- БЛОКИРОВКА ЭКРАНА ПРИ ПЕРЕХОДЕ --- */
+    html.is-leaving, 
+    html.is-leaving body {
+        overflow: hidden !important;
+        pointer-events: none !important;
+        user-select: none !important;
+        touch-action: none !important;
+    }
+
+    /* --- PAGE TRANSITION OVERLAY (VIGNETTE & BLUR) --- */
+    #page-transition-overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        pointer-events: none; z-index: 999999;
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+        transition: background 0.8s cubic-bezier(0.4, 0, 1, 1), 
+                    backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1),
+                    -webkit-backdrop-filter 0.8s cubic-bezier(0.4, 0, 1, 1);
+        will-change: background, backdrop-filter;
+    }
+
+    #page-transition-overlay::after {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at center, transparent 30%, #000000 120%);
+        opacity: 0; transition: opacity 0.8s cubic-bezier(0.4, 0, 1, 1);
+        will-change: opacity; pointer-events: none;
+    }
+
+    html.is-leaving #page-transition-overlay {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        pointer-events: auto;
+    }
+
+    html.is-leaving #page-transition-overlay::after { opacity: 1; }
+
     html {
         padding-top: 0px;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -25,35 +61,25 @@ const globalStyles = `
     @font-face {
         font-family: 'Uniform';
         src: url('/assets/uniform.otf') format('opentype');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
+        font-weight: 400; font-style: normal; font-display: swap;
     }
 
     @font-face {
         font-family: 'Uniform Upper';
         src: url('/assets/uniform_upper.otf') format('opentype');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
+        font-weight: 400; font-style: normal; font-display: swap;
     }
 
     @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft.ttf') format('truetype');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-        size-adjust: 130%; 
+        font-weight: 400; font-style: normal; font-display: swap; size-adjust: 130%; 
     }
 
     @font-face {
         font-family: 'Minecraft';
         src: url('/assets/minecraft-bold.ttf') format('truetype');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-        size-adjust: 130%; 
+        font-weight: 700; font-style: normal; font-display: swap; size-adjust: 130%; 
     }
 
     body {
@@ -61,52 +87,26 @@ const globalStyles = `
         background-image: url("data:image/svg+xml,%3Csvg width='32' height='64' viewBox='0 0 32 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 28h20V16h-4v8H4V4h28v28h-4V8H8v12h4v-8h12v20H0v-4zm12 8h20v4H16v24H0v-4h12V36zm16 12h-4v12h8v4H20V44h12v12h-4v-8zM0 36h8v20H0v-4h4V40H0v-4z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         color: var(--text-main);
         font-family: 'Montserrat', sans-serif;
-        margin: 0;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        will-change: padding-top;
-        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    body::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    body::-webkit-scrollbar-thumb {
-        background-color: #333;
-        border-radius: 8px;
-        z-index: 100000;
-    }
-
-    body::-webkit-scrollbar-track {
-        background-color: #000;
-        border-radius: 8px;
-    }
-
-    .a, button {
-        cursor: url('/assets/pointer.png'), pointer;
-    }
-
-    body {
+        margin: 0; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh;
+        will-change: padding-top; transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: url('/assets/cursor.png'), auto;
     }
 
+    body::-webkit-scrollbar { width: 8px; }
+    body::-webkit-scrollbar-thumb { background-color: #333; border-radius: 8px; }
+    body::-webkit-scrollbar-track { background-color: #000; border-radius: 8px; }
+
+    .a, button, a { cursor: url('/assets/pointer.png'), pointer; }
+
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-        background: transparent; backdrop-filter: blur(0px);
-        border-bottom: 1.5px solid transparent; 
-        display: flex; justify-content: space-between;
-        align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
-        user-select: none;
-        will-change: background, backdrop-filter, border-bottom, margin-top;
+        background: transparent; backdrop-filter: blur(0px); border-bottom: 1.5px solid transparent; 
+        display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        user-select: none; will-change: background, backdrop-filter, border-bottom, margin-top;
         transition: background 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
     }
     nav.scrolled {
-        background: rgba(10, 10, 10, 0.7); 
-        backdrop-filter: blur(5px);
-        border-bottom: 1.5px solid #1a1a1a;
+        background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(5px); border-bottom: 1.5px solid #1a1a1a;
     }
     .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; font-weight: 700; }
     .nav-links { display: flex; gap: 10px; align-items: center; }
@@ -126,54 +126,21 @@ const globalStyles = `
 
     /* ИНТЕРНЕТ ПОП-АП */
     #speed-popup {
-        position: fixed; top: 0; left: 0; width: 100%; height: 20px;
-        color: #fff;
-        z-index: 3001;
+        position: fixed; top: 0; left: 0; width: 100%; height: 20px; color: #fff; z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
-        transform: translateY(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        user-select: none;
+        transform: translateY(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none;
     }
-    
-    /* Состояние: Медленный интернет (Оранжево-желтый) */
-    #speed-popup.slow {
-        background: #fa0;
-        color: #000;
-    }
-
-    /* Состояние: Нет подключения (Красный) */
-    #speed-popup.offline {
-        background: #a00;
-        color: #fff;
-    }
-
-    #speed-popup.active { 
-        transform: translateY(0); 
-    }
-
-    body:has(#speed-popup.active) {
-        margin-top: 20px !important;
-    }
-    body:has(#speed-popup.active) nav {
-        margin-top: 20px !important;
-    }
+    #speed-popup.slow { background: #fa0; color: #000; }
+    #speed-popup.offline { background: #a00; color: #fff; }
+    #speed-popup.active { transform: translateY(0); }
+    body:has(#speed-popup.active) { margin-top: 20px !important; }
+    body:has(#speed-popup.active) nav { margin-top: 20px !important; }
 
     /* Стили для кнопки профиля в шапке */
-    .nav-auth-icon {
-        font-size: 24px !important;
-        font-family: 'Uniform Upper' !important;
-        font-weight: 400 !important;
-    }
-    .nav-user-head {
-        width: 24px;
-        height: 24px;
-        border: 1px solid #333;
-        transition: 0.3s;
-    }
-    .nav-user-head:hover {
-        border-color: var(--accent);
-    }
+    .nav-auth-icon { font-size: 24px !important; font-family: 'Uniform Upper' !important; font-weight: 400 !important; }
+    .nav-user-head { width: 24px; height: 24px; border: 1px solid #333; transition: 0.3s; }
+    .nav-user-head:hover { border-color: var(--accent); }
 `;
 
 const injectHTML = {
@@ -283,11 +250,52 @@ const setupHead = () => {
     document.head.appendChild(statusScript);
 };
 
+// --- ГЛОБАЛЬНАЯ ЛОГИКА АНИМАЦИИ ПЕРЕХОДОВ --- //
+
+function triggerTransition(destinationUrl) {
+    document.documentElement.classList.add('is-leaving');
+    setTimeout(() => { 
+        window.location.href = destinationUrl; 
+    }, 800);
+}
+
+// Глобальный слушатель кликов по ссылкам
+document.addEventListener('click', function(e) {
+    // Если внутренний скрипт на конкретной странице уже отменил переход (например, чекбокс не нажат), ничего не делаем.
+    if (e.defaultPrevented) return;
+
+    const targetLink = e.target.closest('a');
+    if (targetLink && targetLink.href) {
+        
+        // Позволяем разработчику добавлять класс data-no-transition="true" ссылкам, которые не должны анимироваться
+        if (targetLink.hasAttribute('data-no-transition')) return;
+        
+        const href = targetLink.getAttribute('href');
+        
+        // Пропускаем якорные ссылки, заглушки и системные протоколы
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || targetLink.protocol === 'mailto:' || targetLink.protocol === 'tel:') return;
+
+        const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
+
+        if (!isExternal) {
+            e.preventDefault();
+            triggerTransition(targetLink.href);
+        }
+    }
+});
+
+// Возврат назад (bfcache свайпы в Safari/Chrome): сбрасываем класс блокировки
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        document.documentElement.classList.remove('is-leaving');
+    }
+});
+
+
 // Динамическое управление поп-апом интернета
 let networkDelayTimer = null;
 
 const toggleSpeedPopup = (show, type = 'slow') => {
-    // Сбрасываем предыдущий таймер ожидания медленного соединения
     clearTimeout(networkDelayTimer);
 
     const applyVisibility = () => {
@@ -301,45 +309,38 @@ const toggleSpeedPopup = (show, type = 'slow') => {
                 document.body.appendChild(popup);
             }
 
-            // Настраиваем контент и классы в зависимости от типа ошибки
             if (type === 'offline') {
                 popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
-                popup.className = 'offline'; // Вешаем красный стиль
+                popup.className = 'offline';
             } else {
                 popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
-                popup.className = 'slow'; // Вешаем желтый стиль
+                popup.className = 'slow';
             }
 
-            // Форсируем микро-таймаут для плавного CSS-перехода
             setTimeout(() => {
                 popup.classList.add('active');
             }, 50);
         } else {
             if (popup) {
                 popup.classList.remove('active');
-                setTimeout(() => popup.remove(), 300); // Чистим DOM после скрытия
+                setTimeout(() => popup.remove(), 300);
             }
         }
     };
 
     if (type === 'offline') {
-        // Если интернета вообще нет — показываем плашку моментально без задержек!
         applyVisibility();
     } else {
-        // Если интернет просто просел по скорости — аккуратно ждем 1.5 сек перед показом
         networkDelayTimer = setTimeout(applyVisibility, 1500);
     }
 };
 
-// Функция оценки состояния сети
 const evaluateNetwork = () => {
-    // 1. Проверяем абсолютный офлайн
     if (!navigator.onLine) {
         toggleSpeedPopup(true, 'offline');
         return;
     }
 
-    // 2. Проверяем просадку скорости
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
         if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4)) {
@@ -348,26 +349,14 @@ const evaluateNetwork = () => {
         }
     }
 
-    // Если всё восстановилось — плавно скрываем предупреждение
     toggleSpeedPopup(false);
 };
 
-// Живой мониторинг в реальном времени
 const startNetworkMonitoring = () => {
-    // Первичная проверка при загрузке страницы
     evaluateNetwork();
+    window.addEventListener('offline', () => toggleSpeedPopup(true, 'offline'));
+    window.addEventListener('online', () => evaluateNetwork());
 
-    // Мгновенная реакция на физическое отключение (без таймеров и задержек)
-    window.addEventListener('offline', () => {
-        toggleSpeedPopup(true, 'offline');
-    });
-
-    // Реакция на возвращение сети
-    window.addEventListener('online', () => {
-        evaluateNetwork();
-    });
-
-    // Отслеживание изменений скорости «на лету»
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
         connection.addEventListener('change', evaluateNetwork);
@@ -390,6 +379,8 @@ window.addEventListener('scroll', () => {
 // Сборка страницы
 setupHead();
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // Внедряем HTML элементы
     const containers = {
         'noscript-inject': injectHTML.noscript,
         'nav-inject': injectHTML.nav,
@@ -402,10 +393,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.outerHTML = html;
     });
 
+    // Создаем невидимый оверлей для анимаций перехода
+    const overlay = document.createElement('div');
+    overlay.id = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
     startNetworkMonitoring();
 });
 
-// Логика скрытия загрузочного экрана
+// Логика скрытия загрузочного экрана (Loader)
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
