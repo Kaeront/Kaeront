@@ -13,7 +13,7 @@
             --nav-hide: 100px;
         }
 
-        /* --- PAGE TRANSITION OVERLAY & EFFECTS (GPU Accelerated) --- */
+        /* --- PAGE TRANSITION OVERLAY & EFFECTS (с аппаратным ускорением) --- */
         #page-transition-overlay {
             position: fixed;
             top: 0;
@@ -46,7 +46,7 @@
             transition: transform 0.8s cubic-bezier(0.4, 0, 1, 1), filter 0.8s cubic-bezier(0.4, 0, 1, 1);
         }
 
-        /* Общий контейнер для содержимого страницы с аппаратным ускорением */
+        /* Общий контейнер с центрированием и аппаратным ускорением */
         #site-wrapper {
             width: 100%;
             min-height: 100vh;
@@ -54,8 +54,8 @@
             flex-direction: column;
             transform: scale(1) translateZ(0);
             filter: brightness(1);
+            transform-origin: 50% 50%; /* Строго по центру экрана */
             will-change: transform, filter;
-            transform-origin: 50% 50%;
             transition: transform 0.8s cubic-bezier(0, 0, 0.2, 1), filter 0.8s cubic-bezier(0, 0, 0.2, 1);
         }
 
@@ -182,24 +182,23 @@
 <!-- Оверлей для анимации перехода -->
 <div id="page-transition-overlay"></div>
 
-<!-- Loading Screen -->
+<!-- Loading Screen (изначально полностью чёрный, проявляется через 100ms) -->
 <div id="loader-wrapper" style="
     position: fixed;
     user-select: none;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: #0a0a0a;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 99999;
-    opacity: 0; /* Изначально прозрачный */
-    transition: opacity 0.4s ease, visibility 0.4s;
-    animation: hideLoaderNoJS 0.5s forwards;
-    animation-delay: 0.25s;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease;
 ">
     <div style="position: relative; text-align: center; width: 100%;">
         <div style="
@@ -231,15 +230,14 @@
 </div>
 
 <script>
+    // Логика лоадера: через 100мс плавно показываем его при фактическом визите
     (function() {
         const loader = document.getElementById('loader-wrapper');
         if (loader) {
-            loader.style.animation = 'none';
-            
-            // Проявляем лоадер ровно через 1/3 секунды (333мс) при фактическом визите
             setTimeout(() => {
+                loader.style.visibility = 'visible';
                 loader.style.opacity = '1';
-            }, 333);
+            }, 100);
         }
     })();
 </script>
@@ -248,13 +246,6 @@
     body { 
         overflow: hidden;
         background-color: #0a0a0a;
-    }
-
-    @keyframes hideLoaderNoJS {
-        to { 
-            opacity: 0; 
-            visibility: hidden; 
-        }
     }
 
     @keyframes fadeOutText {
@@ -330,10 +321,18 @@
     const link = document.getElementById('pay-link');
     const check = document.getElementById('offer-check');
 
-    // Сброс состояния страницы при возврате назад (bfcache)
+    // Сброс всех анимаций ухода при возврате назад (BFcache)
     window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            document.body.classList.remove('is-leaving');
+        document.body.classList.remove('is-leaving');
+        const overlay = document.getElementById('page-transition-overlay');
+        if (overlay) {
+            overlay.style.backdropFilter = 'blur(0px)';
+            overlay.style.background = 'rgba(10, 10, 10, 0)';
+        }
+        const wrapper = document.getElementById('site-wrapper');
+        if (wrapper) {
+            wrapper.style.transform = 'scale(1) translateZ(0)';
+            wrapper.style.filter = 'brightness(1)';
         }
     });
 
@@ -361,7 +360,7 @@
         }
     });
 
-    // Функция запуска анимации перехода
+    // Запуск анимации ухода
     function triggerTransition(destinationUrl) {
         document.body.classList.add('is-leaving');
         
