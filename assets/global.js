@@ -26,21 +26,22 @@ const globalStyles = `
 
     /* --- КОНТЕЙНЕР ДЛЯ ЭФФЕКТА ОТДАЛЕНИЯ (SCALE & BLUR) --- */
     #site-wrapper {
+        position: relative;
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         width: 100%;
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-                    filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-origin: center center;
+        transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1), 
+                    filter 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+        transform-origin: center 50vh; /* Центрирование строго по вертикали экрана, а не всей страницы */
         backface-visibility: hidden;
         will-change: transform, filter;
     }
 
-    /* Состояние ухода: отдаление, блюр и полное затемнение контента */
+    /* Состояние ухода: быстрое отдаление, блюр и полное затемнение контента */
     html.is-leaving #site-wrapper {
         transform: scale(0.92) translateZ(0);
-        filter: brightness(0.15) blur(6px);
+        filter: brightness(0.1) blur(8px);
     }
 
     /* --- PAGE TRANSITION OVERLAY (ПОЛНОЕ ЗАТЕМНЕНИЕ ДО ЧЕРНОГО) --- */
@@ -48,18 +49,19 @@ const globalStyles = `
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         pointer-events: none; z-index: 999999;
         background: rgba(0, 0, 0, 0);
-        transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background 0.55s cubic-bezier(0.25, 1, 0.5, 1);
         will-change: background;
     }
 
-    /* Виньетка для глубины */
+    /* Виньетка для глубокого кинематографичного эффекта */
     #page-transition-overlay::after {
         content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at center, transparent 20%, #000000 100%);
-        opacity: 0; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: radial-gradient(circle at center, transparent 15%, #000000 90%);
+        opacity: 0; transition: opacity 0.55s cubic-bezier(0.25, 1, 0.5, 1);
         pointer-events: none;
     }
 
+    /* В финальной точке перехода экран становится абсолютно черным (#000) */
     html.is-leaving #page-transition-overlay {
         background: rgba(0, 0, 0, 1);
         pointer-events: auto;
@@ -114,6 +116,7 @@ const globalStyles = `
 
     .a, button, a { cursor: url('/assets/pointer.png'), pointer; }
 
+    /* Навигация строго фиксирована на уровне окна браузера, а не внутри трансформируемого контейнера */
     nav {
         position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
         background: transparent; backdrop-filter: blur(0px); border-bottom: 1.5px solid transparent; 
@@ -214,6 +217,196 @@ const injectHTML = {
                 <h4>Проект</h4>
                 <ul class="footer-links">
                     <li><a href="/news">Новости</a></li>
+                    <li><a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a></li>
+                    <li><a href="/donate">Пожертвовать</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакты</h4>
+                <ul class="footer-links">
+                    <li><a href="https://t.me/KaerontMC" target="_blank">@KaerontMC (Telegram) — поддержка</a></li>
+                    <li><a href="mailto:support@kaeront.ru" target="_blank">support@kaeront.ru — поддержка</a></li>
+                    <li><a href="mailto:admin@kaeront.ru" target="_blank">admin@kaeront.ru — важные вопросы</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright-bar">Copyright © Kaeront 2026. All rights reserved.<br>NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT<br>Проект разработчика Амира «KAmir» Кашапова.</div>
+    </footer>`
+};
+
+const setupHead = () => {
+    const metaTags = [
+      { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
+      { name: 'theme-color', content: '#ffaa00' },
+      { property: 'og:locale', content: 'ru-RU' },
+      { property: 'og:url', content: 'https://kaeront.ru' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:title', content: 'Kaeront — сеть уникальных Minecraft-серверов' },
+      { property: 'og:description', content: 'Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.' },
+      { property: 'og:image', content: 'https://kaeront.ru/preview.png' },
+      { property: 'og:logo', content: 'https://kaeront.ru/palm.png' }
+    ];
+
+    metaTags.forEach(tag => {
+        const m = document.createElement('meta');
+        Object.entries(tag).forEach(([k, v]) => m.setAttribute(k, v));
+        document.head.appendChild(m);
+    });
+
+    const fonts = document.createElement('link');
+    fonts.rel = 'stylesheet';
+    fonts.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap';
+    document.head.appendChild(fonts);
+
+    const style = document.createElement('style')
+    style.innerHTML = globalStyles;
+    document.head.appendChild(style);
+
+    const statusScript = document.createElement('script');
+    statusScript.src = '/assets/online_status.js';
+    statusScript.defer = true;
+    document.head.appendChild(statusScript);
+};
+
+// --- АНИМАЦИЯ ПЕРЕХОДОВ (УСКОРЕННАЯ ДО 550мс) --- //
+
+function triggerTransition(destinationUrl) {
+    document.documentElement.classList.add('is-leaving');
+    setTimeout(() => { 
+        window.location.href = destinationUrl; 
+    }, 550);
+}
+
+document.addEventListener('click', function(e) {
+    if (e.defaultPrevented) return;
+
+    const targetLink = e.target.closest('a');
+    if (targetLink && targetLink.href) {
+        if (targetLink.hasAttribute('data-no-transition')) return;
+        
+        const href = targetLink.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript:') || targetLink.protocol === 'mailto:' || targetLink.protocol === 'tel:') return;
+
+        const isExternal = targetLink.target === '_blank' || targetLink.hostname !== window.location.hostname;
+
+        if (!isExternal) {
+            e.preventDefault();
+            triggerTransition(targetLink.href);
+        }
+    }
+});
+
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        document.documentElement.classList.remove('is-leaving');
+    }
+});
+
+// Мониторинг сети
+let networkDelayTimer = null;
+const toggleSpeedPopup = (show, type = 'slow') => {
+    clearTimeout(networkDelayTimer);
+    const applyVisibility = () => {
+        let popup = document.getElementById('speed-popup');
+        if (show) {
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'speed-popup';
+                document.body.appendChild(popup);
+            }
+            if (type === 'offline') {
+                popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
+                popup.className = 'offline';
+            } else {
+                popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
+                popup.className = 'slow';
+            }
+            setTimeout(() => popup.classList.add('active'), 50);
+        } else {
+            if (popup) {
+                popup.classList.remove('active');
+                setTimeout(() => popup.remove(), 300);
+            }
+        }
+    };
+    if (type === 'offline') applyVisibility();
+    else networkDelayTimer = setTimeout(applyVisibility, 1500);
+};
+
+const evaluateNetwork = () => {
+    if (!navigator.onLine) { toggleSpeedPopup(true, 'offline'); return; }
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection && (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4))) {
+        toggleSpeedPopup(true, 'slow');
+        return;
+    }
+    toggleSpeedPopup(false);
+};
+
+const startNetworkMonitoring = () => {
+    evaluateNetwork();
+    window.addEventListener('offline', () => toggleSpeedPopup(true, 'offline'));
+    window.addEventListener('online', () => evaluateNetwork());
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) connection.addEventListener('change', evaluateNetwork);
+};
+
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('smart-nav');
+    if (nav) {
+        const navHideThreshold = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-hide')) || 0;
+        if (window.scrollY >= navHideThreshold) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+    }
+});
+
+setupHead();
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Создаем обертку #site-wrapper строго после навигации и футера, чтобы fixed-элементы остались на уровне тела документа
+    const wrapper = document.createElement('div');
+    wrapper.id = 'site-wrapper';
+    
+    // Переносим контент тела в обертку, исключая уже встроенные через инъекции элементы
+    while (document.body.firstChild) {
+        wrapper.appendChild(document.body.firstChild);
+    }
+    document.body.appendChild(wrapper);
+
+    const containers = {
+        'noscript-inject': injectHTML.noscript,
+        'nav-inject': injectHTML.nav,
+        'footer-inject': injectHTML.footer,
+        'dev-inject': injectHTML.dev
+    };
+
+    Object.entries(containers).forEach(([id, html]) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.outerHTML = html;
+        }
+    });
+
+    const overlay = document.createElement('div');
+    overlay.id = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    startNetworkMonitoring();
+});
+
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader-wrapper');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.visibility = 'hidden';
+
+        document.body.style.setProperty('overflow', 'auto', 'important');
+        document.documentElement.style.overflow = 'auto'; 
+
+        setTimeout(() => loader.remove(), 500);
+    }
+});
+и</a></li>
                     <li><a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a></li>
                     <li><a href="/donate">Пожертвовать</a></li>
                 </ul>
