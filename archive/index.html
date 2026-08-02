@@ -301,7 +301,6 @@
         #wiki-app::-webkit-scrollbar-thumb {
             background-color: #333;
             border-radius: 5px;
-            z-index: 100000;
         }
 
         /* --- СОСТОЯНИЕ SCALE-DOWN --- */
@@ -351,8 +350,6 @@
             mask-composite: intersect !important;
             -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent), linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent) !important;
             -webkit-mask-composite: source-in !important;
-            user-select: none;
-            pointer-events: none;
         }
 
         /* --- СВЯЗКА АНИМАЦИИ ШИММЕРА С КЛАССОМ SCALE-DOWN РОДИТЕЛЯ --- */
