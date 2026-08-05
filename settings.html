@@ -422,7 +422,7 @@
         .ks-spoiler-content {
             visibility: hidden;
             opacity: 0;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
+            transition: opacity 0.2s linear, visibility 0.2s linear;
         }
         
         /* Когда спойлер открыт — показываем текст */
@@ -437,7 +437,7 @@
             mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
             -webkit-mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
             background: #0f0f0f;
-            transition: --radius 0.2s ease;
+            transition: --radius 0.2s linear;
             position: absolute;
             top: 0;
             left: 0;
