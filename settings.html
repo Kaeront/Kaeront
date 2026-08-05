@@ -414,6 +414,8 @@
             user-select: none;
             overflow: hidden;
             vertical-align: bottom;
+            --mask-x: 50%;
+            --mask-y: 50%;
         }
 
         /* Сам скрытый текст */
@@ -432,8 +434,8 @@
 
         /* Холст для частиц */
         .ks-spoiler-canvas {
-            mask-image: radial-gradient(circle, transparent var(--radius), black var(--radius));
-            -webkit-mask-image: radial-gradient(circle, transparent var(--radius), black var(--radius));
+            mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
+            -webkit-mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
             background: #0f0f0f;
             transition: --radius 0.2s ease;
             position: absolute;
@@ -631,7 +633,7 @@
 
     <script src="/assets/global.js"></script>
     <script>
-        class Spoiler {
+class Spoiler {
             constructor(el) {
                 this.container = el;
                 this.content = el.querySelector('.ks-spoiler-content');
@@ -645,6 +647,7 @@
                 this.isRevealed = false;
                 this.width = 0;
                 this.height = 0;
+                this.hasOpenedByClick = false; // Флаг: был ли клик уже обработан
         
                 this.init();
             }
@@ -655,8 +658,32 @@
         
                 this.container.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    
+                    // Если спойлер закрывается — сбрасываем флаг клика
+                    if (this.isRevealed) {
+                        this.hasOpenedByClick = false;
+                    } 
+                    // Если открывается пользователем вручную (клик) и еще не было задано положение от клика
+                    else if (!this.hasOpenedByClick) {
+                        const rect = this.container.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        // Задаем координаты центра маски в процентах или пикселях
+                        this.container.style.setProperty('--mask-x', `${x}px`);
+                        this.container.style.setProperty('--mask-y', `${y}px`);
+                        this.hasOpenedByClick = true;
+                    }
+
                     this.toggle();
                 });
+            }
+
+            // Метод для установки кастомного центра маски (например, для серединного спойлера)
+            setMaskCenter(xPx, yPx) {
+                this.container.style.setProperty('--mask-x', `${xPx}px`);
+                this.container.style.setProperty('--mask-y', `${yPx}px`);
+                this.hasOpenedByClick = true;
             }
         
             toggle(forceState) {
@@ -705,13 +732,11 @@
                     });
                 }
         
-                // Если анимация отключена из-за слабой видеокарты — рисуем статичную картинку
                 if (SpoilerManager.isLowFps) {
                     this.renderStatic();
                 }
             }
         
-            // Статичная отрисовка (вызывается 1 раз, движение отключено)
             renderStatic() {
                 if (this.isRevealed) return;
                 this.ctx.clearRect(0, 0, this.width, this.height);
@@ -725,7 +750,6 @@
                 }
             }
         
-            // Динамическая отрисовка кадров
             render() {
                 if (this.isRevealed) return;
         
@@ -749,7 +773,7 @@
                 }
             }
         }
-        
+
         // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ
         const SpoilerManager = {
             spoilers: [],
@@ -872,6 +896,33 @@
         
             const isAnyRevealed = SpoilerManager.spoilers.some(s => s.isRevealed);
             const targetState = !isAnyRevealed;
+        
+            if (targetState) {
+                // Ищем серединный спойлер из списка IP
+                const midIndex = Math.floor(activeIpSpoilers.length / 2);
+                const middleSpoiler = activeIpSpoilers[midIndex];
+                
+                if (middleSpoiler) {
+                    const rect = middleSpoiler.container.getBoundingClientRect();
+                    // Центр серединного спойлера относительно него самого
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+        
+                    // Привязываем центр маски ВСЕХ спойлеров к точке центра серединного спойлера
+                    SpoilerManager.spoilers.forEach(s => {
+                        // Пересчитываем координаты относительно каждого конкретного спойлера, 
+                        // чтобы круг начинался визуально из той же точки экрана
+                        const sRect = s.container.getBoundingClientRect();
+                        const relativeX = (rect.left + centerX) - sRect.left;
+                        const relativeY = (rect.top + centerY) - sRect.top;
+                        
+                        s.setMaskCenter(relativeX, relativeY);
+                    });
+                }
+            } else {
+                // При закрытии сбрасываем флаги кликов у всех
+                SpoilerManager.spoilers.forEach(s => s.hasOpenedByClick = false);
+            }
         
             SpoilerManager.spoilers.forEach(s => s.toggle(targetState));
             btn.textContent = targetState ? 'Скрыть' : 'Раскрыть';
