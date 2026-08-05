@@ -156,6 +156,7 @@ style.textContent = `
     }
     .search-input-field:focus {
         border-color: #fa0;
+        box-shadow: 0 0 10px rgba(255, 170, 0, 0.25);
         outline: none;
     }
 
