@@ -24,6 +24,20 @@
   ],
   "rewrites": [
     {
+      "source": "/api/chat",
+      "destination": "/api/chat.js"
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "chat.kaeront.ru"
+        }
+      ],
+      "destination": "/chat/index.html"
+    },
+    {
       "source": "/user/:id",
       "destination": "/user-style"
     },
