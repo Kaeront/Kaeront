@@ -163,7 +163,12 @@
             let lastDateStr = "";
 
             data.messages.forEach(m => {
-                const dateObj = new Date(m.created_at);
+                // Преобразуем формат из "YYYY-MM-DD HH:MM:SS" в валидный ISO UTC "YYYY-MM-DDTHH:MM:SSZ"
+                const isoUtcString = m.created_at.includes('T') 
+                    ? (m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z')
+                    : m.created_at.replace(' ', 'T') + 'Z';
+
+                const dateObj = new Date(isoUtcString);
                 
                 // Форматирование даты
                 const dateStr = dateObj.toLocaleDateString('ru-RU', {
