@@ -28,14 +28,14 @@
       "destination": "/api/chat.js"
     },
     {
-      "source": "/:path*",
+      "source": "/:channel*",
       "has": [
         {
           "type": "host",
           "value": "chat.kaeront.ru"
         }
       ],
-      "destination": "/chat/index.html"
+      "destination": "/chat.html"
     },
     {
       "source": "/user/:id",
