@@ -223,37 +223,55 @@
         let pinnedChannels = [];
         let listenedChannels = [];
 
+        // 1. Функция конвертации ключа
         function urlB64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            // Убираем PEM-заголовки, пробелы и переносы строк, если они случайно попали
+            const pemHeader = "-----BEGIN PUBLIC KEY-----";
+            const pemFooter = "-----END PUBLIC KEY-----";
+            let b64Clean = base64String.replace(pemHeader, "").replace(pemFooter, "").replace(/[\r\n\s]/g, "");
+        
+            const padding = '='.repeat((4 - b64Clean.length % 4) % 4);
+            const base64 = (b64Clean + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            
             const rawData = window.atob(base64);
             const outputArray = new Uint8Array(rawData.length);
             for (let i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
             }
+            
+            // Если браузер получил полный X.509 ключ (91 байт вместо 65), вырезаем хвостовые 65 байт сырого ключа P-256
+            if (outputArray.length === 91) {
+                return outputArray.slice(26); // первые 26 байт — это ASN.1 заголовки алгоритма ECDSA
+            }
+            
             return outputArray;
         }
-
+        
+        // 2. Функция регистрации подписки
         async function registerServiceWorkerAndPush() {
             if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-
+            
             try {
                 const registration = await navigator.serviceWorker.ready;
+                
+                // Передаем ваш ключ в виде чистой строки без переносов строк
                 const publicVapidKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjRk87iRdGjmiExvF9uVUNENYo0f4FV6sTN0tlR1bMWo77V+D0AxLn16FNRhYp3oqPNNTw8YjSI/s8cjAw7q4yw==';
+                
                 const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: urlB64ToUint8Array(publicVapidKey)
+                    applicationServerKey: urlB64ToUint8Array(publicVapidKey) // Обязательная конвертация в Uint8Array
                 });
-
+        
+                // Отправляем подписку на бэкенд
                 await fetch('/api/v1/push/subscribe', {
                     method: 'POST',
-                    headers: {
+              headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
                     },
                     body: JSON.stringify(subscription)
                 });
-                console.log("Push-подписка успешно зарегистрирована на сервере.");
+                console.log("Push-подписка успешно оформлена и отправлена на сервер!");
             } catch (err) {
                 console.error("Ошибка оформления Push-подписки:", err);
             }
