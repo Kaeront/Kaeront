@@ -71,8 +71,7 @@
         /* Сообщения */
         .msg-row { display: flex; gap: 12px; align-items: flex-start; width: 100%; max-width: 100%; }
         .msg-avatar-link { flex-shrink: 0; text-decoration: none; }
-        .msg-avatar { width: 38px; height: 38px; border-radius: 10px; background: #27272a; object-fit: cover; border: 1px solid #3f3f46; transition: transform 0.15s; }
-        .msg-avatar:hover { transform: scale(1.08); }
+        .msg-avatar { width: 38px; height: 38px; border-radius: 10px; background: #27272a; object-fit: cover; border: 1px solid #27272a; user-select: none; }
 
         .msg-body { background: #18181b; padding: 10px 14px; border-radius: 10px; border: 1px solid #27272a; flex: 1; min-width: 0; }
         .msg-header { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
@@ -80,7 +79,7 @@
         .msg-author-link:hover { text-decoration: underline; }
         .msg-source { font-size: 0.65rem; color: #71717a; font-weight: normal; }
         .msg-time { font-size: 0.7rem; color: #52525b; margin-left: auto; }
-        .msg-content { font-size: 0.9rem; color: #e4e4e7; line-height: 1.4; word-break: break-word; }
+        .msg-content { font-size: 0.9rem; color: #e4e4e7; line-height: 1.2; word-break: break-word; }
 
         /* Поле ввода */
         .chat-input-area { padding: 15px; background: #18181b; border-top: 1px solid #27272a; display: flex; gap: 10px; flex-shrink: 0; }
@@ -110,7 +109,7 @@
         body.streaming-mode .chat-input-area { display: none !important; }
         body.streaming-mode { background: transparent !important; }
         body.streaming-mode #chat-main { background: transparent !important; }
-        body.streaming-mode .msg-body { background: rgba(24, 24, 27, 0.85); }
+        body.streaming-mode .msg-body { padding: 8px; background: rgba(24, 24, 27, 0.85); }
         body.streaming-mode .messages-scroll { scrollbar-width: none; }
         body.streaming-mode .msg-row,
         body.streaming-mode #messages-list { gap: 4px; }
