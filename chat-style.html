@@ -693,26 +693,27 @@
                 if (hasNew && lastMsg) {
                     playNotificationSound();
                     
-                    const notifTitle = `Новое сообщение в #${chId}`;
-                    const notifOptions = {
-                        body: `${lastMsg.author_name}: ${lastMsg.content}`,
-                        icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
-                        tag: `msg-${chId}`,
-                        data: { channel: chId }
-                    };
+                    // Проверяем разрешение браузера
+                    if (Notification.permission === 'granted') {
+                        const notifTitle = `Новое сообщение в #${chId}`;
+                        const notifOptions = {
+                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
+                            tag: `msg-${chId}`,
+                            data: { channel: chId },
+                            requireInteraction: false // Не заставлять висеть вечно
+                        };
 
-                    if (document.hidden && Notification.permission === 'granted') {
+                        // Пытаемся отправить через Service Worker (работает надежнее всего)
                         if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                             navigator.serviceWorker.ready.then((reg) => {
                                 reg.showNotification(notifTitle, notifOptions);
+                            }).catch(() => {
+                                // Фоллбэк, если SW не ответил
+                                showLocalNotification(notifTitle, notifOptions, chId);
                             });
                         } else {
-                            const localNotif = new Notification(notifTitle, notifOptions);
-                            localNotif.onclick = () => {
-                                window.focus();
-                                switchChannel(chId);
-                                localNotif.close();
-                            };
+                            showLocalNotification(notifTitle, notifOptions, chId);
                         }
                     }
                 }
