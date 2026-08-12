@@ -188,6 +188,22 @@
     </div>
 
     <script>
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then((reg) => {
+                console.log('SW зарегистрирован:', reg);
+            }).catch((err) => {
+                console.error('Ошибка регистрации SW:', err);
+            });
+        
+            // Прием сообщений от SW при клике на уведомление, если вкладка уже была открыта
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.action === 'SWITCH_CHANNEL') {
+                    switchChannel(event.data.channel);
+                }
+            });
+        }
+
         const token = localStorage.getItem('kaeront_access_token');
         let currentChannel = 'global';
         let userHasScrolledUp = false;
@@ -481,13 +497,42 @@
                 });
             
                 // Уведомление срабатывает, если мы в текущем канале ИЛИ если текущий канал в списке прослушиваемых
-                if (hasNew && lastMsg && (currentChannel === lastMsg.channel_id || listenedChannels.includes(currentChannel))) {
-                    playNotificationSound();
-                    if (document.hidden && Notification.permission === 'granted') {
-                        new Notification(`Новое сообщение в #${currentChannel}`, {
-                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
-                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name)
-                        });
+                if (hasNew && lastMsg) {
+                    const msgChannel = lastMsg.channel_id || currentChannel;
+
+                    // Проверяем: сообщение пришло в открытый канал ИЛИ в прослушиваемый
+                    const isTargetChannel = (msgChannel === currentChannel) || listenedChannels.includes(msgChannel);
+
+                    if (isTargetChannel) {
+                        playNotificationSound();
+
+                        // Показываем уведомление, если вкладка не активна
+                        if (document.hidden && Notification.permission === 'granted') {
+                            const notifTitle = `Новое сообщение в #${msgChannel}`;
+                            const notifOptions = {
+                                body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                                icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
+                                tag: `msg-${msgChannel}`
+                            };
+
+                            // Отправка через активный Service Worker с привязкой события клика
+                            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.ready.then((reg) => {
+                                    reg.showNotification(notifTitle, {
+                                        ...notifOptions,
+                                        data: { channel: msgChannel }
+                                    });
+                                });
+                            } else {
+                                // Запасной фоллбэк на локальное API
+                                const localNotif = new Notification(notifTitle, notifOptions);
+                                localNotif.onclick = () => {
+                                    window.focus();
+                                    switchChannel(msgChannel);
+                                    localNotif.close();
+                                };
+                            }
+                        }
                     }
                 }
             }
