@@ -1087,33 +1087,67 @@ class Spoiler {
 
         // Загрузка и рендер каналов для вкладки "Kaeront Чат"
         async function renderChatSettings() {
+            console.log("[Kaeront Debug] Инициализация renderChatSettings()");
+        
             const pinnedContainer = document.getElementById('pinned-channels-list');
             const listenedContainer = document.getElementById('listened-channels-list');
-
+        
+            if (!pinnedContainer) {
+                console.warn("[Kaeront Debug] Элемент с ID 'pinned-channels-list' не найден в DOM!");
+            }
+            if (!listenedContainer) {
+                console.warn("[Kaeront Debug] Элемент с ID 'listened-channels-list' не найден в DOM!");
+            }
+        
             if (!pinnedContainer || !listenedContainer) return;
-
+        
+            // Проверяем токен авторизации (используем правильный ключ kaeront_access_token)
+            const token = localStorage.getItem('kaeront_access_token') || sessionStorage.getItem('kaeront_access_token');
+            console.log("[Kaeront Debug] Токен авторизации:", token ? "Присутствует (найден)" : "ОТСУТСТВУЕТ!");
+        
+            // Читаем localStorage
+            const rawPinned = localStorage.getItem('kaeront_pinned_channels');
+            const rawListened = localStorage.getItem('kaeront_listened_channels');
+            
+            console.log("[Kaeront Debug] Сырые данные kaeront_pinned_channels из localStorage:", rawPinned);
+            console.log("[Kaeront Debug] Сырые данные kaeront_listened_channels из localStorage:", rawListened);
+        
             let pinnedIds = [];
             let listenedIds = [];
+        
             try {
-                pinnedIds = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
-                listenedIds = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+                pinnedIds = JSON.parse(rawPinned || '[]');
+                console.log("[Kaeront Debug] Успешно распарсенные pinnedIds:", pinnedIds);
             } catch(e) {
-                console.error("Ошибка парсинга каналов:", e);
+                console.error("[Kaeront Debug] Ошибка парсинга kaeront_pinned_channels:", e);
             }
-
-            if (pinnedIds.length === 0) {
+        
+            try {
+                listenedIds = JSON.parse(rawListened || '[]');
+                console.log("[Kaeront Debug] Успешно распарсенные listenedIds:", listenedIds);
+            } catch(e) {
+                console.error("[Kaeront Debug] Ошибка парсинга kaeront_listened_channels:", e);
+            }
+        
+            // Рендерим закрепы
+            if (!Array.isArray(pinnedIds) || pinnedIds.length === 0) {
+                console.log("[Kaeront Debug] Закрепленные каналы отсутствуют или пусты.");
                 pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет закрепленных каналов</span>';
             } else {
+                console.log("[Kaeront Debug] Рендерим закрепы, количество:", pinnedIds.length);
                 pinnedContainer.innerHTML = pinnedIds.map(ch => 
                     `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; text-decoration:none; display:inline-flex; align-items:center;">
                         # ${escapeHtml(ch)}
                     </a>`
                 ).join('');
             }
-
-            if (listenedIds.length === 0) {
+        
+            // Рендерим прослушиваемые
+            if (!Array.isArray(listenedIds) || listenedIds.length === 0) {
+                console.log("[Kaeront Debug] Прослушиваемые каналы отсутствуют или пусты.");
                 listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет прослушиваемых каналов</span>';
             } else {
+                console.log("[Kaeront Debug] Рендерим прослушиваемые, количество:", listenedIds.length);
                 listenedContainer.innerHTML = listenedIds.map(ch => 
                     `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; text-decoration:none; display:inline-flex; align-items:center;">
                         # ${escapeHtml(ch)}
@@ -1121,7 +1155,21 @@ class Spoiler {
                 ).join('');
             }
         }
-
+        
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+        }
+        
+        // Запускаем рендер после полной загрузки DOM или сразу, если документ уже готов
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log("[Kaeront Debug] Событие DOMContentLoaded сработало.");
+                renderChatSettings();
+            });
+        } else {
+            console.log("[Kaeront Debug] DOM уже загружен, запускаем renderChatSettings() немедленно.");
+            renderChatSettings();
+        }
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
         }
