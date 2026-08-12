@@ -349,10 +349,19 @@
             if (!id) return;
 
             const res = await api('channels', 'POST', { id });
+            
+            // Защита от парсинга HTML или ошибок сети
+            if (res.error) {
+                return alert("Ошибка сети или API. Попробуйте перезагрузить страницу.");
+            }
             if (res.detail) {
                 alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
                 return;
             }
+            if (!res.channel_id) {
+                return alert("Произошла ошибка: сервер не вернул ID канала.");
+            }
+            
             switchChannel(res.channel_id);
         }
 
@@ -426,7 +435,26 @@
                 history.pushState({ channel: id }, '', newPath);
             }
 
-            loadChannels();
+            await loadChannels();
+            
+            const inputContainer = document.getElementById('input-area-container');
+            inputContainer.style.display = 'flex'; // Возвращаем инпут, если он был спрятан
+
+            // Логика кастомной 404 ошибки для чата
+            if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
+                document.getElementById('header-channel-name').innerText = `# ${id}`;
+                document.getElementById('header-creator-info').innerText = "Канал не найден";
+                document.getElementById('messages-list').innerHTML = `
+                    <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
+                        <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
+                        <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал <b>#${escapeHtml(id)}</b> не существует или был удалён.</p>
+                        <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
+                    </div>
+                `;
+                inputContainer.style.display = 'none'; // Прячем форму ввода
+                return;
+            }
+
             await loadMessages(true);
         }
 
