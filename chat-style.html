@@ -249,29 +249,24 @@
         
         // 2. Функция регистрации подписки
         async function registerServiceWorkerAndPush() {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+            if (!('serviceWorker' in navigator) || !('PushManager' in window) || !token) return;
             
             try {
                 const registration = await navigator.serviceWorker.ready;
-                
-                // Передаем ваш ключ в виде чистой строки без переносов строк
                 const publicVapidKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjRk87iRdGjmiExvF9uVUNENYo0f4FV6sTN0tlR1bMWo77V+D0AxLn16FNRhYp3oqPNNTw8YjSI/s8cjAw7q4yw==';
                 
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlB64ToUint8Array(publicVapidKey) // Обязательная конвертация в Uint8Array
-                });
+                // Проверяем существующую подписку или создаем новую
+                let subscription = await registration.pushManager.getSubscription();
+                if (!subscription) {
+                    subscription = await registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlB64ToUint8Array(publicVapidKey)
+                    });
+                }
         
-                // Отправляем подписку на бэкенд
-                await fetch('/api/push', {
-                    method: 'POST',
-              headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify(subscription)
-                });
-                console.log("Push-подписка успешно оформлена и отправлена на сервер!");
+                // Гарантированно отправляем подписку на бэкенд через единую обертку api()
+                await api('push', 'POST', subscription);
+                console.log("Push-подписка успешно зарегистрирована на бэкенде!");
             } catch (err) {
                 console.error("Ошибка оформления Push-подписки:", err);
             }
