@@ -21,6 +21,10 @@
         .channel-btn { width: 100%; padding: 10px; border-radius: 6px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s; }
         .channel-btn:hover, .channel-btn.active { background: #27272a; color: #fff; }
         .channel-btn.global { font-weight: bold; color: var(--accent); }
+        .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+        .channel-btn-name { font-weight: 600; font-size: 0.9rem; }
+        .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: center; gap: 4px; }
+        .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
 
         /* Чат бокс */
         #chat-main { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; }
@@ -192,7 +196,22 @@
             data.channels.forEach(ch => {
                 const btn = document.createElement('button');
                 btn.className = `channel-btn ${ch.id === 'global' ? 'global' : ''} ${ch.id === currentChannel ? 'active' : ''}`;
-                btn.innerText = `# ${ch.name}`;
+                
+                const creatorName = ch.created_by_name || 'Система';
+                const avatarUrl = getAvatarUrl(ch.created_by, creatorName);
+                
+                btn.innerHTML = `
+                    <div class="channel-btn-inner">
+                        <span class="channel-btn-name"># ${escapeHtml(ch.name)}</span>
+                        ${ch.id !== 'global' ? `
+                            <div class="channel-btn-meta">
+                                <img src="${avatarUrl}" alt="">
+                                <span>${escapeHtml(creatorName)}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
                 btn.onclick = () => {
                     toggleMobileSidebar(false);
                     switchChannel(ch.id);
