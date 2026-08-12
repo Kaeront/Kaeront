@@ -26,6 +26,7 @@
             flex-direction: column;
         }
 
+
         .page-container {
             max-width: 940px;
             margin: 120px auto 60px;
@@ -338,6 +339,7 @@
             color: var(--accent);
         }
 
+        /* Невидимый мостик, закрывающий зазор между кнопкой и тултипом */
         .info-btn::after {
             content: '';
             position: absolute;
@@ -345,7 +347,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100px;
-            height: 15px;
+            height: 15px; /* Высота зоны перекрытия зазора */
             background: transparent;
             display: none;
         }
@@ -357,7 +359,7 @@
 
         .info-btn .tooltip {
             position: absolute;
-            bottom: 135%;
+            bottom: 135%; /* Чуть выше подняли, чтобы был небольшой зазор */
             left: 50%;
             transform: translateX(-50%) translateY(10px) scale(0.9);
             width: 220px;
@@ -370,6 +372,7 @@
             border-radius: 10px;
             visibility: hidden;
             opacity: 0;
+            /* Добавлена задержка на исчезновение (0.1s), чтобы плашка не дергалась */
             transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
                         transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
                         visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s;
@@ -387,11 +390,13 @@
             color: #70b5ff;
         }
 
+        /* Срабатывание при наведении на кнопку ИЛИ на сам тултип */
         .info-btn:hover .tooltip,
         .info-btn .tooltip:hover {
             visibility: visible;
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+            /* При появлении задержку убираем, чтобы открывалось мгновенно */
             transition-delay: 0s; 
         }
 
@@ -401,6 +406,7 @@
           initial-value: 0%;
         }
 
+        /* Контейнер для текста с защитой от выделения */
         .ks-spoiler {
             position: relative;
             display: inline-block;
@@ -412,18 +418,21 @@
             --mask-y: 50%;
         }
 
+        /* Сам скрытый текст */
         .ks-spoiler-content {
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.2s linear, visibility 0.2s linear;
         }
         
+        /* Когда спойлер открыт — показываем текст */
         .ks-spoiler.revealed .ks-spoiler-content {
             visibility: visible;
             opacity: 1;
             user-select: auto;
         }
 
+        /* Холст для частиц */
         .ks-spoiler-canvas {
             mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
             -webkit-mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
@@ -486,11 +495,14 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
     <div id="loader-wrapper" style="position: fixed; user-select: none; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s; animation: hideLoaderNoJS 0.5s forwards;">
         <div style="position: relative; text-align: center; width: 100%;">
+            <!-- Основной текст (исчезает через 5 секунд) -->
             <div style="font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
                 <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
             </div>
+            <!-- Текст ошибки -->
             <div style="position: absolute; top: 0; left: 0; right: 0; font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); opacity: 0; animation: fadeInText 0.3s forwards; animation-delay: 5s; line-height: 0.3;">
                 «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> всё ещё идёт.</span>
             </div>
@@ -498,16 +510,20 @@
     </div>
     
     <script>
+        // Мгновенная блокировка авто-скрытия, если JS разрешен
         (function() {
             const loader = document.getElementById('loader-wrapper');
             if (loader) {
+                // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
                 loader.style.animation = 'none';
             }
         })();
     </script>
     
     <style>
+        /* Блокировка скролла по умолчанию */
         body { overflow: hidden; }
+        /* Анимация для случая, когда JavaScript отключен */
         @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
         @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
         @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
@@ -515,8 +531,9 @@
     <noscript>
     <div style=" position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; color: white; user-select: none; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif; box-sizing: border-box; overflow: hidden;">
         <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
-        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере.</p>
+        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯</p>
     </div>
+    
     <style>
         body { overflow: hidden !important; }
     </style>
@@ -527,6 +544,7 @@
 
     <div class="page-container">
         <div class="settings-grid">
+            
             <aside class="ks-sidebar">
                 <div class="ks-sidebar-title">нᴀстᴘойᴋи <span style="color: var(--accent);">βeta</span></div>
                 <div class="ks-nav-list">
@@ -536,6 +554,7 @@
             </aside>
 
             <main class="ks-content" id="ks-content-box">
+                
                 <!-- Вкладка 1: Основное -->
                 <div id="tab-general" class="ks-tab-panel active">
                     <div class="ks-header">
@@ -614,41 +633,53 @@
 
     <script src="/assets/global.js"></script>
     <script>
-        class Spoiler {
+class Spoiler {
             constructor(el) {
                 this.container = el;
                 this.content = el.querySelector('.ks-spoiler-content');
+                
                 this.canvas = document.createElement('canvas');
                 this.canvas.className = 'ks-spoiler-canvas';
                 this.container.appendChild(this.canvas);
+                
                 this.ctx = this.canvas.getContext('2d');
                 this.particles = [];
                 this.isRevealed = false;
                 this.width = 0;
                 this.height = 0;
-                this.hasOpenedByClick = false;
+                this.hasOpenedByClick = false; // Флаг: был ли клик уже обработан
+        
                 this.init();
             }
         
             init() {
                 this.resize();
                 this.createParticles();
+        
                 this.container.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    
+                    // Если спойлер закрывается — сбрасываем флаг клика
                     if (this.isRevealed) {
                         this.hasOpenedByClick = false;
-                    } else if (!this.hasOpenedByClick) {
+                    } 
+                    // Если открывается пользователем вручную (клик) и еще не было задано положение от клика
+                    else if (!this.hasOpenedByClick) {
                         const rect = this.container.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         const y = e.clientY - rect.top;
+                        
+                        // Задаем координаты центра маски в процентах или пикселях
                         this.container.style.setProperty('--mask-x', `${x}px`);
                         this.container.style.setProperty('--mask-y', `${y}px`);
                         this.hasOpenedByClick = true;
                     }
+
                     this.toggle();
                 });
             }
 
+            // Метод для установки кастомного центра маски (например, для серединного спойлера)
             setMaskCenter(xPx, yPx) {
                 this.container.style.setProperty('--mask-x', `${xPx}px`);
                 this.container.style.setProperty('--mask-y', `${yPx}px`);
@@ -658,7 +689,9 @@
             toggle(forceState) {
                 const nextState = forceState !== undefined ? forceState : !this.isRevealed;
                 if (this.isRevealed === nextState) return;
+        
                 this.isRevealed = nextState;
+        
                 if (this.isRevealed) {
                     this.container.classList.add('revealed');
                 } else {
@@ -666,6 +699,7 @@
                     this.resize();
                     this.createParticles();
                 }
+        
                 SpoilerManager.checkState();
             }
         
@@ -673,6 +707,7 @@
                 const rect = this.container.getBoundingClientRect();
                 this.width = rect.width || 100;
                 this.height = rect.height || 20;
+                
                 const dpr = window.devicePixelRatio || 1;
                 this.canvas.width = this.width * dpr;
                 this.canvas.height = this.height * dpr;
@@ -684,6 +719,7 @@
                 this.particles = [];
                 const density = 0.06; 
                 const count = Math.floor(this.width * this.height * density);
+        
                 for (let i = 0; i < count; i++) {
                     this.particles.push({
                         x: Math.random() * this.width,
@@ -695,6 +731,7 @@
                         alphaSpeed: (Math.random() - 0.5) * 0.05
                     });
                 }
+        
                 if (SpoilerManager.isLowFps) {
                     this.renderStatic();
                 }
@@ -703,6 +740,7 @@
             renderStatic() {
                 if (this.isRevealed) return;
                 this.ctx.clearRect(0, 0, this.width, this.height);
+        
                 for (let i = 0; i < this.particles.length; i++) {
                     const p = this.particles[i];
                     this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
@@ -714,15 +752,20 @@
         
             render() {
                 if (this.isRevealed) return;
+        
                 this.ctx.clearRect(0, 0, this.width, this.height);
+        
                 for (let i = 0; i < this.particles.length; i++) {
                     const p = this.particles[i];
                     p.x += p.vx;
                     p.y += p.vy;
+        
                     if (p.x < 0 || p.x > this.width) p.vx *= -1;
                     if (p.y < 0 || p.y > this.height) p.vy *= -1;
+        
                     p.alpha += p.alphaSpeed;
                     if (p.alpha <= 0.2 || p.alpha >= 1) p.alphaSpeed *= -1;
+        
                     this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
                     this.ctx.beginPath();
                     this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -731,10 +774,13 @@
             }
         }
 
+        // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ
         const SpoilerManager = {
             spoilers: [],
             animFrameId: null,
             isTabSecurityActive: false,
+            
+            // Переменные для отслеживания просадок FPS
             isLowFps: false,
             lastTime: null,
             fpsCheckFrames: 0,
@@ -746,14 +792,18 @@
                 this.checkState();
                 return instance;
             },
+        
             clear() {
                 this.stopLoop();
                 this.spoilers = [];
             },
+        
             shouldAnimate() {
+                // Если зафиксирован лаг или мы не во вкладке "Безопасность" — анимацию НЕ запускаем
                 if (this.isLowFps || !this.isTabSecurityActive || document.hidden) return false;
                 return this.spoilers.some(s => !s.isRevealed);
             },
+        
             checkState() {
                 if (this.shouldAnimate()) {
                     this.startLoop();
@@ -761,50 +811,72 @@
                     this.stopLoop();
                 }
             },
+        
             startLoop() {
                 if (this.animFrameId) return;
+        
                 this.lastTime = performance.now();
                 this.fpsCheckFrames = 0;
         
                 const loop = (now) => {
+                    // Расчет времени между кадрами (детекция FPS)
                     if (this.lastTime) {
                         const delta = now - this.lastTime;
                         this.fpsCheckFrames++;
-                        if (delta > 35) this.lowFpsCounter++;
+        
+                        // Если кадр рендерился дольше 35ms (менее ~28 FPS)
+                        if (delta > 35) {
+                            this.lowFpsCounter++;
+                        }
+        
+                        // Каждые 30 кадров делаем выводы
                         if (this.fpsCheckFrames >= 30) {
+                            // Если более 5 кадров из 30 просели — переходим на статику
                             if (this.lowFpsCounter >= 5) {
                                 this.disableAnimationDueToPerformance();
                                 return;
                             }
+                            // Сбрасываем счетчики для следующего замера
                             this.fpsCheckFrames = 0;
                             this.lowFpsCounter = 0;
                         }
                     }
                     this.lastTime = now;
+        
+                    // Отрисовка
                     for (let i = 0; i < this.spoilers.length; i++) {
                         if (!this.spoilers[i].isRevealed) {
                             this.spoilers[i].render();
                         }
                     }
+        
                     this.animFrameId = requestAnimationFrame(loop);
                 };
+        
                 this.animFrameId = requestAnimationFrame(loop);
             },
+        
             stopLoop() {
                 if (this.animFrameId) {
                     cancelAnimationFrame(this.animFrameId);
                     this.animFrameId = null;
                 }
             },
+        
+            // Вызывается при падении FPS: замораживает всё в статичную картинку
             disableAnimationDueToPerformance() {
                 this.isLowFps = true;
                 this.stopLoop();
+        
+                // Отрисовываем последний статичный кадр для всех замазанных спойлеров
                 this.spoilers.forEach(s => s.renderStatic());
             },
+        
             setCurrentTab(tabId) {
                 this.isTabSecurityActive = (tabId === 'tab-security');
                 this.checkState();
             },
+        
             resizeAll() {
                 this.spoilers.forEach(s => {
                     if (!s.isRevealed) {
@@ -814,32 +886,44 @@
                 });
             }
         };
-
+        // Сборщик событий изменений окна и активности вкладки браузера
         window.addEventListener('resize', () => SpoilerManager.resizeAll());
         document.addEventListener('visibilitychange', () => SpoilerManager.checkState());
         
+        // ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ВСЕХ IP
         function toggleAllIPs(btn) {
             if (!SpoilerManager.spoilers.length) return;
+        
             const isAnyRevealed = SpoilerManager.spoilers.some(s => s.isRevealed);
             const targetState = !isAnyRevealed;
         
             if (targetState) {
+                // Ищем серединный спойлер из списка IP
                 const midIndex = Math.floor(activeIpSpoilers.length / 2);
                 const middleSpoiler = activeIpSpoilers[midIndex];
+                
                 if (middleSpoiler) {
                     const rect = middleSpoiler.container.getBoundingClientRect();
+                    // Центр серединного спойлера относительно него самого
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
+        
+                    // Привязываем центр маски ВСЕХ спойлеров к точке центра серединного спойлера
                     SpoilerManager.spoilers.forEach(s => {
+                        // Пересчитываем координаты относительно каждого конкретного спойлера, 
+                        // чтобы круг начинался визуально из той же точки экрана
                         const sRect = s.container.getBoundingClientRect();
                         const relativeX = (rect.left + centerX) - sRect.left;
                         const relativeY = (rect.top + centerY) - sRect.top;
+                        
                         s.setMaskCenter(relativeX, relativeY);
                     });
                 }
             } else {
+                // При закрытии сбрасываем флаги кликов у всех
                 SpoilerManager.spoilers.forEach(s => s.hasOpenedByClick = false);
             }
+        
             SpoilerManager.spoilers.forEach(s => s.toggle(targetState));
             btn.textContent = targetState ? 'Скрыть' : 'Раскрыть';
         }
@@ -847,34 +931,54 @@
         let CURRENT_UUID = null;
         let CURRENT_TOKEN = null;
 
+        // ПЛАВНАЯ СМЕНА ВЫСОТЫ И ПЕРЕХОД ТАБОВ
         function switchTab(tabId, btn) {
             const container = document.getElementById('ks-content-box');
             const currentTab = document.querySelector('.ks-tab-panel.active');
             const targetTab = document.getElementById(tabId);
             
             if (currentTab === targetTab) return;
+        
+            // Уведомляем SpoilerManager о смене вкладки
             SpoilerManager.setCurrentTab(tabId);
+        
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         
             container.style.height = `${container.offsetHeight}px`;
-            if (currentTab) currentTab.style.opacity = '0';
+        
+            if (currentTab) {
+                currentTab.style.opacity = '0';
+            }
         
             setTimeout(() => {
-                if (currentTab) currentTab.classList.remove('active');
+                if (currentTab) {
+                    currentTab.classList.remove('active');
+                }
+        
                 targetTab.style.opacity = '0';
                 targetTab.classList.add('active');
+        
                 const newHeight = targetTab.offsetHeight + 80;
                 container.style.height = `${newHeight}px`;
-                requestAnimationFrame(() => { targetTab.style.opacity = '1'; });
-                setTimeout(() => { container.style.height = 'auto'; }, 200);
+        
+                requestAnimationFrame(() => {
+                    targetTab.style.opacity = '1';
+                });
+        
+                setTimeout(() => {
+                    container.style.height = 'auto';
+                }, 200);
+        
             }, 120);
         }
 
+        // Парсинг User-Agent
         function parseDeviceName(uaString, fallbackDevice) {
             if (!uaString || uaString === 'Неизвестный браузер' || uaString.includes('Java')) {
                 return 'Неизвестный браузер';
             }
+        
             let os = '';
             if (uaString.includes('Windows')) os = 'Windows';
             else if (uaString.includes('Mac OS') || uaString.includes('Macintosh')) os = 'macOS';
@@ -894,9 +998,10 @@
             if (browser && os) return `${browser} (${os})`;
             if (browser) return browser;
             if (os) return `Браузер (${os})`;
+        
             return fallbackDevice || 'Неизвестный браузер';
         }
-
+        // Преобразование даты из UTC в локальный часовой пояс зрителя
         function formatLocalDate(dateStr) {
             if (!dateStr) return '—';
             try {
@@ -906,15 +1011,20 @@
                 }
                 const date = new Date(isoStr);
                 return date.toLocaleString(navigator.language || 'ru-RU', {
-                    day: '2-digit', month: '2-digit', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
                 });
             } catch (e) {
                 return dateStr;
             }
         }
 
-        async function checkAuthGuard() {
+        // Авторизационная проверка
+        (async function checkAuthGuard() {
             const token = localStorage.getItem('kaeront_access_token');
             if (!token) {
                 window.location.replace('/login');
@@ -941,8 +1051,8 @@
                 });
 
                 if (res.ok) {
-                    document.body.style.display = 'flex';
-                    await initSettings();
+                    document.body.style.display = 'flex'; // Поддержка flex для футера
+                    initSettings();
                 } else {
                     localStorage.removeItem('kaeront_access_token');
                     window.location.replace('/login');
@@ -952,7 +1062,7 @@
                 localStorage.removeItem('kaeront_access_token');
                 window.location.replace('/login');
             }
-        }
+        })();
 
         async function initSettings() {
             if (!CURRENT_UUID || !CURRENT_TOKEN) return;
@@ -1001,6 +1111,7 @@
             }
         }
 
+        // РЕНДЕР ИСТОРИИ
         let activeIpSpoilers = [];
 
         function renderHistory(items) {
@@ -1031,6 +1142,7 @@
                 `;
             }).join('');
         
+            // Инициализируем спойлеры через менеджер
             document.querySelectorAll('.ip-spoiler').forEach(el => {
                 const inst = SpoilerManager.register(el);
                 activeIpSpoilers.push(inst);
@@ -1040,6 +1152,7 @@
             if (globalBtn) globalBtn.textContent = 'Раскрыть';
         }
 
+        // МОДАЛЬНЫЕ ОКНА И БЛОКИРОВКА СКРОЛЛА
         let pendingAction = null;
 
         function promptLogout(type) {
@@ -1058,12 +1171,12 @@
             }
 
             modal.classList.add('active');
-            document.body.classList.add('modal-open');
+            document.body.classList.add('modal-open'); // Блокировка скролла
         }
 
         function closeModal() {
             document.getElementById('confirm-modal').classList.remove('active');
-            document.body.classList.remove('modal-open');
+            document.body.classList.remove('modal-open'); // Разблокировка скролла
             pendingAction = null;
         }
 
@@ -1090,9 +1203,6 @@
             localStorage.removeItem('kaeront_access_token');
             window.location.replace('/login');
         }
-
-        // Запуск проверки при загрузке страницы
-        checkAuthGuard();
     </script>
 </body>
 </html>
