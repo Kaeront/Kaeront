@@ -43,6 +43,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/chat", "destination": "/chat-style" },
     { "source": "/chat/:id", "destination": "/chat-style" },
     { "source": "/user/:id", "destination": "/user-style" },
     { "source": "/news/:id", "destination": "/news-style" },
