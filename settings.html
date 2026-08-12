@@ -1131,6 +1131,15 @@ class Spoiler {
             renderChatSettings();
         });
         
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+        }
+        
+        // Запускаем рендер после инициализации auth guard
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChatSettings();
+        });
+        
         // Вспомогательная функция экранирования
         function escapeHtml(str) {
             return str ? String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])) : '';
