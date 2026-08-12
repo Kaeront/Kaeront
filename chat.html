@@ -469,6 +469,28 @@
                 container.scrollTop = container.scrollHeight;
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
+
+            if (!isFirstLoad && !isChannelSwitch) {
+                let hasNew = false;
+                let lastMsg = null;
+                data.messages.forEach(m => {
+                    if (!knownMessageIds.has(m.id)) {
+                        hasNew = true;
+                        lastMsg = m;
+                    }
+                });
+            
+                // Уведомление срабатывает, если мы в текущем канале ИЛИ если текущий канал в списке прослушиваемых
+                if (hasNew && lastMsg && (currentChannel === lastMsg.channel_id || listenedChannels.includes(currentChannel))) {
+                    playNotificationSound();
+                    if (document.hidden && Notification.permission === 'granted') {
+                        new Notification(`Новое сообщение в #${currentChannel}`, {
+                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name)
+                        });
+                    }
+                }
+            }
         }
 
         async function sendMsg() {
@@ -565,6 +587,39 @@
         window.addEventListener('popstate', (e) => {
             switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
         });
+
+        // Фоновая проверка прослушиваемых каналов
+        setInterval(async () => {
+            if (!listenedChannels || listenedChannels.length === 0) return;
+        
+            for (const chId of listenedChannels) {
+                if (chId === currentChannel) continue; // Текущий канал и так обновляется поллингом
+        
+                const data = await api(`channels/${chId}/messages`);
+                if (!data || !data.messages) continue;
+        
+                let lastMsg = null;
+                let hasNew = false;
+        
+                data.messages.forEach(m => {
+                    if (!knownMessageIds.has(m.id)) {
+                        knownMessageIds.add(m.id);
+                        hasNew = true;
+                        lastMsg = m;
+                    }
+                });
+        
+                if (hasNew && lastMsg) {
+                    playNotificationSound();
+                    if (Notification.permission === 'granted') {
+                        new Notification(`Новое сообщение в #${chId}`, {
+                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name)
+                        });
+                    }
+                }
+            }
+        }, 5000);
     </script>
 </body>
 </html>
