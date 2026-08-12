@@ -1152,7 +1152,7 @@ class Spoiler {
                 } else {
                     pinnedContainer.innerHTML = pinnedIds.map(ch => `
                         <a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="padding:6px 12px; display:inline-flex; align-items:center; gap:4px;">
-                            <p># ${escapeHtml(ch)}</p>
+                            # ${escapeHtml(ch)}
                             <button type="button" title="Открепить" class="unpin-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff5555; padding:0 4px; font-family: 'Minecraft', sans-serif;">&#10060;</button>
                         </a>
                     `).join('');
@@ -1177,7 +1177,7 @@ class Spoiler {
                 } else {
                     listenedContainer.innerHTML = listenedIds.map(ch => `
                         <a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="padding:6px 12px; display:inline-flex; align-items:center; gap:4px;">
-                            <p># ${escapeHtml(ch)}</p>
+                            # ${escapeHtml(ch)}
                             <button type="button" title="Перестать слушать" class="unlisten-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff5555; padding:0 4px; font-family: 'Minecraft', sans-serif;">&#10060;</button>
                         </a>
                     `).join('');
