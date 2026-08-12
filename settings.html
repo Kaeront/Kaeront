@@ -7,537 +7,70 @@
     <link rel="icon" type="image/png" href="https://kaeront.ru/assets/id.png">
     
     <style>
-        :root {
-            --nav-hide: 80px;
-        }
+        :root { --nav-hide: 80px; }
+        html { height: 100%; }
+        body { display: none; background-color: #080808 !important; color: #ececec; margin: 0; padding: 0; min-height: 100vh; flex-direction: column; }
 
-        html {
-            height: 100%;
-        }
+        .page-container { max-width: 940px; margin: 120px auto 60px; padding: 0 20px; box-sizing: border-box; flex: 1 0 auto; width: 100%; }
+        .settings-grid { display: grid; grid-template-columns: 230px 670px; gap: 10px; align-items: start; justify-content: center; }
 
-        body {
-            display: none; /* Скрыто до валидации токена */
-            background-color: #080808 !important;
-            color: #ececec;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        .ks-sidebar { position: relative; background: rgba(18, 18, 18, 0.85); border: 1px solid #222; border-radius: 40px 10px 0 40px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .ks-sidebar-title { font-size: 0.75rem; letter-spacing: 0.07em; color: #666; font-weight: 700; margin-bottom: 12px; padding-left: 8px; font-family: 'Minecraft', sans-serif; }
+        .ks-nav-list { display: flex; flex-direction: column; gap: 4px; }
+        .ks-nav-item { display: block; width: 100%; padding: 10px 20px; border-radius: 20px; color: #aaa; font-size: 0.9rem; cursor: pointer; background: transparent; border: 1px solid transparent; text-align: left; transition: all 0.15s ease; font-family: 'Minecraft'; }
+        .ks-nav-item:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .ks-nav-item.active { background: #2a2a2a; color: #fff; font-weight: 700; border-color: #383838; }
 
+        .ks-content { background: rgba(18, 18, 18, 0.85); border: 1px solid #222; border-radius: 10px 40px 40px 40px; padding: 40px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); width: 670px; box-sizing: border-box; position: relative; transition: height 0.2s cubic-bezier(0.2, 0, 0, 1); }
+        .ks-tab-panel { display: none; opacity: 0; transition: opacity 0.15s ease-in-out; }
+        .ks-tab-panel.active { display: block; opacity: 1; }
 
-        .page-container {
-            max-width: 940px;
-            margin: 120px auto 60px;
-            padding: 0 20px;
-            box-sizing: border-box;
-            flex: 1 0 auto;
-            width: 100%;
-        }
+        .ks-header { margin-bottom: 24px; border-bottom: 1px solid #222; padding-bottom: 16px; }
+        .ks-title { font-family: 'Minecraft', sans-serif, monospace; font-size: 1.4rem; color: #fff; margin: 0 0 6px 0; }
+        .ks-subtitle { color: #777; font-size: 0.85rem; margin: 0; }
+        .ks-subtitle a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        .ks-subtitle a:hover { text-decoration: underline; }
 
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 230px 670px;
-            gap: 10px;
-            align-items: start;
-            justify-content: center;
-        }
+        .ks-user-box { background: #111; border: 1px solid #252525; border-radius: 20px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .ks-username { font-family: 'Minecraft', sans-serif, monospace; font-size: 1.2rem; color: #fff; }
+        .ks-uuid { font-family: monospace; font-size: 0.8rem; color: #666; user-select: all; }
 
-        /* Сайдбар */
-        .ks-sidebar {
-            position: relative;
-            background: rgba(18, 18, 18, 0.85);
-            border: 1px solid #222;
-            border-radius: 40px 10px 0 40px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            box-sizing: border-box;
-        }
+        .ks-btn { padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.2s ease; text-decoration: none; display: inline-block; }
+        .ks-btn-sec { background: #1a1a1a; color: #ccc; border-color: #333; font-family: 'Minecraft', sans-serif; font-weight: bold; }
+        .ks-btn-sec:hover { background: #252525; color: #fff; }
+        .ks-btn-danger { background: rgba(255, 85, 85, 0.1); color: #ff5555; border-color: rgba(255, 85, 85, 0.3); font-family: 'Minecraft', sans-serif; }
+        .ks-btn-danger:hover { background: #ff5555; color: #fff; }
 
-        .ks-sidebar::after {
-            content: '';
-            position: absolute;
-            bottom: -40px;
-            right: -1px;
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle at 0 100%, transparent 0, transparent 39px, #222 39px, #222 40px, transparent 40px), radial-gradient(circle at 0 100%, transparent 0, transparent 40px, rgba(18, 18, 18, 0.85) 40px);
-            border-right: 1px solid #222;
-            pointer-events: none;
-            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
-        }
+        /* Таблицы и Каналы ЧАТА */
+        .ks-table-container { border: 1px solid #222; border-radius: 20px; background: #0f0f0f; margin-top: 16px; }
+        .ks-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        .ks-table th { color: #777; font-weight: 600; padding: 10px; border-bottom: 3px solid #222; text-transform: uppercase; font-size: 0.7rem; }
+        .ks-table td { padding: 12px 10px; border-top: 1px solid #1a1a1a; color: #ccc; }
 
-        .ks-sidebar-title {
-            font-size: 0.75rem;
-            letter-spacing: 0.07em;
-            color: #666;
-            font-weight: 700;
-            margin-bottom: 12px;
-            padding-left: 8px;
-            font-family: 'Minecraft', sans-serif;
-            font-weight: bold;
-        }
+        /* Разделение каналов по ширине страницы (Justify alignment) */
+        .chat-channels-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 10px; background: #0f0f0f; padding: 15px; border-radius: 16px; border: 1px solid #222; }
+        .chat-channels-row::after { content: ""; flex: auto; } /* Регулировка последней строки */
+        .chat-channel-tag { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .chat-channel-tag:hover { background: rgba(255, 85, 85, 0.2); border-color: #ff5555; color: #ff5555; }
+        .chat-section-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; margin-bottom: 4px; }
+        .chat-section-title svg { width: 18px; height: 18px; fill: var(--accent); }
 
-        .ks-nav-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .ks-nav-item {
-            display: block;
-            width: 100%;
-            padding: 10px 20px;
-            border-radius: 20px;
-            color: #aaa;
-            font-size: 0.9rem;
-            font-weight: 400;
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid transparent;
-            text-align: left;
-            box-sizing: border-box;
-            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-            font-family: 'Minecraft';
-        }
-
-        .ks-nav-item:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .ks-nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .ks-nav-item.active {
-            background: #2a2a2a;
-            color: #fff;
-            font-weight: 700;
-            border-color: #383838;
-        }
-
-        /* КОНТЕЙНЕР */
-        .ks-content {
-            background: rgba(18, 18, 18, 0.85);
-            border: 1px solid #222;
-            border-radius: 10px 40px 40px 40px;
-            padding: 40px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            width: 670px;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
-            transition: height 0.2s cubic-bezier(0.2, 0, 0, 1);
-        }
-
-        .ks-tab-panel {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.15s ease-in-out;
-        }
-
-        .ks-tab-panel.active {
-            display: block;
-            opacity: 1;
-        }
-
-        .ks-header {
-            margin-bottom: 24px;
-            border-bottom: 1px solid #222;
-            padding-bottom: 16px;
-        }
-
-        .ks-title {
-            font-family: 'Minecraft', sans-serif, monospace;
-            font-size: 1.4rem;
-            color: #fff;
-            margin: 0 0 6px 0;
-        }
-
-        .ks-subtitle {
-            color: #777;
-            font-size: 0.85rem;
-            margin: 0;
-        }
-
-        .ks-user-box {
-            background: #111;
-            border: 1px solid #252525;
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .ks-user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .ks-username {
-            font-family: 'Minecraft', sans-serif, monospace;
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        .ks-uuid {
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: #666;
-            user-select: all;
-        }
-
-        .ks-table-container {
-            border: 1px solid #222;
-            border-radius: 20px;
-            background: #0f0f0f;
-            margin-top: 16px;
-        }
-
-        .ks-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        .ks-table th {
-            color: #777;
-            font-weight: 600;
-            padding: 10px;
-            border-bottom: 3px solid #222;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 0.1em;
-        }
-
-        .ks-table td {
-            padding: 12px 10px;
-            border-top: 1px solid #1a1a1a;
-            color: #ccc;
-        }
-
-        .ks-btn {
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .ks-btn-sec {
-            background: #1a1a1a;
-            color: #ccc;
-            border-color: #333;
-            font-family: 'Minecraft', sans-serif;
-            font-weight: bold;
-        }
-        .ks-btn-sec:hover {
-            background: #252525;
-            color: #fff;
-        }
-
-        .ks-btn-danger {
-            background: rgba(255, 85, 85, 0.1);
-            color: #ff5555;
-            border-color: rgba(255, 85, 85, 0.3);
-            font-family: 'Minecraft', sans-serif;
-            font-weight: normal;
-        }
-        .ks-btn-danger:hover {
-            background: #ff5555;
-            color: #fff;
-        }
-
-        /* Модальное окно */
-        .ks-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-        }
-
-        .ks-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        html:has(.ks-modal-overlay.active), body:has(.ks-modal-overlay.active) {
-            overflow: hidden !important;
-        }
-
-        .ks-modal {
-            background: #111;
-            border: 1px solid #2a2a2a;
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-            transform: scale(0.9);
-            transition: transform 0.2s ease;
-        }
-
-        .ks-modal-overlay.active .ks-modal {
-            transform: scale(1);
-        }
-
-        .ks-modal-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0 0 10px 0;
-            font-family: 'Minecraft', sans-serif;
-        }
-
-        .ks-modal-desc {
-            font-size: 0.85rem;
-            color: #888;
-            margin: 0 0 20px 0;
-            line-height: 1.4;
-        }
-
-        .ks-modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        /* Стили для круглой кнопки подсказки */
-        .info-btn {
-            position: relative !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 1.2em !important;
-            font-weight: normal !important;
-            transition: color 0.3s ease !important;
-            vertical-align: middle !important;
-            font-family: 'Uniform', serif !important;
-            text-transform: none !important;
-            letter-spacing: 0 !important;
-        }
-
-        .info-btn:hover {
-            color: var(--accent);
-        }
-
-        /* Невидимый мостик, закрывающий зазор между кнопкой и тултипом */
-        .info-btn::after {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 15px; /* Высота зоны перекрытия зазора */
-            background: transparent;
-            display: none;
-        }
-
-        .info-btn:hover::after,
-        .info-btn:has(.tooltip:hover)::after {
-            display: block;
-        }
-
-        .info-btn .tooltip {
-            position: absolute;
-            bottom: 135%; /* Чуть выше подняли, чтобы был небольшой зазор */
-            left: 50%;
-            transform: translateX(-50%) translateY(10px) scale(0.9);
-            width: 220px;
-            padding: 10px;
-            background-color: #222;
-            color: #fff;
-            text-align: center;
-            font-size: 11px;
-            font-family: 'Montserrat';
-            border-radius: 10px;
-            visibility: hidden;
-            opacity: 0;
-            /* Добавлена задержка на исчезновение (0.1s), чтобы плашка не дергалась */
-            transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
-                        transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
-                        visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            cursor: default;
-        }
-
-        .info-btn .tooltip a {
-            color: #3b9bff;
-            text-decoration: underline;
-        }
-
-        .info-btn .tooltip a:hover {
-            color: #70b5ff;
-        }
-
-        /* Срабатывание при наведении на кнопку ИЛИ на сам тултип */
-        .info-btn:hover .tooltip,
-        .info-btn .tooltip:hover {
-            visibility: visible;
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            /* При появлении задержку убираем, чтобы открывалось мгновенно */
-            transition-delay: 0s; 
-        }
-
-        @property --radius {
-          syntax: '<percentage>';
-          inherits: false;
-          initial-value: 0%;
-        }
-
-        /* Контейнер для текста с защитой от выделения */
-        .ks-spoiler {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-            user-select: none;
-            overflow: hidden;
-            vertical-align: bottom;
-            --mask-x: 50%;
-            --mask-y: 50%;
-        }
-
-        /* Сам скрытый текст */
-        .ks-spoiler-content {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.2s linear, visibility 0.2s linear;
-        }
-        
-        /* Когда спойлер открыт — показываем текст */
-        .ks-spoiler.revealed .ks-spoiler-content {
-            visibility: visible;
-            opacity: 1;
-            user-select: auto;
-        }
-
-        /* Холст для частиц */
-        .ks-spoiler-canvas {
-            mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
-            -webkit-mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
-            background: #0f0f0f;
-            transition: --radius 0.2s linear;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .ks-spoiler.revealed .ks-spoiler-canvas {
-            --radius: 100%;
-        }
-
-        .ks-ip-toggle-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #333;
-            color: #aaa;
-            font-size: 0.65rem;
-            padding: 2px 4px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Minecraft', sans-serif;
-            transition: all 0.2s ease;
-            vertical-align: middle;
-            width: 64px;
-        }
-        
-        .ks-ip-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-            border-color: #555;
-        }
+        .ks-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+        .ks-modal-overlay.active { opacity: 1; visibility: visible; }
+        .ks-modal { background: #111; border: 1px solid #2a2a2a; border-radius: 20px; padding: 24px; max-width: 400px; width: 90%; }
+        .ks-modal-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 10px; font-family: 'Minecraft', sans-serif; }
+        .ks-modal-desc { font-size: 0.85rem; color: #888; margin-bottom: 20px; }
+        .ks-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
         @media (max-width: 960px) {
-            .settings-grid {
-                gap: 10px;
-                grid-template-columns: 1fr;
-            }
-            .ks-sidebar {
-                width: 100%;
-                border-radius: 40px 40px 20px 20px;
-            }
-            .ks-sidebar::after {
-                display: none;
-            }
-            .ks-content {
-                padding: 20px;
-                width: 100%;
-                border-radius: 20px 20px 40px 40px;
-            }
-            .page-container {
-                padding: 0 10px;
-            }
+            .settings-grid { grid-template-columns: 1fr; }
+            .ks-sidebar { width: 100%; border-radius: 20px; }
+            .ks-content { padding: 20px; width: 100%; border-radius: 20px; }
+            .page-container { padding: 0 10px; }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loader-wrapper" style="position: fixed; user-select: none; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s; animation: hideLoaderNoJS 0.5s forwards;">
-        <div style="position: relative; text-align: center; width: 100%;">
-            <!-- Основной текст (исчезает через 5 секунд) -->
-            <div style="font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
-                <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
-            </div>
-            <!-- Текст ошибки -->
-            <div style="position: absolute; top: 0; left: 0; right: 0; font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); opacity: 0; animation: fadeInText 0.3s forwards; animation-delay: 5s; line-height: 0.3;">
-                «Что-то вы долго!»<span style="font-size: clamp(1vh, 1vw, 1vw);"><br><br>Попробуйте обновить страницу.<br>Загрузка <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> всё ещё идёт.</span>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Мгновенная блокировка авто-скрытия, если JS разрешен
-        (function() {
-            const loader = document.getElementById('loader-wrapper');
-            if (loader) {
-                // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
-                loader.style.animation = 'none';
-            }
-        })();
-    </script>
-    
-    <style>
-        /* Блокировка скролла по умолчанию */
-        body { overflow: hidden; }
-        /* Анимация для случая, когда JavaScript отключен */
-        @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
-        @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
-        @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
-    </style>
-    <noscript>
-    <div style=" position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0a; color: white; user-select: none; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: sans-serif; box-sizing: border-box; overflow: hidden;">
-        <h2 style="max-width: 80vw; font-family: sans-serif; color: #FA0; font-size: clamp(3vh, 3vw, 3vw); font-weight: 600;">Включите JavaScript</h2>
-        <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯</p>
-    </div>
-    
-    <style>
-        body { overflow: hidden !important; }
-    </style>
-    </noscript>
 
     <div id="dev-inject"></div>
     <div id="nav-inject"></div>
@@ -550,12 +83,13 @@
                 <div class="ks-nav-list">
                     <button class="ks-nav-item active" onclick="switchTab('tab-general', this)">Основное</button>
                     <button class="ks-nav-item" onclick="switchTab('tab-security', this)">Безопасность</button>
+                    <button class="ks-nav-item" onclick="switchTab('tab-chat', this)">Kaeront Чат</button>
                 </div>
             </aside>
 
             <main class="ks-content" id="ks-content-box">
                 
-                <!-- Вкладка 1: Основное -->
+                <!-- Таб 1: Основное -->
                 <div id="tab-general" class="ks-tab-panel active">
                     <div class="ks-header">
                         <h1 class="ks-title">Основное</h1>
@@ -573,7 +107,7 @@
                     <button class="ks-btn ks-btn-danger" onclick="promptLogout('single')">Выйти из аккаунта</button>
                 </div>
 
-                <!-- Вкладка 2: Безопасность -->
+                <!-- Таб 2: Безопасность -->
                 <div id="tab-security" class="ks-tab-panel">
                     <div class="ks-header">
                         <h1 class="ks-title">Безопасность</h1>
@@ -581,35 +115,55 @@
                     </div>
 
                     <div style="margin-bottom: 30px;">
-                        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Активные сессии</h3>
-                        <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: #777;">
-                            Завершить все открытые сеансы на всех устройствах.
-                        </p>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft'; font-weight: normal;">Активные сессии</h3>
+                        <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: #777;">Завершить все открытые сеансы на всех устройствах.</p>
                         <button class="ks-btn ks-btn-danger" onclick="promptLogout('all')">Завершить все сессии</button>
                     </div>
 
                     <div>
-                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">История успешных входов (до 15)</h3>
+                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft'; font-weight: normal;">История успешных входов (до 15)</h3>
                         <div class="ks-table-container">
                             <table class="ks-table">
-                                <thead style="font-family: 'Minecraft', sans-serif;">
+                                <thead>
                                     <tr>
                                         <th>Браузер</th>
-                                        <th>
-                                            IP
-                                            <div class="info-btn">ⓘ<div class="tooltip">IP-адрес того, кто находился в игре и привязал аккаунт по команде /link, а не того, кто сгенерировал код на сайте.</div></div>
-                                            <button type="button" id="toggle-all-ip-btn" class="ks-ip-toggle-btn" onclick="toggleAllIPs(this)">Раскрыть</button>
-                                        </th>
+                                        <th>IP</th>
                                         <th>Дата и время</th>
                                     </tr>
                                 </thead>
                                 <tbody id="history-rows">
-                                    <tr>
-                                        <td colspan="3" style="text-align: center; color: #555;">Загрузка истории...</td>
-                                    </tr>
+                                    <tr><td colspan="3" style="text-align: center; color: #555;">Загрузка...</td></tr>
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Таб 3: Kaeront Чат -->
+                <div id="tab-chat" class="ks-tab-panel">
+                    <div class="ks-header">
+                        <h1 class="ks-title">Kaeront Чат</h1>
+                        <p class="ks-subtitle">Управление каналами в <a href="https://chat.kaeront.ru" target="_blank">Kaeront Чате</a></p>
+                    </div>
+
+                    <!-- Раздел 1: Закреплённые -->
+                    <div style="margin-bottom: 30px;">
+                        <div class="chat-section-title">
+                            <svg viewBox="0 0 24 24"><path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/></svg>
+                            <span>Закреплённые каналы</span>
+                        </div>
+                        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: #777;">Нажмите на них чтобы открепить их</p>
+                        <div class="chat-channels-row" id="pinned-channels-box"></div>
+                    </div>
+
+                    <!-- Раздел 2: Прослушиваемые -->
+                    <div>
+                        <div class="chat-section-title">
+                            <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 22M11 7H13V9H11V7M11 11H13V17H11V11Z"/></svg>
+                            <span>Прослушиваемые каналы</span>
+                        </div>
+                        <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: #777;">Нажмите на них чтобы перестать слушать их</p>
+                        <div class="chat-channels-row" id="listened-channels-box"></div>
                     </div>
                 </div>
 
@@ -629,407 +183,84 @@
         </div>
     </div>
 
-    <div id="footer-inject"></div>
-
     <script src="/assets/global.js"></script>
     <script>
-class Spoiler {
-            constructor(el) {
-                this.container = el;
-                this.content = el.querySelector('.ks-spoiler-content');
-                
-                this.canvas = document.createElement('canvas');
-                this.canvas.className = 'ks-spoiler-canvas';
-                this.container.appendChild(this.canvas);
-                
-                this.ctx = this.canvas.getContext('2d');
-                this.particles = [];
-                this.isRevealed = false;
-                this.width = 0;
-                this.height = 0;
-                this.hasOpenedByClick = false; // Флаг: был ли клик уже обработан
-        
-                this.init();
-            }
-        
-            init() {
-                this.resize();
-                this.createParticles();
-        
-                this.container.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    
-                    // Если спойлер закрывается — сбрасываем флаг клика
-                    if (this.isRevealed) {
-                        this.hasOpenedByClick = false;
-                    } 
-                    // Если открывается пользователем вручную (клик) и еще не было задано положение от клика
-                    else if (!this.hasOpenedByClick) {
-                        const rect = this.container.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        
-                        // Задаем координаты центра маски в процентах или пикселях
-                        this.container.style.setProperty('--mask-x', `${x}px`);
-                        this.container.style.setProperty('--mask-y', `${y}px`);
-                        this.hasOpenedByClick = true;
-                    }
-
-                    this.toggle();
-                });
-            }
-
-            // Метод для установки кастомного центра маски (например, для серединного спойлера)
-            setMaskCenter(xPx, yPx) {
-                this.container.style.setProperty('--mask-x', `${xPx}px`);
-                this.container.style.setProperty('--mask-y', `${yPx}px`);
-                this.hasOpenedByClick = true;
-            }
-        
-            toggle(forceState) {
-                const nextState = forceState !== undefined ? forceState : !this.isRevealed;
-                if (this.isRevealed === nextState) return;
-        
-                this.isRevealed = nextState;
-        
-                if (this.isRevealed) {
-                    this.container.classList.add('revealed');
-                } else {
-                    this.container.classList.remove('revealed');
-                    this.resize();
-                    this.createParticles();
-                }
-        
-                SpoilerManager.checkState();
-            }
-        
-            resize() {
-                const rect = this.container.getBoundingClientRect();
-                this.width = rect.width || 100;
-                this.height = rect.height || 20;
-                
-                const dpr = window.devicePixelRatio || 1;
-                this.canvas.width = this.width * dpr;
-                this.canvas.height = this.height * dpr;
-                this.ctx.imageSmoothingEnabled = false;
-                this.ctx.scale(dpr, dpr);
-            }
-        
-            createParticles() {
-                this.particles = [];
-                const density = 0.06; 
-                const count = Math.floor(this.width * this.height * density);
-        
-                for (let i = 0; i < count; i++) {
-                    this.particles.push({
-                        x: Math.random() * this.width,
-                        y: Math.random() * this.height,
-                        size: Math.random() * 1.25,
-                        vx: (Math.random() - 0.5) * 0.15,
-                        vy: (Math.random() - 0.5) * 0.15,
-                        alpha: Math.random(),
-                        alphaSpeed: (Math.random() - 0.5) * 0.05
-                    });
-                }
-        
-                if (SpoilerManager.isLowFps) {
-                    this.renderStatic();
-                }
-            }
-        
-            renderStatic() {
-                if (this.isRevealed) return;
-                this.ctx.clearRect(0, 0, this.width, this.height);
-        
-                for (let i = 0; i < this.particles.length; i++) {
-                    const p = this.particles[i];
-                    this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
-                    this.ctx.beginPath();
-                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-            }
-        
-            render() {
-                if (this.isRevealed) return;
-        
-                this.ctx.clearRect(0, 0, this.width, this.height);
-        
-                for (let i = 0; i < this.particles.length; i++) {
-                    const p = this.particles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-        
-                    if (p.x < 0 || p.x > this.width) p.vx *= -1;
-                    if (p.y < 0 || p.y > this.height) p.vy *= -1;
-        
-                    p.alpha += p.alphaSpeed;
-                    if (p.alpha <= 0.2 || p.alpha >= 1) p.alphaSpeed *= -1;
-        
-                    this.ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0.1, p.alpha)})`;
-                    this.ctx.beginPath();
-                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-            }
-        }
-
-        // ГЛОБАЛЬНЫЙ МЕНЕДЖЕР АНИМАЦИИ
-        const SpoilerManager = {
-            spoilers: [],
-            animFrameId: null,
-            isTabSecurityActive: false,
-            
-            // Переменные для отслеживания просадок FPS
-            isLowFps: false,
-            lastTime: null,
-            fpsCheckFrames: 0,
-            lowFpsCounter: 0,
-        
-            register(el) {
-                const instance = new Spoiler(el);
-                this.spoilers.push(instance);
-                this.checkState();
-                return instance;
-            },
-        
-            clear() {
-                this.stopLoop();
-                this.spoilers = [];
-            },
-        
-            shouldAnimate() {
-                // Если зафиксирован лаг или мы не во вкладке "Безопасность" — анимацию НЕ запускаем
-                if (this.isLowFps || !this.isTabSecurityActive || document.hidden) return false;
-                return this.spoilers.some(s => !s.isRevealed);
-            },
-        
-            checkState() {
-                if (this.shouldAnimate()) {
-                    this.startLoop();
-                } else {
-                    this.stopLoop();
-                }
-            },
-        
-            startLoop() {
-                if (this.animFrameId) return;
-        
-                this.lastTime = performance.now();
-                this.fpsCheckFrames = 0;
-        
-                const loop = (now) => {
-                    // Расчет времени между кадрами (детекция FPS)
-                    if (this.lastTime) {
-                        const delta = now - this.lastTime;
-                        this.fpsCheckFrames++;
-        
-                        // Если кадр рендерился дольше 35ms (менее ~28 FPS)
-                        if (delta > 35) {
-                            this.lowFpsCounter++;
-                        }
-        
-                        // Каждые 30 кадров делаем выводы
-                        if (this.fpsCheckFrames >= 30) {
-                            // Если более 5 кадров из 30 просели — переходим на статику
-                            if (this.lowFpsCounter >= 5) {
-                                this.disableAnimationDueToPerformance();
-                                return;
-                            }
-                            // Сбрасываем счетчики для следующего замера
-                            this.fpsCheckFrames = 0;
-                            this.lowFpsCounter = 0;
-                        }
-                    }
-                    this.lastTime = now;
-        
-                    // Отрисовка
-                    for (let i = 0; i < this.spoilers.length; i++) {
-                        if (!this.spoilers[i].isRevealed) {
-                            this.spoilers[i].render();
-                        }
-                    }
-        
-                    this.animFrameId = requestAnimationFrame(loop);
-                };
-        
-                this.animFrameId = requestAnimationFrame(loop);
-            },
-        
-            stopLoop() {
-                if (this.animFrameId) {
-                    cancelAnimationFrame(this.animFrameId);
-                    this.animFrameId = null;
-                }
-            },
-        
-            // Вызывается при падении FPS: замораживает всё в статичную картинку
-            disableAnimationDueToPerformance() {
-                this.isLowFps = true;
-                this.stopLoop();
-        
-                // Отрисовываем последний статичный кадр для всех замазанных спойлеров
-                this.spoilers.forEach(s => s.renderStatic());
-            },
-        
-            setCurrentTab(tabId) {
-                this.isTabSecurityActive = (tabId === 'tab-security');
-                this.checkState();
-            },
-        
-            resizeAll() {
-                this.spoilers.forEach(s => {
-                    if (!s.isRevealed) {
-                        s.resize();
-                        s.createParticles();
-                    }
-                });
-            }
-        };
-        // Сборщик событий изменений окна и активности вкладки браузера
-        window.addEventListener('resize', () => SpoilerManager.resizeAll());
-        document.addEventListener('visibilitychange', () => SpoilerManager.checkState());
-        
-        // ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ВСЕХ IP
-        function toggleAllIPs(btn) {
-            if (!SpoilerManager.spoilers.length) return;
-        
-            const isAnyRevealed = SpoilerManager.spoilers.some(s => s.isRevealed);
-            const targetState = !isAnyRevealed;
-        
-            if (targetState) {
-                // Ищем серединный спойлер из списка IP
-                const midIndex = Math.floor(activeIpSpoilers.length / 2);
-                const middleSpoiler = activeIpSpoilers[midIndex];
-                
-                if (middleSpoiler) {
-                    const rect = middleSpoiler.container.getBoundingClientRect();
-                    // Центр серединного спойлера относительно него самого
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-        
-                    // Привязываем центр маски ВСЕХ спойлеров к точке центра серединного спойлера
-                    SpoilerManager.spoilers.forEach(s => {
-                        // Пересчитываем координаты относительно каждого конкретного спойлера, 
-                        // чтобы круг начинался визуально из той же точки экрана
-                        const sRect = s.container.getBoundingClientRect();
-                        const relativeX = (rect.left + centerX) - sRect.left;
-                        const relativeY = (rect.top + centerY) - sRect.top;
-                        
-                        s.setMaskCenter(relativeX, relativeY);
-                    });
-                }
-            } else {
-                // При закрытии сбрасываем флаги кликов у всех
-                SpoilerManager.spoilers.forEach(s => s.hasOpenedByClick = false);
-            }
-        
-            SpoilerManager.spoilers.forEach(s => s.toggle(targetState));
-            btn.textContent = targetState ? 'Скрыть' : 'Раскрыть';
-        }
-
         let CURRENT_UUID = null;
         let CURRENT_TOKEN = null;
 
-        // ПЛАВНАЯ СМЕНА ВЫСОТЫ И ПЕРЕХОД ТАБОВ
         function switchTab(tabId, btn) {
             const container = document.getElementById('ks-content-box');
             const currentTab = document.querySelector('.ks-tab-panel.active');
             const targetTab = document.getElementById(tabId);
             
             if (currentTab === targetTab) return;
-        
-            // Уведомляем SpoilerManager о смене вкладки
-            SpoilerManager.setCurrentTab(tabId);
-        
+
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-        
+
             container.style.height = `${container.offsetHeight}px`;
-        
-            if (currentTab) {
-                currentTab.style.opacity = '0';
-            }
-        
+            if (currentTab) currentTab.style.opacity = '0';
+
             setTimeout(() => {
-                if (currentTab) {
-                    currentTab.classList.remove('active');
-                }
-        
+                if (currentTab) currentTab.classList.remove('active');
                 targetTab.style.opacity = '0';
                 targetTab.classList.add('active');
-        
+
                 const newHeight = targetTab.offsetHeight + 80;
                 container.style.height = `${newHeight}px`;
-        
-                requestAnimationFrame(() => {
-                    targetTab.style.opacity = '1';
-                });
-        
-                setTimeout(() => {
-                    container.style.height = 'auto';
-                }, 200);
-        
+
+                requestAnimationFrame(() => targetTab.style.opacity = '1');
+                setTimeout(() => container.style.height = 'auto', 200);
             }, 120);
+
+            if (tabId === 'tab-chat') renderChatChannelsSettings();
         }
 
-        // Парсинг User-Agent
-        function parseDeviceName(uaString, fallbackDevice) {
-            if (!uaString || uaString === 'Неизвестный браузер' || uaString.includes('Java')) {
-                return 'Неизвестный браузер';
+        function renderChatChannelsSettings() {
+            const pinned = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
+            const listened = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+
+            const pinnedBox = document.getElementById('pinned-channels-box');
+            const listenedBox = document.getElementById('listened-channels-box');
+
+            if (pinned.length === 0) {
+                pinnedBox.innerHTML = `<span style="color:#555; font-size:0.85rem;">Нет закреплённых каналов.</span>`;
+            } else {
+                pinnedBox.innerHTML = pinned.map(ch => `
+                    <button class="chat-channel-tag" onclick="unpinChannel('${ch}')">
+                        # ${ch} ✕
+                    </button>
+                `).join('');
             }
-        
-            let os = '';
-            if (uaString.includes('Windows')) os = 'Windows';
-            else if (uaString.includes('Mac OS') || uaString.includes('Macintosh')) os = 'macOS';
-            else if (uaString.includes('Android')) os = 'Android';
-            else if (uaString.includes('iPhone') || uaString.includes('iPad')) os = 'iOS';
-            else if (uaString.includes('Linux')) os = 'Linux';
-        
-            let browser = '';
-            if (uaString.includes('Brave') || uaString.includes('brave')) browser = 'Brave';
-            else if (uaString.includes('Edg')) browser = 'Edge';
-            else if (uaString.includes('YaBrowser') || uaString.includes('Yandex')) browser = 'Яндекс';
-            else if (uaString.includes('OPR') || uaString.includes('Opera')) browser = 'Opera';
-            else if (uaString.includes('Firefox')) browser = 'Firefox';
-            else if (uaString.includes('Chrome')) browser = 'Chrome';
-            else if (uaString.includes('Safari')) browser = 'Safari';
-        
-            if (browser && os) return `${browser} (${os})`;
-            if (browser) return browser;
-            if (os) return `Браузер (${os})`;
-        
-            return fallbackDevice || 'Неизвестный браузер';
-        }
-        // Преобразование даты из UTC в локальный часовой пояс зрителя
-        function formatLocalDate(dateStr) {
-            if (!dateStr) return '—';
-            try {
-                let isoStr = dateStr;
-                if (!isoStr.endsWith('Z') && !isoStr.includes('+')) {
-                    isoStr += 'Z';
-                }
-                const date = new Date(isoStr);
-                return date.toLocaleString(navigator.language || 'ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            } catch (e) {
-                return dateStr;
+
+            if (listened.length === 0) {
+                listenedBox.innerHTML = `<span style="color:#555; font-size:0.85rem;">Нет прослушиваемых каналов.</span>`;
+            } else {
+                listenedBox.innerHTML = listened.map(ch => `
+                    <button class="chat-channel-tag" onclick="unlistenedChannel('${ch}')">
+                        # ${ch} ✕
+                    </button>
+                `).join('');
             }
         }
 
-        // Авторизационная проверка
+        function unpinChannel(id) {
+            let pinned = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
+            pinned = pinned.filter(c => c !== id);
+            localStorage.setItem('kaeront_pinned_channels', JSON.stringify(pinned));
+            renderChatChannelsSettings();
+        }
+
+        function unlistenedChannel(id) {
+            let listened = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+            listened = listened.filter(c => c !== id);
+            localStorage.setItem('kaeront_listened_channels', JSON.stringify(listened));
+            renderChatChannelsSettings();
+        }
+
         (async function checkAuthGuard() {
             const token = localStorage.getItem('kaeront_access_token');
-            if (!token) {
-                window.location.replace('/login');
-                return;
-            }
+            if (!token) return window.location.replace('/login');
 
             try {
                 const base64Url = token.split('.')[1];
@@ -1039,121 +270,30 @@ class Spoiler {
                 CURRENT_UUID = payload.sub;
                 CURRENT_TOKEN = token;
 
-                if (!CURRENT_UUID) throw new Error("Missing UUID");
-
                 const res = await fetch(`/api/v1/users/${CURRENT_UUID}/status`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ site_online: true })
                 });
 
                 if (res.ok) {
-                    document.body.style.display = 'flex'; // Поддержка flex для футера
+                    document.body.style.display = 'flex';
                     initSettings();
                 } else {
                     localStorage.removeItem('kaeront_access_token');
                     window.location.replace('/login');
                 }
             } catch (err) {
-                console.error("Auth Guard Error:", err);
                 localStorage.removeItem('kaeront_access_token');
                 window.location.replace('/login');
             }
         })();
 
         async function initSettings() {
-            if (!CURRENT_UUID || !CURRENT_TOKEN) return;
-
+            if (!CURRENT_UUID) return;
             document.getElementById('display-uuid').textContent = CURRENT_UUID;
-
-            try {
-                let username = null;
-                const res = await fetch(`/api/v1/users/${CURRENT_UUID}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    username = data.username || data.name;
-                }
-
-                if (!username) {
-                    const pdb = await fetch(`https://playerdb.co/api/player/minecraft/${CURRENT_UUID}`);
-                    if (pdb.ok) {
-                        const pdbData = await pdb.json();
-                        username = pdbData?.data?.player?.username;
-                    }
-                }
-
-                const profileTarget = username || CURRENT_UUID;
-                document.getElementById('display-username').textContent = username || "Игрок";
-                document.getElementById('profile-link').href = `/user/${profileTarget}`;
-            } catch (e) {
-                console.error("Ошибка данных игрока:", e);
-                document.getElementById('display-username').textContent = "Игрок";
-                document.getElementById('profile-link').href = `/user/${CURRENT_UUID}`;
-            }
-
-            try {
-                const res = await fetch(`/api/v1/users/${CURRENT_UUID}/login-history`, {
-                    headers: { 'Authorization': `Bearer ${CURRENT_TOKEN}` }
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    renderHistory(data.history || data.logins || data);
-                } else {
-                    renderHistory([]);
-                }
-            } catch (e) {
-                console.error("Ошибка истории авторизаций:", e);
-                renderHistory([]);
-            }
+            renderChatChannelsSettings();
         }
-
-        // РЕНДЕР ИСТОРИИ
-        let activeIpSpoilers = [];
-
-        function renderHistory(items) {
-            const tbody = document.getElementById('history-rows');
-            SpoilerManager.clear();
-            activeIpSpoilers = [];
-        
-            if (!Array.isArray(items) || !items.length) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #666;">Была оборвана связь с Kaeront.</td></tr>`;
-                return;
-            }
-        
-            tbody.innerHTML = items.map(item => {
-                const deviceText = item.device || parseDeviceName(item.user_agent);
-                const ipText = item.ip ? `${item.ip}` : '—';
-                const localTime = formatLocalDate(item.created_at || item.timestamp);
-        
-                const formattedIp = item.ip 
-                    ? `<span class="ks-spoiler ip-spoiler"><span class="ks-spoiler-content">${ipText}</span></span>` 
-                    : '—';
-        
-                return `
-                    <tr>
-                        <td style="hyphens: auto; overflow-wrap: break-word;">${deviceText}</td>
-                        <td>${formattedIp}</td>
-                        <td>${localTime}</td>
-                    </tr>
-                `;
-            }).join('');
-        
-            // Инициализируем спойлеры через менеджер
-            document.querySelectorAll('.ip-spoiler').forEach(el => {
-                const inst = SpoilerManager.register(el);
-                activeIpSpoilers.push(inst);
-            });
-        
-            const globalBtn = document.getElementById('toggle-all-ip-btn');
-            if (globalBtn) globalBtn.textContent = 'Раскрыть';
-        }
-
-        // МОДАЛЬНЫЕ ОКНА И БЛОКИРОВКА СКРОЛЛА
-        let pendingAction = null;
 
         function promptLogout(type) {
             const modal = document.getElementById('confirm-modal');
@@ -1170,38 +310,8 @@ class Spoiler {
                 pendingAction = logoutAll;
             }
 
-            modal.classList.add('active');
-            document.body.classList.add('modal-open'); // Блокировка скролла
-        }
-
         function closeModal() {
             document.getElementById('confirm-modal').classList.remove('active');
-            document.body.classList.remove('modal-open'); // Разблокировка скролла
-            pendingAction = null;
-        }
-
-        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
-            if (pendingAction) pendingAction();
-        });
-
-        function logoutSingle() {
-            localStorage.removeItem('kaeront_access_token');
-            window.location.replace('/login');
-        }
-
-        async function logoutAll() {
-            if (CURRENT_TOKEN) {
-                try {
-                    await fetch('/api/v1/user/logout', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${CURRENT_TOKEN}` }
-                    });
-                } catch (e) {
-                    console.error("Logout error:", e);
-                }
-            }
-            localStorage.removeItem('kaeront_access_token');
-            window.location.replace('/login');
         }
     </script>
 </body>
