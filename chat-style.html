@@ -264,9 +264,21 @@
                     });
                 }
         
-                // Гарантированно отправляем подписку на бэкенд через единую обертку api()
-                await api('push', 'POST', subscription);
-                console.log("Push-подписка успешно зарегистрирована на бэкенде!");
+                // Отправляем прямо на Vercel Serverless Function (/api/push.js)
+                const res = await fetch('/api/push', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(subscription)
+                });
+
+                if (res.ok) {
+                    console.log("Push-подписка успешно передана!");
+                } else {
+                    console.error("Ошибка сохранения подписки:", await res.text());
+                }
             } catch (err) {
                 console.error("Ошибка оформления Push-подписки:", err);
             }
