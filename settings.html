@@ -1089,9 +1089,9 @@ class Spoiler {
         async function renderChatSettings() {
             const pinnedContainer = document.getElementById('pinned-channels-list');
             const listenedContainer = document.getElementById('listened-channels-list');
-        
+
             if (!pinnedContainer || !listenedContainer) return;
-        
+
             let pinnedIds = [];
             let listenedIds = [];
             try {
@@ -1100,7 +1100,7 @@ class Spoiler {
             } catch(e) {
                 console.error("Ошибка парсинга каналов:", e);
             }
-        
+
             if (pinnedIds.length === 0) {
                 pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет закрепленных каналов</span>';
             } else {
@@ -1110,7 +1110,7 @@ class Spoiler {
                     </a>`
                 ).join('');
             }
-        
+
             if (listenedIds.length === 0) {
                 listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет прослушиваемых каналов</span>';
             } else {
@@ -1121,7 +1121,16 @@ class Spoiler {
                 ).join('');
             }
         }
-        
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+        }
+
+        // Запускаем рендер после инициализации auth guard
+        document.addEventListener('DOMContentLoaded', () => {
+            renderChatSettings();
+        });
+
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
         }
