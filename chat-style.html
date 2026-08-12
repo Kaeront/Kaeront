@@ -254,6 +254,7 @@
                     <button class="btn" onclick="sendMsg()">Отправить</button>
                 `;
                 await loadPreferences();
+                requestNotificationPermission();
             } else {
                 if (addBtn) addBtn.style.display = 'none';
                 inputContainer.innerHTML = `
@@ -718,6 +719,21 @@
             }
             if (isFirstLoad) isFirstLoad = false;
         }, 5000);
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                console.warn("Этот браузер не поддерживает desktop-уведомления.");
+                return;
+            }
+        
+            if (Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log("Разрешение на уведомления получено!");
+                } else {
+                    console.warn("Пользователь отклонил запрос на уведомления.");
+                }
+            }
+        }
     </script>
 </body>
 </html>
