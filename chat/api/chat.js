@@ -24,8 +24,22 @@ export default async function handler(req, res) {
     'X-Internal-Token': apiKey,
   };
 
-  if (req.headers.authorization) {
-    headers['Authorization'] = req.headers.authorization;
+  // Проверяем Authorization заголовок или пробуем достать из Cookie
+  let token = req.headers.authorization;
+  if (!token && req.headers.cookie) {
+    const cookies = req.headers.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name, val] = cookie.trim().split('=');
+      if (name === 'access_token' || name === 'kaeront_access_token') {
+        token = `Bearer ${val}`;
+        break;
+      }
+    }
+  }
+
+  // Безопасный парсинг ответа (на случай не-JSON ошибок сервера)
+  if (token) {
+    headers['Authorization'] = token;
   }
 
   try {
@@ -37,7 +51,6 @@ export default async function handler(req, res) {
         : undefined,
     });
 
-    // Безопасный парсинг ответа (на случай не-JSON ошибок сервера)
     const contentType = vdsResponse.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
       const data = await vdsResponse.json();
@@ -49,7 +62,6 @@ export default async function handler(req, res) {
         details: rawText
       });
     }
-
   } catch (err) {
     return res.status(502).json({ 
       error: "VDS Proxy Connection Failure", 
