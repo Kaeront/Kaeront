@@ -1087,35 +1087,55 @@ class Spoiler {
 
         // Загрузка и рендер каналов для вкладки "Kaeront Чат"
         function renderChatSettings() {
-            const pinnedList = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
-            const listenedList = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+            let pinnedList = [];
+            let listenedList = [];
+        
+            try {
+                pinnedList = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
+                listenedList = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+            } catch (e) {
+                console.error("Ошибка чтения localStorage каналов:", e);
+            }
         
             const pinnedContainer = document.getElementById('pinned-channels-list');
             const listenedContainer = document.getElementById('listened-channels-list');
         
             if (pinnedContainer) {
-                if (pinnedList.length === 0) {
-                    pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет закрепленных каналов</span>';
+                if (!Array.isArray(pinnedList) || pinnedList.length === 0) {
+                    pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет закрепленных каналов</span>';
                 } else {
                     pinnedContainer.innerHTML = pinnedList.map(ch => 
-                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px;"># ${ch}</a>`
+                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+                            <span># ${escapeHtml(ch)}</span>
+                        </a>`
                     ).join('');
                 }
             }
         
             if (listenedContainer) {
-                if (listenedList.length === 0) {
-                    listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет прослушиваемых каналов</span>';
+                if (!Array.isArray(listenedList) || listenedList.length === 0) {
+                    listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет прослушиваемых каналов</span>';
                 } else {
                     listenedContainer.innerHTML = listenedList.map(ch => 
-                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px;"># ${ch}</a>`
+                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+                            <span># ${escapeHtml(ch)}</span>
+                        </a>`
                     ).join('');
                 }
             }
         }
-
-        // Вызываем рендер при инициализации
-        document.addEventListener('DOMContentLoaded', renderChatSettings);
+        
+        // Вспомогательная функция экранирования
+        function escapeHtml(str) {
+            return str ? String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])) : '';
+        }
+        
+        // Запуск после полной загрузки дерева DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', renderChatSettings);
+        } else {
+            renderChatSettings();
+        }
 
         async function initSettings() {
             if (!CURRENT_UUID || !CURRENT_TOKEN) return;
