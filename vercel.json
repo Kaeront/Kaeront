@@ -24,7 +24,7 @@
   ],
   "rewrites": [
     { "source": "/chat", "destination": "/chat.html" },
-    { "source": "/chat/(.*)", "destination": "/chat.html" },
+    { "source": "/chat/:channel*", "destination": "/chat.html" },
     { "source": "/api/chat/(.*)", "destination": "/api/chat.js" },
     { "source": "/api/chat", "destination": "/api/chat.js" },
     { "source": "/user/:id", "destination": "/user-style" },
