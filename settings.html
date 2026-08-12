@@ -635,13 +635,13 @@
                 
                     <div style="margin-bottom: 24px;">
                         <h3>Закрепленные каналы</h3>
-                        <p>Нажмите на них, чтобы открепить.</p>
+                        <p>Нажмите на <span style="background:transparent; border:none; color:#ff5555; padding:0 4px;">&#10060;</span> рядом, чтобы открепить.</p>
                         <div id="pinned-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
                 
                     <div>
                         <h3>Прослушиваемые каналы</h3>
-                        <p>Нажмите на них, чтобы перестать получать уведомления с них.</p>
+                        <p>Нажмите на <span style="background:transparent; border:none; color:#ff5555; padding:0 4px;">&#10060;</span> рядом, чтобы перестать получать уведомления с них.</p>
                         <div id="listened-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
                 </div>
@@ -1153,7 +1153,7 @@ class Spoiler {
                     pinnedContainer.innerHTML = pinnedIds.map(ch => `
                         <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
                             <a href="/chat/${encodeURIComponent(ch)}" style="color:inherit; text-decoration:none;"># ${escapeHtml(ch)}</a>
-                            <button type="button" title="Открепить" class="unpin-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff4d4f; cursor:pointer; font-weight:bold; padding:0 2px;">&times;</button>
+                            <button type="button" title="Открепить" class="unpin-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff5555; padding:0 4px;">&#10060;</button>
                         </div>
                     `).join('');
 
@@ -1178,7 +1178,7 @@ class Spoiler {
                     listenedContainer.innerHTML = listenedIds.map(ch => `
                         <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
                             <a href="/chat/${encodeURIComponent(ch)}" style="color:inherit; text-decoration:none;"># ${escapeHtml(ch)}</a>
-                            <button type="button" title="Перестать слушать" class="unlisten-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff4d4f; cursor:pointer; font-weight:bold; padding:0 2px;">&times;</button>
+                            <button type="button" title="Перестать слушать" class="unlisten-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff5555; padding:0 4px;">&#10060;</button>
                         </div>
                     `).join('');
 
