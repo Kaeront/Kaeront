@@ -211,7 +211,7 @@
             });
         }
 
-        const token = localStorage.getItem('kaeront_access_token');
+        let token = localStorage.getItem('kaeront_access_token');
         let currentChannel = 'global';
         let userHasScrolledUp = false;
         let lastMessagesHash = "";
@@ -222,6 +222,21 @@
 
         let pinnedChannels = [];
         let listenedChannels = [];
+
+        function playNotificationSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.25);
+            } catch(e) {}
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('streaming')) {
@@ -643,34 +658,65 @@
         // Фоновая проверка прослушиваемых каналов
         setInterval(async () => {
             if (!listenedChannels || listenedChannels.length === 0) return;
-        
+
             for (const chId of listenedChannels) {
-                if (chId === currentChannel) continue; // Текущий канал и так обновляется поллингом
-        
+                if (chId === currentChannel) continue;
+
                 const data = await api(`channels/${chId}/messages`);
                 if (!data || !data.messages) continue;
-        
-                let lastMsg = null;
+
                 let hasNew = false;
-        
+                let lastMsg = null;
+
                 data.messages.forEach(m => {
+                    // Если мы вообще впервые видим это сообщение в памяти
                     if (!knownMessageIds.has(m.id)) {
                         knownMessageIds.add(m.id);
-                        hasNew = true;
-                        lastMsg = m;
+                        // Проверяем, что это не историческое сообщение, а создано прямо сейчас или недавно
+                        // Иначе при первом запуске все старые сообщения вызовут шквал уведомлений
+                        const msgTime = new Date(m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z');
+                        const isRecent = (new Date() - msgTime) < 60000; // младше 1 минуты
+
+                        if (!isFirstLoad && isRecent) {
+                            hasNew = true;
+                            lastMsg = m;
+                        }
                     }
                 });
-        
+
+                if (isFirstLoad) {
+                    // Инициализируем известные ID для прослушиваемых каналов при самом первом проходе
+                    data.messages.forEach(m => knownMessageIds.add(m.id));
+                }
+
                 if (hasNew && lastMsg) {
                     playNotificationSound();
-                    if (Notification.permission === 'granted') {
-                        new Notification(`Новое сообщение в #${chId}`, {
-                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
-                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name)
-                        });
+                    
+                    const notifTitle = `Новое сообщение в #${chId}`;
+                    const notifOptions = {
+                        body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                        icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
+                        tag: `msg-${chId}`,
+                        data: { channel: chId }
+                    };
+
+                    if (document.hidden && Notification.permission === 'granted') {
+                        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.ready.then((reg) => {
+                                reg.showNotification(notifTitle, notifOptions);
+                            });
+                        } else {
+                            const localNotif = new Notification(notifTitle, notifOptions);
+                            localNotif.onclick = () => {
+                                window.focus();
+                                switchChannel(chId);
+                                localNotif.close();
+                            };
+                        }
                     }
                 }
             }
+            if (isFirstLoad) isFirstLoad = false;
         }, 5000);
     </script>
 </body>
