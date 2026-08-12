@@ -10,7 +10,13 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
-// 3. Обработка входящих Push-уведомлений
+// 3. Обработчик fetch (КРИТИЧЕСКИ ВАЖНО для Chromium/Brave)
+self.addEventListener('fetch', (event) => {
+    // Пассивный обработчик, чтобы браузер присвоил статус DOES_EXIST
+    return;
+});
+
+// 4. Обработка входящих Push-уведомлений
 self.addEventListener('push', (event) => {
     if (!event.data) return;
 
@@ -37,7 +43,7 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// 4. Обработка клика по уведомлению
+// 5. Обработка клика по уведомлению
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const channel = event.notification.data ? event.notification.data.channel : null;
