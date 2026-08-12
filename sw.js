@@ -1,4 +1,4 @@
-// sw.js - Service Worker для обработки фоновых уведомлений и кликов
+// sw.js - Service Worker для обработки уведомлений и кликов
 self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
@@ -7,24 +7,12 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
-// Обработка фоновых Push-уведомлений от сервера (Web Push API)
-self.addEventListener('push', (event) => {
-    let data = { title: 'Kaeront Чат', body: 'Новое сообщение!', channel: 'global', icon: '/assets/id.png' };
-    if (event.data) {
-        try { data = event.data.json(); } catch(e) {}
+// Обработка сообщений, отправленных напрямую из вкладки браузера (если потребуется)
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+        const { title, options } = event.data;
+        self.registration.showNotification(title, options);
     }
-
-    const options = {
-        body: data.body,
-        icon: data.icon || '/assets/id.png',
-        badge: '/assets/id.png',
-        data: { channel: data.channel },
-        tag: `chat-channel-${data.channel}`
-    };
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, options)
-    );
 });
 
 // Нажатие на уведомление откроет или сфокусирует вкладку с нужным каналом
