@@ -6,7 +6,7 @@
       "destination": "/api/chat.js"
     },
     {
-      "source": "/:channel*",
+      "source": "/:path((?!api/).*)",
       "destination": "/index.html"
     }
   ]
