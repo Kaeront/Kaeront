@@ -611,14 +611,6 @@
                                         data: { channel: msgChannel }
                                     });
                                 });
-                            } else {
-                                // Запасной фоллбэк на локальное API
-                                const localNotif = new Notification(notifTitle, notifOptions);
-                                localNotif.onclick = () => {
-                                    window.focus();
-                                    switchChannel(msgChannel);
-                                    localNotif.close();
-                                };
                             }
                         }
                     }
