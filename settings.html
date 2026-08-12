@@ -153,6 +153,11 @@
             color: #777;
         }
 
+        .ks-tab-panel a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
         .ks-tab-panel.active {
             display: block;
             opacity: 1;
@@ -1148,7 +1153,7 @@ class Spoiler {
 
                 // Рендерим закрепы с возможностью открепить по клику на крестик
                 if (pinnedIds.length === 0) {
-                    pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет закрепленных каналов</span>';
+                    pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет закрепленных каналов</span>';
                 } else {
                     pinnedContainer.innerHTML = pinnedIds.map(ch => `
                         <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
@@ -1173,7 +1178,7 @@ class Spoiler {
 
                 // Рендерим прослушиваемые с возможностью перестать слушать по клику на крестик
                 if (listenedIds.length === 0) {
-                    listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет прослушиваемых каналов</span>';
+                    listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет прослушиваемых каналов</span>';
                 } else {
                     listenedContainer.innerHTML = listenedIds.map(ch => `
                         <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
