@@ -282,7 +282,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             const inputContainer = document.getElementById('input-area-container');
             const addBtn = document.getElementById('add-channel-btn');
-
+        
             if (token) {
                 if (addBtn) addBtn.style.display = 'block';
                 inputContainer.innerHTML = `
@@ -290,7 +290,18 @@
                     <button class="btn" onclick="sendMsg()">Отправить</button>
                 `;
                 await loadPreferences();
-                requestNotificationPermission();
+                
+                // Запрос разрешения на показ уведомлений
+                if ('Notification' in window) {
+                    if (Notification.permission === 'default') {
+                        await Notification.requestPermission();
+                    }
+                }
+                
+                // Регистрация подписки для фоновых пушей (если настроен Service Worker)
+                if (typeof registerServiceWorkerAndPush === 'function') {
+                    registerServiceWorkerAndPush();
+                }
             } else {
                 if (addBtn) addBtn.style.display = 'none';
                 inputContainer.innerHTML = `
@@ -299,6 +310,7 @@
                     </div>
                 `;
             }
+        });
 
             const initialChannel = getChannelFromUrl();
             switchChannel(initialChannel, false);
