@@ -550,6 +550,7 @@
                 <div class="ks-nav-list">
                     <button class="ks-nav-item active" onclick="switchTab('tab-general', this)">Основное</button>
                     <button class="ks-nav-item" onclick="switchTab('tab-security', this)">Безопасность</button>
+                    <button class="ks-nav-item" onclick="switchTab('tab-chat', this)">Kaeront Чат</button>
                 </div>
             </aside>
 
@@ -612,6 +613,26 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Вкладка 3: Kaeront Чат -->
+                <div id="tab-chat" class="ks-tab-panel">
+                    <div class="ks-header">
+                        <h1 class="ks-title">Kaeront Чат</h1>
+                        <p class="ks-subtitle">Управление закрепленными и прослушиваемыми каналами из <a href="/chat">чата Kaeront</a>.</p>
+                    </div>
+                
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Закрепленные каналы</h3>
+                        <div id="pinned-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                    </div>
+                
+                    <div>
+                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Прослушиваемые каналы</h3>
+                        <div id="listened-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                    </div>
+                </div>
+
+                <!-- на этой линии вставлять вкладки -->
 
             </main>
         </div>
@@ -1063,6 +1084,38 @@ class Spoiler {
                 window.location.replace('/login');
             }
         })();
+
+        // Загрузка и рендер каналов для вкладки "Kaeront Чат"
+        function renderChatSettings() {
+            const pinnedList = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
+            const listenedList = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+        
+            const pinnedContainer = document.getElementById('pinned-channels-list');
+            const listenedContainer = document.getElementById('listened-channels-list');
+        
+            if (pinnedContainer) {
+                if (pinnedList.length === 0) {
+                    pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет закрепленных каналов</span>';
+                } else {
+                    pinnedContainer.innerHTML = pinnedList.map(ch => 
+                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px;"># ${ch}</a>`
+                    ).join('');
+                }
+            }
+        
+            if (listenedContainer) {
+                if (listenedList.length === 0) {
+                    listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem;">Нет прослушиваемых каналов</span>';
+                } else {
+                    listenedContainer.innerHTML = listenedList.map(ch => 
+                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.8rem; padding:6px 12px;"># ${ch}</a>`
+                    ).join('');
+                }
+            }
+        }
+
+        // Вызываем рендер при инициализации
+        document.addEventListener('DOMContentLoaded', renderChatSettings);
 
         async function initSettings() {
             if (!CURRENT_UUID || !CURRENT_TOKEN) return;
