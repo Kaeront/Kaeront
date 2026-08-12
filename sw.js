@@ -7,11 +7,26 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(self.clients.claim());
 });
 
-// Обработка сообщений, отправленных напрямую из вкладки браузера (если потребуется)
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-        const { title, options } = event.data;
-        self.registration.showNotification(title, options);
+// Получение зашифрованного пуш-уведомления от сервера
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+
+    try {
+        const data = event.data.json();
+        const title = data.title || "Новое сообщение";
+        const options = {
+            body: data.body || "",
+            icon: data.icon || '/assets/bubble.png', 
+            badge: '/assets/palm.png',
+            tag: `msg-${data.channel}`,
+            data: { channel: data.channel }
+        };
+
+        event.waitUntil(
+            self.registration.showNotification(title, options)
+        );
+    } catch (e) {
+        console.error("Ошибка парсинга push-данных:", e);
     }
 });
 
@@ -23,14 +38,12 @@ self.addEventListener('notificationclick', (event) => {
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            // Если вкладка чата уже открыта — фокусируемся на ней и переключаем канал через postMessage
             for (const client of clientList) {
                 if (client.url.includes('/chat') && 'focus' in client) {
                     client.postMessage({ action: 'SWITCH_CHANNEL', channel: targetChannel });
                     return client.focus();
                 }
             }
-            // Если вкладок нет — открываем новую страницу с целевым каналом
             if (clients.openWindow) {
                 return clients.openWindow(targetUrl);
             }
