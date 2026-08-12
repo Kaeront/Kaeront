@@ -19,13 +19,25 @@
         .channels-scroll { flex: 1; overflow-y: auto; padding: 10px; }
         
         .section-title { font-size: 0.75rem; text-transform: uppercase; color: #71717a; margin: 15px 5px 5px 5px; font-weight: bold; }
-        .channel-btn { width: 100%; padding: 10px; border-radius: 6px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s; }
+        .channel-btn { width: 100%; padding: 10px; border-radius: 6px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s; position: relative; }
         .channel-btn:hover, .channel-btn.active { background: #27272a; color: #fff; }
         .channel-btn.global { font-weight: bold; color: var(--accent); }
-        .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
-        .channel-btn-name { font-weight: 600; font-size: 0.9rem; }
+        .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; }
+        .channel-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .channel-btn-name { font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: center; gap: 4px; }
         .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* Иконка троеточия и Меню */
+        .channel-more-btn { background: none; border: none; color: #71717a; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s, color 0.15s; }
+        .channel-btn:hover .channel-more-btn { opacity: 1; }
+        .channel-more-btn:hover { color: #fff; background: #3f3f46; }
+
+        .chat-dropdown-menu { position: absolute; right: 10px; top: 35px; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; min-width: 150px; overflow: hidden; }
+        .chat-dropdown-menu.active { display: flex; }
+        .chat-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.85rem; cursor: pointer; text-align: left; transition: background 0.15s; }
+        .chat-dropdown-item:hover { background: #27272a; color: #fff; }
+        .chat-dropdown-item svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
 
         /* Чат бокс */
         #chat-main { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; width: 100%; }
@@ -47,7 +59,7 @@
 
         .notice-banner { background: #18181b; border: 1px solid #27272a; color: #71717a; padding: 10px; border-radius: 6px; text-align: center; font-size: 0.8rem; margin-bottom: 10px; }
 
-        /* Разделитель дат */
+        /* Разделитель по датам */
         .date-divider { display: flex; align-items: center; text-align: center; margin: 10px 0; color: #71717a; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
         .date-divider::before, .date-divider::after { content: ''; flex: 1; border-bottom: 1px solid #27272a; }
         .date-divider span { padding: 0 12px; }
@@ -77,6 +89,24 @@
         .guest-notice-box a:hover { text-decoration: underline; }
 
         .create-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 1.4rem; line-height: 1; display: none; }
+
+        /* Модалка Стриминга */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .modal-title { font-size: 1.1rem; font-weight: bold; color: #fff; margin-bottom: 8px; }
+        .modal-desc { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 16px; line-height: 1.4; }
+        .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 6px; color: #fff; font-size: 0.85rem; }
+
+        /* Стриминг Режим */
+        body.streaming-mode #sidebar,
+        body.streaming-mode .chat-header,
+        body.streaming-mode .notice-banner,
+        body.streaming-mode .chat-input-area { display: none !important; }
+        body.streaming-mode { background: transparent !important; }
+        body.streaming-mode #chat-main { background: transparent !important; }
+        body.streaming-mode .msg-body { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(8px); }
 
         /* Мобильная адаптация (@media) */
         @media (max-width: 768px) {
@@ -121,8 +151,37 @@
             <div id="messages-list"></div>
         </div>
 
-        <div class="chat-input-area" id="input-area-container">
-            <!-- Динамически меняется на инпут или серый блок для гостя -->
+        <div class="chat-input-area" id="input-area-container"></div>
+    </div>
+
+    <!-- Dropdown Menu Template -->
+    <div id="chat-context-menu" class="chat-dropdown-menu">
+        <button class="chat-dropdown-item" onclick="togglePinChannel()">
+            <svg viewBox="0 0 24 24"><path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/></svg>
+            <span id="pin-text">Закрепить</span>
+        </button>
+        <button class="chat-dropdown-item" onclick="toggleListenChannel()">
+            <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2M11 7H13V9H11V7M11 11H13V17H11V11Z"/></svg>
+            <span id="listen-text">Слушать</span>
+        </button>
+        <button class="chat-dropdown-item" onclick="openStreamModal()">
+            <svg viewBox="0 0 24 24"><path d="M20,18H4V6H20M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H9V22H15V20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
+            <span>Стримить...</span>
+        </button>
+    </div>
+
+    <!-- Modal Streaming -->
+    <div class="modal-overlay" id="stream-modal">
+        <div class="modal-card">
+            <div class="modal-title">Виджет для OBS / Стриминга</div>
+            <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашем OBS Studio. Чат будет прозрачным и сфокусирован только на сообщениях.</div>
+            <div class="modal-input-group">
+                <input type="text" id="stream-url-input" readonly>
+                <button class="btn" onclick="copyStreamUrl()">Копировать</button>
+            </div>
+            <div style="text-align: right;">
+                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeStreamModal()">Закрыть</button>
+            </div>
         </div>
     </div>
 
@@ -134,13 +193,22 @@
         let knownMessageIds = new Set();
         let isFirstLoad = true;
         let channelsCache = [];
+        let selectedMenuChannel = null;
 
-        // Включаем звук/уведомления
+        // Пин / Прослушивание
+        let pinnedChannels = JSON.parse(localStorage.getItem('kaeront_pinned_channels') || '[]');
+        let listenedChannels = JSON.parse(localStorage.getItem('kaeront_listened_channels') || '[]');
+
+        // Проверка режима стриминга ?streaming
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('streaming')) {
+            document.body.classList.add('streaming-mode');
+        }
+
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
 
-        // Инициализация UI под статус авторизации
         window.addEventListener('DOMContentLoaded', () => {
             const inputContainer = document.getElementById('input-area-container');
             const addBtn = document.getElementById('add-channel-btn');
@@ -163,9 +231,15 @@
             const initialChannel = getChannelFromUrl();
             switchChannel(initialChannel, false);
             setInterval(() => loadMessages(false), 1500);
+
+            // Закрытие меню при клике мимо
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.channel-more-btn') && !e.target.closest('#chat-context-menu')) {
+                    document.getElementById('chat-context-menu').classList.remove('active');
+                }
+            });
         });
 
-        // Скролл-детектор
         const container = document.getElementById('msg-container');
         container.addEventListener('scroll', () => {
             const distanceToBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
@@ -192,28 +266,29 @@
             const oldDiv = document.getElementById('old-channels');
             activeDiv.innerHTML = ''; oldDiv.innerHTML = '';
 
-            const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
             data.channels.forEach(ch => {
                 const btn = document.createElement('button');
                 btn.className = `channel-btn ${ch.id === 'global' ? 'global' : ''} ${ch.id === currentChannel ? 'active' : ''}`;
                 
-                // Если канал global или создатель не указан — это система
                 const isSystem = ch.id === 'global' || !ch.created_by_name;
                 const creatorName = isSystem ? 'Система' : ch.created_by_name;
                 const avatarUrl = getAvatarUrl(ch.created_by, creatorName);
                 
                 btn.innerHTML = `
-                    <div class="channel-btn-inner" style="display:flex; flex-direction:column; gap:2px;">
-                        <span class="channel-btn-name" style="font-weight:600;"># ${escapeHtml(ch.name)}</span>
-                        <div class="channel-btn-meta" style="font-size:0.7rem; color:#71717a; display:flex; align-items:center; gap:4px;">
-                            <img src="${avatarUrl}" style="width:12px; height:12px; border-radius:50%; object-fit:cover;" alt="">
+                    <div class="channel-btn-inner">
+                        <div class="channel-btn-top">
+                            <span class="channel-btn-name"># ${escapeHtml(ch.name)}</span>
+                            <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
+                        </div>
+                        <div class="channel-btn-meta">
+                            <img src="${avatarUrl}" alt="">
                             <span>${escapeHtml(creatorName)}</span>
                         </div>
                     </div>
                 `;
                 
-                btn.onclick = () => {
+                btn.onclick = (e) => {
+                    if (e.target.classList.contains('channel-more-btn')) return;
                     toggleMobileSidebar(false);
                     switchChannel(ch.id);
                 };
@@ -229,6 +304,64 @@
             updateHeaderInfo();
         }
 
+        function toggleContextMenu(e, channelId) {
+            e.stopPropagation();
+            selectedMenuChannel = channelId;
+            const menu = document.getElementById('chat-context-menu');
+            
+            const isPinned = pinnedChannels.includes(channelId);
+            const isListened = listenedChannels.includes(channelId);
+
+            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
+            document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
+
+            const rect = e.target.getBoundingClientRect();
+            menu.style.top = `${rect.bottom + window.scrollY}px`;
+            menu.style.left = `${rect.left + window.scrollX - 120}px`;
+            menu.classList.toggle('active');
+        }
+
+        function togglePinChannel() {
+            if (!selectedMenuChannel) return;
+            if (pinnedChannels.includes(selectedMenuChannel)) {
+                pinnedChannels = pinnedChannels.filter(id => id !== selectedMenuChannel);
+            } else {
+                pinnedChannels.push(selectedMenuChannel);
+            }
+            localStorage.setItem('kaeront_pinned_channels', JSON.stringify(pinnedChannels));
+            document.getElementById('chat-context-menu').classList.remove('active');
+        }
+
+        function toggleListenChannel() {
+            if (!selectedMenuChannel) return;
+            if (listenedChannels.includes(selectedMenuChannel)) {
+                listenedChannels = listenedChannels.filter(id => id !== selectedMenuChannel);
+            } else {
+                listenedChannels.push(selectedMenuChannel);
+            }
+            localStorage.setItem('kaeront_listened_channels', JSON.stringify(listenedChannels));
+            document.getElementById('chat-context-menu').classList.remove('active');
+        }
+
+        function openStreamModal() {
+            if (!selectedMenuChannel) return;
+            const url = `https://chat.kaeront.ru/${selectedMenuChannel}?streaming`;
+            document.getElementById('stream-url-input').value = url;
+            document.getElementById('stream-modal').classList.add('active');
+            document.getElementById('chat-context-menu').classList.remove('active');
+        }
+
+        function closeStreamModal() {
+            document.getElementById('stream-modal').classList.remove('active');
+        }
+
+        function copyStreamUrl() {
+            const input = document.getElementById('stream-url-input');
+            input.select();
+            navigator.clipboard.writeText(input.value);
+            alert('Ссылка для стрима скопирована в буфер обмена!');
+        }
+
         function updateHeaderInfo() {
             document.getElementById('header-channel-name').innerText = `# ${currentChannel}`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
@@ -238,8 +371,8 @@
                 const avatarUrl = getAvatarUrl(chData.created_by, chData.created_by_name);
                 creatorInfoDiv.innerHTML = `
                     Создатель: 
-                    <img src="${avatarUrl}" class="channel-creator-avatar" alt="" style="width:16px; height:16px; border-radius:50%; object-fit:cover; vertical-align:middle;">
-                    <a href="https://kaeront.ru/user/${encodeURIComponent(chData.created_by_name)}" target="_blank" class="creator-link" style="color:var(--accent); text-decoration:none;">
+                    <img src="${avatarUrl}" class="channel-creator-avatar" alt="">
+                    <a href="https://kaeront.ru/user/${encodeURIComponent(chData.created_by_name)}" target="_blank" class="creator-link">
                         ${escapeHtml(chData.created_by_name)}
                     </a>
                 `;
@@ -250,10 +383,7 @@
 
         async function loadMessages(isChannelSwitch = false) {
             const list = document.getElementById('messages-list');
-            
-            if (isChannelSwitch) {
-                list.classList.add('loading');
-            }
+            if (isChannelSwitch) list.classList.add('loading');
 
             const data = await api(`channels/${currentChannel}/messages`);
             if (!data.messages) {
@@ -261,7 +391,6 @@
                 return;
             }
 
-            // Воспроизведение звука и вызов Push при по-настоящему новых сообщениях
             if (!isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
                 let lastMsg = null;
@@ -283,14 +412,11 @@
                 }
             }
 
-            // Обновляем список известных ID
             data.messages.forEach(m => knownMessageIds.add(m.id));
             isFirstLoad = false;
 
             const currentHash = JSON.stringify(data.messages);
-            if (currentHash === lastMessagesHash && !isChannelSwitch) {
-                return;
-            }
+            if (currentHash === lastMessagesHash && !isChannelSwitch) return;
             lastMessagesHash = currentHash;
 
             let htmlBuffer = "";
@@ -302,10 +428,7 @@
                     : m.created_at.replace(' ', 'T') + 'Z';
 
                 const dateObj = new Date(isoUtcString);
-                
-                const dateStr = dateObj.toLocaleDateString('ru-RU', {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                });
+                const dateStr = dateObj.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
                 if (dateStr !== lastDateStr) {
                     htmlBuffer += `<div class="date-divider"><span>${escapeHtml(dateStr)}</span></div>`;
@@ -335,10 +458,7 @@
             });
 
             list.innerHTML = htmlBuffer;
-
-            if (isChannelSwitch) {
-                setTimeout(() => list.classList.remove('loading'), 50);
-            }
+            if (isChannelSwitch) setTimeout(() => list.classList.remove('loading'), 50);
 
             if (!userHasScrolledUp || isChannelSwitch) {
                 container.scrollTop = container.scrollHeight;
@@ -369,59 +489,38 @@
             if (!id) return;
 
             const res = await api('channels', 'POST', { id });
-            
-            // Защита от парсинга HTML или ошибок сети
-            if (res.error) {
-                return alert("Ошибка сети или API. Попробуйте перезагрузить страницу.");
-            }
-            if (res.detail) {
-                alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
-                return;
-            }
-            if (!res.channel_id) {
-                return alert("Произошла ошибка: сервер не вернул ID канала.");
-            }
+            if (res.error) return alert("Ошибка сети или API.");
+            if (res.detail) return alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
+            if (!res.channel_id) return alert("Сервер не вернул ID канала.");
             
             switchChannel(res.channel_id);
         }
 
-        // Генерация аватарок
         function getAvatarUrl(uuid, username) {
             if (uuid && uuid !== '00000000-0000-0000-0000-000000000000') {
-                const cleanUuid = uuid.replace(/-/g, '');
-                return `https://crafthead.net/avatar/${cleanUuid}`;
+                return `https://crafthead.net/avatar/${uuid.replace(/-/g, '')}`;
             }
             return `https://crafthead.net/avatar/${encodeURIComponent(username || 'Console')}`;
         }
 
-        // Синтезатор звука веб-аудио API (не требует внешних mp3)
         function playNotificationSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // A5
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
                 gain.gain.setValueAtTime(0.15, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.25);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.25);
             } catch(e) {}
         }
 
         function toggleMobileSidebar(open) {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (open) {
-                sidebar.classList.add('open');
-                overlay.style.display = 'block';
-            } else {
-                sidebar.classList.remove('open');
-                overlay.style.display = 'none';
-            }
+            document.getElementById('sidebar').classList.toggle('open', open);
+            document.getElementById('sidebar-overlay').style.display = open ? 'block' : 'none';
         }
 
         function getTimeAgo(date) {
@@ -432,35 +531,30 @@
             if (minutes < 60) return `${minutes} мин. назад`;
             const hours = Math.floor(minutes / 60);
             if (hours < 24) return `${hours} ч. назад`;
-            const days = Math.floor(hours / 24);
-            return `${days} дн. назад`;
+            return `${Math.floor(hours / 24)} дн. назад`;
         }
 
         function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+            return str ? str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])) : '';
         }
 
         function getChannelFromUrl() {
             const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-            return path ? decodeURIComponent(path).toLowerCase() : 'global';
+            return path && path !== 'chat' ? decodeURIComponent(path).toLowerCase() : 'global';
         }
 
         async function switchChannel(id, pushHistory = true) {
             currentChannel = id;
             lastMessagesHash = "";
 
-            if (pushHistory && window.location.pathname !== `/${id}`) {
-                const newPath = id === 'global' ? '/' : `/${id}`;
+            if (pushHistory) {
+                const newPath = id === 'global' ? '/chat' : `/chat/${id}`;
                 history.pushState({ channel: id }, '', newPath);
             }
 
             await loadChannels();
-            
-            const inputContainer = document.getElementById('input-area-container');
-            inputContainer.style.display = 'flex'; // Возвращаем инпут, если он был спрятан
+            document.getElementById('input-area-container').style.display = 'flex';
 
-            // Логика кастомной 404 ошибки для чата
             if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
                 document.getElementById('header-channel-name').innerText = `# ${id}`;
                 document.getElementById('header-creator-info').innerText = "Канал не найден";
@@ -471,7 +565,7 @@
                         <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
                     </div>
                 `;
-                inputContainer.style.display = 'none'; // Прячем форму ввода
+                document.getElementById('input-area-container').style.display = 'none';
                 return;
             }
 
@@ -479,8 +573,7 @@
         }
 
         window.addEventListener('popstate', (e) => {
-            const channelFromState = e.state ? e.state.channel : getChannelFromUrl();
-            switchChannel(channelFromState, false);
+            switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
         });
     </script>
 </body>
