@@ -139,6 +139,20 @@
             transition: opacity 0.15s ease-in-out;
         }
 
+        .ks-tab-panel h3 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: #fff;
+            font-family: 'Minecraft', sans-serif;
+            font-weight: normal;
+        }
+
+        .ks-tab-panel p {
+            margin: 0 0 14px 0;
+            font-size: 0.85rem;
+            color: #777;
+        }
+
         .ks-tab-panel.active {
             display: block;
             opacity: 1;
@@ -582,15 +596,13 @@
                     </div>
 
                     <div style="margin-bottom: 30px;">
-                        <h3 style="margin: 0 0 8px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Активные сессии</h3>
-                        <p style="margin: 0 0 14px 0; font-size: 0.85rem; color: #777;">
-                            Завершить все открытые сеансы на всех устройствах.
-                        </p>
+                        <h3>Активные сессии</h3>
+                        <p>Завершить все открытые сеансы на всех устройствах.</p>
                         <button class="ks-btn ks-btn-danger" onclick="promptLogout('all')">Завершить все сессии</button>
                     </div>
 
                     <div>
-                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">История успешных входов (до 15)</h3>
+                        <h3>История успешных входов (до 15)</h3>
                         <div class="ks-table-container">
                             <table class="ks-table">
                                 <thead style="font-family: 'Minecraft', sans-serif;">
@@ -622,12 +634,14 @@
                     </div>
                 
                     <div style="margin-bottom: 24px;">
-                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Закрепленные каналы</h3>
+                        <h3>Закрепленные каналы</h3>
+                        <p>Нажмите на них, чтобы открепить.</p>
                         <div id="pinned-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
                 
                     <div>
-                        <h3 style="margin: 0 0 12px 0; font-size: 1rem; color: #fff; font-family: 'Minecraft', sans-serif; font-weight: normal;">Прослушиваемые каналы</h3>
+                        <h3>Прослушиваемые каналы</h3>
+                        <p>Нажмите на них, чтобы перестать слушать.</p>
                         <div id="listened-channels-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
                 </div>
