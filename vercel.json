@@ -12,6 +12,26 @@
       "permanent": false
     },
     {
+      "source": "/user-style",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/user-style/:path*",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/chat-style",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/chat-style/:path*",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
       "source": "/archive/index",
       "destination": "/archive",
       "permanent": true
@@ -23,10 +43,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/chat", "destination": "/chat.html" },
-    { "source": "/chat/:channel*", "destination": "/chat.html" },
-    { "source": "/api/chat/(.*)", "destination": "/api/chat.js" },
-    { "source": "/api/chat", "destination": "/api/chat.js" },
+    { "source": "/chat/:id", "destination": "/chat-style" },
     { "source": "/user/:id", "destination": "/user-style" },
     { "source": "/news/:id", "destination": "/news-style" },
     { "source": "/archive/assets/:path*", "destination": "/archive/assets/:path*" },
