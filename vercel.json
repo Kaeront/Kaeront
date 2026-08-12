@@ -1,41 +1,35 @@
 {
   "cleanUrls": true,
   "redirects": [
-    { "source": "/news-style", "destination": "/404", "permanent": false },
-    { "source": "/news-style/:path*", "destination": "/404", "permanent": false },
-    { "source": "/archive/index", "destination": "/archive", "permanent": true },
-    { "source": "/archive/:slug((?!.*\\.md$).*)", "destination": "/archive?page=:slug", "permanent": false }
+    {
+      "source": "/news-style",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/news-style/:path*",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/archive/index",
+      "destination": "/archive",
+      "permanent": true
+    },
+    {
+      "source": "/archive/:slug((?!.*\\.md$).*)",
+      "destination": "/archive?page=:slug",
+      "permanent": false
+    }
   ],
   "rewrites": [
-    {
-      "source": "/api/chat",
-      "has": [{ "type": "host", "value": "chat.kaeront.ru" }],
-      "destination": "/api/chat.js"
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "chat.kaeront.ru" }],
-      "destination": "/chat.html"
-    },
-    {
-      "source": "/api/chat",
-      "destination": "/api/chat.js"
-    },
-    {
-      "source": "/user/:id",
-      "destination": "/user-style"
-    },
-    {
-      "source": "/news/:id",
-      "destination": "/news-style"
-    },
-    {
-      "source": "/archive/assets/:path*",
-      "destination": "/archive/assets/:path*"
-    },
-    {
-      "source": "/archive/((?!.*\\.).*)",
-      "destination": "/archive/index.html"
-    }
+    { "source": "/chat", "destination": "/chat.html" },
+    { "source": "/chat/(.*)", "destination": "/chat.html" },
+    { "source": "/api/chat/(.*)", "destination": "/api/chat.js" },
+    { "source": "/api/chat", "destination": "/api/chat.js" },
+    { "source": "/user/:id", "destination": "/user-style" },
+    { "source": "/news/:id", "destination": "/news-style" },
+    { "source": "/archive/assets/:path*", "destination": "/archive/assets/:path*" },
+    { "source": "/archive/((?!.*\\.).*)", "destination": "/archive/index.html" }
   ]
 }
