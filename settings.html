@@ -1110,12 +1110,11 @@ class Spoiler {
 
             const token = localStorage.getItem('kaeront_access_token') || sessionStorage.getItem('kaeront_access_token');
             if (!token) {
-                console.warn("[Kaeront Debug] Токен отсутствует, невозможно запросить предпочтения с сервера.");
+                console.warn("[Kaeront Debug] Токен отсутствует.");
                 return;
             }
 
             try {
-                // Запрашиваем данные из вашей базы через Vercel API эндпоинт
                 const response = await fetch('/api/chat?path=preferences', {
                     method: 'GET',
                     headers: {
@@ -1124,36 +1123,77 @@ class Spoiler {
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Ошибка сервера: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
 
                 const data = await response.json();
-                console.log("[Kaeront Debug] Полученные с сервера предпочтения:", data);
-
                 const pinnedIds = data.pinned_channels || [];
                 const listenedIds = data.listened_channels || [];
 
-                // Рендерим закрепы
+                // Функция обновления предпочтений на сервере
+                async function updatePreferences(newPinned, newListened) {
+                    const updateRes = await fetch('/api/chat?path=preferences', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            pinned_channels: newPinned,
+                            listened_channels: newListened
+                        })
+                    });
+                    if (!updateRes.ok) throw new Error('Не удалось обновить предпочтения');
+                    renderChatSettings(); // Перезагружаем список
+                }
+
+                // Рендерим закрепы с возможностью открепить по клику на крестик
                 if (pinnedIds.length === 0) {
                     pinnedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет закрепленных каналов</span>';
                 } else {
-                    pinnedContainer.innerHTML = pinnedIds.map(ch => 
-                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; text-decoration:none; display:inline-flex; align-items:center;">
-                            # ${escapeHtml(ch)}
-                        </a>`
-                    ).join('');
+                    pinnedContainer.innerHTML = pinnedIds.map(ch => `
+                        <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
+                            <a href="/chat/${encodeURIComponent(ch)}" style="color:inherit; text-decoration:none;"># ${escapeHtml(ch)}</a>
+                            <button type="button" title="Открепить" class="unpin-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff4d4f; cursor:pointer; font-weight:bold; padding:0 2px;">&times;</button>
+                        </div>
+                    `).join('');
+
+                    pinnedContainer.querySelectorAll('.unpin-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            const targetCh = btn.getAttribute('data-channel');
+                            const updatedPinned = pinnedIds.filter(c => c !== targetCh);
+                            try {
+                                await updatePreferences(updatedPinned, listenedIds);
+                            } catch (err) {
+                                console.error("Ошибка при откреплении:", err);
+                            }
+                        });
+                    });
                 }
 
-                // Рендерим прослушиваемые
+                // Рендерим прослушиваемые с возможностью перестать слушать по клику на крестик
                 if (listenedIds.length === 0) {
                     listenedContainer.innerHTML = '<span style="color:#666; font-size:0.85rem; font-family: sans-serif;">Нет прослушиваемых каналов</span>';
                 } else {
-                    listenedContainer.innerHTML = listenedIds.map(ch => 
-                        `<a href="/chat/${encodeURIComponent(ch)}" class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; text-decoration:none; display:inline-flex; align-items:center;">
-                            # ${escapeHtml(ch)}
-                        </a>`
-                    ).join('');
+                    listenedContainer.innerHTML = listenedIds.map(ch => `
+                        <div class="ks-btn ks-btn-sec" style="font-size:0.85rem; padding:6px 12px; display:inline-flex; align-items:center; gap:8px;">
+                            <a href="/chat/${encodeURIComponent(ch)}" style="color:inherit; text-decoration:none;"># ${escapeHtml(ch)}</a>
+                            <button type="button" title="Перестать слушать" class="unlisten-btn" data-channel="${escapeHtml(ch)}" style="background:transparent; border:none; color:#ff4d4f; cursor:pointer; font-weight:bold; padding:0 2px;">&times;</button>
+                        </div>
+                    `).join('');
+
+                    listenedContainer.querySelectorAll('.unlisten-btn').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            const targetCh = btn.getAttribute('data-channel');
+                            const updatedListened = listenedIds.filter(c => c !== targetCh);
+                            try {
+                                await updatePreferences(pinnedIds, updatedListened);
+                            } catch (err) {
+                                console.error("Ошибка при удалении из прослушиваемых:", err);
+                            }
+                        });
+                    });
                 }
 
             } catch (e) {
@@ -1165,7 +1205,6 @@ class Spoiler {
             return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
         }
 
-        // Запускаем рендер после загрузки DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', renderChatSettings);
         } else {
