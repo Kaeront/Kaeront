@@ -611,6 +611,14 @@
                                         data: { channel: msgChannel }
                                     });
                                 });
+                            } else {
+                                // Запасной фоллбэк на локальное API
+                                const localNotif = new Notification(notifTitle, notifOptions);
+                                localNotif.onclick = () => {
+                                    window.focus();
+                                    switchChannel(msgChannel);
+                                    localNotif.close();
+                                };
                             }
                         }
                     }
@@ -713,6 +721,70 @@
             switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
         });
 
+        // Фоновая проверка прослушиваемых каналов
+        setInterval(async () => {
+            if (!listenedChannels || listenedChannels.length === 0) return;
+
+            for (const chId of listenedChannels) {
+                if (chId === currentChannel) continue;
+
+                const data = await api(`channels/${chId}/messages`);
+                if (!data || !data.messages) continue;
+
+                let hasNew = false;
+                let lastMsg = null;
+
+                data.messages.forEach(m => {
+                    // Если мы вообще впервые видим это сообщение в памяти
+                    if (!knownMessageIds.has(m.id)) {
+                        knownMessageIds.add(m.id);
+                        // Проверяем, что это не историческое сообщение, а создано прямо сейчас или недавно
+                        // Иначе при первом запуске все старые сообщения вызовут шквал уведомлений
+                        const msgTime = new Date(m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z');
+                        const isRecent = (new Date() - msgTime) < 60000; // младше 1 минуты
+
+                        if (!isFirstLoad && isRecent) {
+                            hasNew = true;
+                            lastMsg = m;
+                        }
+                    }
+                });
+
+                if (isFirstLoad) {
+                    // Инициализируем известные ID для прослушиваемых каналов при самом первом проходе
+                    data.messages.forEach(m => knownMessageIds.add(m.id));
+                }
+
+                if (hasNew && lastMsg) {
+                    playNotificationSound();
+                    
+                    // Проверяем разрешение браузера
+                    if (Notification.permission === 'granted') {
+                        const notifTitle = `Новое сообщение в #${chId}`;
+                        const notifOptions = {
+                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
+                            tag: `msg-${chId}`,
+                            data: { channel: chId },
+                            requireInteraction: false // Не заставлять висеть вечно
+                        };
+
+                        // Пытаемся отправить через Service Worker (работает надежнее всего)
+                        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.ready.then((reg) => {
+                                reg.showNotification(notifTitle, notifOptions);
+                            }).catch(() => {
+                                // Фоллбэк, если SW не ответил
+                                showLocalNotification(notifTitle, notifOptions, chId);
+                            });
+                        } else {
+                            showLocalNotification(notifTitle, notifOptions, chId);
+                        }
+                    }
+                }
+            }
+            if (isFirstLoad) isFirstLoad = false;
+        }, 5000);
         async function requestNotificationPermission() {
             if (!('Notification' in window)) {
                 console.warn("Этот браузер не поддерживает desktop-уведомления.");
