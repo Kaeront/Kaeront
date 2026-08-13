@@ -164,13 +164,9 @@
             align-items: flex-start;
             gap: 5px;
         }
-        body.streaming-mode.compact .msg-author-link {
-            font-size: 0.75rem;
-        }
-        body.streaming-mode.compact .msg-content {
-            font-size: 0.8rem;
-            line-height: 1.1;
-        }
+        body.streaming-mode.compact .msg-author-link { font-size: 0.75rem; }
+        body.streaming-mode.compact .msg-content { font-size: 0.8rem; line-height: 1.1; }
+        body.streaming-mode #messages-list { gap: 6px 0; }
 
         @media (max-width: 768px) {
             #sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
