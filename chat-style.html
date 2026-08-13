@@ -32,6 +32,21 @@
             const globalScript = document.createElement('script');
             globalScript.src = "/assets/global.js";
             document.head.appendChild(globalScript);
+
+            window.addEventListener('load', () => {
+                const loader = document.getElementById('loader-wrapper');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
+            
+                    document.body.style.setProperty('overflow', 'auto', 'important');
+                    document.documentElement.style.overflow = 'auto'; 
+            
+                    setTimeout(() => {
+                        loader.remove();
+                    }, 500);
+                }
+            });
         }
     </script>
     <style>
