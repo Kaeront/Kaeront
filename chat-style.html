@@ -629,7 +629,7 @@
 
         function updateHeaderInfo() {
             if (isStreaming) return;
-            document.getElementById('header-channel-name').innerText = `# ${currentChannelName} /${currentChannel}`;
+            document.getElementById('header-channel-name').innerText = `# ${ch.name} /${currentChannel}`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             const chData = channelsCache.find(c => c.id === currentChannel);
