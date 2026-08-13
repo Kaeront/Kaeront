@@ -277,7 +277,6 @@
 
     <!-- Context Menu -->
     <div id="chat-context-menu" class="chat-dropdown-menu">
-        <span style="font-size: 0.75rem; word-break: break-all; padding: 2px 5px; border-bottom: 1px solid #333;" id="channel-info-text"></span>
         <button class="chat-dropdown-item" onclick="togglePinChannel()">
             <p>📌</p>
             <span id="pin-text">Закрепить</span>
@@ -526,7 +525,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a;">(${ch.id})</span></span>
+                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a;">(/${ch.id})</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -564,13 +563,11 @@
             if (isStreaming) return;
             e.stopPropagation();
             selectedMenuChannel = channelId;
-            selectedMenuChannelName = channelName;
             const menu = document.getElementById('chat-context-menu');
             
             const isPinned = pinnedChannels.includes(channelId);
             const isListened = listenedChannels.includes(channelId);
 
-            document.getElementById('channel-info-text').innerText = `# ${selectedMenuChannelName} (/${selectedMenuChannel})`;
             document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
             document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
 
