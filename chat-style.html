@@ -54,7 +54,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background-image: none !important; color: #fff !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; flex-direction: row !important; font-family: 'Montserrat', 'Inter', sans-serif; }
 
-        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; }
+        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
 
         /* Sidebar */
         #sidebar { width: 270px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #27272a; height: 100vh; z-index: 20; transition: transform 0.25s ease; }
@@ -89,7 +89,7 @@
 
         /* Шапка текущего канала */
         .chat-header { padding: 16px 20px; background: #18181b; border-bottom: 1px solid #27272a; display: flex; align-items: center; gap: 12px; flex-shrink: 0; z-index: 5; }
-        .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; font-family: 'Minecraft', 'Uniform' sans-serif; }
+        .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; font-family: 'Minecraft', 'Uniform', sans-serif; }
         .channel-title-box { display: flex; flex-direction: column; word-break: break-all; }
         .channel-title-name { font-size: 1rem; font-weight: bold; color: #fff; font-family: 'Minecraft', sans-serif; display: flex; align-items: center; gap: 10px; }
         .channel-creator-info { font-size: 0.75rem; color: #a1a1aa; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
