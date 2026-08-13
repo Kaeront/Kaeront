@@ -252,18 +252,25 @@
             if (!('serviceWorker' in navigator) || !('PushManager' in window) || !token) return;
             
             try {
-                const registration = await navigator.serviceWorker.ready;
+                // 1. Регистрируем SW с явным указанием Scope (на весь домен)
+                const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+                await navigator.serviceWorker.ready;
+        
                 const publicVapidKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjRk87iRdGjmiExvF9uVUNENYo0f4FV6sTN0tlR1bMWo77V+D0AxLn16FNRhYp3oqPNNTw8YjSI/s8cjAw7q4yw==';
-                
+        
+                // 2. Проверяем, есть ли уже АКТИВНАЯ подписка
                 let subscription = await registration.pushManager.getSubscription();
+        
                 if (!subscription) {
+                    // Создаем новую, только если её вообще нет
                     subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: urlB64ToUint8Array(publicVapidKey)
                     });
                 }
         
-                const res = await fetch('/api/push', {
+                // 3. Всегда отправляем актуальный endpoint на бэкенд, чтобы VDS знал, куда слать
+                await fetch('/api/push', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -272,15 +279,15 @@
                     body: JSON.stringify(subscription)
                 });
         
-                if (res.ok) {
-                    console.log("Push-подписка успешно передана!");
-                } else {
-                    console.error("Ошибка сохранения подписки:", await res.text());
-                }
             } catch (err) {
-                console.error("Ошибка оформления Push-подписки:", err);
+                console.error("[PUSH] Ошибка SW/Push:", err);
             }
         }
+        
+        // Запускаем регистрацию при загрузке страницы
+        window.addEventListener('load', () => {
+            registerServiceWorkerAndPush();
+        });
 
         function playNotificationSound() {
             try {
