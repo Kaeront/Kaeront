@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaeront | Чат</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/assets/global.js"></script>
+    <script>
+        // Инициализация проверки стриминг-режима до загрузки остальных скриптов
+        const urlParams = new URLSearchParams(window.location.search);
+        const isStreaming = urlParams.has('streaming');
+        const isCompactStreaming = urlParams.get('streaming') === 'compact';
+
+        if (!isStreaming) {
+            // Загружаем global.js только в обычном режиме
+            const globalScript = document.createElement('script');
+            globalScript.src = "/assets/global.js";
+            document.head.appendChild(globalScript);
+        }
+    </script>
     <style>
         :root { --bg: #0e0e10; --sidebar-bg: #18181b; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,11 +114,13 @@
         .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
         .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
 
-        /* Стриминг Режим */
+        /* Стриминг Базовый Режим */
         body.streaming-mode #sidebar,
         body.streaming-mode .chat-header,
         body.streaming-mode .notice-banner,
-        body.streaming-mode .chat-input-area { display: none !important; }
+        body.streaming-mode .chat-input-area,
+        body.streaming-mode #chat-context-menu,
+        body.streaming-mode .modal-overlay { display: none !important; }
         body.streaming-mode { background: transparent !important; }
         body.streaming-mode #chat-main { background: transparent !important; }
         body.streaming-mode .msg-body { padding: 8px; background: rgba(24, 24, 27, 0.85); }
@@ -114,6 +128,33 @@
         body.streaming-mode .msg-row,
         body.streaming-mode #messages-list { gap: 4px; }
         body.streaming-mode .date-divider { margin: 0; }
+
+        /* Стриминг Компактный Режим (?streaming=compact) */
+        body.streaming-mode.compact {
+            font-size: 0.8rem;
+        }
+        body.streaming-mode.compact .msg-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+        }
+        body.streaming-mode.compact .msg-body {
+            padding: 4px 8px;
+            background: rgba(15, 15, 18, 0.75);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        body.streaming-mode.compact .msg-author-link {
+            font-size: 0.75rem;
+        }
+        body.streaming-mode.compact .msg-content {
+            font-size: 0.8rem;
+            line-height: 1.1;
+        }
+        body.streaming-mode.compact .msg-source,
+        body.streaming-mode.compact .msg-time {
+            font-size: 0.6rem;
+        }
 
         @media (max-width: 768px) {
             #sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
@@ -194,15 +235,22 @@
     </div>
 
     <script>
-        // Регистрация Service Worker
-        if ('serviceWorker' in navigator) {
+        // Инициализация спец-режимов
+        if (isStreaming) {
+            document.body.classList.add('streaming-mode');
+            if (isCompactStreaming) {
+                document.body.classList.add('compact');
+            }
+        }
+
+        // SW регистрируется только в стандартном режиме
+        if (!isStreaming && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').then((reg) => {
                 console.log('SW зарегистрирован:', reg);
             }).catch((err) => {
                 console.error('Ошибка регистрации SW:', err);
             });
         
-            // Прием сообщений от SW при клике на уведомление, если вкладка уже была открыта
             navigator.serviceWorker.addEventListener('message', (event) => {
                 if (event.data && event.data.action === 'SWITCH_CHANNEL') {
                     switchChannel(event.data.channel);
@@ -211,6 +259,21 @@
         }
 
         let token = localStorage.getItem('kaeront_access_token');
+        let currentUserId = null;
+        let currentUserName = null;
+
+        // Расшифровка JWT для определения собственного пользователя
+        if (token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                const parsed = JSON.parse(jsonPayload);
+                currentUserId = parsed.sub || parsed.uuid || parsed.user_id;
+                currentUserName = parsed.username || parsed.name;
+            } catch(e) {}
+        }
+
         let currentChannel = 'global';
         let userHasScrolledUp = false;
         let lastMessagesHash = "";
@@ -228,7 +291,7 @@
             const pemHeader = "-----BEGIN PUBLIC KEY-----";
             const pemFooter = "-----END PUBLIC KEY-----";
             let b64Clean = base64String.replace(pemHeader, "").replace(pemFooter, "").replace(/[\r\n\s]/g, "");
-        
+            
             const padding = '='.repeat((4 - b64Clean.length % 4) % 4);
             const base64 = (b64Clean + padding).replace(/\-/g, '+').replace(/_/g, '/');
             
@@ -237,58 +300,42 @@
             for (let i = 0; i < rawData.length; ++i) {
                 outputArray[i] = rawData.charCodeAt(i);
             }
-            
-            // Если браузер получил полный X.509 ключ (91 байт вместо 65), вырезаем хвостовые 65 байт сырого ключа P-256
-            if (outputArray.length === 91) {
-                return outputArray.slice(26); // первые 26 байт — это ASN.1 заголовки алгоритма ECDSA
-            }
-            
+            if (outputArray.length === 91) return outputArray.slice(26);
             return outputArray;
         }
         
-        // 2. Функция регистрации подписки
         async function registerServiceWorkerAndPush() {
-            if (!('serviceWorker' in navigator) || !('PushManager' in window) || !token) return;
-            
+            if (isStreaming || !('serviceWorker' in navigator) || !('PushManager' in window) || !token) return;
             try {
-                // 1. Регистрируем SW с явным указанием Scope (на весь домен)
                 const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
                 await navigator.serviceWorker.ready;
-        
                 const publicVapidKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjRk87iRdGjmiExvF9uVUNENYo0f4FV6sTN0tlR1bMWo77V+D0AxLn16FNRhYp3oqPNNTw8YjSI/s8cjAw7q4yw==';
-        
-                // 2. Проверяем, есть ли уже АКТИВНАЯ подписка
                 let subscription = await registration.pushManager.getSubscription();
-        
                 if (!subscription) {
-                    // Создаем новую, только если её вообще нет
                     subscription = await registration.pushManager.subscribe({
                         userVisibleOnly: true,
                         applicationServerKey: urlB64ToUint8Array(publicVapidKey)
                     });
                 }
-        
-                // 3. Всегда отправляем актуальный endpoint на бэкенд, чтобы VDS знал, куда слать
                 await fetch('/api/push', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify(subscription)
                 });
-        
             } catch (err) {
                 console.error("[PUSH] Ошибка SW/Push:", err);
             }
         }
         
-        // Запускаем регистрацию при загрузке страницы
-        window.addEventListener('load', () => {
-            registerServiceWorkerAndPush();
-        });
+        if (!isStreaming) {
+            window.addEventListener('load', () => {
+                registerServiceWorkerAndPush();
+            });
+        }
 
+        // Hard-урезанный звук в streaming режимах
         function playNotificationSound() {
+            if (isStreaming) return; // Урезан под нуль
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
@@ -303,52 +350,47 @@
             } catch(e) {}
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('streaming')) {
-            document.body.classList.add('streaming-mode');
-        }
-
         window.addEventListener('DOMContentLoaded', async () => {
             const inputContainer = document.getElementById('input-area-container');
             const addBtn = document.getElementById('add-channel-btn');
-        
-            if (token) {
-                if (addBtn) addBtn.style.display = 'block';
-                inputContainer.innerHTML = `
-                    <input type="text" id="msg-input" placeholder="Написать сообщение (Интервал 2 сек)..." onkeydown="if(event.key==='Enter') sendMsg()">
-                    <button class="btn" onclick="sendMsg()">Отправить</button>
-                `;
-                await loadPreferences();
-                
-                // Запрос разрешения на показ уведомлений
-                if ('Notification' in window) {
-                    if (Notification.permission === 'default') {
+
+            if (!isStreaming) {
+                if (token) {
+                    if (addBtn) addBtn.style.display = 'block';
+                    if (inputContainer) {
+                        inputContainer.innerHTML = `
+                            <input type="text" id="msg-input" placeholder="Написать сообщение (Интервал 2 сек)..." onkeydown="if(event.key==='Enter') sendMsg()">
+                            <button class="btn" onclick="sendMsg()">Отправить</button>
+                        `;
+                    }
+                    await loadPreferences();
+                    if ('Notification' in window && Notification.permission === 'default') {
                         await Notification.requestPermission();
                     }
-                }
-                
-                // Регистрация подписки для фоновых пушей (если настроен Service Worker)
-                if (typeof registerServiceWorkerAndPush === 'function') {
                     registerServiceWorkerAndPush();
+                } else {
+                    if (addBtn) addBtn.style.display = 'none';
+                    if (inputContainer) {
+                        inputContainer.innerHTML = `
+                            <div class="guest-notice-box">
+                                Чтобы отправить сообщение или создать канал вам нужно <a href="/login">авторизоваться</a>.
+                            </div>
+                        `;
+                    }
                 }
-            } else {
-                if (addBtn) addBtn.style.display = 'none';
-                inputContainer.innerHTML = `
-                    <div class="guest-notice-box">
-                        Чтобы отправить сообщение или создать канал вам нужно <a href="/login">авторизоваться</a>.
-                    </div>
-                `;
             }
 
             const initialChannel = getChannelFromUrl();
             switchChannel(initialChannel, false);
             setInterval(() => loadMessages(false), 1500);
 
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.channel-more-btn') && !e.target.closest('#chat-context-menu')) {
-                    document.getElementById('chat-context-menu').classList.remove('active');
-                }
-            });
+            if (!isStreaming) {
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.channel-more-btn') && !e.target.closest('#chat-context-menu')) {
+                        document.getElementById('chat-context-menu').classList.remove('active');
+                    }
+                });
+            }
         });
 
         const container = document.getElementById('msg-container');
@@ -369,7 +411,7 @@
         }
 
         async function loadPreferences() {
-            if (!token) return;
+            if (!token || isStreaming) return;
             const res = await api('preferences');
             if (res && !res.error) {
                 pinnedChannels = res.pinned_channels || [];
@@ -378,7 +420,7 @@
         }
 
         async function savePreferences() {
-            if (!token) return;
+            if (!token || isStreaming) return;
             await api('preferences', 'POST', {
                 pinned_channels: pinnedChannels,
                 listened_channels: listenedChannels
@@ -386,6 +428,7 @@
         }
 
         async function loadChannels() {
+            if (isStreaming) return; // Не тратим ресурс на прорисовку сайдбара
             const data = await api('channels');
             if(!data.channels) return;
             channelsCache = data.channels;
@@ -396,7 +439,6 @@
             const oldDiv = document.getElementById('old-channels');
 
             pinnedDiv.innerHTML = ''; activeDiv.innerHTML = ''; oldDiv.innerHTML = '';
-
             let hasPinned = false;
 
             data.channels.forEach(ch => {
@@ -445,6 +487,7 @@
         }
 
         function toggleContextMenu(e, channelId) {
+            if (isStreaming) return;
             e.stopPropagation();
             selectedMenuChannel = channelId;
             const menu = document.getElementById('chat-context-menu');
@@ -462,7 +505,7 @@
         }
 
         async function togglePinChannel() {
-            if (!selectedMenuChannel) return;
+            if (!selectedMenuChannel || isStreaming) return;
             if (pinnedChannels.includes(selectedMenuChannel)) {
                 pinnedChannels = pinnedChannels.filter(id => id !== selectedMenuChannel);
             } else {
@@ -474,34 +517,27 @@
         }
 
         async function toggleListenChannel() {
-            if (!selectedMenuChannel) return;
-            
+            if (!selectedMenuChannel || isStreaming) return;
             const cleanChan = selectedMenuChannel.lstrip ? selectedMenuChannel.lstrip('#') : selectedMenuChannel.replace(/^#/, '');
-        
             if (listenedChannels.includes(selectedMenuChannel) || listenedChannels.includes(cleanChan)) {
                 listenedChannels = listenedChannels.filter(id => id !== selectedMenuChannel && id !== cleanChan);
             } else {
                 listenedChannels.push(selectedMenuChannel);
-                
-                // Автоматически запрашиваем разрешение на Push и регистрируем SW, когда пользователь начинает слушать канал
                 if ('Notification' in window && Notification.permission !== 'granted') {
                     const perm = await Notification.requestPermission();
-                    if (perm === 'granted') {
-                        await registerServiceWorkerAndPush();
-                    }
+                    if (perm === 'granted') await registerServiceWorkerAndPush();
                 } else {
                     await registerServiceWorkerAndPush();
                 }
             }
-            
             await savePreferences();
             document.getElementById('chat-context-menu').classList.remove('active');
             loadChannels();
         }
 
         function openStreamModal() {
-            if (!selectedMenuChannel) return;
-            const url = `https://kaeront.ru/chat/${selectedMenuChannel}?streaming`;
+            if (!selectedMenuChannel || isStreaming) return;
+            const url = `https://kaeront.ru/chat/${selectedMenuChannel}?streaming=compact`;
             document.getElementById('stream-url-input').value = url;
             document.getElementById('stream-modal').classList.add('active');
             document.getElementById('chat-context-menu').classList.remove('active');
@@ -519,6 +555,7 @@
         }
 
         function updateHeaderInfo() {
+            if (isStreaming) return;
             document.getElementById('header-channel-name').innerText = `# ${currentChannel}`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
@@ -600,7 +637,8 @@
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
 
-            if (!isFirstLoad && !isChannelSwitch) {
+            // Обработка звука и уведов ТОЛЬКО если НЕ streaming-режим
+            if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
                 let lastMsg = null;
                 data.messages.forEach(m => {
@@ -610,17 +648,18 @@
                     }
                 });
             
-                // Уведомление срабатывает, если мы в текущем канале ИЛИ если текущий канал в списке прослушиваемых
                 if (hasNew && lastMsg) {
-                    const msgChannel = lastMsg.channel_id || currentChannel;
+                    // Проверка отсечения собственных сообщений (от самого себя)
+                    const isSelfMessage = (currentUserId && lastMsg.author_uuid === currentUserId) || 
+                                          (currentUserName && lastMsg.author_name === currentUserName);
 
-                    // Проверяем: сообщение пришло в открытый канал ИЛИ в прослушиваемый
+                    const msgChannel = lastMsg.channel_id || currentChannel;
                     const isTargetChannel = (msgChannel === currentChannel) || listenedChannels.includes(msgChannel);
 
-                    if (isTargetChannel) {
+                    // Уведомляем и воспроизводим звук ТОЛЬКО если сообщение чужое
+                    if (isTargetChannel && !isSelfMessage) {
                         playNotificationSound();
 
-                        // Показываем уведомление, если вкладка не активна
                         if (document.hidden && Notification.permission === 'granted') {
                             const notifTitle = `Новое сообщение в #${msgChannel}`;
                             const notifOptions = {
@@ -629,7 +668,6 @@
                                 tag: `msg-${msgChannel}`
                             };
 
-                            // Отправка через активный Service Worker с привязкой события клика
                             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                                 navigator.serviceWorker.ready.then((reg) => {
                                     reg.showNotification(notifTitle, {
@@ -638,7 +676,6 @@
                                     });
                                 });
                             } else {
-                                // Запасной фоллбэк на локальное API
                                 const localNotif = new Notification(notifTitle, notifOptions);
                                 localNotif.onclick = () => {
                                     window.focus();
@@ -653,6 +690,7 @@
         }
 
         async function sendMsg() {
+            if (isStreaming) return;
             const input = document.getElementById('msg-input');
             if(!input) return;
             const content = input.value.trim();
@@ -670,6 +708,7 @@
         }
 
         async function createChannelPrompt() {
+            if (isStreaming) return;
             if (!token) return alert("Создавать каналы могут только авторизованные пользователи!");
             const id = prompt("Введите ID нового канала (буквы, цифры, _ и -):");
             if (!id) return;
@@ -690,6 +729,7 @@
         }
 
         function toggleMobileSidebar(open) {
+            if (isStreaming) return;
             document.getElementById('sidebar').classList.toggle('open', open);
             document.getElementById('sidebar-overlay').style.display = open ? 'block' : 'none';
         }
@@ -718,113 +758,100 @@
             currentChannel = id;
             lastMessagesHash = "";
 
-            if (pushHistory) {
+            if (pushHistory && !isStreaming) {
                 const newPath = id === 'global' ? '/chat' : `/chat/${id}`;
                 history.pushState({ channel: id }, '', newPath);
             }
 
-            await loadChannels();
-            document.getElementById('input-area-container').style.display = 'flex';
+            if (!isStreaming) {
+                await loadChannels();
+                const inputArea = document.getElementById('input-area-container');
+                if (inputArea) inputArea.style.display = 'flex';
 
-            if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
-                document.getElementById('header-channel-name').innerText = `# ${id}`;
-                document.getElementById('header-creator-info').innerText = "Канал не найден";
-                document.getElementById('messages-list').innerHTML = `
-                    <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
-                        <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
-                        <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал <b>#${escapeHtml(id)}</b> не существует или был удалён.</p>
-                        <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
-                    </div>
-                `;
-                document.getElementById('input-area-container').style.display = 'none';
-                return;
+                if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
+                    document.getElementById('header-channel-name').innerText = `# ${id}`;
+                    document.getElementById('header-creator-info').innerText = "Канал не найден";
+                    document.getElementById('messages-list').innerHTML = `
+                        <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
+                            <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
+                            <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал <b>#${escapeHtml(id)}</b> не существует или был удалён.</p>
+                            <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
+                        </div>
+                    `;
+                    if (inputArea) inputArea.style.display = 'none';
+                    return;
+                }
             }
 
             await loadMessages(true);
         }
 
-        window.addEventListener('popstate', (e) => {
-            switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
-        });
+        if (!isStreaming) {
+            window.addEventListener('popstate', (e) => {
+                switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
+            });
 
-        // Фоновая проверка прослушиваемых каналов
-        setInterval(async () => {
-            if (!listenedChannels || listenedChannels.length === 0) return;
+            // Фоновая проверка прослушиваемых каналов для оверлея обычных вкладок
+            setInterval(async () => {
+                if (!listenedChannels || listenedChannels.length === 0) return;
 
-            for (const chId of listenedChannels) {
-                if (chId === currentChannel) continue;
+                for (const chId of listenedChannels) {
+                    if (chId === currentChannel) continue;
 
-                const data = await api(`channels/${chId}/messages`);
-                if (!data || !data.messages) continue;
+                    const data = await api(`channels/${chId}/messages`);
+                    if (!data || !data.messages) continue;
 
-                let hasNew = false;
-                let lastMsg = null;
+                    let hasNew = false;
+                    let lastMsg = null;
 
-                data.messages.forEach(m => {
-                    // Если мы вообще впервые видим это сообщение в памяти
-                    if (!knownMessageIds.has(m.id)) {
-                        knownMessageIds.add(m.id);
-                        // Проверяем, что это не историческое сообщение, а создано прямо сейчас или недавно
-                        // Иначе при первом запуске все старые сообщения вызовут шквал уведомлений
-                        const msgTime = new Date(m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z');
-                        const isRecent = (new Date() - msgTime) < 60000; // младше 1 минуты
+                    data.messages.forEach(m => {
+                        if (!knownMessageIds.has(m.id)) {
+                            knownMessageIds.add(m.id);
+                            const msgTime = new Date(m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z');
+                            const isRecent = (new Date() - msgTime) < 60000;
 
-                        if (!isFirstLoad && isRecent) {
-                            hasNew = true;
-                            lastMsg = m;
+                            if (!isFirstLoad && isRecent) {
+                                hasNew = true;
+                                lastMsg = m;
+                            }
+                        }
+                    });
+
+                    if (isFirstLoad) {
+                        data.messages.forEach(m => knownMessageIds.add(m.id));
+                    }
+
+                    if (hasNew && lastMsg) {
+                        // Проверка на собственное сообщение
+                        const isSelfMessage = (currentUserId && lastMsg.author_uuid === currentUserId) || 
+                                              (currentUserName && lastMsg.author_name === currentUserName);
+
+                        if (!isSelfMessage) {
+                            playNotificationSound();
+                            
+                            if (Notification.permission === 'granted') {
+                                const notifTitle = `Новое сообщение в #${chId}`;
+                                const notifOptions = {
+                                    body: `${lastMsg.author_name}: ${lastMsg.content}`,
+                                    icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
+                                    tag: `msg-${chId}`,
+                                    data: { channel: chId },
+                                    requireInteraction: false
+                                };
+
+                                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                                    navigator.serviceWorker.ready.then((reg) => {
+                                        reg.showNotification(notifTitle, notifOptions);
+                                    });
+                                } else {
+                                    showLocalNotification(notifTitle, notifOptions, chId);
+                                }
+                            }
                         }
                     }
-                });
-
-                if (isFirstLoad) {
-                    // Инициализируем известные ID для прослушиваемых каналов при самом первом проходе
-                    data.messages.forEach(m => knownMessageIds.add(m.id));
                 }
-
-                if (hasNew && lastMsg) {
-                    playNotificationSound();
-                    
-                    // Проверяем разрешение браузера
-                    if (Notification.permission === 'granted') {
-                        const notifTitle = `Новое сообщение в #${chId}`;
-                        const notifOptions = {
-                            body: `${lastMsg.author_name}: ${lastMsg.content}`,
-                            icon: getAvatarUrl(lastMsg.author_uuid, lastMsg.author_name),
-                            tag: `msg-${chId}`,
-                            data: { channel: chId },
-                            requireInteraction: false // Не заставлять висеть вечно
-                        };
-
-                        // Пытаемся отправить через Service Worker (работает надежнее всего)
-                        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.ready.then((reg) => {
-                                reg.showNotification(notifTitle, notifOptions);
-                            }).catch(() => {
-                                // Фоллбэк, если SW не ответил
-                                showLocalNotification(notifTitle, notifOptions, chId);
-                            });
-                        } else {
-                            showLocalNotification(notifTitle, notifOptions, chId);
-                        }
-                    }
-                }
-            }
-            if (isFirstLoad) isFirstLoad = false;
-        }, 5000);
-        async function requestNotificationPermission() {
-            if (!('Notification' in window)) {
-                console.warn("Этот браузер не поддерживает desktop-уведомления.");
-                return;
-            }
-        
-            if (Notification.permission === 'default') {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log("Разрешение на уведомления получено!");
-                } else {
-                    console.warn("Пользователь отклонил запрос на уведомления.");
-                }
-            }
+                if (isFirstLoad) isFirstLoad = false;
+            }, 5000);
         }
     </script>
 </body>
