@@ -629,10 +629,10 @@
 
         function updateHeaderInfo() {
             if (isStreaming) return;
-            document.getElementById('header-channel-name').innerText = `# ${ch.name} /${currentChannel}`;
+            const chData = channelsCache.find(c => c.id === currentChannel);
+            document.getElementById('header-channel-name').innerText = `# ${encodeURIComponent(chData.name)} /${currentChannel}`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
-            const chData = channelsCache.find(c => c.id === currentChannel);
             if (chData && chData.created_by_name && chData.id !== 'global') {
                 const avatarUrl = getAvatarUrl(chData.created_by, chData.created_by_name);
                 creatorInfoDiv.innerHTML = `
@@ -843,7 +843,7 @@
                 if (inputArea) inputArea.style.display = 'flex';
 
                 if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
-                    document.getElementById('header-channel-name').innerText = `# ${name} /${id}`;
+                    document.getElementById('header-channel-name').innerText = `/${id}`;
                     document.getElementById('header-creator-info').innerText = "Канал не найден";
                     document.getElementById('messages-list').innerHTML = `
                         <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
