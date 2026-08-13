@@ -524,7 +524,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em;">(${ch.id})</span></span>
+                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a;">(${ch.id})</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -567,7 +567,7 @@
             const isPinned = pinnedChannels.includes(channelId);
             const isListened = listenedChannels.includes(channelId);
 
-            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
+            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить ${ch.name} # ${ch.id}';
             document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
 
             const rect = e.target.getBoundingClientRect();
@@ -781,8 +781,8 @@
 
         async function createChannelPrompt() {
             if (isStreaming) return;
-            if (!token) return alert("Создавать каналы могут только авторизованные пользователи!");
-            const id = prompt("Придумайте ID для нового канала (буквы, цифры, _ и -)\nВы не сможете его изменить!");
+            if (!token) return alert("Создавать каналы могут только авторизованные пользователи! Пройдите авторизацию на kaeront.ru/login");
+            const id = prompt("Придумайте ID для нового канала используя латинские буквы, цифры, _ и -\n\n⚠️ Вы потом не сможете его изменить!");
             if (!id) return;
 
             const res = await api('channels', 'POST', { id });
