@@ -35,7 +35,7 @@
         }
     </script>
     <style>
-        :root { --bg: #0e0e10 !importatnt; --sidebar-bg: #18181b !importatnt; --accent: #FA0; }
+        :root { --bg: #0e0e10 !important; --sidebar-bg: #18181b !important; --accent: #FA0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background-image: none !important; color: #fff !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; flex-direction: row !important; font-family: 'Montserrat', 'Inter', sans-serif; }
 
@@ -142,7 +142,7 @@
         body.streaming-mode .msg-body { padding: 8px; background: rgba(24, 24, 27, 0.85); }
         body.streaming-mode .messages-scroll { padding: 8px; scrollbar-width: none; }
         body.streaming-mode .msg-row,
-        body.streaming-mode #messages-list { gap: 4px; }
+        body.streaming-mode #messages-list { gap: 6px; }
         body.streaming-mode .date-divider { margin: 0; }
 
         /* Стриминг Компактный Режим (?streaming=compact) */
@@ -153,10 +153,10 @@
         body.streaming-mode.compact .msg-source,
         body.streaming-mode.compact .msg-time,
         body.streaming-mode.compact .date-divider { display: none !important; }
-        body.streaming-mode { background: rgba(15, 15, 18, 0.75) !important; }
+        body.streaming-mode.compact { background: rgba(15, 15, 18, 0.75) !important; }
+        body.streaming-mode .messages-scroll { padding: 5px; }
         body.streaming-mode.compact .msg-body {
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 0;
             background: transparent !important;
             border: none;
             display: flex;
@@ -238,7 +238,7 @@
     <div class="modal-overlay" id="stream-modal">
         <div class="modal-card">
             <div class="modal-title">Виджет для стриминга</div>
-            <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашей программе для стримов. Чат будет иметь прозрачный фон и сфокусирован только на получаемых сообщениях.<br>Если вам не понравились пробелы, аватарки</div>
+            <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашей программе для стримов. Чат будет иметь прозрачный фон и сфокусирован только на получаемых сообщениях.<br>Если вам не понравились большие зазоры, аватарки или просто хотите более компактный вид, то после "?streaming" добавьте "=compact" (без кавычек).</div>
             <div class="modal-input-group">
                 <input type="text" id="stream-url-input" readonly>
                 <button class="btn" onclick="copyStreamUrl()">Копировать</button>
