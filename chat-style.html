@@ -64,7 +64,7 @@
         .channels-scroll::-webkit-scrollbar-thumb { background-color: #222; border-radius: 5px; }
         
         .section-title { font-size: 0.75rem; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif; }
-        .channel-btn { width: 100%; padding: 10px; border-radius: 10px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s; position: relative; }
+        .channel-btn { width: 100%; padding: 6px 10px; border-radius: 10px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s, color 0.15s; position: relative; }
         .channel-btn:hover, .channel-btn.active { background: #27272a; color: #fff; }
         .channel-btn.global { color: var(--accent); }
         .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; }
@@ -74,15 +74,15 @@
         .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
 
         /* Иконка троеточия и Меню */
-        .channel-more-btn { background: none; border: none; color: #71717a; cursor: pointer; padding: 2px 6px; border-radius: 4px; font-size: 1rem; line-height: 1; opacity: 0; transition: opacity 0.15s, color 0.15s; }
+        .channel-more-btn { background: none; border: none; color: #71717a; cursor: pointer; padding: 2px 6px; border-radius: 50%; font-size: 1rem; line-height: 1; transition: color 0.15s; font-family: 'Uniform'; }
         .channel-btn:hover .channel-more-btn { opacity: 1; }
         .channel-more-btn:hover { color: #fff; background: #3f3f46; }
 
         .chat-dropdown-menu { display: flex !important; position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
         .chat-dropdown-menu.active { opacity: 1; visibility: visible; }
-        .chat-dropdown-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
+        .chat-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
         .chat-dropdown-item:hover { background: #27272a; color: #fff; }
-        .chat-dropdown-item svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+        .chat-dropdown-item p { font-size: 16px; font-family: 'Upper'; }
 
         /* Чат бокс */
         #chat-main { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; position: relative; background: var(--bg); }
@@ -277,15 +277,15 @@
     <!-- Context Menu -->
     <div id="chat-context-menu" class="chat-dropdown-menu">
         <button class="chat-dropdown-item" onclick="togglePinChannel()">
-            <svg viewBox="0 0 16 16"><path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707l-2.474 2.475a1.5 1.5 0 0 0-.322.458l-1.34 2.68a.5.5 0 0 1-.895.008l-1.258-2.516-3.1 3.1a.5.5 0 0 1-.707 0l-.708-.707a.5.5 0 0 1 0-.708l3.1-3.1-2.517-1.257a.5.5 0 0 1 .008-.895l2.68-1.34a1.5 1.5 0 0 0 .458-.323L9.121.868a.5.5 0 0 1 .707-.146z"/></svg>
+            <p>📌</p>
             <span id="pin-text">Закрепить</span>
         </button>
         <button class="chat-dropdown-item" onclick="toggleListenChannel()">
-            <svg viewBox="0 0 16 16"><path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0v-11zm-1 0.5v10l-6-3.5V6.5l6-3.5zM3 5.5a2.5 2.5 0 0 0-2.5 2.5v0a2.5 2.5 0 0 0 2.5 2.5h1V5.5H3z"/></svg>
+            <p>📢</p>
             <span id="listen-text">Слушать</span>
         </button>
         <button class="chat-dropdown-item" onclick="openStreamModal()">
-            <svg viewBox="0 0 16 16"><path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4zm2-1a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H2zm3 11a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/></svg>
+            <p>📺</p>
             <span>Стримить...</span>
         </button>
     </div>
@@ -524,7 +524,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.id}</span>
+                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em;">(${ch.id})</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -782,7 +782,7 @@
         async function createChannelPrompt() {
             if (isStreaming) return;
             if (!token) return alert("Создавать каналы могут только авторизованные пользователи!");
-            const id = prompt("Введите ID нового канала (буквы, цифры, _ и -):");
+            const id = prompt("Придумайте ID для нового канала (буквы, цифры, _ и -)\nВы не сможете его изменить!");
             if (!id) return;
 
             const res = await api('channels', 'POST', { id });
