@@ -20,14 +20,14 @@
         .channels-scroll::-webkit-scrollbar { width: 5px; }
         .channels-scroll::-webkit-scrollbar-thumb { background-color: #222; border-radius: 5px; }
         
-        .section-title { font-size: 0.75rem; text-transform: uppercase; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif; }
+        .section-title { font-size: 0.75rem; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif; }
         .channel-btn { width: 100%; padding: 10px; border-radius: 6px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s; position: relative; }
         .channel-btn:hover, .channel-btn.active { background: #27272a; color: #fff; }
-        .channel-btn.global { font-weight: bold; color: var(--accent); }
+        .channel-btn.global { color: var(--accent); }
         .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; }
         .channel-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
         .channel-btn-name { font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; font-family: 'Minecraft', sans-serif; }
-        .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: flex-start; gap: 4px; font-family: 'Minecraft', sans-serif; }
+        .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: flex-start; gap: 6px; font-family: 'Minecraft', sans-serif; }
         .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
 
         /* Иконка троеточия и Меню */
@@ -74,8 +74,8 @@
         .msg-avatar { width: 38px; height: 38px; border-radius: 10px; background: #27272a; object-fit: cover; border: 1px solid #27272a; user-select: none; }
 
         .msg-body { background: #18181b; padding: 10px 14px; border-radius: 10px; border: 1px solid #27272a; flex: 1; min-width: 0; }
-        .msg-header { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; font-family: 'Minecraft', sans-serif; }
-        .msg-author-link { font-size: 0.85rem; font-weight: bold; color: var(--accent); text-decoration: none; }
+        .msg-header { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .msg-author-link { font-family: 'Minecraft', sans-serif; font-size: 0.85rem; color: var(--accent); text-decoration: none; }
         .msg-author-link:hover { text-decoration: underline; }
         .msg-source { font-size: 0.65rem; color: #71717a; font-weight: normal; }
         .msg-time { font-size: 0.7rem; color: #52525b; margin-left: auto; }
