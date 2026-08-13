@@ -629,7 +629,7 @@
 
         function updateHeaderInfo() {
             if (isStreaming) return;
-            document.getElementById('header-channel-name').innerText = `# ${currentChannel}`;
+            document.getElementById('header-channel-name').innerText = `# ${currentChannelName} /${currentChannel}`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             const chData = channelsCache.find(c => c.id === currentChannel);
@@ -827,8 +827,9 @@
             return path && path !== 'chat' ? decodeURIComponent(path.replace('chat/', '')).toLowerCase() : 'global';
         }
 
-        async function switchChannel(id, pushHistory = true) {
+        async function switchChannel(id, name, pushHistory = true) {
             currentChannel = id;
+            currentChannelName = name;
             lastMessagesHash = "";
 
             if (pushHistory && !isStreaming) {
