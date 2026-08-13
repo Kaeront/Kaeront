@@ -15,7 +15,7 @@
 
         /* Sidebar */
         #sidebar { width: 260px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #27272a; height: 100vh; z-index: 20; transition: transform 0.25s ease; }
-        .sidebar-header { padding: 15px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header { padding: 15px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; font-family: 'Minecraft', 'Uniform Upper', sans-serif; }
         .channels-scroll { flex: 1; overflow-y: auto; padding: 10px; }
         .channels-scroll::-webkit-scrollbar { width: 5px; }
         .channels-scroll::-webkit-scrollbar-thumb { background-color: #222; border-radius: 5px; }
@@ -46,7 +46,7 @@
 
         /* Шапка текущего канала */
         .chat-header { padding: 16px 20px; background: #18181b; border-bottom: 1px solid #27272a; display: flex; align-items: center; gap: 12px; flex-shrink: 0; z-index: 5; }
-        .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
+        .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; font-family: 'Minecraft', 'Uniform' sans-serif; }
         .channel-title-box { display: flex; flex-direction: column; }
         .channel-title-name { font-size: 1rem; font-weight: bold; color: #fff; font-family: 'Minecraft', sans-serif; }
         .channel-creator-info { font-size: 0.75rem; color: #a1a1aa; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
@@ -129,8 +129,7 @@
 
     <div id="sidebar">
         <div class="sidebar-header">
-            <h4 style="color: var(--accent); font-family: 'Minecraft';><span style="font-family: 'Uniform'; font-weight: 400;">💬</span> Kaeront Чат</h4>
-            βeta
+            💬 <b>Kaeront Чат</b>
             <button id="add-channel-btn" class="create-btn" onclick="createChannelPrompt()" title="Создать канал">+</button>
         </div>
         <div class="channels-scroll">
