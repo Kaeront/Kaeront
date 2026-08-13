@@ -255,7 +255,6 @@
                 const registration = await navigator.serviceWorker.ready;
                 const publicVapidKey = 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjRk87iRdGjmiExvF9uVUNENYo0f4FV6sTN0tlR1bMWo77V+D0AxLn16FNRhYp3oqPNNTw8YjSI/s8cjAw7q4yw==';
                 
-                // Проверяем существующую подписку или создаем новую
                 let subscription = await registration.pushManager.getSubscription();
                 if (!subscription) {
                     subscription = await registration.pushManager.subscribe({
@@ -264,7 +263,6 @@
                     });
                 }
         
-                // Отправляем прямо на Vercel Serverless Function (/api/push.js)
                 const res = await fetch('/api/push', {
                     method: 'POST',
                     headers: {
@@ -273,7 +271,7 @@
                     },
                     body: JSON.stringify(subscription)
                 });
-
+        
                 if (res.ok) {
                     console.log("Push-подписка успешно передана!");
                 } else {
@@ -471,13 +469,28 @@
 
         async function toggleListenChannel() {
             if (!selectedMenuChannel) return;
-            if (listenedChannels.includes(selectedMenuChannel)) {
-                listenedChannels = listenedChannels.filter(id => id !== selectedMenuChannel);
+            
+            const cleanChan = selectedMenuChannel.lstrip ? selectedMenuChannel.lstrip('#') : selectedMenuChannel.replace(/^#/, '');
+        
+            if (listenedChannels.includes(selectedMenuChannel) || listenedChannels.includes(cleanChan)) {
+                listenedChannels = listenedChannels.filter(id => id !== selectedMenuChannel && id !== cleanChan);
             } else {
                 listenedChannels.push(selectedMenuChannel);
+                
+                // Автоматически запрашиваем разрешение на Push и регистрируем SW, когда пользователь начинает слушать канал
+                if ('Notification' in window && Notification.permission !== 'granted') {
+                    const perm = await Notification.requestPermission();
+                    if (perm === 'granted') {
+                        await registerServiceWorkerAndPush();
+                    }
+                } else {
+                    await registerServiceWorkerAndPush();
+                }
             }
+            
             await savePreferences();
             document.getElementById('chat-context-menu').classList.remove('active');
+            loadChannels();
         }
 
         function openStreamModal() {
