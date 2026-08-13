@@ -32,7 +32,7 @@
             const globalScript = document.createElement('script');
             globalScript.src = "/assets/global.js";
             document.head.appendChild(globalScript);
-
+        } else {
             window.addEventListener('load', () => {
                 const loader = document.getElementById('loader-wrapper');
                 if (loader) {
