@@ -54,7 +54,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background-image: none !important; color: #fff !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; flex-direction: row !important; font-family: 'Montserrat', 'Inter', sans-serif; }
 
-        #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
+        #sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
 
         /* Sidebar */
         #sidebar { width: 270px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #27272a; height: 100vh; z-index: 20; transition: transform 0.25s ease; }
@@ -804,7 +804,8 @@
         function toggleMobileSidebar(open) {
             if (isStreaming) return;
             document.getElementById('sidebar').classList.toggle('open', open);
-            document.getElementById('sidebar-overlay').style.display = open ? 'block' : 'none';
+            document.getElementById('sidebar-overlay').style.visibility = open ? 'visible' : 'hidden';
+            document.getElementById('sidebar-overlay').style.opacity = open ? 1 : 0;
         }
 
         function getTimeAgo(date) {
