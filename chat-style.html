@@ -277,6 +277,7 @@
 
     <!-- Context Menu -->
     <div id="chat-context-menu" class="chat-dropdown-menu">
+        <span id="channel-info-text"></span>
         <button class="chat-dropdown-item" onclick="togglePinChannel()">
             <p>📌</p>
             <span id="pin-text">Закрепить</span>
@@ -568,7 +569,8 @@
             const isPinned = pinnedChannels.includes(channelId);
             const isListened = listenedChannels.includes(channelId);
 
-            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить ${ch.name} # ${ch.id}';
+            document.getElementById('channel-info-text').innerText = `${selectedMenuChannel}`;
+            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
             document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
 
             const rect = e.target.getBoundingClientRect();
