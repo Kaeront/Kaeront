@@ -82,7 +82,7 @@
         .chat-dropdown-menu.active { opacity: 1; visibility: visible; }
         .chat-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
         .chat-dropdown-item:hover { background: #27272a; color: #fff; }
-        .chat-dropdown-item p { font-size: 16px; font-family: 'Upper'; }
+        .chat-dropdown-item p { font-size: 20px; font-family: 'Uniform Upper'; }
 
         /* Чат бокс */
         #chat-main { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; position: relative; background: var(--bg); }
@@ -137,9 +137,10 @@
         .create-btn { background: none; border: none; color: var(--accent); font-family: 'Minecraft'; cursor: pointer; font-size: 1.4rem; line-height: 1; display: none; }
 
         /* Модалка Стриминга */
-        .modal-overlay { display: flex !important; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
+        .modal-overlay { display: flex !important; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .modal-card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.15s; }
+        .modal-overlay.active .modal-card { transform: scale(1); }
         .modal-title { font-size: 1.15rem; font-weight: bold; color: #fff; margin-bottom: 4px; font-family: 'Minecraft', sans-serif; }
         .modal-desc { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 16px; line-height: 1.4; }
         .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
