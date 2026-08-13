@@ -32,10 +32,10 @@ self.addEventListener('push', (event) => {
         body: data.body || '',
         icon: data.icon || '/assets/bubble.png',
         badge: data.badge || '/assets/bubble.png',
-        tag: data.channel ? `msg-${data.channel}` : 'default-tag',
-        data: { channel: data.channel || '' },
+        tag: data.channel ? `msg-${data.channel}` : 'kaeront-chat-msg',
+        data: { channel: data.channel || 'global' },
         renotify: true,
-        requireInteraction: true
+        requireInteraction: true // Оставляет уведомление на столе Windows/macOS до клика
     };
 
     event.waitUntil(
