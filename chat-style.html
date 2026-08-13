@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaeront | Чат</title>
+    <link rel="icon" type="image/png" href="https://kaeront.ru/assets/bubble.png">
+    <meta name="description" content="Центр общения пользователей и игроков Kaeront. Создавайте каналы, обсуждайте темы и общайтесь из Minecraft и kaeront.ru/chat." />
+    <meta itemprop="name" content="Kaeront | Чат" />
+    <meta itemprop="description" content="Центр общения пользователей и игроков Kaeront. Создавайте каналы, обсуждайте темы и общайтесь из Minecraft и kaeront.ru/chat." />
+
+    <meta property="og:url" content="https://kaeront.ru/chat" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" Kaeront | Чат" />
+    <meta property="og:description" content="Центр общения пользователей и игроков Kaeront. Создавайте каналы, обсуждайте темы и общайтесь из Minecraft и kaeront.ru/chat." />
+
+    <meta name="twitter:card" content="summary_small_image" />
+    <meta name="twitter:title" content="Kaeront | Чат" />
+    <meta name="twitter:description" content="Центр общения пользователей и игроков Kaeront. Создавайте каналы, обсуждайте темы и общайтесь из Minecraft и kaeront.ru/chat." />
+
+    <link type="application/json+oembed" href="https://kaeront.ru?author=Kaeront • kaeront.ru" />
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Инициализация проверки стриминг-режима до загрузки остальных скриптов
@@ -19,9 +35,9 @@
         }
     </script>
     <style>
-        :root { --bg: #0e0e10; --sidebar-bg: #18181b; }
+        :root { --bg: #0e0e10 !importatnt; --sidebar-bg: #18181b !importatnt; --accent: #FA0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { background-image: none; color: #fff; height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: row; }
+        html, body { background-image: none !important; color: #fff !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; flex-direction: row !important; font-family: 'Montserrat', 'Inter', sans-serif; }
 
         #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; }
 
@@ -47,8 +63,8 @@
         .channel-btn:hover .channel-more-btn { opacity: 1; }
         .channel-more-btn:hover { color: #fff; background: #3f3f46; }
 
-        .chat-dropdown-menu { display: flex !important; position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; transition: opacity 0.15s; }
-        .chat-dropdown-menu.active { opacity: 1; }
+        .chat-dropdown-menu { display: flex !important; position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
+        .chat-dropdown-menu.active { opacity: 1; visibility: visible; }
         .chat-dropdown-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
         .chat-dropdown-item:hover { background: #27272a; color: #fff; }
         .chat-dropdown-item svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
@@ -133,16 +149,19 @@
         body.streaming-mode.compact {
             font-size: 0.8rem;
         }
-        body.streaming-mode.compact .msg-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-        }
+        body.streaming-mode.compact .msg-avatar,
+        body.streaming-mode.compact .msg-source,
+        body.streaming-mode.compact .msg-time,
+        body.streaming-mode.compact .date-divider { display: none !important; }
+        body.streaming-mode { background: rgba(15, 15, 18, 0.75) !important; }
         body.streaming-mode.compact .msg-body {
             padding: 4px 8px;
-            background: rgba(15, 15, 18, 0.75);
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: transparent !important;
+            border: none;
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
         }
         body.streaming-mode.compact .msg-author-link {
             font-size: 0.75rem;
@@ -150,10 +169,6 @@
         body.streaming-mode.compact .msg-content {
             font-size: 0.8rem;
             line-height: 1.1;
-        }
-        body.streaming-mode.compact .msg-source,
-        body.streaming-mode.compact .msg-time {
-            font-size: 0.6rem;
         }
 
         @media (max-width: 768px) {
@@ -223,7 +238,7 @@
     <div class="modal-overlay" id="stream-modal">
         <div class="modal-card">
             <div class="modal-title">Виджет для стриминга</div>
-            <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашей программе для стримов. Чат будет иметь прозрачный фон и сфокусирован только на получаемых сообщениях.</div>
+            <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашей программе для стримов. Чат будет иметь прозрачный фон и сфокусирован только на получаемых сообщениях.<br>Если вам не понравились пробелы, аватарки</div>
             <div class="modal-input-group">
                 <input type="text" id="stream-url-input" readonly>
                 <button class="btn" onclick="copyStreamUrl()">Копировать</button>
@@ -537,7 +552,7 @@
 
         function openStreamModal() {
             if (!selectedMenuChannel || isStreaming) return;
-            const url = `https://kaeront.ru/chat/${selectedMenuChannel}?streaming=compact`;
+            const url = `https://kaeront.ru/chat/${selectedMenuChannel}?streaming`;
             document.getElementById('stream-url-input').value = url;
             document.getElementById('stream-modal').classList.add('active');
             document.getElementById('chat-context-menu').classList.remove('active');
