@@ -139,8 +139,8 @@
         body.streaming-mode .modal-overlay { display: none !important; }
         body.streaming-mode { background: transparent !important; }
         body.streaming-mode #chat-main { background: transparent !important; }
-        body.streaming-mode .msg-body { padding: 8px; background: rgba(24, 24, 27, 0.85); }
-        body.streaming-mode .messages-scroll { padding: 8px; scrollbar-width: none; }
+        body.streaming-mode .msg-body { padding: 10px; background: rgba(24, 24, 27, 0.85); }
+        body.streaming-mode .messages-scroll { padding: 15px; scrollbar-width: none; }
         body.streaming-mode .msg-row,
         body.streaming-mode #messages-list { gap: 6px; }
         body.streaming-mode .date-divider { margin: 0; }
@@ -154,7 +154,7 @@
         body.streaming-mode.compact .msg-time,
         body.streaming-mode.compact .date-divider { display: none !important; }
         body.streaming-mode.compact { background: rgba(15, 15, 18, 0.75) !important; }
-        body.streaming-mode .messages-scroll { padding: 5px; }
+        body.streaming-mode .messages-scroll { padding: 6px; }
         body.streaming-mode.compact .msg-body {
             padding: 0;
             background: transparent !important;
@@ -162,12 +162,12 @@
             display: flex;
             flex-direction: row;
             align-items: flex-start;
-            gap: 5px;
+            gap: 6px;
         }
         body.streaming-mode.compact .msg-author-link { font-size: 0.75rem; }
         body.streaming-mode.compact .msg-content { font-size: 0.8rem; line-height: 1.1; }
-        body.streaming-mode .msg-row,
-        body.streaming-mode #messages-list { gap: 6px 0; }
+        body.streaming-mode.compact .msg-row,
+        body.streaming-mode.compact #messages-list { gap: 6px 0; }
 
         @media (max-width: 768px) {
             #sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
