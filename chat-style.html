@@ -26,7 +26,7 @@
         .channel-btn.global { color: var(--accent); }
         .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; }
         .channel-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-        .channel-btn-name { font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; font-family: 'Minecraft', sans-serif; }
+        .channel-btn-name { font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; font-family: 'Minecraft', sans-serif; overflow-x: auto; scrollbar-width: none; }
         .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: flex-start; gap: 6px; font-family: 'Minecraft', sans-serif; }
         .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
 
@@ -35,9 +35,9 @@
         .channel-btn:hover .channel-more-btn { opacity: 1; }
         .channel-more-btn:hover { color: #fff; background: #3f3f46; }
 
-        .chat-dropdown-menu { position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; min-width: 160px; overflow: hidden; }
-        .chat-dropdown-menu.active { display: flex; }
-        .chat-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.85rem; cursor: pointer; text-align: left; transition: background 0.15s; }
+        .chat-dropdown-menu { display: flex !important; position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; transition: opacity 0.15s; }
+        .chat-dropdown-menu.active { opacity: 1; }
+        .chat-dropdown-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
         .chat-dropdown-item:hover { background: #27272a; color: #fff; }
         .chat-dropdown-item svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
 
@@ -51,7 +51,7 @@
         .channel-title-name { font-size: 1rem; font-weight: bold; color: #fff; font-family: 'Minecraft', sans-serif; }
         .channel-creator-info { font-size: 0.75rem; color: #a1a1aa; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
         .channel-creator-avatar { width: 16px; height: 16px; border-radius: 50%; object-fit: cover; }
-        .creator-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+        .creator-link { color: var(--accent); text-decoration: none; font-family: 'Minecraft', sans-serif; }
         .creator-link:hover { text-decoration: underline; }
 
         /* Контейнер сообщений */
@@ -411,7 +411,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${escapeHtml(ch.name)}</span>
+                            <span class="channel-btn-name"># ${ch.id}</span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -458,7 +458,7 @@
 
             const rect = e.target.getBoundingClientRect();
             menu.style.top = `${rect.bottom + window.scrollY}px`;
-            menu.style.left = `${rect.left + window.scrollX - 120}px`;
+            menu.style.left = `${rect.left + window.scrollX - 110}px`;
             menu.classList.add('active');
         }
 
