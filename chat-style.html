@@ -1562,7 +1562,7 @@
             if (plusBtn) plusBtn.onclick = openCreateChannelModal;
         
             // Первичный парсинг пути и запуск
-            const route = parseUrl();
+            const route = getChannelFromUrl();
             await switchChannel(route.channel, route.thread, false);
         
             // Фоновый поллинг
