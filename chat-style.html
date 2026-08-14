@@ -525,7 +525,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a;">/${ch.id}</span></span>
+                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a; border-left: 1px solid #27272a;">/${ch.id}</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -630,7 +630,7 @@
         function updateHeaderInfo() {
             if (isStreaming) return;
             const chData = channelsCache.find(c => c.id === currentChannel);
-            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400;">/${currentChannel}</span>`;
+            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; border-left: 1px solid #27272a;">/${currentChannel}</span>`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             if (chData && chData.created_by_name && chData.id !== 'global') {
