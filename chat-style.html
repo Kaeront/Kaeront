@@ -69,7 +69,7 @@
         .channel-btn.global { color: var(--accent); }
         .channel-btn-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; }
         .channel-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-        .channel-btn-name { font-size: 0.9rem; overflow: hidden; display: flex; align-items: center; gap: 6px; font-family: 'Minecraft', sans-serif; word-break: break-all; }
+        .channel-btn-name { font-size: 0.9rem; overflow: hidden; display: flex; align-items: center; gap: 2px; font-family: 'Minecraft', sans-serif; word-break: break-all; }
         .channel-btn-meta { font-size: 0.7rem; color: #71717a; display: flex; align-items: flex-start; gap: 6px; font-family: 'Minecraft', sans-serif; }
         .channel-btn-meta img { width: 12px; height: 12px; border-radius: 50%; }
 
@@ -88,7 +88,7 @@
         #chat-main { flex: 1; display: flex; flex-direction: column; height: 100vh; min-width: 0; position: relative; background: var(--bg); }
 
         /* Шапка текущего канала */
-        .chat-header { padding: 16px 20px; background: #18181b; border-bottom: 1px solid #27272a; display: flex; align-items: center; gap: 12px; flex-shrink: 0; z-index: 5; }
+        .chat-header { padding: 16px 20px; background: #18181b; border-bottom: 1px solid #27272a; display: flex; align-items: center; gap: 6px; flex-shrink: 0; z-index: 5; }
         .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; font-family: 'Minecraft', 'Uniform', sans-serif; }
         .channel-title-box { display: flex; flex-direction: column; word-break: break-all; }
         .channel-title-name { font-size: 1rem; font-weight: bold; color: #fff; font-family: 'Minecraft', sans-serif; display: flex; align-items: center; gap: 10px; }
@@ -525,7 +525,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a; margin-left: 2px; border-left: 2px solid #27272a;">/${ch.id}</span></span>
+                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a; padding-left: 2px; border-left: 2px solid #27272a;">/${ch.id}</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -630,7 +630,7 @@
         function updateHeaderInfo() {
             if (isStreaming) return;
             const chData = channelsCache.find(c => c.id === currentChannel);
-            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; margin-left: 2px; border-left: 2px solid #27272a;">/${currentChannel}</span>`;
+            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; padding-left: 2px; border-left: 2px solid #27272a;">/${currentChannel}</span>`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             if (chData && chData.created_by_name && chData.id !== 'global') {
