@@ -141,9 +141,9 @@
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.15s; }
         .modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-title { font-size: 1.15rem; font-weight: bold; color: #fff; margin-bottom: 4px; font-family: 'Minecraft', sans-serif; }
+        .modal-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 4px; font-family: 'Minecraft', sans-serif; }
         .modal-desc { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 16px; line-height: 1.4; }
-        .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
         .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
 
         /* Стриминг Базовый Режим */
@@ -630,7 +630,7 @@
         function updateHeaderInfo() {
             if (isStreaming) return;
             const chData = channelsCache.find(c => c.id === currentChannel);
-            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; padding-left: 4px; border-left: 1px solid #71717a;">/${currentChannel}</span>`;
+            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; padding-left: 6px; border-left: 1px solid #71717a;">/${currentChannel}</span>`;
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             if (chData && chData.created_by_name && chData.id !== 'global') {
