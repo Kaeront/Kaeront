@@ -1025,12 +1025,11 @@
             list.innerHTML = htmlBuffer;
             if (isChannelSwitch) setTimeout(() => list.classList.remove('loading'), 50);
             if (!userHasScrolledUp || isChannelSwitch) {
-                container.scrollTop = container.scrollHeight;
+                const container = document.getElementById('msg-container');
+                if (container) container.scrollTop = container.scrollHeight;
                 userHasScrolledUp = false;
-            if (!userHasScrolledUp || isChannelSwitch) {
-                container.scrollTop = container.scrollHeight;
-                if (isChannelSwitch) userHasScrolledUp = false;
             }
+            
             // Обработка звука и уведов ТОЛЬКО если НЕ streaming-режим
             if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
