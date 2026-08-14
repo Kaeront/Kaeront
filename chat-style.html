@@ -127,6 +127,9 @@
         .msg-source { font-size: 0.65rem; color: #71717a; font-weight: normal; }
         .msg-time { font-size: 0.7rem; color: #52525b; margin-left: auto; }
         .msg-content { font-size: 0.9rem; color: #e4e4e7; line-height: 1.2; word-break: break-word; }
+        .msg-delete-btn { background: none; border: none; color: #ef4444; cursor: pointer; opacity: 0; transition: opacity 0.15s; font-size: 0.75rem; padding: 0 4px; line-height: 1; margin-left: 6px; }
+        .msg-row:hover .msg-delete-btn { opacity: 1; }
+        .msg-delete-btn:hover { text-decoration: underline; }
 
         /* Поле ввода */
         .chat-input-area { padding: 15px; background: #18181b; border-top: 1px solid #27272a; display: flex; gap: 10px; flex-shrink: 0; }
@@ -149,7 +152,15 @@
         .modal-desc { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 16px; line-height: 1.4; }
         .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
         .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
-
+        
+        /* Класс скрытия полей настройки каналов/веток */
+        .settings-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+        .settings-field label { font-size: 0.75rem; color: #a1a1aa; font-family: 'Minecraft', sans-serif; }
+        .settings-field select, .settings-field input {
+            background: #09090b; border: 1px solid #27272a; padding: 8px 10px; border-radius: 8px; color: #fff; font-size: 0.85rem; outline: none;
+        }
+        .settings-field select:focus, .settings-field input:focus { border-color: var(--accent); }
+        
         /* Стриминг Базовый Режим */
         body.streaming-mode #sidebar,
         body.streaming-mode .chat-header,
@@ -279,23 +290,21 @@
         <div class="chat-input-area" id="input-area-container"></div>
     </div>
 
-    <!-- Context Menu -->
+    <!-- Context Menu (Обновленное) -->
     <div id="chat-context-menu" class="chat-dropdown-menu">
         <button class="chat-dropdown-item" onclick="togglePinChannel()">
-            <p>📌</p>
-            <span id="pin-text">Закрепить</span>
+            <p>📌</p><span id="pin-text">Закрепить</span>
         </button>
         <button class="chat-dropdown-item" onclick="toggleListenChannel()">
-            <p>📢</p>
-            <span id="listen-text">Слушать</span>
+            <p>📢</p><span id="listen-text">Слушать</span>
         </button>
-        <button class="chat-dropdown-item" onclick="openStreamModal()">
-            <p>📺</p>
-            <span>Стримить...</span>
+        <button class="chat-dropdown-item" onclick="openModal('stream-modal')">
+            <p>📺</p><span>Стримить...</span>
         </button>
+        <!-- Динамические кнопки (Настройки/Удалить) будут вставляться сюда из JS -->
     </div>
 
-    <!-- Modal Streaming -->
+    <!-- Modal 1: Стриминг -->
     <div class="modal-overlay" id="stream-modal">
         <div class="modal-card">
             <div class="modal-title">Виджет для стриминга</div>
@@ -306,7 +315,59 @@
             </div>
             <div class="modal-desc">Если вам не понравились большие зазоры, аватарки или просто хотите более компактный вид, то после "?streaming" добавьте "=compact" (без кавычек).</div>
             <div style="text-align: right;">
-                <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeStreamModal()">Закрыть</button>
+                <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeModal('stream-modal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Создание Канала (Замена prompt) -->
+    <div class="modal-overlay" id="create-channel-modal">
+        <div class="modal-card">
+            <div class="modal-title">Создать канал</div>
+            <div style="margin-top: 14px;">
+                <div class="settings-field">
+                    <label>ID Канала (латиница, цифры, _ и -):</label>
+                    <input type="text" id="create-ch-id" placeholder="my-channel">
+                </div>
+                <div class="settings-field">
+                    <label>Название канала:</label>
+                    <input type="text" id="create-ch-name" placeholder="Мой Канал">
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 15px; display: flex; gap: 8px; justify-content: flex-end;">
+                <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeModal('create-channel-modal')">Отмена</button>
+                <button class="btn" onclick="submitCreateChannel()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Настройки Канала -->
+    <div class="modal-overlay" id="channel-settings-modal">
+        <div class="modal-card">
+            <div class="modal-title">Настройки канала</div>
+            <div style="margin-top: 14px;">
+                <div class="settings-field">
+                    <label>Название канала:</label>
+                    <input type="text" id="set-ch-name">
+                </div>
+                <div class="settings-field">
+                    <label>Отправка сообщений:</label>
+                    <select id="set-ch-messages">
+                        <option value="1">Разрешено всем</option>
+                        <option value="0">Запрещено (Только чтение)</option>
+                    </select>
+                </div>
+                <div class="settings-field">
+                    <label>Создание веток:</label>
+                    <select id="set-ch-threads">
+                        <option value="1">Разрешено всем</option>
+                        <option value="0">Запрещено</option>
+                    </select>
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 15px; display: flex; gap: 8px; justify-content: flex-end;">
+                <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeModal('channel-settings-modal')">Отмена</button>
+                <button class="btn" onclick="saveChannelSettings()">Сохранить</button>
             </div>
         </div>
     </div>
@@ -352,16 +413,21 @@
         }
 
         let currentChannel = 'global';
+        let currentThread = null; // Новая переменная для веток
         let userHasScrolledUp = false;
         let lastMessagesHash = "";
         let knownMessageIds = new Set();
         let isFirstLoad = true;
         let channelsCache = [];
         let selectedMenuChannel = null;
-
+        let isChannelNotFound = false; // Предотвращение бесконечного цикла 404
+        
         let pinnedChannels = [];
         let listenedChannels = [];
 
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
         // 1. Функция конвертации ключа
         function urlB64ToUint8Array(base64String) {
             // Убираем PEM-заголовки, пробелы и переносы строк, если они случайно попали
@@ -505,20 +571,20 @@
         }
 
         async function loadChannels() {
-            if (isStreaming) return; // Не тратим ресурс на прорисовку сайдбара
+            if (isStreaming) return;
             const data = await api('channels');
             if(!data.channels) return;
             channelsCache = data.channels;
-
+        
             const pinnedSection = document.getElementById('pinned-section');
             const pinnedDiv = document.getElementById('pinned-channels');
             const activeDiv = document.getElementById('active-channels');
             const oldDiv = document.getElementById('old-channels');
-
+        
             pinnedDiv.innerHTML = ''; activeDiv.innerHTML = ''; oldDiv.innerHTML = '';
-
+        
             let hasPinned = false;
-
+        
             data.channels.forEach(ch => {
                 const btn = document.createElement('button');
                 btn.className = `channel-btn ${ch.id === 'global' ? 'global' : ''} ${ch.id === currentChannel ? 'active' : ''}`;
@@ -530,7 +596,7 @@
                 btn.innerHTML = `
                     <div class="channel-btn-inner">
                         <div class="channel-btn-top">
-                            <span class="channel-btn-name"># ${ch.name} <span style="font-size: 0.8em; color: #71717a; padding-left: 6px; border-left: 1px solid #71717a;">/${ch.id}</span></span>
+                            <span class="channel-btn-name"># ${escapeHtml(ch.name)} <span style="font-size: 0.8em; color: #71717a; padding-left: 6px; border-left: 1px solid #71717a;">/${ch.id}</span></span>
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
@@ -559,9 +625,15 @@
                     }
                 }
             });
-
+        
             pinnedSection.style.display = hasPinned ? 'block' : 'none';
             updateHeaderInfo();
+        }
+        
+        // Функция сворачивания разделов (Стрелочки)
+        function toggleSection(el) {
+            el.classList.toggle('collapsed');
+            if(el.nextElementSibling) el.nextElementSibling.classList.toggle('collapsed');
         }
 
         function toggleContextMenu(e, channelId) {
@@ -570,18 +642,83 @@
             selectedMenuChannel = channelId;
             const menu = document.getElementById('chat-context-menu');
             
+            // Удаляем прошлые динамические кнопки авторизации/управления
+            menu.querySelectorAll('.dynamic-item').forEach(el => el.remove());
+        
             const isPinned = pinnedChannels.includes(channelId);
             const isListened = listenedChannels.includes(channelId);
-
+        
             document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
             document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
-
+        
+            // Проверяем, является ли текущий юзер владельцем
+            const chData = channelsCache.find(c => c.id === channelId);
+            if (chData && chData.created_by && chData.created_by === currentUserId) {
+                menu.insertAdjacentHTML('beforeend', `
+                    <button class="chat-dropdown-item dynamic-item" onclick="openChannelSettingsModal()">
+                        <p>⚙️</p><span>Настройки</span>
+                    </button>
+                    <button class="chat-dropdown-item dynamic-item" style="color:#ef4444;" onclick="deleteCurrentChannel()">
+                        <p>🗑️</p><span>Удалить</span>
+                    </button>
+                `);
+            }
+        
             const rect = e.target.getBoundingClientRect();
             menu.style.top = `${rect.bottom + window.scrollY}px`;
             menu.style.left = `${rect.left + window.scrollX - 110}px`;
             menu.classList.add('active');
         }
 
+        async function deleteCurrentChannel() {
+            if (!selectedMenuChannel || isStreaming) return;
+            if (!confirm(`Вы действительно хотите безвозвратно удалить канал /${selectedMenuChannel}?`)) return;
+        
+            const res = await api(`channels/${selectedMenuChannel}`, 'DELETE');
+            document.getElementById('chat-context-menu').classList.remove('active');
+            
+            if (res.error || res.detail) {
+                alert(res.detail || "Ошибка при удалении.");
+                return;
+            }
+        
+            if (currentChannel === selectedMenuChannel) {
+                switchChannel('global');
+            } else {
+                loadChannels();
+            }
+        }
+        
+        function openChannelSettingsModal() {
+            const chData = channelsCache.find(c => c.id === selectedMenuChannel);
+            if (!chData) return;
+            
+            document.getElementById('set-ch-name').value = chData.name || '';
+            document.getElementById('set-ch-messages').value = chData.allow_messages ?? 1;
+            document.getElementById('set-ch-threads').value = chData.allow_threads ?? 1;
+            
+            document.getElementById('chat-context-menu').classList.remove('active');
+            openModal('channel-settings-modal');
+        }
+        
+        async function saveChannelSettings() {
+            const name = document.getElementById('set-ch-name').value.trim();
+            const allow_messages = parseInt(document.getElementById('set-ch-messages').value);
+            const allow_threads = parseInt(document.getElementById('set-ch-threads').value);
+        
+            const res = await api(`channels/${selectedMenuChannel}`, 'PATCH', {
+                name, allow_messages, allow_threads
+            });
+        
+            if (res.error || res.detail) {
+                alert(res.detail || "Ошибка сохранения настроек.");
+                return;
+            }
+        
+            closeModal('channel-settings-modal');
+            loadChannels();
+        }
+        
         async function togglePinChannel() {
             if (!selectedMenuChannel || isStreaming) return;
             if (pinnedChannels.includes(selectedMenuChannel)) {
@@ -613,18 +750,6 @@
             loadChannels();
         }
 
-        function openStreamModal() {
-            if (!selectedMenuChannel || isStreaming) return;
-            const url = `https://kaeront.ru/chat/${selectedMenuChannel}?streaming`;
-            document.getElementById('stream-url-input').value = url;
-            document.getElementById('stream-modal').classList.add('active');
-            document.getElementById('chat-context-menu').classList.remove('active');
-        }
-
-        function closeStreamModal() {
-            document.getElementById('stream-modal').classList.remove('active');
-        }
-
         function copyStreamUrl() {
             const input = document.getElementById('stream-url-input');
             input.select();
@@ -653,43 +778,49 @@
         }
 
         async function loadMessages(isChannelSwitch = false) {
+            if (isChannelNotFound) return; // Предотвращает бессмысленные повторные запросы при 404
+        
             const list = document.getElementById('messages-list');
             if (isChannelSwitch) list.classList.add('loading');
-
+        
             const data = await api(`channels/${currentChannel}/messages`);
             if (!data.messages) {
                 if (isChannelSwitch) list.classList.remove('loading');
                 return;
             }
-
+        
             data.messages.forEach(m => knownMessageIds.add(m.id));
             isFirstLoad = false;
-
+        
             const currentHash = JSON.stringify(data.messages);
             if (currentHash === lastMessagesHash && !isChannelSwitch) return;
             lastMessagesHash = currentHash;
-
+        
             let htmlBuffer = "";
             let lastDateStr = "";
-
+        
             data.messages.forEach(m => {
                 const isoUtcString = m.created_at.includes('T') 
                     ? (m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z')
                     : m.created_at.replace(' ', 'T') + 'Z';
-
+        
                 const dateObj = new Date(isoUtcString);
                 const dateStr = dateObj.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
+        
                 if (dateStr !== lastDateStr) {
                     htmlBuffer += `<div class="date-divider"><span>${escapeHtml(dateStr)}</span></div>`;
                     lastDateStr = dateStr;
                 }
-
+        
                 const timeStr = dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 const timeAgoStr = getTimeAgo(dateObj);
                 const userProfileUrl = `/user/${encodeURIComponent(m.author_name)}`;
                 const avatarUrl = getAvatarUrl(m.author_uuid, m.author_name);
-
+        
+                // Показываем кнопку удаления только автору сообщения
+                const isMyMsg = m.author_uuid === currentUserId;
+                const deleteBtn = isMyMsg ? `<button class="msg-delete-btn" onclick="deleteMessage(${m.id})" title="Удалить сообщение">✕</button>` : '';
+        
                 htmlBuffer += `
                     <div class="msg-row">
                         <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
@@ -700,21 +831,21 @@
                                 <a href="${userProfileUrl}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
                                 <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
                                 <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
+                                ${deleteBtn}
                             </div>
                             <div class="msg-content">${escapeHtml(m.content)}</div>
                         </div>
                     </div>
                 `;
             });
-
+        
             list.innerHTML = htmlBuffer;
             if (isChannelSwitch) setTimeout(() => list.classList.remove('loading'), 50);
-
+        
             if (!userHasScrolledUp || isChannelSwitch) {
                 container.scrollTop = container.scrollHeight;
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
-
             // Обработка звука и уведов ТОЛЬКО если НЕ streaming-режим
             if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
@@ -766,6 +897,17 @@
                 }
             }
         }
+        
+        // Функция удаления сообщения
+        async function deleteMessage(msgId) {
+            if (!confirm("Удалить это сообщение?")) return;
+            const res = await api(`messages/${msgId}`, 'DELETE');
+            if (res.error || res.detail) {
+                alert(res.detail || "Не удалось удалить сообщение.");
+                return;
+            }
+            await loadMessages();
+        }
 
         async function sendMsg() {
             if (isStreaming) return;
@@ -785,18 +927,26 @@
             await loadMessages();
         }
 
-        async function createChannelPrompt() {
+        function createChannelPrompt() {
             if (isStreaming) return;
-            if (!token) return alert("Создавать каналы могут только авторизованные пользователи! Пройдите авторизацию на kaeront.ru/login");
-            const id = prompt("Придумайте ID для нового канала используя латинские буквы, цифры, _ и -\n\n⚠️ Вы потом не сможете его изменить!");
-            if (!id) return;
-
-            const res = await api('channels', 'POST', { id });
+            if (!token) return alert("Создавать каналы могут только авторизованные пользователи!");
+            document.getElementById('create-ch-id').value = '';
+            document.getElementById('create-ch-name').value = '';
+            openModal('create-channel-modal');
+        }
+        
+        async function submitCreateChannel() {
+            const id = document.getElementById('create-ch-id').value.trim().toLowerCase();
+            const name = document.getElementById('create-ch-name').value.trim();
+        
+            if (!id) return alert("Введите ID канала!");
+        
+            const res = await api('channels', 'POST', { id, name: name || id });
             if (res.error) return alert("Ошибка сети или API.");
             if (res.detail) return alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
-            if (!res.channel_id) return alert("Сервер не вернул ID канала.");
             
-            switchChannel(res.channel_id);
+            closeModal('create-channel-modal');
+            switchChannel(res.channel_id || id);
         }
 
         function getAvatarUrl(uuid, username) {
@@ -833,22 +983,23 @@
             return path && path !== 'chat' ? decodeURIComponent(path.replace('chat/', '')).toLowerCase() : 'global';
         }
 
-        async function switchChannel(id, name, pushHistory = true) {
+        async function switchChannel(id, pushHistory = true) {
             currentChannel = id;
-            currentChannelName = name;
             lastMessagesHash = "";
-
+            isChannelNotFound = false; // Сброс статуса ошибки
+        
             if (pushHistory && !isStreaming) {
                 const newPath = id === 'global' ? '/chat' : `/chat/${id}`;
                 history.pushState({ channel: id }, '', newPath);
             }
-
+        
             if (!isStreaming) {
                 await loadChannels();
                 const inputArea = document.getElementById('input-area-container');
                 if (inputArea) inputArea.style.display = 'flex';
-
+        
                 if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
+                    isChannelNotFound = true; // Устанавливаем стоп-флаг
                     document.getElementById('header-channel-name').innerText = `/${id}`;
                     document.getElementById('header-creator-info').innerText = "Канал не найден";
                     document.getElementById('messages-list').innerHTML = `
@@ -862,7 +1013,7 @@
                     return;
                 }
             }
-
+        
             await loadMessages(true);
         }
 
