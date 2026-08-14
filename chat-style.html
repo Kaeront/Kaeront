@@ -63,7 +63,28 @@
         .channels-scroll::-webkit-scrollbar { width: 5px; }
         .channels-scroll::-webkit-scrollbar-thumb { background-color: #222; border-radius: 5px; }
         
-        .section-title { font-size: 0.75rem; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif; }
+        /* Стили секций и стрелочек */
+        .section-header { display: flex; align-items: center; cursor: pointer; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif; font-size: 0.75rem; user-select: none; }
+        .section-arrow { margin-right: 5px; transition: transform 0.2s; display: inline-block; }
+        .section-header.closed .section-arrow { transform: rotate(-90deg); }
+        .section-content { overflow: hidden; transition: max-height 0.3s ease; }
+        
+        /* Стили веток */
+        .thread-container { padding-left: 20px; display: none; flex-direction: column; }
+        .thread-container.open { display: flex; }
+        .thread-btn { width: 100%; padding: 4px 10px; border-radius: 8px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.8rem; border-left: 2px solid #27272a; margin-left: 5px; margin-bottom: 2px; }
+        .thread-btn:hover, .thread-btn.active { background: #27272a; color: #fff; border-left-color: var(--accent); }
+        
+        /* Модальные окна (Кастомный prompt) */
+        .modal-form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+        .modal-form-group label { font-size: 0.8rem; color: #a1a1aa; }
+        .danger-zone { border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin-top: 15px; }
+        .danger-btn { background: #ef4444; color: white; width: 100%; margin-top: 5px; }
+        
+        /* Удаление сообщения */
+        .msg-delete-btn { opacity: 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.9rem; margin-left: 10px; transition: opacity 0.2s; }
+        .msg-row:hover .msg-delete-btn { opacity: 1; }
+
         .channel-btn { width: 100%; padding: 6px 10px; border-radius: 10px; background: transparent; color: #a1a1aa; border: none; text-align: left; cursor: pointer; font-size: 0.9rem; margin-bottom: 2px; transition: background 0.15s, color 0.15s; position: relative; }
         .channel-btn:hover, .channel-btn.active { background: #27272a; color: #fff; }
         .channel-btn.global { color: var(--accent); }
@@ -348,6 +369,7 @@
         }
 
         let currentChannel = 'global';
+        let currentThread = null;
         let userHasScrolledUp = false;
         let lastMessagesHash = "";
         let knownMessageIds = new Set();
@@ -500,6 +522,31 @@
             });
         }
 
+        function toggleSection(sectionId) {
+            const content = document.getElementById(`${sectionId}-content`);
+            const header = document.getElementById(`${sectionId}-header`);
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                header.classList.remove('closed');
+            } else {
+                content.style.display = 'none';
+                header.classList.add('closed');
+            }
+        }
+
+        function toggleThreads(channelId, e) {
+            e.stopPropagation();
+            const container = document.getElementById(`threads-${channelId}`);
+            const arrow = document.getElementById(`arrow-${channelId}`);
+            if (container.classList.contains('open')) {
+                container.classList.remove('open');
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                container.classList.add('open');
+                arrow.style.transform = 'rotate(90deg)';
+            }
+        }
+
         async function loadChannels() {
             if (isStreaming) return; // Не тратим ресурс на прорисовку сайдбара
             const data = await api('channels');
@@ -648,6 +695,7 @@
         }
 
         async function loadMessages(isChannelSwitch = false) {
+            if (!currentChannel) return;
             const list = document.getElementById('messages-list');
             if (isChannelSwitch) list.classList.add('loading');
 
@@ -685,6 +733,9 @@
                 const userProfileUrl = `/user/${encodeURIComponent(m.author_name)}`;
                 const avatarUrl = getAvatarUrl(m.author_uuid, m.author_name);
 
+                const isMsgAuthor = (currentUserId && m.author_uuid === currentUserId);
+                const deleteHtml = isMsgAuthor ? `<button class="msg-delete-btn" onclick="deleteMessage(${m.id})" title="Удалить сообщение">🗑</button>` : '';
+
                 htmlBuffer += `
                     <div class="msg-row">
                         <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
@@ -695,6 +746,7 @@
                                 <a href="${userProfileUrl}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
                                 <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
                                 <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
+                                ${deleteHtml}
                             </div>
                             <div class="msg-content">${escapeHtml(m.content)}</div>
                         </div>
@@ -780,6 +832,13 @@
             await loadMessages();
         }
 
+        async function deleteMessage(msgId) {
+            if(!confirm("Удалить это сообщение?")) return;
+            const res = await api(`messages/${msgId}`, 'DELETE');
+            if(res.error) alert("Ошибка удаления");
+            else loadMessages(true);
+        }
+
         async function createChannelPrompt() {
             if (isStreaming) return;
             if (!token) return alert("Создавать каналы могут только авторизованные пользователи! Пройдите авторизацию на kaeront.ru/login");
@@ -825,7 +884,11 @@
 
         function getChannelFromUrl() {
             const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-            return path && path !== 'chat' ? decodeURIComponent(path.replace('chat/', '')).toLowerCase() : 'global';
+            const parts = path.replace('chat', '').split('/').filter(Boolean);
+            return {
+                channel: parts[0] ? decodeURIComponent(parts[0]).toLowerCase() : 'global',
+                thread: parts[1] || null
+            };
         }
 
         async function switchChannel(id, name, pushHistory = true) {
@@ -844,16 +907,15 @@
                 if (inputArea) inputArea.style.display = 'flex';
 
                 if (id !== 'global' && channelsCache.length > 0 && !channelsCache.some(c => c.id === id)) {
+                    currentChannel = null; // Отключаем запросы
                     document.getElementById('header-channel-name').innerText = `/${id}`;
-                    document.getElementById('header-creator-info').innerText = "Канал не найден";
                     document.getElementById('messages-list').innerHTML = `
                         <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
                             <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
-                            <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал <b>#${escapeHtml(id)}</b> не существует или был удалён.</p>
+                            <p style="color: #a1a1aa;">Канал <b>#${escapeHtml(id)}</b> не существует или был удалён.</p>
                             <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
-                        </div>
-                    `;
-                    if (inputArea) inputArea.style.display = 'none';
+                        </div>`;
+                    document.getElementById('input-area-container').style.display = 'none';
                     return;
                 }
             }
