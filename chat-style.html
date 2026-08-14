@@ -310,7 +310,7 @@
         <button class="chat-dropdown-item" onclick="toggleListenChannel()">
             <p>📢</p><span id="listen-text">Слушать</span>
         </button>
-        <button class="chat-dropdown-item" onclick="openModal('stream-modal')">
+        <button class="chat-dropdown-item" onclick="openStreamModal()">
             <p>📺</p><span>Стримить...</span>
         </button>
     </div>
@@ -388,13 +388,11 @@
                 <div class="settings-field">
                     <div class="settings-field-top">
                         <label>Сообщения во всех ветках</label>
-                        <select id="set-ch-override-messages" style="background:#09090b; border:1px solid #27272a; padding:6px; border-radius:6px; color:#fff;">
-                            <option value="1">✔️ Разрешить</option>
-                            <option value="0">❌ Запретить</option>
-                            <option value="2">/ Наследовать</option>
-                        </select>
+                        <div class="tri-state-toggle" id="set-ch-override-messages" data-value="2" onclick="toggleTriState(this)">
+                            <span class="state-icon">/</span>
+                        </div>
                     </div>
-                    <p class="desc">Это приоритизированная настройка, отвечающая за отправку сообщения во всех ветках, независимо от их же настроек.</p>
+                    <p class="desc">описание</p>
                 </div>
                 <div class="settings-field">
                     <div class="settings-field-top">
@@ -413,13 +411,11 @@
                 <div class="settings-field">
                     <div class="settings-field-top">
                         <label>Слушание во всех ветках</label>
-                        <select id="set-ch-override-listening" style="background:#09090b; border:1px solid #27272a; padding:6px; border-radius:6px; color:#fff;">
-                            <option value="1">✔️ Разрешить</option>
-                            <option value="0">❌ Запретить</option>
-                            <option value="2">/ Наследовать</option>
-                        </select>
+                        <div class="tri-state-toggle" id="set-ch-override-listening" data-value="2" onclick="toggleTriState(this)">
+                            <span class="state-icon">/</span>
+                        </div>
                     </div>
-                    <p class="desc">Приоритизированная настройка слушания (получения уведомлений) во всех ветках.</p>
+                    <p class="desc">описание</p>
                 </div>
 
                 <div class="danger-zone">
@@ -650,11 +646,16 @@
             await api('preferences', 'POST', { pinned_channels: pinnedChannels, listened_channels: listenedChannels });
         }
 
-        async function loadChannels() {
+        async function loadChannels(force = false) {
             if (isStreaming) return;
+            if (channelsCache.length > 0 && !force) {
+                renderChannelsList(channelsCache);
+                return;
+            }
             const data = await api('channels');
-            if(!data.channels) return;
+            if (!data || !data.channels) return;
             channelsCache = data.channels;
+            renderChannelsList(channelsCache);
         
             const pinnedSection = document.getElementById('pinned-section');
             const pinnedDiv = document.getElementById('pinned-channels');
@@ -826,6 +827,13 @@
             openModal('channel-settings-modal');
         }
 
+        function toggleTriState(el) {
+            let val = parseInt(el.getAttribute('data-value') || '2');
+            val = val === 2 ? 0 : 2;
+            el.setAttribute('data-value', val);
+            el.querySelector('.state-icon').innerText = val === 0 ? '❌' : '/';
+        }
+
         async function saveChannelSettings() {
             const name = document.getElementById('set-ch-name').value.trim();
             const allow_messages = document.getElementById('set-ch-messages').checked ? 1 : 0;
@@ -945,6 +953,13 @@
             loadChannels();
         }
 
+        function openStreamModal() {
+            const streamInput = document.getElementById('stream-url-input');
+            const currentChan = currentChannel || 'global';
+            streamInput.value = `https://kaeront.ru/chat/${currentChan}?streaming`;
+            openModal('stream-modal');
+        }
+
         function copyStreamUrl() {
             const input = document.getElementById('stream-url-input');
             input.select();
@@ -1013,7 +1028,7 @@
                             <div class="msg-header">
                                 <a href="/user/${encodeURIComponent(m.author_name)}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
                                 <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
-                                <span class="msg-time">${timeStr}</span>
+                                <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
                                 ${deleteBtn}
                             </div>
                             <div class="msg-content">${escapeHtml(m.content)}</div>
