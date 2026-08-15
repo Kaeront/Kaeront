@@ -665,6 +665,46 @@
                     toggleMobileSidebar(false);
                     switchChannel(ch.id);
                 };
+
+                const threadsContainer = document.createElement('div');
+                threadsContainer.className = 'channel-threads-list';
+                
+                if (ch.threads && ch.threads.length > 0) {
+                    ch.threads.forEach(th => {
+                        const threadBtn = document.createElement('button');
+                        threadBtn.className = `channel-btn thread-btn ${ch.id === currentChannel && th.id == currentThread ? 'active' : ''}`;
+                        threadBtn.innerHTML = `
+                            <div class="channel-btn-top">
+                                <span class="channel-btn-name">↳ ${escapeHtml(th.name)}</span>
+                                <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}', '${th.id}')">⋮</button>
+                            </div>
+                        `;
+                        threadBtn.onclick = (e) => {
+                            if (e.target.classList.contains('channel-more-btn')) return;
+                            toggleMobileSidebar(false);
+                            switchChannel(ch.id, th.id);
+                        };
+                        threadsContainer.appendChild(threadBtn);
+                    });
+                }
+                
+                // Создаем общую обертку для канала и его веток
+                const wrapper = document.createElement('div');
+                wrapper.appendChild(btn);
+                wrapper.appendChild(threadsContainer);
+                
+                if (pinnedChannels.includes(ch.id)) {
+                    pinnedDiv.appendChild(wrapper);
+                    hasPinned = true;
+                } else {
+                    const lastAct = ch.last_activity ? new Date(ch.last_activity) : new Date(ch.created_at);
+                    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                    if (lastAct < oneDayAgo && ch.id !== 'global') {
+                        oldDiv.appendChild(wrapper);
+                    } else {
+                        activeDiv.appendChild(wrapper);
+                    }
+                }
             
                 if (pinnedChannels.includes(ch.id)) {
                     pinnedDiv.appendChild(btn);
@@ -1147,6 +1187,11 @@
             document.getElementById('create-modal-title').innerText = "Создать канал";
             document.getElementById('create-id-group').style.display = 'flex';
             document.getElementById('thread-warning').style.display = 'none';
+            
+            // Очистка полей перед показом
+            document.getElementById('create-id-input').value = '';
+            document.getElementById('create-name-input').value = '';
+            
             document.getElementById('create-modal').classList.add('active');
         }
         
@@ -1154,6 +1199,10 @@
             targetType = 'thread';
             document.getElementById('create-modal-title').innerText = "Создать ветку";
             document.getElementById('create-id-group').style.display = 'none';
+            
+            // Очистка полей перед показом
+            document.getElementById('create-id-input').value = '';
+            document.getElementById('create-name-input').value = '';
             
             const chData = channelCacheMap[selectedMenuChannel];
             if (chData && chData.allow_threads === 0) {
@@ -1167,23 +1216,33 @@
         }
         
         async function submitCreation() {
-            const name = document.getElementById('create-name-input').value.trim();
-            if (!name) return alert("Введите название");
+            let name = document.getElementById('create-name-input').value.trim();
         
             if (targetType === 'channel') {
                 const id = document.getElementById('create-id-input').value.trim();
-                if(!id) return alert("Введите ID");
+                if (!id) return alert("Введите ID канала");
+        
+                // Если Название не указано, берем значение ID
+                if (!name) {
+                    name = id;
+                }
+        
                 const res = await api('channels', 'POST', { id, name });
-                if(res.error || res.detail) return alert(res.detail || "Ошибка");
+                if (res.error || res.detail) return alert(res.detail || "Ошибка создания канала");
                 switchChannel(id);
             } else {
+                if (!name) return alert("Введите название ветки");
+        
                 const res = await api(`channels/${selectedMenuChannel}/threads`, 'POST', { name });
-                if(res.error || res.detail) return alert(res.detail || "Ошибка");
-                switchChannel(selectedMenuChannel, res.thread_id);
+                if (res.error || res.detail) return alert(res.detail || "Ошибка создания ветки");
+        
+                // Переходим на созданную ветку
+                const threadId = res.thread_id || res.id;
+                switchChannel(selectedMenuChannel, threadId);
             }
             closeModals();
         }
-        
+
         document.querySelectorAll('.custom-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if(e.target.classList.contains('toggle-btn')) {
@@ -1195,13 +1254,18 @@
         });
         
         function openSettingsModal() {
-            settingsData = {};
             const modal = document.getElementById('settings-modal');
             const chData = channelCacheMap[selectedMenuChannel];
             
             document.getElementById('del-target-name').innerText = targetType === 'channel' ? 'канал' : 'ветку';
             
             if (targetType === 'channel') {
+                settingsData = {
+                    allow_messages: chData.allow_messages,
+                    override_thread_messages: chData.override_thread_messages,
+                    allow_threads: chData.allow_threads
+                };
+        
                 document.getElementById('settings-title').innerText = `Настройки канала /${chData.id}`;
                 document.getElementById('set-name').value = chData.name;
                 
@@ -1214,7 +1278,11 @@
                 setToggle('override_msg', chData.override_thread_messages);
                 setToggle('allow_threads', chData.allow_threads);
             } else {
-                const thData = chData.threads ? chData.threads.find(t=>t.id==selectedMenuThread) : null;
+                const thData = chData.threads ? chData.threads.find(t => t.id == selectedMenuThread) : null;
+                settingsData = {
+                    allow_messages: thData ? thData.allow_messages : 1
+                };
+        
                 document.getElementById('settings-title').innerText = `Настройки ветки`;
                 document.getElementById('set-name').value = thData ? thData.name : '';
                 
@@ -1252,6 +1320,46 @@
                 if(targetType === 'channel') switchChannel(selectedMenuChannel, currentThread, false);
             } else {
                 alert(res.detail || "Ошибка сохранения");
+            }
+        }
+
+        async function confirmAction(action) {
+            let message = "";
+            if (action === 'clear_messages') message = "Вы уверены, что хотите очистить ВСЕ сообщения?";
+            if (action === 'delete_threads') message = "Вы уверены, что хотите удалить ВСЕ ветки канала?";
+            if (action === 'close_thread') message = "Вы уверены, что хотите закрыть и скрыть эту ветку навсегда?";
+            if (action === 'delete_target') message = `Вы уверены, что хотите удалить этот ${targetType === 'channel' ? 'канал' : 'ветку'}?`;
+        
+            // Вызываем стандартный диалог подтверждения (или откройте свое кастомное 2-е модальное окно)
+            if (!confirm(message)) return;
+        
+            let url = "";
+            let method = "DELETE";
+        
+            if (action === 'clear_messages') {
+                url = targetType === 'channel' 
+                    ? `channels/${selectedMenuChannel}/messages` 
+                    : `channels/${selectedMenuChannel}/threads/${selectedMenuThread}/messages`;
+            } else if (action === 'delete_threads') {
+                url = `channels/${selectedMenuChannel}/threads`;
+            } else if (action === 'close_thread' || action === 'delete_target') {
+                url = targetType === 'channel' 
+                    ? `channels/${selectedMenuChannel}` 
+                    : `channels/${selectedMenuChannel}/threads/${selectedMenuThread}`;
+            }
+        
+            const res = await api(url, method);
+            if (res && (res.status === 'DELETED' || res.status === 'SUCCESS' || !res.error)) {
+                alert("Действие успешно выполнено!");
+                closeModals();
+                if (action === 'delete_target' || action === 'close_thread') {
+                    switchChannel('global');
+                } else {
+                    loadChannels();
+                    loadMessages(true);
+                }
+            } else {
+                alert(res.detail || "Произошла ошибка при выполнении действия.");
             }
         }
     </script>
