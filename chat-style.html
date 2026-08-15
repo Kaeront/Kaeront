@@ -11,7 +11,7 @@
 
     <meta property="og:url" content="https://kaeront.ru/chat" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" Kaeront | Чат" />
+    <meta property="og:title" content="Kaeront | Чат" />
     <meta property="og:description" content="Центр общения пользователей и игроков Kaeront. Создавайте каналы, обсуждайте темы и общайтесь из Minecraft и kaeront.ru/chat." />
 
     <meta name="twitter:card" content="summary_small_image" />
@@ -22,13 +22,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Инициализация проверки стриминг-режима до загрузки остальных скриптов
         const urlParams = new URLSearchParams(window.location.search);
         const isStreaming = urlParams.has('streaming');
         const isCompactStreaming = urlParams.get('streaming') === 'compact';
 
         if (!isStreaming) {
-            // Загружаем global.js только в обычном режиме
             const globalScript = document.createElement('script');
             globalScript.src = "/assets/global.js";
             document.head.appendChild(globalScript);
@@ -58,7 +56,7 @@
 
         /* Sidebar */
         #sidebar { width: 270px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #27272a; height: 100vh; z-index: 20; transition: transform 0.25s ease; }
-        .sidebar-header { padding: 10px 20px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-evenly; align-items: center; font-family: 'Minecraft', 'Uniform Upper', sans-serif; }
+        .sidebar-header { padding: 10px 20px; border-bottom: 1px solid #27272a; display: flex; justify-content: space-between; align-items: center; font-family: 'Minecraft', 'Uniform Upper', sans-serif; }
         .channels-scroll { flex: 1; overflow-y: auto; padding: 10px; }
         .channels-scroll::-webkit-scrollbar { width: 5px; }
         .channels-scroll::-webkit-scrollbar-thumb { background-color: #222; border-radius: 5px; }
@@ -78,8 +76,8 @@
         .channel-btn:hover .channel-more-btn { opacity: 1; }
         .channel-more-btn:hover { color: #fff; background: #3f3f46; }
 
-        .chat-dropdown-menu { display: flex !important; position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
-        .chat-dropdown-menu.active { opacity: 1; visibility: visible; }
+        .chat-dropdown-menu { position: absolute; background: #18181b; border: 1px solid #27272a; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 100; display: none; flex-direction: column; width: auto; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
+        .chat-dropdown-menu.active { display: flex !important; opacity: 1; visibility: visible; }
         .chat-dropdown-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: transparent; border: none; color: #e4e4e7; font-size: 0.75rem; cursor: pointer; text-align: left; transition: background 0.15s; font-family: 'Minecraft', sans-serif; }
         .chat-dropdown-item:hover { background: #27272a; color: #fff; }
         .chat-dropdown-item p { font-size: 20px; font-family: 'Uniform Upper'; }
@@ -136,15 +134,15 @@
 
         .create-btn { background: none; border: none; color: var(--accent); font-family: 'Minecraft'; cursor: pointer; font-size: 1.4rem; line-height: 1; display: none; }
 
-        /* Модалка Стриминга */
-        .modal-overlay { display: flex !important; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
+        /* Модальные окна */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.15s, visibility 0.15s; }
+        .modal-overlay.active { display: flex !important; opacity: 1; visibility: visible; }
         .modal-card { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.15s; }
         .modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 4px; font-family: 'Minecraft', sans-serif; }
+        .modal-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 8px; font-family: 'Minecraft', sans-serif; }
         .modal-desc { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 16px; line-height: 1.4; }
-        .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
-        .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
+        .modal-input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .modal-input-group input { background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
 
         /* Дополнения к CSS */
         .sidebar-section-header { 
@@ -160,16 +158,11 @@
         .sidebar-section.open .sidebar-section-content { display: block; }
         .sidebar-section.open .arrow { transform: rotate(90deg); }
         
-        /* Стили веток */
         .thread-btn { 
             margin-left: 15px; width: calc(100% - 15px); padding: 4px 10px; border-left: 2px solid #27272a; 
             border-radius: 0 10px 10px 0; font-size: 0.85rem; 
         }
-        .thread-btn::before {
-            content: '└'; position: absolute; left: -12px; color: #3f3f46; font-family: monospace;
-        }
         
-        /* Модальные окна */
         .settings-modal { max-width: 500px; }
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #27272a; }
         .settings-row:last-child { border-bottom: none; }
@@ -177,7 +170,6 @@
         .settings-title { font-size: 0.9rem; color: #fff; font-family: 'Minecraft', sans-serif; }
         .settings-desc { font-size: 0.7rem; color: #71717a; line-height: 1.3; }
         
-        /* Кастомные переключатели */
         .custom-toggle { 
             display: flex; background: #09090b; border: 1px solid #27272a; border-radius: 6px; overflow: hidden; 
         }
@@ -191,7 +183,6 @@
         .btn-danger { background: #ef4444; color: #fff; width: 100%; margin-bottom: 8px; }
         .btn-danger:hover { background: #dc2626; }
         
-        /* Кнопка корзины у сообщения */
         .msg-delete-btn { opacity: 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; margin-left: 10px; transition: 0.2s; }
         .msg-row:hover .msg-delete-btn { opacity: 1; }
 
@@ -210,7 +201,6 @@
         body.streaming-mode #messages-list { gap: 6px; }
         body.streaming-mode .date-divider { margin: 0; }
 
-        /* Стриминг Компактный Режим (?streaming=compact) */
         body.streaming-mode.compact { font-size: 0.8rem; }
         body.streaming-mode.compact .msg-avatar,
         body.streaming-mode.compact .msg-source,
@@ -280,9 +270,7 @@
         <p style="max-width: 80vw; font-size: clamp(1.5vh, 1.2vw, 1.2vw); line-height: 1.6; color: #888; ">Для корректной работы сайта kaeront.ru, стабильного отображения контента, анимаций и переходов необходимо включить поддержку JavaScript на вашем браузере. Без него большинство функций будет недоступно. Данное предупреждение скрыть невозможно, из-за не работы скриптов, как раз таки.<br>¯\_(ツ)_/¯</p>
     </div>
     
-    <style>
-        body { overflow: hidden !important; }
-    </style>
+    <style> body { overflow: hidden !important; } </style>
     </noscript>
 
 
@@ -290,7 +278,7 @@
 
     <div id="sidebar">
         <div class="sidebar-header">
-            💬 <b>Kaeront Чат</b>
+            <span>💬 <b>Kaeront Чат</b></span>
             <button id="add-channel-btn" class="create-btn" onclick="openChannelModal()" title="Создать канал">+</button>
         </div>
         <div class="channels-scroll">
@@ -325,6 +313,7 @@
         </div>
 
         <div class="messages-scroll" id="msg-container">
+            <div id="chat-warnings"></div>
             <div class="notice-banner">
                 Отображены последние 100 сообщений, но мы будем увеличивать лимит со временем.
             </div>
@@ -341,6 +330,28 @@
         <button class="chat-dropdown-item" id="ctx-stream" onclick="openStreamModal()"><p>📺</p><span>Стримить...</span></button>
         <button class="chat-dropdown-item" id="ctx-create-thread" onclick="openThreadModal()" style="display:none; color: var(--accent);"><p>➕</p><span>Создать ветку</span></button>
         <button class="chat-dropdown-item" id="ctx-settings" onclick="openSettingsModal()" style="display:none;"><p>⚙️</p><span>Настройки</span></button>
+    </div>
+
+    <!-- Модалка Создания Канала/Ветки -->
+    <div class="modal-overlay" id="create-modal">
+        <div class="modal-card">
+            <div class="modal-title" id="create-modal-title">Создать канал</div>
+            <p id="thread-warning" style="color:#ef4444; font-size:0.8rem; display:none; margin-bottom:10px;">Внимание: Создание веток отключено владельцем канала.</p>
+            <div class="modal-input-group">
+                <div id="create-id-group" style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:0.75rem; color:#a1a1aa;">ID канала (латиница):</label>
+                    <input type="text" id="create-id-input" placeholder="например: my-channel">
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:0.75rem; color:#a1a1aa;">Название:</label>
+                    <input type="text" id="create-name-input" placeholder="Мой канал">
+                </div>
+            </div>
+            <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeModals()">Отмена</button>
+                <button class="btn" onclick="submitCreation()">Создать</button>
+            </div>
+        </div>
     </div>
 
     <!-- Модалка Настроек -->
@@ -377,7 +388,7 @@
             <div class="settings-row" id="row-allow-threads">
                 <div class="settings-label">
                     <span class="settings-title">Разрешить создание веток</span>
-                    <span class="settings-desc">Раннее созданные ветки останутся.</span>
+                    <span class="settings-desc">Ранее созданные ветки останутся.</span>
                 </div>
                 <div class="custom-toggle" id="toggle-allow-threads">
                     <button class="toggle-btn" data-val="0">❌</button>
@@ -393,7 +404,7 @@
                 <button class="btn btn-danger" onclick="confirmAction('delete_target')">Удалить <span id="del-target-name"></span></button>
             </div>
     
-            <div style="text-align: right; margin-top: 15px;">
+            <div style="text-align: right; margin-top: 15px; display:flex; gap:10px; justify-content:flex-end;">
                 <button class="btn" style="background:#27272a; color:#fff;" onclick="closeModals()">Отмена</button>
                 <button class="btn" onclick="saveSettings()">Сохранить</button>
             </div>
@@ -405,11 +416,11 @@
         <div class="modal-card">
             <div class="modal-title">Виджет для стриминга</div>
             <div class="modal-desc">Вставьте эту ссылку в качестве источника браузера (Browser Source) в вашей программе для стримов. Чат будет иметь прозрачный фон и сфокусирован только на получаемых сообщениях.</div>
-            <div class="modal-input-group">
-                <input type="text" id="stream-url-input" readonly>
+            <div class="modal-input-group" style="flex-direction:row;">
+                <input type="text" id="stream-url-input" readonly style="flex:1;">
                 <button class="btn" onclick="copyStreamUrl()">Копировать</button>
             </div>
-            <div class="modal-desc">Если вам не понравились большие зазоры, аватарки или просто хотите более компактный вид, то после "?streaming" добавьте "=compact" (без кавычек).</div>
+            <div class="modal-desc">Для компактного вида после "?streaming" добавьте "=compact" (...?streaming=compact).</div>
             <div style="text-align: right;">
                 <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeStreamModal()">Закрыть</button>
             </div>
@@ -417,7 +428,6 @@
     </div>
 
     <script>
-        // Инициализация спец-режимов
         if (isStreaming) {
             document.body.classList.add('streaming-mode');
             if (isCompactStreaming) {
@@ -425,7 +435,6 @@
             }
         }
 
-        // SW регистрируется только в стандартном режиме
         if (!isStreaming && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').then((reg) => {
                 console.log('SW зарегистрирован:', reg);
@@ -444,7 +453,6 @@
         let currentUserId = null;
         let currentUserName = null;
 
-        // Расшифровка JWT для определения собственного пользователя
         if (token) {
             try {
                 const base64Url = token.split('.')[1];
@@ -466,13 +474,12 @@
         let channelsCache = [];
         let channelCacheMap = {};
         let selectedMenuChannel = null;
+        let selectedMenuThread = null;
 
         let pinnedChannels = [];
         let listenedChannels = [];
 
-        // 1. Функция конвертации ключа
         function urlB64ToUint8Array(base64String) {
-            // Убираем PEM-заголовки, пробелы и переносы строк, если они случайно попали
             const pemHeader = "-----BEGIN PUBLIC KEY-----";
             const pemFooter = "-----END PUBLIC KEY-----";
             let b64Clean = base64String.replace(pemHeader, "").replace(pemFooter, "").replace(/[\r\n\s]/g, "");
@@ -518,9 +525,8 @@
             });
         }
 
-        // Hard-урезанный звук в streaming режимах
         function playNotificationSound() {
-            if (isStreaming) return; // Урезан под нуль
+            if (isStreaming) return;
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
@@ -565,9 +571,8 @@
                 }
             }
 
-            const initialChannel = getChannelFromUrl();
-            switchChannel(initialChannel, false);
-            setInterval(() => loadMessages(false), 1500);
+            const initialRoute = getChannelFromUrl();
+            await switchChannel(initialRoute.ch, initialRoute.th, false);
 
             if (!isStreaming) {
                 document.addEventListener('click', (e) => {
@@ -615,10 +620,16 @@
         }
 
         async function loadChannels() {
-            if (isStreaming) return; // Не тратим ресурс на прорисовку сайдбара
+            if (isStreaming) return;
             const data = await api('channels');
             if(!data.channels) return;
             channelsCache = data.channels;
+
+            // Наполнение карты кэша каналов!
+            channelCacheMap = {};
+            data.channels.forEach(ch => {
+                channelCacheMap[ch.id] = ch;
+            });
 
             const pinnedSection = document.getElementById('pinned-section');
             const pinnedDiv = document.getElementById('pinned-channels');
@@ -675,36 +686,39 @@
 
         function toggleContextMenu(e, channelId, threadId = null) {
             if (isStreaming) return;
-            e.stopPropagation();
+            if (e && e.stopPropagation) e.stopPropagation();
+            
             selectedMenuChannel = channelId;
-            let selectedMenuThread = threadId;
+            selectedMenuThread = threadId;
             targetType = threadId ? 'thread' : 'channel';
         
             const menu = document.getElementById('chat-context-menu');
             const chData = channelCacheMap[channelId];
-            const isCreator = currentUserId === chData.created_by;
+            const isCreator = chData && (currentUserId === chData.created_by);
             
-            // Сброс видимости кнопок
             document.getElementById('ctx-create-thread').style.display = 'none';
             document.getElementById('ctx-settings').style.display = 'none';
         
-            if (!threadId && channelId !== 'global') {
-                if (chData.allow_threads === 1 || isCreator) {
-                    document.getElementById('ctx-create-thread').style.display = 'flex';
-                }
-                if (isCreator) {
-                    document.getElementById('ctx-settings').style.display = 'flex';
-                }
-            } else if (threadId) {
-                const thData = chData.threads.find(t=>t.id==threadId);
-                if (isCreator || currentUserId === thData.created_by) {
-                    document.getElementById('ctx-settings').style.display = 'flex';
+            if (chData) {
+                if (!threadId && channelId !== 'global') {
+                    if (chData.allow_threads === 1 || isCreator) {
+                        document.getElementById('ctx-create-thread').style.display = 'flex';
+                    }
+                    if (isCreator) {
+                        document.getElementById('ctx-settings').style.display = 'flex';
+                    }
+                } else if (threadId && chData.threads) {
+                    const thData = chData.threads.find(t => t.id == threadId);
+                    if (isCreator || (thData && currentUserId === thData.created_by)) {
+                        document.getElementById('ctx-settings').style.display = 'flex';
+                    }
                 }
             }
         
-            const rect = e.target.getBoundingClientRect();
+            const targetEl = e.currentTarget || e.target;
+            const rect = targetEl.getBoundingClientRect();
             menu.style.top = `${rect.bottom + window.scrollY}px`;
-            menu.style.left = `${rect.left + window.scrollX - 110}px`;
+            menu.style.left = `${Math.max(10, rect.left + window.scrollX - 110)}px`;
             menu.classList.add('active');
         }
 
@@ -722,7 +736,7 @@
 
         async function toggleListenChannel() {
             if (!selectedMenuChannel || isStreaming) return;
-            const cleanChan = selectedMenuChannel.lstrip ? selectedMenuChannel.lstrip('#') : selectedMenuChannel.replace(/^#/, '');
+            const cleanChan = selectedMenuChannel.replace(/^#/, '');
             if (listenedChannels.includes(selectedMenuChannel) || listenedChannels.includes(cleanChan)) {
                 listenedChannels = listenedChannels.filter(id => id !== selectedMenuChannel && id !== cleanChan);
             } else {
@@ -760,8 +774,14 @@
 
         function updateHeaderInfo() {
             if (isStreaming) return;
-            const chData = channelsCache.find(c => c.id === currentChannel);
-            document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; padding-left: 6px; border-left: 1px solid #71717a;">/${currentChannel}</span>`;
+            const chData = channelCacheMap[currentChannel] || channelsCache.find(c => c.id === currentChannel);
+            
+            if (chData) {
+                document.getElementById('header-channel-name').innerHTML = `# ${chData.name}<span style="font-size: 0.85em; color: #71717a; font-weight: 400; padding-left: 6px; border-left: 1px solid #71717a;">/${currentChannel}</span>`;
+            } else {
+                document.getElementById('header-channel-name').innerText = `# ${currentChannel}`;
+            }
+
             const creatorInfoDiv = document.getElementById('header-creator-info');
             
             if (chData && chData.created_by_name && chData.id !== 'global') {
@@ -779,10 +799,15 @@
         }
 
         async function loadMessages(isChannelSwitch = false) {
+            if (!currentChannel) return;
             const list = document.getElementById('messages-list');
             if (isChannelSwitch) list.classList.add('loading');
 
-            const data = await api(`channels/${currentChannel}/messages`);
+            const urlPath = currentThread 
+                ? `channels/${currentChannel}/threads/${currentThread}/messages`
+                : `channels/${currentChannel}/messages`;
+
+            const data = await api(urlPath);
             if (!data.messages) {
                 if (isChannelSwitch) list.classList.remove('loading');
                 return;
@@ -842,7 +867,6 @@
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
 
-            // Обработка звука и уведов ТОЛЬКО если НЕ streaming-режим
             if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
                 let lastMsg = null;
@@ -854,14 +878,12 @@
                 });
             
                 if (hasNew && lastMsg) {
-                    // Проверка отсечения собственных сообщений (от самого себя)
                     const isSelfMessage = (currentUserId && lastMsg.author_uuid === currentUserId) || 
                                           (currentUserName && lastMsg.author_name === currentUserName);
 
                     const msgChannel = lastMsg.channel_id || currentChannel;
                     const isTargetChannel = (msgChannel === currentChannel) || listenedChannels.includes(msgChannel);
 
-                    // Уведомляем и воспроизводим звук ТОЛЬКО если сообщение чужое
                     if (isTargetChannel && !isSelfMessage) {
                         playNotificationSound();
 
@@ -895,13 +917,17 @@
         }
 
         async function sendMsg() {
-            if (isStreaming) return;
+            if (isStreaming || !currentChannel) return;
             const input = document.getElementById('msg-input');
             if(!input) return;
             const content = input.value.trim();
             if (!content) return;
 
-            const res = await api(`channels/${currentChannel}/messages`, 'POST', { content, source: 'site' });
+            const urlPath = currentThread 
+                ? `channels/${currentChannel}/threads/${currentThread}/messages`
+                : `channels/${currentChannel}/messages`;
+
+            const res = await api(urlPath, 'POST', { content, source: 'site' });
             if (res.detail) {
                 alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
                 return;
@@ -916,25 +942,11 @@
             if(!confirm("Вы уверены, что хотите удалить своё сообщение?")) return;
             const res = await api(`messages/${msgId}`, 'DELETE');
             if(res.status === "DELETED") {
-                lastMessagesHash = ""; // форсируем обновление
+                lastMessagesHash = "";
                 await loadMessages(true);
             } else {
                 alert(res.detail || "Ошибка удаления");
             }
-        }
-
-        async function createChannelPrompt() {
-            if (isStreaming) return;
-            if (!token) return alert("Создавать каналы могут только авторизованные пользователи! Пройдите авторизацию на kaeront.ru/login");
-            const id = prompt("Придумайте ID для нового канала используя латинские буквы, цифры, _ и -\n\n⚠️ Вы потом не сможете его изменить!");
-            if (!id) return;
-
-            const res = await api('channels', 'POST', { id });
-            if (res.error) return alert("Ошибка сети или API.");
-            if (res.detail) return alert(typeof res.detail === 'string' ? res.detail : JSON.stringify(res.detail));
-            if (!res.channel_id) return alert("Сервер не вернул ID канала.");
-            
-            switchChannel(res.channel_id);
         }
 
         function getAvatarUrl(uuid, username) {
@@ -968,84 +980,96 @@
 
         function getChannelFromUrl() {
             const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-            const parts = path.replace('chat/', '').split('/');
-            if (parts.length === 0 || parts[0] === 'chat' || parts[0] === '') return { ch: 'global', th: null };
-            return { ch: parts[0].toLowerCase(), th: parts.length > 1 ? parts[1] : null };
+            const parts = path.split('/');
+            
+            if (parts.length <= 1 || parts[0] !== 'chat') {
+                return { ch: 'global', th: null };
+            }
+            
+            return { 
+                ch: parts[1] ? decodeURIComponent(parts[1]).toLowerCase() : 'global', 
+                th: parts[2] ? decodeURIComponent(parts[2]) : null 
+            };
         }
 
-        // Перезапись switchChannel для поддержки 404 и веток
         async function switchChannel(chId, thId = null, pushHistory = true) {
+            if (typeof chId === 'object' && chId !== null) {
+                thId = chId.th || chId.thread || null;
+                chId = chId.ch || chId.channel || 'global';
+            }
+
             currentChannel = chId;
             currentThread = thId;
             lastMessagesHash = "";
-        
+
             if (pushHistory && !isStreaming) {
-                let newPath = chId === 'global' ? '/chat' : `/chat/${chId}`;
-                if (thId) newPath += `/${thId}`;
+                let newPath = chId === 'global' ? '/chat' : `/chat/${encodeURIComponent(chId)}`;
+                if (thId) newPath += `/${encodeURIComponent(thId)}`;
                 history.pushState({ channel: chId, thread: thId }, '', newPath);
             }
-        
+
             if (!isStreaming) {
                 await loadChannels();
                 const inputArea = document.getElementById('input-area-container');
-                
                 const chData = channelCacheMap[chId];
-                
-                // 404 Ошибка (ОСТАНОВКА ЗАПРОСОВ)
-                if (chId !== 'global' && (!chData || (thId && !chData.threads.some(t => t.id == thId)))) {
+
+                if (chId !== 'global' && (!chData || (thId && chData.threads && !chData.threads.some(t => t.id == thId)))) {
                     document.getElementById('header-channel-name').innerText = `/${chId}${thId ? '/'+thId : ''}`;
                     document.getElementById('header-creator-info').innerText = "Не найдено";
                     document.getElementById('messages-list').innerHTML = `
                         <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
-                            <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
+                            <h1 style="font-size: 4rem; margin-bottom: 10px; font-family:'Minecraft',sans-serif;">404</h1>
                             <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал или ветка не существует, скрыта или была удалена.</p>
                             <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
                         </div>
                     `;
                     if (inputArea) inputArea.style.display = 'none';
-                    currentChannel = null; // Блокируем интервал loadMessages
+                    currentChannel = null;
                     return;
                 }
-        
+
                 if (inputArea) inputArea.style.display = 'flex';
                 
-                // Проверка прав и вывод предупреждений
                 let warnings = "";
-                let isCreator = currentUserId === chData.created_by;
-                let isThreadCreator = thId ? currentUserId === chData.threads.find(t=>t.id==thId).created_by : false;
-        
-                if (thId) {
-                    const thread = chData.threads.find(t=>t.id==thId);
-                    if (chData.override_thread_messages === 0 && !isCreator) {
-                        warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка настройками самого канала. Только создатель канала может отправлять сообщения.</div>`;
-                    } else if (thread.allow_messages === 0 && !isCreator && !isThreadCreator) {
-                        warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка. Только создатели могут отправлять сообщения.</div>`;
-                    }
-                } else {
-                    if (chData.allow_messages === 0 && !isCreator) {
-                        warnings = `<div class="notice-banner" style="color:#ef4444">На этом канале запрещена отправка. Только создатель может отправлять сообщения.</div>`;
+                if (chData) {
+                    let isCreator = currentUserId === chData.created_by;
+                    let isThreadCreator = thId && chData.threads ? (chData.threads.find(t=>t.id==thId)?.created_by === currentUserId) : false;
+
+                    if (thId) {
+                        const thread = chData.threads.find(t=>t.id==thId);
+                        if (chData.override_thread_messages === 0 && !isCreator) {
+                            warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка сообщений создателем канала.</div>`;
+                        } else if (thread && thread.allow_messages === 0 && !isCreator && !isThreadCreator) {
+                            warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка.</div>`;
+                        }
+                    } else {
+                        if (chData.allow_messages === 0 && !isCreator) {
+                            warnings = `<div class="notice-banner" style="color:#ef4444">На этом канале запрещена отправка.</div>`;
+                        }
                     }
                 }
                 
-                // Вставка варнинга (нужно добавить div id="chat-warnings" над инпутом)
-                // Если у вас его нет, вставляем прямо в messages-scroll сверху
-                document.getElementById('msg-container').insertAdjacentHTML('afterbegin', warnings);
+                const warnEl = document.getElementById('chat-warnings');
+                if (warnEl) warnEl.innerHTML = warnings;
             }
             
-            if(currentChannel) await loadMessages(true);
+            if (currentChannel) await loadMessages(true);
         }
-        
-        // Заглушка для loadMessages интервала (защита от 404)
+
         setInterval(() => {
             if (currentChannel) loadMessages(false);
         }, 1500);
 
         if (!isStreaming) {
             window.addEventListener('popstate', (e) => {
-                switchChannel(e.state ? e.state.channel : getChannelFromUrl(), false);
+                if (e.state && e.state.channel) {
+                    switchChannel(e.state.channel, e.state.thread || null, false);
+                } else {
+                    const route = getChannelFromUrl();
+                    switchChannel(route.ch, route.th, false);
+                }
             });
 
-            // Фоновая проверка прослушиваемых каналов для оверлея обычных вкладок
             setInterval(async () => {
                 if (!listenedChannels || listenedChannels.length === 0) return;
 
@@ -1076,7 +1100,6 @@
                     }
 
                     if (hasNew && lastMsg) {
-                        // Проверка на собственное сообщение
                         const isSelfMessage = (currentUserId && lastMsg.author_uuid === currentUserId) || 
                                               (currentUserName && lastMsg.author_name === currentUserName);
 
@@ -1098,7 +1121,12 @@
                                         reg.showNotification(notifTitle, notifOptions);
                                     });
                                 } else {
-                                    showLocalNotification(notifTitle, notifOptions, chId);
+                                    const localNotif = new Notification(notifTitle, notifOptions);
+                                    localNotif.onclick = () => {
+                                        window.focus();
+                                        switchChannel(chId);
+                                        localNotif.close();
+                                    };
                                 }
                             }
                         }
@@ -1128,18 +1156,19 @@
             document.getElementById('create-id-group').style.display = 'none';
             
             const chData = channelCacheMap[selectedMenuChannel];
-            if (chData.allow_threads === 0) {
+            if (chData && chData.allow_threads === 0) {
                 document.getElementById('thread-warning').style.display = 'block';
             } else {
                 document.getElementById('thread-warning').style.display = 'none';
             }
             
+            document.getElementById('chat-context-menu').classList.remove('active');
             document.getElementById('create-modal').classList.add('active');
         }
         
         async function submitCreation() {
             const name = document.getElementById('create-name-input').value.trim();
-            if (!name) return alert("Введите имя");
+            if (!name) return alert("Введите название");
         
             if (targetType === 'channel') {
                 const id = document.getElementById('create-id-input').value.trim();
@@ -1155,7 +1184,6 @@
             closeModals();
         }
         
-        // Инициализация кастомных тогглов
         document.querySelectorAll('.custom-toggle').forEach(toggle => {
             toggle.addEventListener('click', (e) => {
                 if(e.target.classList.contains('toggle-btn')) {
@@ -1167,7 +1195,7 @@
         });
         
         function openSettingsModal() {
-            settingsData = {}; // Очистка
+            settingsData = {};
             const modal = document.getElementById('settings-modal');
             const chData = channelCacheMap[selectedMenuChannel];
             
@@ -1182,24 +1210,23 @@
                 document.getElementById('btn-del-threads').style.display = 'block';
                 document.getElementById('btn-close-thread').style.display = 'none';
                 
-                // Установка тогглов (тут нужен хелпер сеттер, для краткости:)
                 setToggle('allow_msg', chData.allow_messages);
                 setToggle('override_msg', chData.override_thread_messages);
                 setToggle('allow_threads', chData.allow_threads);
             } else {
-                // Логика для ветки
-                const thData = chData.threads.find(t=>t.id==selectedMenuThread); // Запоминаем ID в меню
+                const thData = chData.threads ? chData.threads.find(t=>t.id==selectedMenuThread) : null;
                 document.getElementById('settings-title').innerText = `Настройки ветки`;
-                document.getElementById('set-name').value = thData.name;
+                document.getElementById('set-name').value = thData ? thData.name : '';
                 
                 document.getElementById('row-override-msg').style.display = 'none';
                 document.getElementById('row-allow-threads').style.display = 'none';
                 document.getElementById('btn-del-threads').style.display = 'none';
                 document.getElementById('btn-close-thread').style.display = 'block';
                 
-                setToggle('allow_msg', thData.allow_messages);
+                if (thData) setToggle('allow_msg', thData.allow_messages);
             }
             
+            document.getElementById('chat-context-menu').classList.remove('active');
             modal.classList.add('active');
         }
         
