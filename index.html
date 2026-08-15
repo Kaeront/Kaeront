@@ -322,6 +322,7 @@
 
         .status-text-online { color: #55FF55; }
         .status-text-offline { color: #FF5555; }
+        .status-text-dev { color: #FFAA00; }
         .badge-dev { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255, 170, 0, 0.1); border: 1px solid var(--accent); color: var(--accent); font-family: 'Minecraft'; font-size: 0.7rem; margin-top: 15px; }
         .badge-dev span { opacity: 0.8; font-size: 0.7rem; background: var(--accent); color: #000; padding: 2px 4px; }
 
@@ -664,7 +665,7 @@
                 <p>Сердце проекта и центр навигации. Найди друзей в Хабе, начни историю на Survival или стань легендой Мини-игр. Всё начинается здесь.</p>
                 <div class="server-status">
                      <div class="status-dot status-dev"></div>
-                     <span class="status-text-offline">Загрузка...</span>
+                     <span class="status-text-dev">Загрузка...</span>
                 </div>
             </div>
             <div class="server-card" onclick="openModal('modal-survival')">
@@ -672,7 +673,7 @@
                 <p>Основной сервер. Спокойно строй, исследуй и заводи друзей без угрозы гриферства. Мирная атмосфера взаимопомощи.</p>
                 <div class="server-status">
                      <div class="status-dot status-dev"></div>
-                     <span class="status-text-offline">Загрузка...</span>
+                     <span class="status-text-dec">Загрузка...</span>
                 </div>
             </div>
             <div class="server-card" onclick="openModal('modal-bedrock')">
@@ -729,8 +730,8 @@
             <span class="close-btn" onclick="closeModal('modal-survival')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Survival</h2>
                 <div class="server-status">
-                     <div class="status-dot status-offline"></div>
-                     <span class="status-text-offline">Загрузка...</span>
+                     <div class="status-dot status-dev"></div>
+                     <span class="status-text-dev">Загрузка...</span>
                 </div>
             <p style="color: var(--text-dim); line-height: 1.6;">Исследуй бесконечные земли, объединяйся в кланы и строй монументальные базы. Продуманная экономика и уникальные плагины превращают классическое выживание в захватывающую историю твоего успеха.</p>
             <div class="modal-grid">
@@ -757,8 +758,8 @@
             <span class="close-btn" onclick="closeModal('modal-hub')">ЗАКРЫТЬ</span>
             <h2 style="font-family: 'Minecraft'; color: var(--accent);">Kaeront: Hub</h2>
                 <div class="server-status">
-                     <div class="status-dot status-offline"></div>
-                     <span class="status-text-offline">Загрузка...</span>
+                     <div class="status-dot status-dev"></div>
+                     <span class="status-text-dev">Загрузка...</span>
                 </div>
             <p style="color: var(--text-dim); line-height: 1.6;">Главная площадка для общения и старта. Здесь ты найдешь свежие новости, топ-игроков и прямой доступ ко всей экосистеме Kaeront. Залетай на Survival, если готов к долгому пути, или ворвись в Мини-игры для быстрого фана!</p>
             <div class="modal-right">
