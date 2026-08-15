@@ -306,12 +306,9 @@
     <div id="chat-main">
         <div class="chat-header">
             <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)">☰</button>
-            <div class="channel-title-box">
-                <span class="channel-title-name" id="header-channel-name">Загрузка...</span>
-                <div class="channel-creator-info" id="header-creator-info"></div>
-            </div>
+            <div class="channel-title-box" id="chat-header-info"></div>
         </div>
-
+        
         <div class="messages-scroll" id="msg-container">
             <div id="chat-warnings"></div>
             <div class="notice-banner">
@@ -423,6 +420,33 @@
             <div class="modal-desc">Для компактного вида после "?streaming" добавьте "=compact" (...?streaming=compact).</div>
             <div style="text-align: right;">
                 <button class="btn" style="background:#27272a; color:#fff; border-color: #444;" onclick="closeStreamModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно поиска и управления ветками -->
+    <div class="modal-overlay" id="threads-modal" onclick="handleModalOverlayClick(event, 'threads-modal')">
+        <div class="modal-card" style="max-width: 520px; z-index: 1010;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div class="modal-title" style="margin:0;">🧵 Ветки канала</div>
+                <button class="btn" style="padding: 4px 10px; font-size: 1.1rem;" onclick="openThreadModalFromList()">+</button>
+            </div>
+            <input type="text" id="thread-search-input" placeholder="Быстрый поиск по названию..." oninput="filterThreadsList()" style="width: 100%; margin-bottom: 12px;">
+            <div id="threads-search-results" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeModal('threads-modal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно подтверждения из Опасной Зоны -->
+    <div class="modal-overlay" id="confirm-modal" style="z-index: 1050;" onclick="handleModalOverlayClick(event, 'confirm-modal')">
+        <div class="modal-card" style="max-width: 420px; border: 1px solid #ef4444;">
+            <div class="modal-title" style="color: #ef4444;">⚠️ Подтверждение действия</div>
+            <p class="modal-desc" id="confirm-modal-text" style="color: #e4e4e7; margin-top: 10px;"></p>
+            <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; margin-top: 20px;">
+                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeModal('confirm-modal')">Отмена</button>
+                <button class="btn btn-danger" id="confirm-modal-action-btn">Выполнить</button>
             </div>
         </div>
     </div>
@@ -1361,6 +1385,233 @@
             } else {
                 alert(res.detail || "Произошла ошибка при выполнении действия.");
             }
+        }
+
+        // Кэш веток текущего канала для моментального поиска
+        let currentChannelThreadsCache = [];
+        let pendingDangerAction = null;
+        
+        // Закрытие кликом мимо модали (только той, на которую кликнули)
+        function handleModalOverlayClick(event, modalId) {
+            if (event.target.id === modalId) {
+                closeModal(modalId);
+            }
+        }
+        
+        function closeModal(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) el.classList.remove('active');
+        }
+        
+        // Обновление шапки под стиль Discord с точной иерархией
+        function updateHeaderInfo() {
+            if (isStreaming) return;
+            const chData = channelCacheMap[currentChannel] || channelsCache.find(c => c.id === currentChannel);
+            const headerBox = document.getElementById('chat-header-info');
+            if (!headerBox) return;
+        
+            if (currentThread && chData && chData.threads) {
+                const thData = chData.threads.find(t => t.id == currentThread);
+                const threadCreator = thData ? (thData.created_by_name || 'Неизвестно') : 'Неизвестно';
+                const threadCreatorUuid = thData ? thData.created_by : null;
+        
+                headerBox.innerHTML = `
+                    <div style="font-size: 0.72rem; color: #71717a; font-family: 'Minecraft', sans-serif;">
+                        # ${escapeHtml(chData.name)} <span style="font-size:0.65rem; color:#52525b;">/${currentChannel}</span>
+                    </div>
+                    <div class="channel-title-name" style="font-size: 1.05rem; color: #fff;">
+                        🧵 ${escapeHtml(thData ? thData.name : currentThread)} 
+                        <span style="font-size:0.75rem; color:#71717a; font-weight:normal;">/${currentThread}</span>
+                    </div>
+                    <div class="channel-creator-info">
+                        Создатель ветки: 
+                        <img src="${getAvatarUrl(threadCreatorUuid, threadCreator)}" class="channel-creator-avatar" alt="">
+                        <a href="/user/${encodeURIComponent(threadCreator)}" target="_blank" class="creator-link">${escapeHtml(threadCreator)}</a>
+                    </div>
+                `;
+            } else if (chData) {
+                const isSystem = chData.id === 'global' || !chData.created_by_name;
+                const creatorName = isSystem ? 'Система' : chData.created_by_name;
+        
+                headerBox.innerHTML = `
+                    <div class="channel-title-name">
+                        # ${escapeHtml(chData.name)}
+                        <span style="font-size: 0.8em; color: #71717a; font-weight: normal; padding-left: 6px; border-left: 1px solid #3f3f46;">/${currentChannel}</span>
+                    </div>
+                    <div class="channel-creator-info">
+                        ${isSystem ? 'Официальный системный канал' : `
+                            Создатель: 
+                            <img src="${getAvatarUrl(chData.created_by, creatorName)}" class="channel-creator-avatar" alt="">
+                            <a href="/user/${encodeURIComponent(creatorName)}" target="_blank" class="creator-link">${escapeHtml(creatorName)}</a>
+                        `}
+                    </div>
+                `;
+            }
+        }
+        
+        // Открытие списка веток и кэширование
+        function openThreadsModal(channelId) {
+            selectedMenuChannel = channelId || currentChannel;
+            const chData = channelCacheMap[selectedMenuChannel];
+            currentChannelThreadsCache = (chData && chData.threads) ? chData.threads : [];
+        
+            document.getElementById('thread-search-input').value = '';
+            filterThreadsList();
+            document.getElementById('chat-context-menu').classList.remove('active');
+            document.getElementById('threads-modal').classList.add('active');
+        }
+        
+        function filterThreadsList() {
+            const query = document.getElementById('thread-search-input').value.toLowerCase().trim();
+            const container = document.getElementById('threads-search-results');
+            container.innerHTML = '';
+        
+            const filtered = currentChannelThreadsCache.filter(t => t.name.toLowerCase().includes(query));
+        
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="color:#71717a; text-align:center; padding:15px; font-size:0.85rem;">Ветки не найдены</div>`;
+                return;
+            }
+        
+            filtered.forEach(th => {
+                const item = document.createElement('div');
+                item.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#09090b; border:1px solid #27272a; border-radius:8px; cursor:pointer;";
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold; color:#fff; font-size:0.85rem;">🧵 ${escapeHtml(th.name)}</div>
+                        <div style="font-size:0.7rem; color:#71717a;">ID: ${th.id}</div>
+                    </div>
+                    <button class="btn" style="padding:4px 10px; font-size:0.75rem;">Перейти</button>
+                `;
+                item.onclick = () => {
+                    closeModal('threads-modal');
+                    switchChannel(selectedMenuChannel, th.id);
+                };
+                container.appendChild(item);
+            });
+        }
+        
+        function openThreadModalFromList() {
+            openThreadModal();
+        }
+        
+        // Показ предупреждений и информационных сообщений для Создателя
+        function checkChannelPermissionsAndWarnings(chData, thId) {
+            const warnEl = document.getElementById('chat-warnings');
+            const threadWarnEl = document.getElementById('thread-warning');
+            if (!warnEl) return;
+        
+            let warnings = "";
+            let isCreator = chData && (currentUserId === chData.created_by);
+        
+            if (chData) {
+                let isThreadCreator = thId && chData.threads ? (chData.threads.find(t => t.id == thId)?.created_by === currentUserId) : false;
+        
+                // Предупреждение о сообщениях
+                if (thId) {
+                    const thread = chData.threads.find(t => t.id == thId);
+                    if (chData.override_thread_messages === 0) {
+                        if (isCreator) {
+                            warnings = `<div class="notice-banner" style="color:#f59e0b; border-color:#f59e0b;">👑 Отправка сообщений в ветках отключена, но вам разрешено отправлять как владельцу канала.</div>`;
+                        } else {
+                            warnings = `<div class="notice-banner" style="color:#ef4444; border-color:#ef4444;">На этой ветке запрещена отправка сообщений создателем канала.</div>`;
+                        }
+                    } else if (thread && thread.allow_messages === 0) {
+                        if (isCreator || isThreadCreator) {
+                            warnings = `<div class="notice-banner" style="color:#f59e0b; border-color:#f59e0b;">👑 Отправка сообщений отключена, но вы можете писать как создатель.</div>`;
+                        } else {
+                            warnings = `<div class="notice-banner" style="color:#ef4444; border-color:#ef4444;">На этой ветке запрещена отправка сообщений.</div>`;
+                        }
+                    }
+                } else {
+                    if (chData.allow_messages === 0) {
+                        if (isCreator) {
+                            warnings = `<div class="notice-banner" style="color:#f59e0b; border-color:#f59e0b;">👑 Сообщения в канале отключены, но вам разрешено писать как создателю.</div>`;
+                        } else {
+                            warnings = `<div class="notice-banner" style="color:#ef4444; border-color:#ef4444;">На этом канале запрещена отправка сообщений.</div>`;
+                        }
+                    }
+                }
+        
+                // Предупреждение в модальном окне создания ветки
+                if (threadWarnEl) {
+                    if (chData.allow_threads === 0) {
+                        if (isCreator) {
+                            threadWarnEl.style.display = 'block';
+                            threadWarnEl.style.color = '#f59e0b';
+                            threadWarnEl.innerText = "👑 Создание веток отключено для пользователей, но вам разрешено как создателю канала.";
+                        } else {
+                            threadWarnEl.style.display = 'block';
+                            threadWarnEl.style.color = '#ef4444';
+                            threadWarnEl.innerText = "Внимание: Создание веток отключено владельцем канала.";
+                        }
+                    } else {
+                        threadWarnEl.style.display = 'none';
+                    }
+                }
+            }
+            warnEl.innerHTML = warnings;
+        }
+        
+        // Оптимизированное удаление сообщений
+        async function deleteMessage(msgId) {
+            if (!confirm("Вы уверены, что хотите удалить сообщение?")) return;
+            
+            // Мгновенное удаление из DOM для плавностей Discord
+            const msgElement = document.getElementById(`msg-${msgId}`);
+            if (msgElement) msgElement.style.opacity = '0.3';
+        
+            const res = await api(`messages/${msgId}`, 'DELETE');
+            if (res && res.status === "DELETED") {
+                if (msgElement) msgElement.remove();
+                lastMessagesHash = "";
+            } else {
+                if (msgElement) msgElement.style.opacity = '1';
+                alert(res.detail || "Ошибка при удалении сообщения");
+            }
+        }
+        
+        // Вызов наложения подтверждения
+        function confirmAction(action) {
+            let message = "";
+            if (action === 'clear_messages') message = "Вы уверены, что хотите очистить ВСЕ сообщения?";
+            if (action === 'delete_threads') message = "Вы уверены, что хотите удалить ВСЕ ветки этого канала?";
+            if (action === 'close_thread') message = "Вы уверены, что хотите закрыть и скрыть эту ветку навсегда?";
+            if (action === 'delete_target') message = `Вы уверены, что хотите безвозвратно удалить этот ${targetType === 'channel' ? 'канал' : 'ветку'}?`;
+        
+            document.getElementById('confirm-modal-text').innerText = message;
+            
+            const actionBtn = document.getElementById('confirm-modal-action-btn');
+            actionBtn.onclick = async () => {
+                let url = "";
+                if (action === 'clear_messages') {
+                    url = targetType === 'channel' 
+                        ? `channels/${selectedMenuChannel}/messages` 
+                        : `channels/${selectedMenuChannel}/threads/${selectedMenuThread}/messages`;
+                } else if (action === 'delete_threads') {
+                    url = `channels/${selectedMenuChannel}/threads`;
+                } else if (action === 'close_thread' || action === 'delete_target') {
+                    url = targetType === 'channel' 
+                        ? `channels/${selectedMenuChannel}` 
+                        : `channels/${selectedMenuChannel}/threads/${selectedMenuThread}`;
+                }
+        
+                const res = await api(url, 'DELETE');
+                if (res && (res.status === 'DELETED' || res.status === 'SUCCESS' || !res.error)) {
+                    closeModal('confirm-modal');
+                    closeModal('settings-modal');
+                    if (action === 'delete_target' || action === 'close_thread') {
+                        switchChannel('global');
+                    } else {
+                        loadChannels();
+                        loadMessages(true);
+                    }
+                } else {
+                    alert(res.detail || "Произошла ошибка при выполнении действия.");
+                }
+            };
+        
+            document.getElementById('confirm-modal').classList.add('active');
         }
     </script>
 </body>
