@@ -146,32 +146,54 @@
         .modal-input-group { display: flex; gap: 8px; margin-bottom: 20px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; }
         .modal-input-group input { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 10px; border-radius: 10px; color: #fff; font-size: 0.85rem; }
 
-        /* Выпадающие списки (details/summary) */
-        details.sidebar-section summary {
-            list-style: none; /* Скрываем стандартный маркер */
-            cursor: pointer;
-            font-size: 0.75rem; color: #71717a; margin: 15px 5px 5px 5px; font-family: 'Minecraft', sans-serif;
-            display: flex; align-items: center; gap: 5px;
-            user-select: none;
+        /* Дополнения к CSS */
+        .sidebar-section-header { 
+            font-size: 0.75rem; color: #71717a; margin: 15px 5px 5px 5px; 
+            font-family: 'Minecraft', sans-serif; cursor: pointer; display: flex; align-items: center; 
+            user-select: none; transition: color 0.2s;
         }
-        details.sidebar-section summary::-webkit-details-marker { display: none; }
-        details.sidebar-section summary::before {
-            content: '▶'; display: inline-block; font-size: 0.6rem; transition: transform 0.2s;
+        .sidebar-section-header:hover { color: #fff; }
+        .sidebar-section-header .arrow { 
+            display: inline-block; width: 15px; transition: transform 0.2s; font-size: 0.6rem; 
         }
-        details.sidebar-section[open] summary::before { transform: rotate(90deg); }
+        .sidebar-section-content { display: none; }
+        .sidebar-section.open .sidebar-section-content { display: block; }
+        .sidebar-section.open .arrow { transform: rotate(90deg); }
         
-        .thread-btn {
-            padding: 4px 10px 4px 30px; /* Отступ слева для визуальной вложенности */
-            font-size: 0.85rem; color: #a1a1aa; background: transparent; border: none; text-align: left;
-            width: 100%; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        /* Стили веток */
+        .thread-btn { 
+            margin-left: 15px; width: calc(100% - 15px); padding: 4px 10px; border-left: 2px solid #27272a; 
+            border-radius: 0 10px 10px 0; font-size: 0.85rem; 
         }
-        .thread-btn:hover, .thread-btn.active { background: #27272a; color: #fff; }
+        .thread-btn::before {
+            content: '└'; position: absolute; left: -12px; color: #3f3f46; font-family: monospace;
+        }
         
-        /* Сообщения: кнопка удаления */
-        .msg-delete-btn {
-            background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; display: none; margin-left: 10px;
+        /* Модальные окна */
+        .settings-modal { max-width: 500px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #27272a; }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-label { display: flex; flex-direction: column; gap: 4px; flex: 1; padding-right: 15px; }
+        .settings-title { font-size: 0.9rem; color: #fff; font-family: 'Minecraft', sans-serif; }
+        .settings-desc { font-size: 0.7rem; color: #71717a; line-height: 1.3; }
+        
+        /* Кастомные переключатели */
+        .custom-toggle { 
+            display: flex; background: #09090b; border: 1px solid #27272a; border-radius: 6px; overflow: hidden; 
         }
-        .msg-row:hover .msg-delete-btn { display: inline-block; }
+        .toggle-btn { 
+            padding: 6px 12px; background: transparent; border: none; color: #71717a; cursor: pointer; transition: 0.2s; 
+        }
+        .toggle-btn.active { background: var(--accent); color: #000; font-weight: bold; }
+        
+        .danger-zone { margin-top: 20px; border: 1px solid #ef4444; border-radius: 10px; padding: 15px; }
+        .danger-title { color: #ef4444; font-family: 'Minecraft', sans-serif; margin-bottom: 10px; }
+        .btn-danger { background: #ef4444; color: #fff; width: 100%; margin-bottom: 8px; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        /* Кнопка корзины у сообщения */
+        .msg-delete-btn { opacity: 0; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; margin-left: 10px; transition: 0.2s; }
+        .msg-row:hover .msg-delete-btn { opacity: 1; }
 
         /* Стриминг Базовый Режим */
         body.streaming-mode #sidebar,
@@ -269,23 +291,26 @@
     <div id="sidebar">
         <div class="sidebar-header">
             💬 <b>Kaeront Чат</b>
-            <button id="add-channel-btn" class="create-btn" onclick="openCreateModal()" title="Создать канал или ветку">+</button>
+            <button id="add-channel-btn" class="create-btn" onclick="openChannelModal()" title="Создать канал">+</button>
         </div>
-        <div class="channels-scroll" id="channels-container"></div>
-    </div>
-
-    <div class="modal-overlay" id="create-modal">
-        <div class="modal-card">
-            <div class="modal-title" id="create-modal-title">Создание канала</div>
-            <div class="modal-input-group" id="create-id-group">
-                <input type="text" id="create-id-input" placeholder="ID канала (a-z, 0-9, -, _)">
+        <div class="channels-scroll">
+            <div class="sidebar-section open" id="pinned-section" style="display:none;">
+                <div class="sidebar-section-header" onclick="toggleSection(this)">
+                    <span class="arrow">▶</span> — Закреплённые —
+                </div>
+                <div class="sidebar-section-content" id="pinned-channels"></div>
             </div>
-            <div class="modal-input-group">
-                <input type="text" id="create-name-input" placeholder="Название канала">
+            <div class="sidebar-section open">
+                <div class="sidebar-section-header" onclick="toggleSection(this)">
+                    <span class="arrow">▶</span> — Все каналы —
+                </div>
+                <div class="sidebar-section-content" id="active-channels"></div>
             </div>
-            <div style="text-align: right; margin-top: 10px;">
-                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeCreateModal()">Отмена</button>
-                <button class="btn" onclick="submitCreate()">Создать</button>
+            <div class="sidebar-section">
+                <div class="sidebar-section-header" onclick="toggleSection(this)">
+                    <span class="arrow">▶</span> — Старые каналы —
+                </div>
+                <div class="sidebar-section-content" id="old-channels"></div>
             </div>
         </div>
     </div>
@@ -311,21 +336,71 @@
 
     <!-- Context Menu -->
     <div id="chat-context-menu" class="chat-dropdown-menu">
-        <button class="chat-dropdown-item" onclick="togglePinChannel()">
-            <p>📌</p>
-            <span id="pin-text">Закрепить</span>
-        </button>
-        <button class="chat-dropdown-item" onclick="toggleListenChannel()">
-            <p>📢</p>
-            <span id="listen-text">Слушать</span>
-        </button>
-        <button class="chat-dropdown-item" onclick="openStreamModal()">
-            <p>📺</p>
-            <span>Стримить...</span>
-        </button>
+        <button class="chat-dropdown-item" id="ctx-pin" onclick="togglePinChannel()"><p>📌</p><span id="pin-text">Закрепить</span></button>
+        <button class="chat-dropdown-item" id="ctx-listen" onclick="toggleListenChannel()"><p>📢</p><span id="listen-text">Слушать</span></button>
+        <button class="chat-dropdown-item" id="ctx-stream" onclick="openStreamModal()"><p>📺</p><span>Стримить...</span></button>
+        <button class="chat-dropdown-item" id="ctx-create-thread" onclick="openThreadModal()" style="display:none; color: var(--accent);"><p>➕</p><span>Создать ветку</span></button>
+        <button class="chat-dropdown-item" id="ctx-settings" onclick="openSettingsModal()" style="display:none;"><p>⚙️</p><span>Настройки</span></button>
     </div>
 
-    <!-- Modal Streaming -->
+    <!-- Модалка Настроек -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-card settings-modal">
+            <div class="modal-title" id="settings-title">Настройки</div>
+            <br>
+            <div class="settings-row">
+                <div class="settings-label">
+                    <span class="settings-title">Изменить имя</span>
+                </div>
+                <input type="text" id="set-name" style="background:#09090b; border:1px solid #27272a; color:#fff; padding:5px; border-radius:5px;">
+            </div>
+            
+            <div class="settings-row">
+                <div class="settings-label"><span class="settings-title">Разрешить сообщения</span></div>
+                <div class="custom-toggle" id="toggle-allow-msg">
+                    <button class="toggle-btn" data-val="0">❌</button>
+                    <button class="toggle-btn" data-val="1">✔️</button>
+                </div>
+            </div>
+    
+            <div class="settings-row" id="row-override-msg">
+                <div class="settings-label">
+                    <span class="settings-title">Сообщения во всех ветках</span>
+                    <span class="settings-desc">Приоритизированная настройка отправки сообщений для всех веток.</span>
+                </div>
+                <div class="custom-toggle" id="toggle-override-msg">
+                    <button class="toggle-btn" data-val="0">❌</button>
+                    <button class="toggle-btn" data-val="2">/</button>
+                </div>
+            </div>
+    
+            <div class="settings-row" id="row-allow-threads">
+                <div class="settings-label">
+                    <span class="settings-title">Разрешить создание веток</span>
+                    <span class="settings-desc">Раннее созданные ветки останутся.</span>
+                </div>
+                <div class="custom-toggle" id="toggle-allow-threads">
+                    <button class="toggle-btn" data-val="0">❌</button>
+                    <button class="toggle-btn" data-val="1">✔️</button>
+                </div>
+            </div>
+    
+            <div class="danger-zone">
+                <div class="danger-title">Опасная зона</div>
+                <button class="btn btn-danger" onclick="confirmAction('clear_messages')">Очистить сообщения</button>
+                <button class="btn btn-danger" id="btn-del-threads" onclick="confirmAction('delete_threads')">Удалить все ветки</button>
+                <button class="btn btn-danger" id="btn-close-thread" onclick="confirmAction('close_thread')" style="display:none;">Закрыть и скрыть ветку (Навсегда)</button>
+                <button class="btn btn-danger" onclick="confirmAction('delete_target')">Удалить <span id="del-target-name"></span></button>
+            </div>
+    
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="btn" style="background:#27272a; color:#fff;" onclick="closeModals()">Отмена</button>
+                <button class="btn" onclick="saveSettings()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Streaming Modal -->
     <div class="modal-overlay" id="stream-modal">
         <div class="modal-card">
             <div class="modal-title">Виджет для стриминга</div>
@@ -383,11 +458,13 @@
 
         let currentChannel = 'global';
         let currentThread = null;
+        let targetType = 'channel';
         let userHasScrolledUp = false;
         let lastMessagesHash = "";
         let knownMessageIds = new Set();
         let isFirstLoad = true;
         let channelsCache = [];
+        let channelCacheMap = {};
         let selectedMenuChannel = null;
 
         let pinnedChannels = [];
@@ -507,6 +584,8 @@
             userHasScrolledUp = distanceToBottom > 60;
         });
 
+        function toggleSection(headerEl) { headerEl.parentElement.classList.toggle('open'); }
+
         async function api(path, method = 'GET', body = null) {
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -594,18 +673,35 @@
             updateHeaderInfo();
         }
 
-        function toggleContextMenu(e, channelId) {
+        function toggleContextMenu(e, channelId, threadId = null) {
             if (isStreaming) return;
             e.stopPropagation();
             selectedMenuChannel = channelId;
+            let selectedMenuThread = threadId;
+            targetType = threadId ? 'thread' : 'channel';
+        
             const menu = document.getElementById('chat-context-menu');
+            const chData = channelCacheMap[channelId];
+            const isCreator = currentUserId === chData.created_by;
             
-            const isPinned = pinnedChannels.includes(channelId);
-            const isListened = listenedChannels.includes(channelId);
-
-            document.getElementById('pin-text').innerText = isPinned ? 'Открепить' : 'Закрепить';
-            document.getElementById('listen-text').innerText = isListened ? 'Перестать слушать' : 'Слушать';
-
+            // Сброс видимости кнопок
+            document.getElementById('ctx-create-thread').style.display = 'none';
+            document.getElementById('ctx-settings').style.display = 'none';
+        
+            if (!threadId && channelId !== 'global') {
+                if (chData.allow_threads === 1 || isCreator) {
+                    document.getElementById('ctx-create-thread').style.display = 'flex';
+                }
+                if (isCreator) {
+                    document.getElementById('ctx-settings').style.display = 'flex';
+                }
+            } else if (threadId) {
+                const thData = chData.threads.find(t=>t.id==threadId);
+                if (isCreator || currentUserId === thData.created_by) {
+                    document.getElementById('ctx-settings').style.display = 'flex';
+                }
+            }
+        
             const rect = e.target.getBoundingClientRect();
             menu.style.top = `${rect.bottom + window.scrollY}px`;
             menu.style.left = `${rect.left + window.scrollX - 110}px`;
@@ -730,6 +826,7 @@
                                 <a href="${userProfileUrl}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
                                 <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
                                 <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
+                                ${m.author_uuid === currentUserId ? `<button class="msg-delete-btn" onclick="deleteMessage('${m.id}')" title="Удалить">🗑️</button>` : ''}
                             </div>
                             <div class="msg-content">${escapeHtml(m.content)}</div>
                         </div>
@@ -816,9 +913,14 @@
         }
 
         async function deleteMessage(msgId) {
-            if (!confirm("Вы уверены, что хотите удалить это сообщение?")) return;
+            if(!confirm("Вы уверены, что хотите удалить своё сообщение?")) return;
             const res = await api(`messages/${msgId}`, 'DELETE');
-            if (!res.error) loadMessages();
+            if(res.status === "DELETED") {
+                lastMessagesHash = ""; // форсируем обновление
+                await loadMessages(true);
+            } else {
+                alert(res.detail || "Ошибка удаления");
+            }
         }
 
         async function createChannelPrompt() {
@@ -865,51 +967,78 @@
         }
 
         function getChannelFromUrl() {
-            const path = window.location.pathname.replace(/^\/+|\/+$/g, '').split('/');
-            // path: ['chat', 'channel_id', 'thread_id']
-            if (path.length >= 2 && path[0] === 'chat') {
-                const chanId = decodeURIComponent(path[1]).toLowerCase();
-                const threadId = path[2] ? decodeURIComponent(path[2]) : null;
-                return { channel: chanId, thread: threadId };
-            }
-            return { channel: 'global', thread: null };
+            const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+            const parts = path.replace('chat/', '').split('/');
+            if (parts.length === 0 || parts[0] === 'chat' || parts[0] === '') return { ch: 'global', th: null };
+            return { ch: parts[0].toLowerCase(), th: parts.length > 1 ? parts[1] : null };
         }
 
-        async function switchChannel(id, name, pushHistory = true) {
-            currentChannel = chanId;
-            currentThread = threadId;
+        // Перезапись switchChannel для поддержки 404 и веток
+        async function switchChannel(chId, thId = null, pushHistory = true) {
+            currentChannel = chId;
+            currentThread = thId;
             lastMessagesHash = "";
-
-            const chData = channelsCache.find(c => c.id === chanId);
-            
+        
             if (pushHistory && !isStreaming) {
-                const newPath = chanId === 'global' ? '/chat' : (threadId ? `/chat/${chanId}/${threadId}` : `/chat/${chanId}`);
-                history.pushState({ channel: chanId, thread: threadId }, '', newPath);
+                let newPath = chId === 'global' ? '/chat' : `/chat/${chId}`;
+                if (thId) newPath += `/${thId}`;
+                history.pushState({ channel: chId, thread: thId }, '', newPath);
             }
-
-            
-            
+        
             if (!isStreaming) {
                 await loadChannels();
                 const inputArea = document.getElementById('input-area-container');
-                if (inputArea) inputArea.style.display = 'flex';
-
-                if (chanId !== 'global' && channelsCache.length > 0 && !chData) {
-                    document.getElementById('header-channel-name').innerText = `/${chanId}`;
-                    document.getElementById('header-creator-info').innerText = "Канал не найден";
+                
+                const chData = channelCacheMap[chId];
+                
+                // 404 Ошибка (ОСТАНОВКА ЗАПРОСОВ)
+                if (chId !== 'global' && (!chData || (thId && !chData.threads.some(t => t.id == thId)))) {
+                    document.getElementById('header-channel-name').innerText = `/${chId}${thId ? '/'+thId : ''}`;
+                    document.getElementById('header-creator-info').innerText = "Не найдено";
                     document.getElementById('messages-list').innerHTML = `
                         <div style="text-align:center; padding: 60px 20px; color: #ef4444;">
                             <h1 style="font-size: 4rem; margin-bottom: 10px;">404</h1>
-                            <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал или ветка не существует либо была удалена.</p>
+                            <p style="color: #a1a1aa; font-size: 1.1rem; margin-bottom: 25px;">Канал или ветка не существует, скрыта или была удалена.</p>
                             <button class="btn" onclick="switchChannel('global')">Вернуться в #global</button>
                         </div>
                     `;
-                    document.getElementById('input-area-container').style.display = 'none';
-                    return; // БЛОКИРУЕМ дальнейшие запросы!
+                    if (inputArea) inputArea.style.display = 'none';
+                    currentChannel = null; // Блокируем интервал loadMessages
+                    return;
                 }
+        
+                if (inputArea) inputArea.style.display = 'flex';
+                
+                // Проверка прав и вывод предупреждений
+                let warnings = "";
+                let isCreator = currentUserId === chData.created_by;
+                let isThreadCreator = thId ? currentUserId === chData.threads.find(t=>t.id==thId).created_by : false;
+        
+                if (thId) {
+                    const thread = chData.threads.find(t=>t.id==thId);
+                    if (chData.override_thread_messages === 0 && !isCreator) {
+                        warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка настройками самого канала. Только создатель канала может отправлять сообщения.</div>`;
+                    } else if (thread.allow_messages === 0 && !isCreator && !isThreadCreator) {
+                        warnings = `<div class="notice-banner" style="color:#ef4444">На этой ветке запрещена отправка. Только создатели могут отправлять сообщения.</div>`;
+                    }
+                } else {
+                    if (chData.allow_messages === 0 && !isCreator) {
+                        warnings = `<div class="notice-banner" style="color:#ef4444">На этом канале запрещена отправка. Только создатель может отправлять сообщения.</div>`;
+                    }
+                }
+                
+                // Вставка варнинга (нужно добавить div id="chat-warnings" над инпутом)
+                // Если у вас его нет, вставляем прямо в messages-scroll сверху
+                document.getElementById('msg-container').insertAdjacentHTML('afterbegin', warnings);
             }
-            await loadMessages(true);
+            
+            if(currentChannel) await loadMessages(true);
         }
+        
+        // Заглушка для loadMessages интервала (защита от 404)
+        setInterval(() => {
+            if (currentChannel) loadMessages(false);
+        }, 1500);
 
         if (!isStreaming) {
             window.addEventListener('popstate', (e) => {
@@ -977,6 +1106,126 @@
                 }
                 if (isFirstLoad) isFirstLoad = false;
             }, 5000);
+        }
+
+        let settingsData = {};
+        
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+        
+        function openChannelModal() {
+            targetType = 'channel';
+            document.getElementById('create-modal-title').innerText = "Создать канал";
+            document.getElementById('create-id-group').style.display = 'flex';
+            document.getElementById('thread-warning').style.display = 'none';
+            document.getElementById('create-modal').classList.add('active');
+        }
+        
+        function openThreadModal() {
+            targetType = 'thread';
+            document.getElementById('create-modal-title').innerText = "Создать ветку";
+            document.getElementById('create-id-group').style.display = 'none';
+            
+            const chData = channelCacheMap[selectedMenuChannel];
+            if (chData.allow_threads === 0) {
+                document.getElementById('thread-warning').style.display = 'block';
+            } else {
+                document.getElementById('thread-warning').style.display = 'none';
+            }
+            
+            document.getElementById('create-modal').classList.add('active');
+        }
+        
+        async function submitCreation() {
+            const name = document.getElementById('create-name-input').value.trim();
+            if (!name) return alert("Введите имя");
+        
+            if (targetType === 'channel') {
+                const id = document.getElementById('create-id-input').value.trim();
+                if(!id) return alert("Введите ID");
+                const res = await api('channels', 'POST', { id, name });
+                if(res.error || res.detail) return alert(res.detail || "Ошибка");
+                switchChannel(id);
+            } else {
+                const res = await api(`channels/${selectedMenuChannel}/threads`, 'POST', { name });
+                if(res.error || res.detail) return alert(res.detail || "Ошибка");
+                switchChannel(selectedMenuChannel, res.thread_id);
+            }
+            closeModals();
+        }
+        
+        // Инициализация кастомных тогглов
+        document.querySelectorAll('.custom-toggle').forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                if(e.target.classList.contains('toggle-btn')) {
+                    toggle.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    settingsData[toggle.id.replace('toggle-', '').replace(/-/g, '_')] = parseInt(e.target.dataset.val);
+                }
+            });
+        });
+        
+        function openSettingsModal() {
+            settingsData = {}; // Очистка
+            const modal = document.getElementById('settings-modal');
+            const chData = channelCacheMap[selectedMenuChannel];
+            
+            document.getElementById('del-target-name').innerText = targetType === 'channel' ? 'канал' : 'ветку';
+            
+            if (targetType === 'channel') {
+                document.getElementById('settings-title').innerText = `Настройки канала /${chData.id}`;
+                document.getElementById('set-name').value = chData.name;
+                
+                document.getElementById('row-override-msg').style.display = 'flex';
+                document.getElementById('row-allow-threads').style.display = 'flex';
+                document.getElementById('btn-del-threads').style.display = 'block';
+                document.getElementById('btn-close-thread').style.display = 'none';
+                
+                // Установка тогглов (тут нужен хелпер сеттер, для краткости:)
+                setToggle('allow_msg', chData.allow_messages);
+                setToggle('override_msg', chData.override_thread_messages);
+                setToggle('allow_threads', chData.allow_threads);
+            } else {
+                // Логика для ветки
+                const thData = chData.threads.find(t=>t.id==selectedMenuThread); // Запоминаем ID в меню
+                document.getElementById('settings-title').innerText = `Настройки ветки`;
+                document.getElementById('set-name').value = thData.name;
+                
+                document.getElementById('row-override-msg').style.display = 'none';
+                document.getElementById('row-allow-threads').style.display = 'none';
+                document.getElementById('btn-del-threads').style.display = 'none';
+                document.getElementById('btn-close-thread').style.display = 'block';
+                
+                setToggle('allow_msg', thData.allow_messages);
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function setToggle(id, val) {
+            const container = document.getElementById(`toggle-${id.replace(/_/g, '-')}`);
+            if(!container) return;
+            container.querySelectorAll('.toggle-btn').forEach(b => {
+                b.classList.remove('active');
+                if(parseInt(b.dataset.val) === val) b.classList.add('active');
+            });
+        }
+        
+        async function saveSettings() {
+            settingsData.name = document.getElementById('set-name').value;
+            const url = targetType === 'channel' 
+                ? `channels/${selectedMenuChannel}` 
+                : `channels/${selectedMenuChannel}/threads/${selectedMenuThread}`;
+                
+            const res = await api(url, 'PATCH', settingsData);
+            if(res.status === 'UPDATED') {
+                closeModals();
+                loadChannels();
+                if(targetType === 'channel') switchChannel(selectedMenuChannel, currentThread, false);
+            } else {
+                alert(res.detail || "Ошибка сохранения");
+            }
         }
     </script>
 </body>
