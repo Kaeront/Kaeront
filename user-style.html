@@ -257,7 +257,7 @@ async function loadUserProfile() {
                         const formattedDate = regDate.toLocaleString(undefined, {
                             year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         });
-                        registeredText = `<div class="registered-badge">На kaeront.ru с ${formattedDate}</div>`;
+                        registeredText = `<div class="registered-badge">Зарегистрирован на kaeront.ru с ${formattedDate}</div>`;
                     }
                     siteOnline = dbData.site_online ?? false;
                     serverOnline = dbData.server_online ?? false;
@@ -286,7 +286,7 @@ async function loadUserProfile() {
                 ${siteStatusHTML}
                 <div class="status-badge">
                     <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
-                    На сервере: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                    В игре (Kaeront): <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
                 </div>
             </div>
             <div class="profile-actions" id="profile-actions">
