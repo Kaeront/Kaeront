@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kaeront | Профиль</title>
-    <link rel="icon" type="image/png" href="https://kaeront.ru/assets/silhouette.png">
+    <link rel="icon" id="dynamic-favicon" type="image/png" href="https://kaeront.ru/assets/silhouette.png">
     <style>
         .user-container {
             max-width: 1000px;
@@ -269,6 +269,7 @@ async function loadUserProfile() {
         const username = player.username;
         const uuid = player.id;
         const rawId = player.raw_id;
+        updateFavicon(rawId, username);
         const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
         const fullBodyUrl = `https://nmsr.nickac.dev/fullbodyiso/${rawId}`;
         const nameMcUrl = `https://namemc.com/profile/${uuid}`;
@@ -374,6 +375,23 @@ function renderSettingsButton(profileUuid) {
     } catch (e) {
         console.error("Ошибка проверки владельца профиля:", e);
     }
+}
+
+function updateFavicon(rawId, username) {
+    const favicon = document.getElementById('dynamic-favicon');
+    if (!favicon) return;
+
+    // Ссылка на голову игрока
+    const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
+
+    const img = new Image();
+    img.src = avatarUrl;
+
+    // Если загрузилось успешно — меняем иконку
+    img.onload = () => { favicon.href = avatarUrl; };
+
+    // Если ошибка (сервер не ответил или 404) — остается дефолтная silhouette.png
+    img.onerror = () => { console.warn("Не удалось загрузить аватар для favicon, оставлен силуэт."); };
 }
 </script>
 </body>
