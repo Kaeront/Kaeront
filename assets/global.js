@@ -44,7 +44,7 @@ const globalStyles = `
         font-weight: 400;
         font-style: normal;
         font-display: swap;
-        size-adjust: 130%; 
+        size-adjust: 130%;
     }
 
     @font-face {
@@ -53,14 +53,11 @@ const globalStyles = `
         font-weight: 700;
         font-style: normal;
         font-display: swap;
-        size-adjust: 130%; 
+        size-adjust: 130%;
     }
 
     body {
         background-color: var(--bg);
-        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(https://assets.mcasset.cloud/1.16/assets/minecraft/textures/block/basalt_top.png);
-        background-size: 48px;
-        image-rendering: pixelated;
         color: var(--text-main);
         font-family: 'Montserrat', sans-serif;
         margin: 0;
@@ -70,6 +67,24 @@ const globalStyles = `
         min-height: 100vh;
         will-change: padding-top;
         transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 0;
+    }
+    
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/assets/basalt_top.png');
+        background-size: 48px 48px;
+        background-repeat: repeat;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        pointer-events: none; 
     }
 
     body::-webkit-scrollbar {
