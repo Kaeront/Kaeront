@@ -6,11 +6,43 @@
     <link rel="icon" type="image/png" href="https://kaeront.ru/assets/silhouette.png">
     <style>
         .user-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 120px auto 60px;
             padding: 0 20px;
             width: 100%;
             box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .profile-layout-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .fullbody-avatar-container {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullbody-avatar {
+            max-height: 380px;
+            width: auto;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+            transition: transform 0.3s ease;
+        }
+
+        .fullbody-avatar:hover {
+            transform: translateY(-5px);
         }
 
         .user-card {
@@ -24,6 +56,8 @@
             text-align: center;
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            flex-grow: 1;
+            max-width: 520px;
         }
 
         .registered-badge {
@@ -138,6 +172,15 @@
             font-family: 'Minecraft', sans-serif;
             font-size: 0.9rem;
         }
+
+        @media (max-width: 768px) {
+            .profile-layout-wrapper {
+                flex-direction: column;
+            }
+            .fullbody-avatar {
+                max-height: 260px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -237,7 +280,8 @@ async function loadUserProfile() {
         const username = player.username;
         const uuid = player.id;
         const rawId = player.raw_id;
-        const avatarUrl = `https://crafthead.net/avatar/${rawId}/128`;
+        const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
+        const fullBodyUrl = `https://nmsr.nickac.dev/fullbodyiso/${rawId}`;
         const nameMcUrl = `https://namemc.com/profile/${uuid}`;
 
         let registeredText = '';
@@ -277,23 +321,30 @@ async function loadUserProfile() {
 
         card.innerHTML = `
             ${registeredText}
-            <div class="user-avatar-wrapper">
-                <img src="${avatarUrl}" alt="${username}" class="user-avatar">
-            </div>
-            <h1 class="user-name">${username}</h1>
-            <div class="user-uuid">${uuid}</div>
-            <div class="status-container">
-                ${siteStatusHTML}
-                <div class="status-badge">
-                    <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
-                    В игре (Kaeront): <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+            <div class="profile-layout-wrapper">
+                <div class="fullbody-avatar-container">
+                    <img src="${fullBodyUrl}" alt="${username} Fullbody" class="fullbody-avatar">
                 </div>
-            </div>
-            <div class="profile-actions" id="profile-actions">
-                <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                    Посмотреть на NameMC
-                </a>
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    <div class="user-avatar-wrapper">
+                        <img src="${avatarUrl}" alt="${username}" class="user-avatar">
+                    </div>
+                    <h1 class="user-name">${username}</h1>
+                    <div class="user-uuid">${uuid}</div>
+                    <div class="status-container">
+                        ${siteStatusHTML}
+                        <div class="status-badge">
+                            <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
+                            В игре (Kaeront): <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                        </div>
+                    </div>
+                    <div class="profile-actions" id="profile-actions">
+                        <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Посмотреть на NameMC
+                        </a>
+                    </div>
+                </div>
             </div>
         `;
 
