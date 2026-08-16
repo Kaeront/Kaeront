@@ -170,10 +170,10 @@ const globalStyles = `
     }
 
     body:has(#speed-popup.active) {
-        margin-top: 20px !important;
+        margin-top: 20px;
     }
     body:has(#speed-popup.active) nav {
-        margin-top: 20px !important;
+        margin-top: 20px;
     }
 
     /* Стили для кнопки профиля в шапке */
