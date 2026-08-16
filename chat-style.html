@@ -529,7 +529,7 @@
                             <button class="channel-more-btn" onclick="toggleContextMenu(event, '${ch.id}')">⋮</button>
                         </div>
                         <div class="channel-btn-meta">
-                            <img src="${avatarUrl}" alt="" onerror="this.onerror=null; this.src='/assets/silhouette.png';">
+                            <img src="${avatarUrl}" alt="" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
                             <span>${escapeHtml(creatorName)}</span>
                         </div>
                     </div>
@@ -637,7 +637,7 @@
                 const avatarUrl = getAvatarUrl(chData.created_by, chData.created_by_name);
                 creatorInfoDiv.innerHTML = `
                     Создатель: 
-                    <img src="${avatarUrl}" class="channel-creator-avatar" alt="" onerror="this.onerror=null; this.src='/assets/silhouette.png';">
+                    <img src="${avatarUrl}" class="channel-creator-avatar" alt="" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
                     <a href="/user/${encodeURIComponent(chData.created_by_name)}" target="_blank" class="creator-link">
                         ${escapeHtml(chData.created_by_name)}
                     </a>
@@ -688,7 +688,7 @@
                 htmlBuffer += `
                     <div class="msg-row">
                         <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
-                            <img src="${avatarUrl}" class="msg-avatar" alt="${escapeHtml(m.author_name)}" loading="lazy" onerror="this.onerror=null; this.src='/assets/silhouette.png';">
+                            <img src="${avatarUrl}" class="msg-avatar" alt="${escapeHtml(m.author_name)}" loading="lazy" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
                         </a>
                         <div class="msg-body">
                             <div class="msg-header">
@@ -795,13 +795,10 @@
         }
 
         function getAvatarUrl(uuid, username) {
-            if (uuid && uuid !== '00000000-0000-0000-0000-000000000000') {
-                return `https://nmsr.nickac.dev/face/${uuid.replace(/-/g, '')}`;
-            }
-            if (username) {
-                return `https://nmsr.nickac.dev/face/${encodeURIComponent(username)}`;
-            }
-            return `/assets/silhouette.png`;
+            if (username === 'Система') { return '/assets/island.png'; }
+            if (uuid && uuid !== '00000000-0000-0000-0000-000000000000') { return `https://nmsr.nickac.dev/face/${uuid.replace(/-/g, '')}`; }
+            if (username) { return `https://nmsr.nickac.dev/face/${encodeURIComponent(username)}`; }
+            return '/assets/silhouette.png';
         }
 
         function toggleMobileSidebar(open) {
