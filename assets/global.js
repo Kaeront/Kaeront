@@ -258,7 +258,7 @@ const setupHead = () => {
       { property: 'og:title', content: 'Kaeront — сеть уникальных Minecraft-серверов' },
       { property: 'og:description', content: 'Твой новый дом в мире Minecraft. Мы создали это место для дружелюбных, адекватных игроков, совместного творчества и для тех, кто ценит Minecraft как искусство.' },
       { property: 'og:image', content: 'https://kaeront.ru/preview.png' },
-      { property: 'og:logo', content: 'https://kaeront.ru/palm.png' }
+      { property: 'og:logo', content: 'https://kaeront.ru/island.png' }
     ];
 
     metaTags.forEach(tag => {
