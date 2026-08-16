@@ -796,9 +796,9 @@
 
         function getAvatarUrl(uuid, username) {
             if (uuid && uuid !== '00000000-0000-0000-0000-000000000000') {
-                return `https://crafthead.net/avatar/${uuid.replace(/-/g, '')}`;
+                return `https://nmsr.nickac.dev/face/${uuid.replace(/-/g, '')}`;
             }
-            return `https://crafthead.net/avatar/${encodeURIComponent(username || 'Console')}`;
+            return `https://nmsr.nickac.dev/face/${encodeURIComponent(username || 'MHF_Question')}`;
         }
 
         function toggleMobileSidebar(open) {
