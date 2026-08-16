@@ -166,13 +166,12 @@ const globalStyles = `
         font-weight: 400 !important;
     }
     .nav-user-head {
-        width: 24px;
-        height: 24px;
-        border: 1px solid #333;
-        transition: 0.3s;
+        width: 28px;
+        height: 28px;
+        transition: 0.1s transform;
     }
     .nav-user-head:hover {
-        border-color: var(--accent);
+        transform: scale(1.1);
     }
 `;
 
