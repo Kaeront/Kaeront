@@ -147,7 +147,6 @@
         .sidebar-tree-container::-webkit-scrollbar-thumb {
             background-color: #333;
             border-radius: 5px;
-            z-index: 100000;
         }
 
         /* --- УНИВЕРСАЛЬНАЯ СТРУКТУРА ДЕРЕВА --- */
@@ -284,7 +283,8 @@
             overflow-y: auto !important; 
             overflow-x: hidden !important;
             transition: transform 0.35s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+                        opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1),
+                        scrollbar-width 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
             transform-origin: top center !important;
             opacity: 1 !important;
             will-change: transform, opacity;
@@ -292,20 +292,16 @@
             position: relative;
             mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent) !important;
             -webkit-mask-image: linear-gradient(to bottom, transparent, black 40px, black calc(100% - 40px), transparent) !important;
+            scrollbar-width: auto;
         }
 
         #wiki-app::-webkit-scrollbar {
             width: 5px;
-            transition: width 0.35s cubic-bezier(0.215, 0.61, 0.355, 1);
         }
 
         #wiki-app::-webkit-scrollbar-thumb {
             background-color: #333;
             border-radius: 5px;
-        }
-
-        #wiki-app.scale-down::-webkit-scrollbar {
-            width: 0px;
         }
 
         /* --- СОСТОЯНИЕ SCALE-DOWN --- */
@@ -316,6 +312,7 @@
                         opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
             user-select: none;
             pointer-events: none;
+            scrollbar-width: none;
         }
 
         /* Ключевые кадры анимации шиммера */
@@ -391,7 +388,6 @@
         .markdown-body table::-webkit-scrollbar-thumb {
             background-color: #333;
             border-radius: 7px;
-            z-index: 100000;
         }
         .markdown-body img {
             border-radius: 20px !important;
