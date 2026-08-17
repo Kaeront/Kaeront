@@ -79,7 +79,7 @@ const globalStyles = `
         width: 100%;
         height: 100%;
         z-index: -1;
-        background-image: linear-gradient(rgba(0, 3, 0, 0.8)), url('/assets/blackstone_top.png');
+        background-image: linear-gradient(rgba(0, 5, 0, 0.65)), url('/assets/blackstone_top.png');
         background-size: 36px 36px;
         background-repeat: repeat;
         image-rendering: pixelated;
