@@ -386,7 +386,6 @@ async function updateFavicon(rawId, username) {
     if (!favicon) return;
 
     const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
-    const badgeUrl = '/assets/island.png';
 
     const loadImage = (url) => new Promise((resolve, reject) => {
         const img = new Image();
@@ -397,41 +396,30 @@ async function updateFavicon(rawId, username) {
     });
 
     try {
-        const [avatarImg, badgeImg] = await Promise.all([
-            loadImage(avatarUrl),
-            loadImage(badgeUrl)
-        ]);
+        const avatarImg = await loadImage(avatarUrl);
 
         const canvas = document.createElement('canvas');
         canvas.width = 64;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
 
-        // Отключаем сглаживание для эффекта pixelated
         ctx.imageSmoothingEnabled = false;
 
-        // 1. Рисуем голову игрока
-        ctx.drawImage(avatarImg, 0, 0, 64, 64);
-
-        // 2. Рисуем подложку для иконки сайта (фон #fa0 + рамка)
-        const badgeSize = 24;
-        const badgeX = 40;
-        const badgeY = 40;
-        const border = 2;
-
         ctx.fillStyle = '#fa0';
-        ctx.fillRect(badgeX, badgeY, badgeSize, badgeSize);
-        
+        ctx.fillRect(0, 0, 64, 64);
+
         ctx.strokeStyle = '#fa0';
-        ctx.lineWidth = border;
-        ctx.strokeRect(badgeX + border/2, badgeY + border/2, badgeSize - border, badgeSize - border);
+        ctx.lineWidth = 4;
+        ctx.strokeRect(2, 2, 60, 60);
 
-        // 3. Рисуем иконку сайта поверх подложки
-        ctx.drawImage(badgeImg, badgeX + 2, badgeY + 2, badgeSize - 4, badgeSize - 4);
+        // 3. Рисуем голову игрока с небольшим отступом от края
+        ctx.drawImage(avatarImg, 4, 4, 56, 56);
 
+        // Устанавливаем результат как иконку
         favicon.href = canvas.toDataURL('image/png');
 
     } catch (e) {
+        console.warn("Ошибка генерации фавикона, оставлен силуэт.");
         favicon.href = '/assets/silhouette.png';
     }
 }
