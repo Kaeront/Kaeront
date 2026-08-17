@@ -397,7 +397,6 @@ async function updateFavicon(rawId, username) {
 
     try {
         const avatarImg = await loadImage(avatarUrl);
-
         const canvas = document.createElement('canvas');
         canvas.width = 64;
         canvas.height = 64;
@@ -408,18 +407,14 @@ async function updateFavicon(rawId, username) {
         ctx.fillStyle = '#fa0';
         ctx.fillRect(0, 0, 64, 64);
 
+        ctx.drawImage(avatarImg, 4, 4, 56, 56);
+
         ctx.strokeStyle = '#fa0';
         ctx.lineWidth = 4;
         ctx.strokeRect(2, 2, 60, 60);
 
-        // 3. Рисуем голову игрока с небольшим отступом от края
-        ctx.drawImage(avatarImg, 4, 4, 56, 56);
-
-        // Устанавливаем результат как иконку
         favicon.href = canvas.toDataURL('image/png');
-
     } catch (e) {
-        console.warn("Ошибка генерации фавикона, оставлен силуэт.");
         favicon.href = '/assets/silhouette.png';
     }
 }
