@@ -5,6 +5,10 @@
     <title>Kaeront | Профиль</title>
     <link rel="icon" id="dynamic-favicon" type="image/png" href="https://kaeront.ru/assets/silhouette.png">
     <style>
+        :root {
+            --nav-hide: 70px;
+        }
+
         .user-container {
             max-width: 1000px;
             margin: 120px auto 60px;
@@ -325,7 +329,7 @@ async function loadUserProfile() {
                         ${siteStatusHTML}
                         <div class="status-badge">
                             <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
-                            В игре (Kaeront): <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                            В игре на Kaeront: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
                         </div>
                     </div>
                     <div class="profile-actions" id="profile-actions">
