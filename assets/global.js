@@ -80,7 +80,7 @@ const globalStyles = `
         height: 100%;
         z-index: -1;
         background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/assets/basalt_top.png');
-        background-size: 48px 48px;
+        background-size: 36px 36px;
         background-repeat: repeat;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
@@ -131,7 +131,7 @@ const globalStyles = `
     .nav-links a:hover { color: var(--accent); }
     .nav-links a span { display: inline-block; vertical-align: middle; line-height: 1; }
         
-    footer { padding: 60px 20px; background: #050505; border-top: 1px solid #111; margin-top: auto; z-index: 500;}
+    footer { padding: 60px 20px; background: #050505c0; border-top: 1px solid #111; margin-top: auto; z-index: 500;}
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
     .footer-section h4 { font-family: 'Minecraft'; font-size: 0.7rem; color: var(--accent); margin-bottom: 20px; font-weight: 400; }
     .footer-links { list-style: none; padding: 0; margin: 0; }
