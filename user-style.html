@@ -407,18 +407,30 @@ async function updateFavicon(rawId, username) {
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
 
-        // Включаем "пиксельный" режим отрисовки для контекста
+        // Отключаем сглаживание для эффекта pixelated
         ctx.imageSmoothingEnabled = false;
 
         // 1. Рисуем голову игрока
         ctx.drawImage(avatarImg, 0, 0, 64, 64);
 
-        // 2. Рисуем черный фон под иконку (квадрат 34x34 для отступов)
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(30, 30, 34, 34);
-        // 3. Рисуем иконку island.png (32x32)
-        ctx.drawImage(badgeImg, 31, 31, 32, 32);
+        // 2. Рисуем подложку для иконки сайта (фон #fa0 + рамка)
+        const badgeSize = 24;
+        const badgeX = 40;
+        const badgeY = 40;
+        const border = 2;
+
+        ctx.fillStyle = '#fa0';
+        ctx.fillRect(badgeX, badgeY, badgeSize, badgeSize);
+        
+        ctx.strokeStyle = '#fa0';
+        ctx.lineWidth = border;
+        ctx.strokeRect(badgeX + border/2, badgeY + border/2, badgeSize - border, badgeSize - border);
+
+        // 3. Рисуем иконку сайта поверх подложки
+        ctx.drawImage(badgeImg, badgeX + 2, badgeY + 2, badgeSize - 4, badgeSize - 4);
+
         favicon.href = canvas.toDataURL('image/png');
+
     } catch (e) {
         favicon.href = '/assets/silhouette.png';
     }
