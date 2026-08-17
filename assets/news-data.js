@@ -122,7 +122,7 @@ window.allNews = [
                 id: "04-03-2026",
                 date: "4 марта, 2026 года",
                 title: "Мы переименовались в Kaeront: Survival",
-                tags: [{n: "Важное", c: "tag-red"}, {n: "Серверы", c: "tag-blue"}],
+                tags: [{n: "Важное", c: "tag-red"}, {n: "Серверы", c: "tag-blue"}, {n: "AlsasnikS", c: "tag-gold"}, {n: "Kaeront: Survival", c: "tag-gold"}],
                 content: "Мы официально меняем название на <b>Kaeront: Survival</b>. Это решение связано с расширением нашей инфраструктуры и подготовкой к запуску глобальной сети серверов Kaeront."
             },
             {
