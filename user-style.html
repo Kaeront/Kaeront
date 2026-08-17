@@ -388,10 +388,9 @@ async function updateFavicon(rawId, username) {
     const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
     const badgeUrl = '/assets/island.png';
 
-    // Функция загрузки картинки как Promise
     const loadImage = (url) => new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = "anonymous"; // Важно для работы с Canvas
+        img.crossOrigin = "anonymous";
         img.onload = () => resolve(img);
         img.onerror = reject;
         img.src = url;
@@ -407,13 +406,19 @@ async function updateFavicon(rawId, username) {
         canvas.width = 64;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
+
+        // Включаем "пиксельный" режим отрисовки для контекста
+        ctx.imageSmoothingEnabled = false;
+
         // 1. Рисуем голову игрока
         ctx.drawImage(avatarImg, 0, 0, 64, 64);
-        // 2. Рисуем иконку island.png в правом нижнем углу (размер 24x24)
-        ctx.drawImage(badgeImg, 40, 40, 24, 24);
-        // Устанавливаем результат как иконку
-        favicon.href = canvas.toDataURL('image/png');
 
+        // 2. Рисуем черный фон под иконку (квадрат 34x34 для отступов)
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(30, 30, 34, 34);
+        // 3. Рисуем иконку island.png (32x32)
+        ctx.drawImage(badgeImg, 31, 31, 32, 32);
+        favicon.href = canvas.toDataURL('image/png');
     } catch (e) {
         favicon.href = '/assets/silhouette.png';
     }
