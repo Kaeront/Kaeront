@@ -381,21 +381,42 @@ function renderSettingsButton(profileUuid) {
     }
 }
 
-function updateFavicon(rawId, username) {
+async function updateFavicon(rawId, username) {
     const favicon = document.getElementById('dynamic-favicon');
     if (!favicon) return;
 
-    // Ссылка на голову игрока
     const avatarUrl = `https://nmsr.nickac.dev/face/${rawId}`;
+    const badgeUrl = '/assets/island.png';
 
-    const img = new Image();
-    img.src = avatarUrl;
+    // Функция загрузки картинки как Promise
+    const loadImage = (url) => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Важно для работы с Canvas
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
 
-    // Если загрузилось успешно — меняем иконку
-    img.onload = () => { favicon.href = avatarUrl; };
+    try {
+        const [avatarImg, badgeImg] = await Promise.all([
+            loadImage(avatarUrl),
+            loadImage(badgeUrl)
+        ]);
 
-    // Если ошибка (сервер не ответил или 404) — остается дефолтная silhouette.png
-    img.onerror = () => { console.warn("Не удалось загрузить аватар для favicon, оставлен силуэт."); };
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        // 1. Рисуем голову игрока
+        ctx.drawImage(avatarImg, 0, 0, 64, 64);
+        // 2. Рисуем иконку island.png в правом нижнем углу (размер 24x24)
+        ctx.drawImage(badgeImg, 40, 40, 24, 24);
+        // Устанавливаем результат как иконку
+        favicon.href = canvas.toDataURL('image/png');
+
+    } catch (e) {
+        favicon.href = '/assets/silhouette.png';
+    }
 }
 </script>
 </body>
