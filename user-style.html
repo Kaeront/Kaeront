@@ -80,11 +80,18 @@
             flex-wrap: wrap;
             gap: 8px;
             justify-content: center;
-            margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 10px;
             background: #0a0a0a;
             border: 1px solid #222;
             padding: 6px 12px;
             border-radius: 6px;
+        }
+
+        .user-badges-container::before {
+            content: 'Значки:';
+            font-size: 0.7rem;
+            color: var(--text-dim);
         }
         
         .badge-item {
@@ -171,7 +178,7 @@
             font-family: monospace;
             font-size: 0.85rem;
             color: var(--text-dim);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             user-select: all;
             background: #050505;
             padding: 4px 10px;
@@ -181,7 +188,7 @@
 
         .status-container {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 25px;
             flex-wrap: wrap;
             justify-content: center;
