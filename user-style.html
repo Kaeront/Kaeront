@@ -401,7 +401,7 @@ async function loadUserProfile() {
         if (dbData && dbData.badges && dbData.badges.length > 0) {
             badgesHTML = `<div class="user-badges-container">` + 
                 dbData.badges.map(b => {
-                    const imgSrc = b.image_base64 ? b.image_base64 : '/assets/silhouette.png';
+                    const imgSrc = b.image_base64 ? b.image_base64 : '/assets/unavailable.png';
                     return `
                     <div class="badge-item">
                         <img src="${imgSrc}" class="badge-icon" alt="${b.name}">
