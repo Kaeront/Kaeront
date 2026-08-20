@@ -41,7 +41,6 @@
             filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
         }
 
-
         .user-card {
             background: rgba(15, 15, 15, 0.8);
             border: 1px solid #1a1a1a;
@@ -73,6 +72,41 @@
             width: 128px;
             height: 128px;
             border-radius: 16px;
+        }
+
+        /* Стили бэйджей на карточке профиля */
+        .user-badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+    
+        .badge-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #ffaa00;
+            font-family: 'Montserrat', sans-serif;
+            cursor: help;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+    
+        .badge-item:hover {
+            transform: translateY(-2px);
+            border-color: #ffaa00;
+        }
+    
+        .badge-icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
 
         .user-name {
@@ -305,6 +339,19 @@ async function loadUserProfile() {
             console.warn("Игрок не зарегистрирован на Kaeront или API недоступно:", e);
         }
 
+        let badgesHTML = '';
+        if (dbData && dbData.badges && dbData.badges.length > 0) {
+            badgesHTML = `<div class="user-badges-container">` + 
+                dbData.badges.map(b => {
+                    const imgSrc = b.image_base64 ? b.image_base64 : '/assets/silhouette.png';
+                    return `<div class="badge-item" title="${b.description}">
+                        <img src="${imgSrc}" class="badge-icon" alt="${b.name}">
+                        <span>${b.name}</span>
+                    </div>`;
+                }).join('') + 
+            `</div>`;
+        }        
+
         // Статус "На сайте" только для зарегистрированных пользователей
         const siteStatusHTML = isRegistered ? `
             <div class="status-badge">
@@ -317,7 +364,7 @@ async function loadUserProfile() {
             ${registeredText}
             <div class="profile-layout-wrapper">
                 <div class="fullbody-avatar-container">
-                    <img src="${fullBodyUrl}" alt="${username} Fullbody" class="fullbody-avatar">
+                    <img src="${fullBodyUrl}" alt="${username}" class="fullbody-avatar">
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                     <div class="user-avatar-wrapper">
@@ -325,6 +372,7 @@ async function loadUserProfile() {
                     </div>
                     <h1 class="user-name">${username}</h1>
                     <div class="user-uuid">${uuid}</div>
+                    ${badgesHTML}
                     <div class="status-container">
                         ${siteStatusHTML}
                         <div class="status-badge">
