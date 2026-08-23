@@ -13,6 +13,6 @@ Yo, is that an isl<img src="https://kaeront.ru/assets/island.png" alt="Опис�
 
 
 ## Тест ширин картинок
-<img src="https://kaeront.ru/assets/island.png" alt="Я — обычная картинка!"/>
+<img src="https://kaeront.ru/assets/unavailable.png" alt="Я — обычная картинка!"/>
 
-<img src="https://kaeront.ru/assets/island.png" alt="А я — полноширинная картинка!" class="full-width"/>
+<img src="https://kaeront.ru/assets/unavailable.png" alt="А я — полноширинная картинка!" class="full-width"/>
