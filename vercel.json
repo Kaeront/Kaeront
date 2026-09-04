@@ -1,5 +1,24 @@
 {
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    }
+  ],
   "redirects": [
     {
       "source": "/news-style",
@@ -43,6 +62,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/offline", "destination": "/offline.html" },
     { "source": "/chat", "destination": "/chat-style" },
     { "source": "/chat/:id", "destination": "/chat-style" },
     { "source": "/chat/:id/:thread", "destination": "/chat-style" },
