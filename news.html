@@ -28,7 +28,7 @@
             border-radius: 20px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .search-input:focus { border-color: var(--accent); }
+        .search-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 170, 0, 0.15); }
         
         .filter-tags { display: flex; flex-wrap: wrap; gap: 6px; }
         .filter-btn {
@@ -53,7 +53,7 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .news-tags { display: flex; flex-wrap: wrap; justify-content: space-beetwen; gap: 4px; }
         .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 2px; }
         
         /* Цвета тегов */
@@ -66,7 +66,7 @@
         .tag-green  { background: #5F5; color: #000; }
         .tag-black-gold  { background: #000; color: #FA0; }
 
-        .news-meta { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 20px; display: block; font-family: 'Minecraft'; }
+        .news-meta { color: var(--text-dim); font-size: 0.75rem; margin: 10px 0; display: block; font-family: 'Minecraft'; }
         .news-card p, li { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; }
         .news-card b { color: var(--text-main); }
         .news-card a { color: var(--text-main); transition: 0.3s; }
