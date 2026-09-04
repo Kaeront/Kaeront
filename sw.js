@@ -1,25 +1,38 @@
-const CACHE_NAME = 'kaeront-assets-v2';
+const CACHE_NAME = 'kaeront-assets-v3';
 const OFFLINE_URL = '/offline.html';
 
-// Ресурсы, необходимые для полноценной работы оффлайн-страницы
+// Полный список ресурсов для верстки оффлайн-страницы
 const ASSETS_TO_CACHE = [
     OFFLINE_URL,
     '/assets/global.js',
     '/assets/unavailable.png',
-    '/assets/unavailable_favicon.png'
+    '/assets/unavailable_favicon.png',
+    '/assets/blackstone_top.png',
+    '/assets/minecraft.ttf',
+    '/assets/uniform.otf'
 ];
 
-// 1. Установка и предзагрузка ресурсов
+// 1. Установка с обходом редиректов Vercel (redirect: 'follow')
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
+        caches.open(CACHE_NAME).then(async (cache) => {
+            for (const url of ASSETS_TO_CACHE) {
+                try {
+                    // Переход по редиректам Vercel (cleanUrls)
+                    const response = await fetch(url, { redirect: 'follow' });
+                    if (response.ok) {
+                        await cache.put(url, response);
+                    }
+                } catch (err) {
+                    console.warn('[SW] Не удалось закэшировать ресурс:', url, err);
+                }
+            }
         })
     );
     self.skipWaiting();
 });
 
-// 2. Активация и удаление старых версий кэша
+// 2. Активация и авто-очистка устаревших кэшей
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -34,32 +47,43 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// 3. Обработка всех запросов (HTML + статические файлы)
+// 3. Перехват и безопасная обработка запросов
 self.addEventListener('fetch', (event) => {
-    // 3.1. Запросы навигации (переходы по HTML-страницам)
+    // Игнорируем все не-GET запросы (POST, OPTIONS и т.д.)
+    if (event.request.method !== 'GET') return;
+
+    // 3.1. Переходы по страницам (HTML)
     if (event.request.mode === 'navigate') {
         event.respondWith(
-            fetch(event.request).catch(() => {
-                return caches.match(OFFLINE_URL);
+            fetch(event.request).catch(async () => {
+                const cache = await caches.open(CACHE_NAME);
+                const cachedOffline = await cache.match(OFFLINE_URL);
+                return cachedOffline || Response.error();
             })
         );
         return;
     }
 
-    // 3.2. Запросы статических ресурсов (JS, CSS, Изображения)
+    // 3.2. Статические ресурсы (Stale-While-Revalidate)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                // Если ресурс есть в кэше — отдаем его мгновенно
-                return cachedResponse;
-            }
-            // Если ресурса нет в кэше — загружаем из сети
-            return fetch(event.request);
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
+                // Кэшируем только успешные ответы с нашего домена
+                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
+                return networkResponse;
+            }).catch(() => {/* Игнорируем сетевые ошибки в фоновом режиме */});
+
+            return cachedResponse || fetchPromise;
         })
     );
 });
 
-// 4. Push-уведомления (ваш существующий код)
+// 4. Push-уведомления
 self.addEventListener('push', (event) => {
     if (!event.data) return;
 
@@ -86,7 +110,7 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// 5. Клик по уведомлению (ваш существующий код)
+// 5. Обработка клика по уведомлению
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const channel = event.notification.data ? event.notification.data.channel : null;
