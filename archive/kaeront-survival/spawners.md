@@ -7,4 +7,4 @@
 * **Интерфейс и управление:**
   * Удобное меню с поддержкой пагинации (переключения страниц).
   * Возможность забрать как весь накопленный лут одной кнопкой (*«Забрать весь лут»*), так и поштучно — кликая по конкретным ячейкам с предметами.
-> <img src="/assets/spawner.png" width="400px" style="border-radius: 0 !important; box-shadow: none !important;">
+<img src="/assets/spawner.png" width="400px" style="border-radius: 0 !important; box-shadow: none !important;">
