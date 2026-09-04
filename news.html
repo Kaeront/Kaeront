@@ -25,7 +25,8 @@
         .search-input {
             background: #151515; border: 1px solid #333; color: white;
             padding: 12px; font-family: 'Montserrat'; outline: none; width: 100%; box-sizing: border-box;
-            border-radius: 0;
+            border-radius: 20px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .search-input:focus { border-color: var(--accent); }
         
@@ -33,6 +34,7 @@
         .filter-btn {
             background: #151515; border: 1px solid #333; color: var(--text-dim);
             padding: 8px; cursor: url('pointer.png'), pointer; font-family: 'Minecraft'; font-size: 0.6rem; transition: 0.2s;
+            border-radius: 10px;
         }
         .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255, 170, 0, 0.1); }
 
@@ -43,16 +45,16 @@
         
         /* Карточка новости */
         .news-card {
-            background: var(--card-bg); border: 1px solid #1a1a1a; padding: 30px;
+            background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px;
             position: relative; transition: 0.3s;
             animation: fadeIn 0.3s ease-out;
-            border-radius: 20px;
+            border-radius: 40px;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 10px; }
+        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 2px; }
         
         /* Цвета тегов */
         .tag-gold  { background: #FA0; color: #000; }
