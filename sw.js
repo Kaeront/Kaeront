@@ -1,22 +1,25 @@
-const CACHE_NAME = 'kaeront-offline-v1';
+const CACHE_NAME = 'kaeront-assets-v2';
 const OFFLINE_URL = '/offline.html';
 
-// Ресурсы, которые нужно закэшировать при установке
+// Ресурсы, необходимые для полноценной работы оффлайн-страницы
 const ASSETS_TO_CACHE = [
     OFFLINE_URL,
+    '/assets/global.js',
     '/assets/unavailable.png',
     '/assets/unavailable_favicon.png'
 ];
 
-// 1. Установка и кэширование
+// 1. Установка и предзагрузка ресурсов
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS_TO_CACHE);
+        })
     );
     self.skipWaiting();
 });
 
-// 2. Активация и очистка старого кэша
+// 2. Активация и удаление старых версий кэша
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keys) => {
@@ -31,15 +34,29 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// 3. Перехват сетевых запросов (Fetch)
+// 3. Обработка всех запросов (HTML + статические файлы)
 self.addEventListener('fetch', (event) => {
+    // 3.1. Запросы навигации (переходы по HTML-страницам)
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request).catch(() => {
                 return caches.match(OFFLINE_URL);
             })
         );
+        return;
     }
+
+    // 3.2. Запросы статических ресурсов (JS, CSS, Изображения)
+    event.respondWith(
+        caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+                // Если ресурс есть в кэше — отдаем его мгновенно
+                return cachedResponse;
+            }
+            // Если ресурса нет в кэше — загружаем из сети
+            return fetch(event.request);
+        })
+    );
 });
 
 // 4. Push-уведомления (ваш существующий код)
