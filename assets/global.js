@@ -436,3 +436,22 @@ window.addEventListener('load', () => {
         }, 500);
     }
 });
+
+// Регистрация Service Worker
+const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    // Успешная регистрация
+                    console.log('[SW] Зарегистрирован:', registration.scope);
+                })
+                .catch((error) => {
+                    console.error('[SW] Ошибка регистрации:', error);
+                });
+        });
+    }
+};
+
+// Запускаем регистрацию
+registerServiceWorker();
