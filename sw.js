@@ -1,16 +1,48 @@
-// sw.js - Service Worker для обработки уведомлений и кликов
+const CACHE_NAME = 'kaeront-offline-v1';
+const OFFLINE_URL = '/offline.html';
 
-// 1. Автоматическое обновление воркера без ожидания закрытия вкладок
+// Ресурсы, которые нужно закэшировать при установке
+const ASSETS_TO_CACHE = [
+    OFFLINE_URL,
+    '/assets/unavailable.png',
+    '/assets/unavailable_favicon.png'
+];
+
+// 1. Установка и кэширование
 self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    );
     self.skipWaiting();
 });
 
-// 2. Немедленный перехват управления всеми открытыми клиентами
+// 2. Активация и очистка старого кэша
 self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
+    event.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.map((key) => {
+                    if (key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
+                })
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
-// 3. Обработка входящих Push-уведомлений
+// 3. Перехват сетевых запросов (Fetch)
+self.addEventListener('fetch', (event) => {
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() => {
+                return caches.match(OFFLINE_URL);
+            })
+        );
+    }
+});
+
+// 4. Push-уведомления (ваш существующий код)
 self.addEventListener('push', (event) => {
     if (!event.data) return;
 
@@ -29,7 +61,7 @@ self.addEventListener('push', (event) => {
         tag: data.channel ? `msg-${data.channel}` : 'kaeront-chat-msg',
         data: { channel: data.channel || 'global' },
         renotify: true,
-        requireInteraction: true // Оставляет уведомление на столе Windows/macOS до клика
+        requireInteraction: true
     };
 
     event.waitUntil(
@@ -37,7 +69,7 @@ self.addEventListener('push', (event) => {
     );
 });
 
-// 4. Обработка клика по уведомлению
+// 5. Клик по уведомлению (ваш существующий код)
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     const channel = event.notification.data ? event.notification.data.channel : null;
@@ -45,7 +77,6 @@ self.addEventListener('notificationclick', (event) => {
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            // Если вкладка чата уже открыта — переключаем канал и фокусируемся
             for (const client of clientList) {
                 if (client.url.includes('/chat') && 'focus' in client) {
                     if (channel) {
@@ -54,7 +85,6 @@ self.addEventListener('notificationclick', (event) => {
                     return client.focus();
                 }
             }
-            // Если открытой вкладки нет — открываем новую
             if (clients.openWindow) {
                 return clients.openWindow(targetUrl);
             }
