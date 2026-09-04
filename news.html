@@ -46,12 +46,13 @@
             background: var(--card-bg); border: 1px solid #1a1a1a; padding: 30px;
             position: relative; transition: 0.3s;
             animation: fadeIn 0.3s ease-out;
+            border-radius: 20px;
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; }
+        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 10px; }
         
         /* Цвета тегов */
         .tag-gold  { background: #FA0; color: #000; }
