@@ -751,7 +751,7 @@ class Spoiler {
         
             createParticles() {
                 this.particles = [];
-                const density = 0.06; 
+                const density = 0.04;
                 const count = Math.floor(this.width * this.height * density);
         
                 for (let i = 0; i < count; i++) {
@@ -759,8 +759,8 @@ class Spoiler {
                         x: Math.random() * this.width,
                         y: Math.random() * this.height,
                         size: Math.random() * 1.25,
-                        vx: (Math.random() - 0.5) * 0.15,
-                        vy: (Math.random() - 0.5) * 0.15,
+                        vx: (Math.random() - 0.5) * 0.25,
+                        vy: (Math.random() - 0.5) * 0.25,
                         alpha: Math.random(),
                         alphaSpeed: (Math.random() - 0.5) * 0.05
                     });
