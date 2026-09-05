@@ -30,10 +30,10 @@
         }
         .search-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(255, 170, 0, 0.15); }
         
-        .filter-tags { display: flex; flex-wrap: wrap; flex-grow: 1; gap: 4px; }
+        .filter-tags { display: flex; flex-wrap: wrap; gap: 4px; }
         .filter-btn {
             background: #151515; border: 1px solid #333; color: var(--text-dim);
-            padding: 8px; cursor: url('pointer.png'), pointer; font-family: 'Minecraft'; font-size: 0.7rem; transition: 0.2s;
+            padding: 8px; cursor: url('pointer.png'), pointer; font-family: 'Minecraft'; font-size: 0.65rem; transition: 0.2s;
             border-radius: 10px;
         }
         .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255, 170, 0, 0.1); }
@@ -54,7 +54,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 5px; }
+        .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 5px; flex-grow: 1; }
         
         /* Цвета тегов */
         .tag-gold  { background: #FA0; color: #000; }
