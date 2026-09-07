@@ -47,12 +47,12 @@
         /* Карточка новости */
         .news-card {
             background: var(--card-bg); border: 1px solid #1a1a1a; padding: 20px;
-            position: relative; transition: 0.3s;
-            animation: fadeIn 0.3s ease-out;
+            position: relative; transition: 0.5s;
+            animation: fadeIn 0.5s ease-out;
             border-radius: 40px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.8); } to { opacity: 1; visibility: visible; transform: translateY(0) scale(1); } }
 
         .news-tags { display: flex; flex-wrap: wrap; gap: 4px; }
         .tag { font-family: 'Minecraft', sans-serif; font-size: 0.65rem; padding: 4px; border-radius: 5px; }
@@ -74,7 +74,7 @@
         .news-card a:hover { color: #fff; }
         .news-card ul { color: var(--text-dim); line-height: 1.5; margin: 8px 0; }
         .news-card ol { color: var(--text-dim); line-height: 1.5; margin: 8px 0; }
-        .news-card h2 a { font-family: 'Minecraft'; font-size: 1.2rem; color: var(--accent); margin: 0 0 10px 0; line-height: 1.4; text-decoration: none; transition: color 0.3s ease; }
+        .news-card h2 a { font-family: 'Minecraft'; font-size: 1.2rem; color: var(--accent); margin: 0 0 10px 0; line-height: 1.4; text-decoration: none; transition: color 0.2s ease, filter 0.2s ease; }
         .news-card h2 a:hover { color: var(--text-main); filter: drop-shadow(0 0 10px var(--accent)); }
 
 
@@ -87,7 +87,7 @@
         .show-more-btn {
             background: transparent; border: 1px dashed var(--text-dim); color: var(--text-dim);
             padding: 15px; width: 100%; font-family: 'Minecraft'; font-size: 0.7rem;
-            cursor: url('pointer.png'), pointer; transition: 0.3s;
+            cursor: url('pointer.png'), pointer; transition: color 0.2s ease, border-color 0.2s ease;
         }
         .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
 
