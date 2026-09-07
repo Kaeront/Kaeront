@@ -21,7 +21,12 @@
   ],
   "redirects": [
     {
-      "source": "/user-style",
+      "source": "/news-style",
+      "destination": "/404",
+      "permanent": false
+    },
+    {
+      "source": "/user-style/:path*",
       "destination": "/404",
       "permanent": false
     },
@@ -52,19 +57,11 @@
     }
   ],
   "rewrites": [
-{
-      "source": "/news-style",
-      "destination": "/404"
-    },
-    { "source": "/news-style", "destination": "/404.html", "statusCode": 404 },
-    { "source": "/news-style/:path*", "destination": "/404.html", "statusCode": 404 },
-    { "source": "/offline", "destination": "/offline.html" },
     { "source": "/chat", "destination": "/chat-style" },
     { "source": "/chat/:id", "destination": "/chat-style" },
     { "source": "/chat/:id/:thread", "destination": "/chat-style" },
     { "source": "/user/:id", "destination": "/user-style" },
     { "source": "/news/:id", "destination": "/news-style" },
-    { "source": "/archive/assets/:path*", "destination": "/archive/assets/:path*" },
     { "source": "/archive/((?!.*\\.).*)", "destination": "/archive/index.html" }
   ]
 }
