@@ -21,11 +21,6 @@
   ],
   "redirects": [
     {
-      "source": "/news-style/:path*",
-      "destination": "/404",
-      "permanent": false
-    },
-    {
       "source": "/user-style",
       "destination": "/404",
       "permanent": false
@@ -58,7 +53,7 @@
   ],
   "rewrites": [
     { "source": "/news-style", "destination": "/404.html" },
-    { "source": "/news-style", "destination": "/404.html" },
+    { "source": "/news-style/:path*", "destination": "/404.html" },
     { "source": "/offline", "destination": "/offline.html" },
     { "source": "/chat", "destination": "/chat-style" },
     { "source": "/chat/:id", "destination": "/chat-style" },
