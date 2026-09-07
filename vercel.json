@@ -52,8 +52,8 @@
     }
   ],
   "rewrites": [
-    { "source": "/news-style", "destination": "/404.html" },
-    { "source": "/news-style/:path*", "destination": "/404.html" },
+    { "source": "/news-style", "destination": "/404.html", "statusCode": 404 },
+    { "source": "/news-style/:path*", "destination": "/404.html", "statusCode": 404 },
     { "source": "/offline", "destination": "/offline.html" },
     { "source": "/chat", "destination": "/chat-style" },
     { "source": "/chat/:id", "destination": "/chat-style" },
