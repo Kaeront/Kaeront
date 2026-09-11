@@ -77,7 +77,6 @@
             color: #888 !important;
             cursor: not-allowed !important;
             box-shadow: none !important;
-            opacity: 0.5;
             background: linear-gradient(
                 135deg, 
                 rgba(255, 170, 0, 0.1) 25%, 
@@ -92,8 +91,8 @@
             animation: move-stripes 1.5s linear infinite !important;
         }
         @keyframes move-stripes {
-            0% { background-position: 0 0; }
-            100% { background-position: -40px 0; }
+            0% { background-position: 0 0 !important; }
+            100% { background-position: -40px 0 !important; }
         }
         .timer-text { color: #888; font-size: 14px; }
         .expired-box {
