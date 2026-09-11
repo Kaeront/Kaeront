@@ -37,7 +37,7 @@
             max-width: 600px;
             margin: 80px auto;
             padding: 25px;
-            background: #11111180;
+            background: #11111160;
             border: 1px solid #222;
             border-radius: 40px;
             color: #ffffff;
@@ -71,6 +71,13 @@
             transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
             font-family: 'Minecraft', sans-serif;
             text-transform: uppercase;
+        }
+        .btn-auth:disabled {
+            background: #555 !important;
+            color: #888 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            opacity: 0.6;
         }
         .btn-auth:hover { background: #fff; color: #fa0; box-shadow: 0 0 15px #fa0; }
         .timer-text { color: #888; font-size: 14px; }
@@ -203,6 +210,16 @@ async function startAuthProcess() {
         return;
     }
 
+    // Получаем кнопку в блоке #step-start
+    const btn = document.querySelector('#step-start .btn-auth');
+    const originalText = btn ? btn.innerText : 'Приступить';
+
+    // Блокируем кнопку перед отправкой запроса
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Загрузка...';
+    }
+
     try {
         // Определение точного браузера
         let customUa = navigator.userAgent;
@@ -225,6 +242,11 @@ async function startAuthProcess() {
 
         if (!response.ok) {
             alert(`Ошибка сервера (${response.status}).`);
+            // Разблокируем кнопку при ошибке ответа сервера
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
             return;
         }
 
@@ -235,10 +257,21 @@ async function startAuthProcess() {
             localStorage.setItem('kaeront_expire', expireTimestamp);
 
             showCodeState(data.code, expireTimestamp);
+        } else {
+            // Если структура ответа некорректная
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         }
     } catch (e) {
         console.error("Auth process error:", e);
         alert('Не удалось связаться с сервером.');
+        // Разблокируем кнопку при сетевом или аварийном сбое
+        if (btn) {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     }
 }
 
