@@ -72,14 +72,29 @@
             font-family: 'Minecraft', sans-serif;
             text-transform: uppercase;
         }
+        .btn-auth:hover { background: #fff; color: #fa0; box-shadow: 0 0 15px #fa0; }
         .btn-auth:disabled {
-            background: #555 !important;
             color: #888 !important;
             cursor: not-allowed !important;
             box-shadow: none !important;
-            opacity: 0.6;
+            opacity: 0.5;
+            background: linear-gradient(
+                135deg, 
+                rgba(255, 170, 0, 0.1) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255, 170, 0, 0.1) 50%, 
+                rgba(255, 170, 0, 0.1) 75%, 
+                transparent 75%, 
+                transparent
+            ) !important;
+            background-size: 20px 20px;
+            animation: move-stripes 1.5s linear infinite;
         }
-        .btn-auth:hover { background: #fff; color: #fa0; box-shadow: 0 0 15px #fa0; }
+        @keyframes move-stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: -40px 0; }
+        }
         .timer-text { color: #888; font-size: 14px; }
         .expired-box {
             background: rgba(255, 85, 85, 0.1);
