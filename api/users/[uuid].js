@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { uuid } = req.query;
+    const { uuid, subpath } = req.query; // subpath для /followers и /following
     if (!uuid) return res.status(400).json({ error: 'UUID is required' });
 
     const apiUrl = process.env.KAERONT_API_URL?.replace(/\/$/, '');
@@ -17,17 +17,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        const response = await fetch(`${apiUrl}/api/users/${uuid}`, {
-            headers: {
-                'X-Internal-Token': apiKey
-            }
+        const endpoint = subpath ? `${apiUrl}/api/users/${uuid}/${subpath}` : `${apiUrl}/api/users/${uuid}`;
+        const response = await fetch(endpoint, {
+            headers: { 'X-Internal-Token': apiKey }
         });
 
         const textData = await response.text();
 
         // Если VDS ответил не 200 OK — отдаем точный текст ошибки с VDS
         if (!response.ok) {
-            console.error(`VDS error status ${response.status}:`, textData);
             return res.status(response.status).json({ 
                 error: 'Backend error', 
                 vdsStatus: response.status,
@@ -35,11 +33,8 @@ export default async function handler(req, res) {
             });
         }
 
-        // Если всё OK — парсим JSON
-        const data = JSON.parse(textData);
-        return res.status(200).json(data);
+        return res.status(200).json(JSON.parse(textData));
     } catch (error) {
-        console.error('Fetch Error to VDS:', error.message);
         return res.status(500).json({ error: 'Failed to connect to backend', details: error.message });
     }
 }
