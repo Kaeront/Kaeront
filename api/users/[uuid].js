@@ -14,19 +14,19 @@ export default async function handler(req, res) {
     }
 
     try {
-        let endpoint = '';
         const headers = { 
             'X-Internal-Token': apiKey,
             'Content-Type': 'application/json'
         };
 
-        // Передаем токен авторизации клиента на VDS при наличии
+        // ВАЖНО: Всегда передаем токен авторизации клиента на VDS
         if (req.headers.authorization) {
             headers['Authorization'] = req.headers.authorization;
         }
 
         // Обработка POST-запросов (Follow / Unfollow)
         if (req.method === 'POST') {
+            let endpoint = '';
             if (uuid === 'follow' || uuid === 'unfollow') {
                 endpoint = `${apiUrl}/api/v1/users/${uuid}`;
             } else {
@@ -40,19 +40,23 @@ export default async function handler(req, res) {
             });
 
             const textData = await response.text();
-            return res.status(response.status).send(textData);
+            try {
+                return res.status(response.status).json(JSON.parse(textData));
+            } catch (e) {
+                return res.status(response.status).send(textData);
+            }
         }
 
-        // Обработка GET-запросов
+        // Обработка GET-запросов (Профиль, Подписчики, Подписки)
         if (req.method === 'GET') {
             if (!uuid) return res.status(400).json({ error: 'UUID is required' });
 
             const { subpath } = req.query;
-            endpoint = subpath ? `${apiUrl}/api/users/${uuid}/${subpath}` : `${apiUrl}/api/users/${uuid}`;
+            const endpoint = subpath ? `${apiUrl}/api/users/${uuid}/${subpath}` : `${apiUrl}/api/users/${uuid}`;
 
             const response = await fetch(endpoint, {
                 method: 'GET',
-                headers: headers
+                headers: headers // Заголовок Authorization теперь уйдет и сюда
             });
 
             const textData = await response.text();
