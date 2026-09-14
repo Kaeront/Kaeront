@@ -826,8 +826,8 @@ async function toggleFollow(targetUuid) {
             btn.classList.toggle('following');
             btn.innerText = btn.classList.contains('following') ? 'Вы подписаны' : 'Подписаться';
         } else {
-            const errData = await res.json();
-            console.error('Ошибка подписки:', errData);
+            const rawText = await res.text();
+            console.error('Ошибка подписки (статус ' + res.status + '):', rawText);
         }
     } catch (e) {
         console.error('Follow Error:', e);
