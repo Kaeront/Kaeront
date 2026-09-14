@@ -542,6 +542,7 @@ async function loadUserProfile() {
         let isFollowing = false;
         let dbData = null;
 
+        // Авторизация
         const token = localStorage.getItem('kaeront_access_token');
         const headers = {};
         if (token) {
@@ -563,14 +564,13 @@ async function loadUserProfile() {
                     }
                     siteOnline = dbData.site_online ?? false;
                     serverOnline = dbData.server_online ?? false;
-                    isFollowing = dbData.is_following ?? false;
+                    isFollowing = dbData.is_following ?? false; // Считываем статус из ответа API
                 }
             }
         } catch (e) {
-            console.warn("Игрок не зарегистрирован на Kaeront или API недоступно:", e);
+            console.warn("Ошибка загрузки данных профиля с БД:", e);
         }
 
-        // Рендеринг значков
         let badgesHTML = '';
         if (dbData && dbData.badges && dbData.badges.length > 0) {
             badgesHTML = `<div class="user-badges-container">` + 
@@ -588,7 +588,6 @@ async function loadUserProfile() {
             `</div>`;
         }
 
-        // Статус "На сайте"
         const siteStatusHTML = isRegistered ? `
             <div class="status-badge">
                 <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
@@ -599,11 +598,10 @@ async function loadUserProfile() {
         const followersCount = dbData ? dbData.followers_count : 0;
         const followingCount = dbData ? dbData.following_count : 0;
         
-        // Проверка: мы на собственной странице или нет
         const currentUserUuid = getCurrentUserUuid();
         const isOwnProfile = currentUserUuid && currentUserUuid === uuid.toLowerCase();
 
-        // Формируем кнопку подписки ТОЛЬКО если мы не на своем профиле и пользователь вошел
+        // Отображение кнопки подписки согласно переменной isFollowing
         let followButtonHTML = '';
         if (token && !isOwnProfile) {
             const btnClass = isFollowing ? 'link-btn btn-follow following' : 'link-btn btn-follow';
@@ -628,7 +626,6 @@ async function loadUserProfile() {
                     <h1 class="user-name">${username}</h1>
                     <div class="user-uuid">${uuid}</div>
 
-                    <!-- Статусы -->
                     <div class="status-container">
                         ${siteStatusHTML}
                         <div class="status-badge">
@@ -637,16 +634,14 @@ async function loadUserProfile() {
                         </div>
                     </div>
 
-                    <!-- Значки -->
                     ${badgesHTML}
                     
-                    <!-- Компактные счетчики -->
                     <div class="follow-stats-container">
                         <div class="stat-box" onclick="openFollowModal('${uuid}', 'followers')">
-                            <span class="stat-value">${followersCount}</span> Подписчиков
+                            <span id="followers-count" class="stat-value">${followersCount}</span> Подписчиков
                         </div>
                         <div class="stat-box" onclick="openFollowModal('${uuid}', 'following')">
-                            <span class="stat-value">${followingCount}</span> Подписки
+                            <span id="following-count" class="stat-value">${followingCount}</span> Подписки
                         </div>
                     </div>
 
@@ -807,6 +802,7 @@ async function toggleFollow(targetUuid) {
     if (!token) return;
 
     const btn = document.getElementById('btn-follow');
+    const followersCntElem = document.getElementById('followers-count');
     if (!btn) return;
 
     const isFollowing = btn.classList.contains('following');
@@ -823,11 +819,22 @@ async function toggleFollow(targetUuid) {
         });
 
         if (res.ok) {
+            // Переключаем класс и текст
             btn.classList.toggle('following');
-            btn.innerText = btn.classList.contains('following') ? 'Вы подписаны' : 'Подписаться';
+            const nowFollowing = btn.classList.contains('following');
+            btn.innerText = nowFollowing ? 'Вы подписаны' : 'Подписаться';
+
+            // Динамически обновляем счетчик подписчиков без перезагрузки
+            if (followersCntElem) {
+                let currentCnt = parseInt(followersCntElem.innerText) || 0;
+                followersCntElem.innerText = nowFollowing ? currentCnt + 1 : Math.max(0, currentCnt - 1);
+            }
+
+            // Очищаем локальный кэш списка подписчиков, чтобы при открытии модалки данные обновились
+            delete followCache[`${targetUuid}_followers`];
         } else {
             const rawText = await res.text();
-            console.error('Ошибка подписки (статус ' + res.status + '):', rawText);
+            console.error('Ошибка при смене статуса подписки:', rawText);
         }
     } catch (e) {
         console.error('Follow Error:', e);
