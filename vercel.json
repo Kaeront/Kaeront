@@ -62,6 +62,8 @@
     { "source": "/chat/:id/:thread", "destination": "/chat-style" },
     { "source": "/user/:id", "destination": "/user-style" },
     { "source": "/news/:id", "destination": "/news-style" },
-    { "source": "/archive/((?!.*\\.).*)", "destination": "/archive/index.html" }
+    { "source": "/archive/((?!.*\\.).*)", "destination": "/archive/index.html" },
+    { "source": "/api/v1/users/:uuid", "destination": "/api/users/:uuid" },
+    { "source": "/api/users/:uuid", "destination": "/api/users/:uuid" }
   ]
 }
