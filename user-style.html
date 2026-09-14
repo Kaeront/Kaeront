@@ -81,7 +81,7 @@
             gap: 8px;
             justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             background: #0a0a0a;
             border: 1px solid #222;
             padding: 6px 12px;
@@ -189,7 +189,7 @@
         .status-container {
             display: flex;
             gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -257,23 +257,28 @@
             font-size: 0.9rem;
         }
 
-        /* Счётчики и подписки */
+        /* Компактные Счётчики и подписки */
         .follow-stats-container {
             display: flex;
-            gap: 20px;
-            margin: 12px 0 20px;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+            align-items: center;
         }
         
         .stat-box {
-            display: flex;
-            flex-direction: column;
+            display: inline-flex;
             align-items: center;
+            gap: 6px;
             cursor: pointer;
-            padding: 6px 16px;
+            padding: 6px 14px;
             background: #0a0a0a;
             border: 1px solid #1f1f1f;
             border-radius: 8px;
             transition: all 0.2s ease;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
         }
         
         .stat-box:hover {
@@ -283,15 +288,8 @@
         
         .stat-value {
             font-family: 'Minecraft', sans-serif;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             color: #ffaa00;
-        }
-        
-        .stat-label {
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         
         /* Кнопка подписки */
@@ -300,6 +298,7 @@
             color: #000 !important;
             border: 1px solid #ffaa00 !important;
             font-weight: 700 !important;
+            font-family: 'Montserrat', sans-serif !important;
         }
         
         .btn-follow.following {
@@ -407,7 +406,7 @@
     <!-- Loading Screen -->
     <div id="loader-wrapper" style="position: fixed; user-select: none; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.5s ease, visibility 0.5s; animation: hideLoaderNoJS 0.5s forwards;">
         <div style="position: relative; text-align: center; width: 100%;">
-            <!-- Основной текст (исчезает через 5 секунд) -->
+            <!-- Основной текст -->
             <div style="font-family: sans-serif; color: #888; font-size: clamp(3vh, 3vw, 3vw); animation: fadeOutText 0.3s forwards; animation-delay: 5s;">
                 <span style="font-family: sans-serif; color: #FFAA00;">Kaeront</span> загружается...
             </div>
@@ -419,20 +418,16 @@
     </div>
     
     <script>
-        // Мгновенная блокировка авто-скрытия, если JS разрешен
         (function() {
             const loader = document.getElementById('loader-wrapper');
             if (loader) {
-                // Удаляем анимацию hideLoaderNoJS, чтобы лоадер не исчез сам по себе
                 loader.style.animation = 'none';
             }
         })();
     </script>
     
     <style>
-        /* Блокировка скролла по умолчанию */
         body { overflow: hidden; }
-        /* Анимация для случая, когда JavaScript отключен */
         @keyframes hideLoaderNoJS { to { opacity: 0; visibility: hidden; } }
         @keyframes fadeOutText { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
         @keyframes fadeInText { from { opacity: 0; } to { opacity: 1; } }
@@ -475,6 +470,12 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadUserProfile();
 });
+
+// Кэш для подписчиков и подписок
+const followCache = {};
+let currentType = null;
+let currentRenderedIndex = 0;
+const BATCH_SIZE = 5;
 
 async function loadUserProfile() {
     const card = document.getElementById('user-card');
@@ -519,9 +520,8 @@ async function loadUserProfile() {
         let isRegistered = false;
         let siteOnline = false;
         let serverOnline = false;
-        let dbData = null; // Выносим переменную на уровень выше, чтобы устранить ReferenceError
+        let dbData = null;
 
-        // Безопасное получение данных с Kaeront API
         try {
             const dbRes = await fetch(`/api/users/${uuid}`);
             if (dbRes.ok) {
@@ -543,7 +543,7 @@ async function loadUserProfile() {
             console.warn("Игрок не зарегистрирован на Kaeront или API недоступно:", e);
         }
 
-        // Рендеринг значков с тултипом
+        // Рендеринг значков
         let badgesHTML = '';
         if (dbData && dbData.badges && dbData.badges.length > 0) {
             badgesHTML = `<div class="user-badges-container">` + 
@@ -561,7 +561,7 @@ async function loadUserProfile() {
             `</div>`;
         }
 
-        // Статус "На сайте" только для зарегистрированных пользователей
+        // Статус "На сайте"
         const siteStatusHTML = isRegistered ? `
             <div class="status-badge">
                 <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
@@ -572,6 +572,14 @@ async function loadUserProfile() {
         const followersCount = dbData ? dbData.followers_count : 0;
         const followingCount = dbData ? dbData.following_count : 0;
         
+        // Проверка авторизованности пользователя для отображения кнопки
+        const isLoggedIn = !!localStorage.getItem('kaeront_access_token');
+        const followButtonHTML = isLoggedIn ? `
+            <button id="btn-follow" class="link-btn btn-follow" onclick="toggleFollow('${uuid}')">
+                Подписаться
+            </button>
+        ` : '';
+
         card.innerHTML = `
             ${registeredText}
             <div class="profile-layout-wrapper">
@@ -584,19 +592,8 @@ async function loadUserProfile() {
                     </div>
                     <h1 class="user-name">${username}</h1>
                     <div class="user-uuid">${uuid}</div>
-                    ${badgesHTML}
-        
-                    <div class="follow-stats-container">
-                        <div class="stat-box" onclick="openFollowModal('${uuid}', 'followers')">
-                            <span class="stat-value">${followersCount}</span>
-                            <span class="stat-label">Followers</span>
-                        </div>
-                        <div class="stat-box" onclick="openFollowModal('${uuid}', 'following')">
-                            <span class="stat-value">${followingCount}</span>
-                            <span class="stat-label">Following</span>
-                        </div>
-                    </div>
-        
+
+                    <!-- 1. Раньше всех выводим Статусы -->
                     <div class="status-container">
                         ${siteStatusHTML}
                         <div class="status-badge">
@@ -604,10 +601,22 @@ async function loadUserProfile() {
                             В игре на Kaeront: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
                         </div>
                     </div>
+
+                    <!-- 2. Затем Значки -->
+                    ${badgesHTML}
+                    
+                    <!-- 3. Компактные счетчики с акцентным стилем -->
+                    <div class="follow-stats-container">
+                        <div class="stat-box" onclick="openFollowModal('${uuid}', 'followers')">
+                            <span class="stat-value">${followersCount}</span> Подписчиков
+                        </div>
+                        <div class="stat-box" onclick="openFollowModal('${uuid}', 'following')">
+                            <span class="stat-value">${followingCount}</span> Подписки
+                        </div>
+                    </div>
+
                     <div class="profile-actions" id="profile-actions">
-                        <button id="btn-follow" class="link-btn btn-follow" onclick="toggleFollow('${uuid}')">
-                            Подписаться
-                        </button>
+                        ${followButtonHTML}
                         <a href="${nameMcUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                             NameMC
@@ -677,12 +686,9 @@ async function updateFavicon(rawId, username) {
         const ctx = canvas.getContext('2d');
 
         ctx.imageSmoothingEnabled = false;
-
         ctx.fillStyle = '#fa0';
         ctx.fillRect(0, 0, 64, 64);
-
         ctx.drawImage(avatarImg, 4, 4, 56, 56);
-
         ctx.strokeStyle = '#fa0';
         ctx.lineWidth = 4;
         ctx.strokeRect(2, 2, 60, 60);
@@ -693,36 +699,84 @@ async function updateFavicon(rawId, username) {
     }
 }
 
-// Функции Бесшовной работы:
+// Постепенная подгрузка (Lazy Load) элементов из кэша
+function renderNextChunk() {
+    if (!currentType || !followCache[currentType]) return;
+
+    const listBody = document.getElementById('modal-list-body');
+    const items = followCache[currentType];
+    const nextChunk = items.slice(currentRenderedIndex, currentRenderedIndex + BATCH_SIZE);
+
+    if (nextChunk.length === 0) return;
+
+    const html = nextChunk.map(item => `
+        <a href="/user/${item.username}" class="follow-user-item">
+            <img src="https://nmsr.nickac.dev/face/${item.uuid.replace(/-/g,'')}" class="follow-user-avatar">
+            <span class="follow-user-name">${item.username}</span>
+        </a>
+    `).join('');
+
+    listBody.insertAdjacentHTML('beforeend', html);
+    currentRenderedIndex += nextChunk.length;
+}
+
+// Открытие Модалки с кэшированием и подгрузкой
 async function openFollowModal(targetUuid, type) {
     const modal = document.getElementById('follow-modal');
     const title = document.getElementById('modal-title');
     const listBody = document.getElementById('modal-list-body');
 
     title.innerText = type === 'followers' ? 'Подписчики' : 'Подписки';
-    listBody.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Загрузка...</div>';
+    listBody.innerHTML = '';
     modal.classList.add('active');
+
+    currentType = `${targetUuid}_${type}`;
+    currentRenderedIndex = 0;
+
+    // Сброс и привязка бесконечного скролла
+    listBody.onscroll = null;
+
+    // Если данные есть в кэше — выводим из него
+    if (followCache[currentType]) {
+        if (followCache[currentType].length === 0) {
+            listBody.innerHTML = '<div style="text-align:center; padding:20px; color:#555;">Список пуст</div>';
+            return;
+        }
+        renderNextChunk();
+        attachModalScroll(listBody);
+        return;
+    }
+
+    // Если данных в кэше нет — загружаем по API
+    listBody.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">Загрузка...</div>';
 
     try {
         const res = await fetch(`/api/users/${targetUuid}?subpath=${type}`);
         const data = await res.json();
         const items = data[type] || [];
 
+        followCache[currentType] = items;
+        listBody.innerHTML = '';
+
         if (items.length === 0) {
             listBody.innerHTML = '<div style="text-align:center; padding:20px; color:#555;">Список пуст</div>';
             return;
         }
 
-        listBody.innerHTML = items.map(item => `
-            <a href="/user/${item.username}" class="follow-user-item">
-                <img src="https://nmsr.nickac.dev/face/${item.uuid.replace(/-/g,'')}" class="follow-user-avatar">
-                <span class="follow-user-name">${item.username}</span>
-            </a>
-        `).join('');
+        renderNextChunk();
+        attachModalScroll(listBody);
 
     } catch (e) {
         listBody.innerHTML = '<div style="text-align:center; color:#ff5555; padding:20px;">Ошибка загрузки</div>';
     }
+}
+
+function attachModalScroll(container) {
+    container.onscroll = () => {
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 20) {
+            renderNextChunk();
+        }
+    };
 }
 
 function closeFollowModal() {
@@ -731,12 +785,11 @@ function closeFollowModal() {
 
 async function toggleFollow(targetUuid) {
     const token = localStorage.getItem('kaeront_access_token');
-    if (!token) {
-        alert('Авторизуйтесь через сервер Kaeront, чтобы подписываться на пользователей!');
-        return;
-    }
+    if (!token) return;
 
     const btn = document.getElementById('btn-follow');
+    if (!btn) return;
+
     const isFollowing = btn.classList.contains('following');
     const endpoint = isFollowing ? '/api/v1/users/unfollow' : '/api/v1/users/follow';
 
