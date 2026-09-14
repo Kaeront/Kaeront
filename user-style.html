@@ -334,7 +334,7 @@
         .spa-modal-card {
             background: #0d0d0d;
             border: 1px solid #222;
-            border-radius: 16px;
+            border-radius: 30px;
             width: 90%;
             max-width: 440px;
             max-height: 520px;
@@ -368,9 +368,12 @@
         .spa-modal-close:hover { color: #fff; }
         
         .spa-modal-body {
-            padding: 12px;
+            padding: 15px;
             overflow-y: auto;
-            flex-grow: 1;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
         
         .follow-user-item {
@@ -378,10 +381,11 @@
             align-items: center;
             gap: 12px;
             padding: 8px 12px;
-            border-radius: 8px;
+            border-radius: 15px;
             text-decoration: none;
             color: #fff;
             transition: background 0.2s;
+            font-family: 'Minecraft', sans-serif;
         }
         
         .follow-user-item:hover {
