@@ -791,10 +791,10 @@ async function toggleFollow(targetUuid) {
     if (!btn) return;
 
     const isFollowing = btn.classList.contains('following');
-    const endpoint = isFollowing ? '/api/v1/users/unfollow' : '/api/v1/users/follow';
+    const endpoint = isFollowing ? '/api/users/unfollow' : '/api/users/follow';
 
     try {
-        const res = await fetch(`https://kaeront.ru${endpoint}`, {
+        const res = await fetch(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -806,6 +806,9 @@ async function toggleFollow(targetUuid) {
         if (res.ok) {
             btn.classList.toggle('following');
             btn.innerText = btn.classList.contains('following') ? 'Вы подписаны' : 'Подписаться';
+        } else {
+            const errData = await res.json();
+            console.error('Ошибка подписки:', errData);
         }
     } catch (e) {
         console.error('Follow Error:', e);
