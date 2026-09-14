@@ -1,4 +1,3 @@
-// Vercel Serverless Function для зашифрованного общения с внутренним сервером
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -6,7 +5,7 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const { uuid, action } = req.query; // uuid может принимать значения "follow" или "unfollow" при POST
+    const { uuid } = req.query; // uuid может принимать значения "follow" или "unfollow" при POST
     const apiUrl = process.env.KAERONT_API_URL?.replace(/\/$/, '');
     const apiKey = process.env.INTERNAL_API_KEY;
 
@@ -21,12 +20,13 @@ export default async function handler(req, res) {
             'Content-Type': 'application/json'
         };
 
+        // Передаем токен авторизации клиента на VDS при наличии
+        if (req.headers.authorization) {
+            headers['Authorization'] = req.headers.authorization;
+        }
+
         // Обработка POST-запросов (Follow / Unfollow)
         if (req.method === 'POST') {
-            if (req.headers.authorization) {
-                headers['Authorization'] = req.headers.authorization;
-            }
-
             if (uuid === 'follow' || uuid === 'unfollow') {
                 endpoint = `${apiUrl}/api/v1/users/${uuid}`;
             } else {
