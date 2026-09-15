@@ -687,16 +687,16 @@ async function loadUserProfile() {
         let statusColor = "#FF5555";
         
         // Формируем текст локации сервера
-        let serverLocationText = serverOnlineIn ? `В игре (${serverOnlineIn})` : "В игре";
+        let serverLocationText = serverOnlineIn ? `Играет на ${serverOnlineIn}` : "Играет на Kaeront";
 
         if (siteOnline && serverOnline) {
             statusText = `На сайте и ${serverLocationText.toLowerCase()}`;
             statusColor = "#55FF55";
         } else if (serverOnline) {
-            statusText = `${serverLocationText} онлайн`;
+            statusText = `Играет на ${serverLocationText}`;
             statusColor = "#55FF55";
         } else if (siteOnline) {
-            statusText = "На сайте онлайн";
+            statusText = "На сайте";
             statusColor = "#5555FF";
         }
 
