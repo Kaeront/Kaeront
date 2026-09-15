@@ -63,15 +63,111 @@
             margin-bottom: 15px;
         }
 
+        /* Новые стили для статуса и аватарки */
+        .avatar-status-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
         .user-avatar-wrapper {
             position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .user-avatar {
             width: 128px;
             height: 128px;
             border-radius: 16px;
+            display: block;
+        }
+
+        /* Кружок статуса в правом нижнем углу аватарки */
+        .avatar-status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 4px solid rgba(15, 15, 15, 0.95);
+            background: #FF5555;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 10;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Выпадающее меню UUID */
+        .username-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            margin: 0 0 20px 0;
+        }
+
+        .uuid-dropdown-toggle {
+            cursor: pointer;
+            color: var(--text-dim);
+            transition: color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            padding: 4px;
+        }
+
+        .uuid-dropdown-toggle:hover {
+            color: #fff;
+            transform: translateY(1px);
+        }
+
+        .uuid-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .uuid-dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(4px);
+        }
+
+        .uuid-item {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            background: #050505;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #111;
+            user-select: all; /* Позволяет выделить весь текст кликом */
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        .uuid-item:hover {
+            border-color: #333;
+            color: #fff;
         }
 
         /* Стили бэйджей на карточке профиля */
@@ -170,57 +266,8 @@
             font-family: 'Minecraft', sans-serif;
             font-size: 1.8rem;
             color: var(--text-main);
-            margin: 0 0 8px 0;
+            margin: 0;
             font-weight: 400;
-        }
-
-        .user-uuid {
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-            user-select: all;
-            background: #050505;
-            padding: 4px 10px;
-            border-radius: 4px;
-            border: 1px solid #111;
-        }
-
-        .status-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #0a0a0a;
-            border: 1px solid #222;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-family: 'Montserrat', sans-serif;
-            color: var(--text-dim);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #555;
-        }
-
-        .status-dot.online {
-            background: #55ff55;
-            box-shadow: 0 0 8px rgba(85, 255, 85, 0.5);
-        }
-
-        .status-dot.offline {
-            background: #ff5555;
         }
 
         .profile-actions {
@@ -509,6 +556,39 @@ function getCurrentUserUuid() {
     }
 }
 
+// Конвертация обычного UUID в массив целых чисел Minecraft [I;x,y,z,w]
+function getIntArrayFromUUID(uuidStr) {
+    try {
+        const hex = uuidStr.replace(/-/g, '');
+        const ints = [];
+        for (let i = 0; i < 4; i++) {
+            let val = parseInt(hex.substr(i * 8, 8), 16);
+            if (val > 0x7FFFFFFF) val -= 0x100000000; // Учет signed int 32-bit
+            ints.push(val);
+        }
+        return `[I;${ints.join(',')}]`;
+    } catch (e) {
+        return '[I;0,0,0,0]';
+    }
+}
+
+// Управление выпадающим списком UUID
+function toggleUuidDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('uuid-dropdown');
+    if (dropdown) dropdown.classList.toggle('active');
+}
+
+// Закрытие списка UUID при клике вне его области
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('uuid-dropdown');
+    if (dropdown && dropdown.classList.contains('active')) {
+        if (!event.target.closest('.username-container')) {
+            dropdown.classList.remove('active');
+        }
+    }
+});
+
 async function loadUserProfile() {
     const card = document.getElementById('user-card');
     const pathParts = window.location.pathname.split('/').filter(Boolean);
@@ -601,12 +681,26 @@ async function loadUserProfile() {
             `</div>`;
         }
 
-        const siteStatusHTML = isRegistered ? `
-            <div class="status-badge">
-                <span class="status-dot ${siteOnline ? 'online' : 'offline'}"></span>
-                На сайте: <b>${siteOnline ? 'Онлайн' : 'Оффлайн'}</b>
-            </div>
-        ` : '';
+        // Вычисление динамического статуса игрока
+        let serverOnlineIn = dbData ? dbData.server_online_in : null;
+        let statusText = "Оффлайн";
+        let statusColor = "#FF5555";
+        let inGameText = serverOnlineIn ? `В игре (${serverOnlineIn})` : "В игре (play.kaeront.ru)";
+
+        if (siteOnline && serverOnline) {
+            statusText = "На сайте и в игре";
+            statusColor = "#55FF55";
+        } else if (serverOnline) {
+            statusText = inGameText + " онлайн";
+            statusColor = "#55FF55";
+        } else if (siteOnline) {
+            statusText = "На сайте онлайн";
+            statusColor = "#5555FF";
+        }
+
+        // Форматы UUID для меню
+        const trimmedUuid = uuid.replace(/-/g, '');
+        const intArrayUuid = getIntArrayFromUUID(uuid);
 
         const followersCount = dbData ? dbData.followers_count : 0;
         const followingCount = dbData ? dbData.following_count : 0;
@@ -633,17 +727,22 @@ async function loadUserProfile() {
                     <img src="${fullBodyUrl}" alt="${username}" class="fullbody-avatar">
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    
                     <div class="user-avatar-wrapper">
+                        <div class="avatar-status-text" style="color: ${statusColor};">${statusText}</div>
                         <img src="${avatarUrl}" alt="${username}" class="user-avatar">
+                        <div class="avatar-status-dot" style="background: ${statusColor}; ${(siteOnline || serverOnline) ? 'box-shadow: 0 0 12px ' + statusColor + '80;' : ''}"></div>
                     </div>
-                    <h1 class="user-name">${username}</h1>
-                    <div class="user-uuid">${uuid}</div>
 
-                    <div class="status-container">
-                        ${siteStatusHTML}
-                        <div class="status-badge">
-                            <span class="status-dot ${serverOnline ? 'online' : 'offline'}"></span>
-                            В игре на Kaeront: <b>${serverOnline ? 'Онлайн' : 'Оффлайн'}</b>
+                    <div class="username-container">
+                        <h1 class="user-name">${username}</h1>
+                        <div class="uuid-dropdown-toggle" onclick="toggleUuidDropdown(event)" title="Варианты UUID">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div id="uuid-dropdown" class="uuid-dropdown-menu">
+                            <div class="uuid-item" title="Стандартный UUID">${uuid}</div>
+                            <div class="uuid-item" title="Без дефисов (Hex)">${trimmedUuid}</div>
+                            <div class="uuid-item" title="Minecraft IntArray NBT">${intArrayUuid}</div>
                         </div>
                     </div>
 
