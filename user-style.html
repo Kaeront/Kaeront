@@ -330,6 +330,10 @@
             opacity: 1;
             visibility: visible;
         }
+
+        html:has(.spa-modal-overlay.active), body:has(.spa-modal-overlay.active) {
+            overflow: hidden !important;
+        }
         
         .spa-modal-card {
             background: #0d0d0d;
