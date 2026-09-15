@@ -68,42 +68,41 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 0.85rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             text-align: center;
         }
 
         .user-avatar-wrapper {
             position: relative;
+            width: 128px;
+            height: 128px;
             margin-bottom: 15px;
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
+            display: inline-block;
         }
 
         .user-avatar {
-            width: 128px;
-            height: 128px;
+            width: 100%;
+            height: 100%;
             border-radius: 16px;
             display: block;
         }
 
-        /* Кружок статуса в правом нижнем углу аватарки */
         .avatar-status-dot {
             position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 24px;
-            height: 24px;
+            bottom: -3px;
+            right: -3px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            border: 4px solid rgba(15, 15, 15, 0.95);
+            border: 3px solid #0f0f0f;
             background: #FF5555;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 10;
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Выпадающее меню UUID */
+        /* Выпадающее меню с UUID */
         .username-container {
             display: flex;
             align-items: center;
@@ -690,7 +689,7 @@ async function loadUserProfile() {
         let serverLocationText = serverOnlineIn ? `Играет на ${serverOnlineIn}` : "Играет на Kaeront";
 
         if (siteOnline && serverOnline) {
-            statusText = `На сайте и ${serverLocationText.toLowerCase()}`;
+            statusText = `На сайте и ${serverLocationText}`;
             statusColor = "#55FF55";
         } else if (serverOnline) {
             statusText = `${serverLocationText}`;
