@@ -88,39 +88,41 @@
         .ks-nav-item {
             display: block;
             width: 100%;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .ks-nav-inner {
+            display: block;
+            width: 100%;
             padding: 10px 20px;
             border-radius: 20px;
             color: #aaa;
             font-size: 0.9rem;
             font-weight: 400;
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid transparent;
             text-align: left;
             box-sizing: border-box;
+            background: transparent;
+            border: 1px solid transparent;
+            font-family: 'Minecraft', sans-serif;
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.5s linear(0 0%, 0.22 2.1%, 0.86 6.5%, 1.11 8.6%, 1.3 10.7%, 1.35 11.8%, 1.37 12.9%, 1.37 13.7%, 1.36 14.5%, 1.32 16.2%, 1.03 21.8%, 0.94 24%, 0.89 25.9%, 0.88 26.85%, 0.87 27.8%, 0.87 29.25%, 0.88 30.7%, 0.91 32.4%, 0.98 36.4%, 1.01 38.3%, 1.04 40.5%, 1.05 42.7%, 1.05 44.1%, 1.04 45.7%, 1 53.3%, 0.99 55.4%, 0.98 57.5%, 0.99 60.7%, 1 68.1%, 1.01 72.2%, 1 86.7%, 1 100%), text-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), letter-spacing 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-family: 'Minecraft';
-            outline: 20px solid transparent;
-            outline-offset: -20px;
         }
 
-        .ks-nav-item:hover:not(.active) {
+        .ks-nav-item:hover .ks-nav-inner {
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
         }
 
-        .ks-nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .ks-nav-item:hover:active {
+        .ks-nav-item:hover:active .ks-nav-inner {
             transform: scale(0.9);
             transition: transform 1.5s cubic-bezier(0.22, 0.61, 0.36, 1);
-            outline-offset: 10px; 
         }
 
-        .ks-nav-item.active {
+        .ks-nav-item.active .ks-nav-inner {
             background: #2a2a2a;
             color: #fff;
             border-color: #383838;
@@ -572,11 +574,17 @@
             
             <aside class="ks-sidebar">
                 <div class="ks-sidebar-title">нᴀстᴘойᴋи <span style="color: var(--accent);">βeta</span></div>
-                <div class="ks-nav-list">
-                    <button class="ks-nav-item active" onclick="switchTab('tab-general', this)">Основное</button>
-                    <button class="ks-nav-item" onclick="switchTab('tab-security', this)">Безопасность</button>
-                    <button class="ks-nav-item" onclick="switchTab('tab-chat', this)">Kaeront Чат</button>
-                </div>
+                    <div class="ks-nav-list">
+                        <button class="ks-nav-item active" onclick="switchTab('tab-general', this)">
+                            <span class="ks-nav-inner">Основное</span>
+                        </button>
+                        <button class="ks-nav-item" onclick="switchTab('tab-security', this)">
+                            <span class="ks-nav-inner">Безопасность</span>
+                        </button>
+                        <button class="ks-nav-item" onclick="switchTab('tab-chat', this)">
+                            <span class="ks-nav-inner">Kaeront Чат</span>
+                        </button>
+                    </div>
             </aside>
 
             <main class="ks-content" id="ks-content-box">
