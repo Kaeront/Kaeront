@@ -65,9 +65,8 @@
 
         /* Новые стили для статуса и аватарки */
         .avatar-status-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-family: 'Minecraft', sans-serif;
+            font-size: 0.75rem;
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             text-align: center;
@@ -731,12 +730,12 @@ async function loadUserProfile() {
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
 
-                    <div class="avatar-status-text" style="color: ${statusColor};">${statusText}</div>
-
                     <div class="user-avatar-wrapper">
                         <img src="${avatarUrl}" alt="${username}" class="user-avatar">
                         <div class="avatar-status-dot" style="background: ${statusColor};"></div>
                     </div>
+
+                    <div class="avatar-status-text" style="color: ${statusColor};">${statusText}</div>
 
                     <div class="username-container">
                         <h1 class="user-name">${username}</h1>
