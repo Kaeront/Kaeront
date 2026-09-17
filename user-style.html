@@ -63,12 +63,11 @@
             margin-bottom: 15px;
         }
 
-        /* Новые стили для статуса и аватарки */
+        /* Стили для статуса и аватарки */
         .avatar-status-text {
             font-family: 'Minecraft', sans-serif;
             font-size: 0.75rem;
             margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             text-align: center;
         }
 
@@ -735,8 +734,6 @@ async function loadUserProfile() {
                         <div class="avatar-status-dot" style="background: ${statusColor};"></div>
                     </div>
 
-                    <div class="avatar-status-text" style="color: ${statusColor};">${statusText}</div>
-
                     <div class="username-container">
                         <h1 class="user-name">${username}</h1>
                         <div class="uuid-dropdown-toggle" onclick="toggleUuidDropdown(event)" title="Варианты UUID">
@@ -748,6 +745,8 @@ async function loadUserProfile() {
                             <div class="uuid-item" title="Minecraft IntArray NBT">${intArrayUuid}</div>
                         </div>
                     </div>
+
+                    <div class="avatar-status-text" style="color: ${statusColor};">${statusText}</div>
 
                     ${badgesHTML}
                     
