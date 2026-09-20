@@ -312,107 +312,122 @@ const setupHead = () => {
 let networkDelayTimer = null;
 
 const toggleSpeedPopup = (show, type = 'slow') => {
+    // Сбрасываем текущие отложенные таймеры
     clearTimeout(networkDelayTimer);
 
-    const applyVisibility = () => {
-        // Если интернет выключен — игнорируем любые попытки показать желтую плашку
-        if (!navigator.onLine && type !== 'offline') return;
+    const popup = document.getElementById('speed-popup');
 
-        let popup = document.getElementById('speed-popup');
-
-        if (show) {
-            if (!popup) {
-                popup = document.createElement('div');
-                popup.id = 'speed-popup';
-                document.body.appendChild(popup);
-            }
-
-            if (type === 'offline') {
-                popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
-                popup.className = 'offline'; // Вешаем красный стиль
-            } else {
-                popup.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
-                popup.className = 'slow'; // Вешаем желтый стиль
-            }
-
-            // Микро-таймаут для запуска CSS-анимации
-            requestAnimationFrame(() => {
-                popup.classList.add('active');
-            });
-        } else {
-            if (popup) {
-                popup.classList.remove('active');
-                setTimeout(() => {
-                    const currentPopup = document.getElementById('speed-popup');
-                    if (currentPopup && !currentPopup.classList.contains('active')) {
-                        currentPopup.remove();
-                    }
-                }, 300);
-            }
+    // 1. ЕСЛИ НУЖНО СКРЫТЬ ПЛАШКУ
+    if (!show) {
+        if (popup) {
+            popup.classList.remove('active');
+            setTimeout(() => {
+                // Удаляем из DOM только если за время анимации не появился новый поп-ап
+                const currentPopup = document.getElementById('speed-popup');
+                if (currentPopup && !currentPopup.classList.contains('active')) {
+                    currentPopup.remove();
+                }
+            }, 300);
         }
+        return;
+    }
+
+    // 2. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ РЕНДЕРА/ОБНОВЛЕНИЯ ПЛАШКИ
+    const renderPopup = (statusType) => {
+        let el = document.getElementById('speed-popup');
+        
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'speed-popup';
+            document.body.appendChild(el);
+        }
+
+        if (statusType === 'offline') {
+            el.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
+            el.className = 'offline';
+        } else {
+            el.innerHTML = `<span>Ой-ой! Медленная связь!</span>`;
+            el.className = 'slow';
+        }
+
+        // Включаем активный класс на следующем кадре
+        requestAnimationFrame(() => {
+            el.classList.add('active');
+        });
     };
 
+    // 3. ЕСЛИ НЕТ ИНТЕРНЕТА (OFFLINE) — Показываем мгновенно
     if (type === 'offline') {
-        // Если интернета нет — показываем моментально
-        applyVisibility();
-    } else {
-        // Если уже горит красная плашка оффлайна — не заменяем её желтой
-        const existingPopup = document.getElementById('speed-popup');
-        if (existingPopup && existingPopup.classList.contains('offline')) {
-            return;
-        }
-
-        // Задержка 1.5 сек перед показом предупреждения о медленной связи
-        networkDelayTimer = setTimeout(applyVisibility, 1500);
+        renderPopup('offline');
+        return;
     }
+
+    // 4. ЕСЛИ МЕДЛЕННЫЙ ИНТЕРНЕТ (SLOW)
+    // Если УЖЕ висит красная плашка оффлайна — игнорируем желтую
+    if (popup && popup.classList.contains('offline') && popup.classList.contains('active')) {
+        return;
+    }
+
+    // Задержка 1 секунда перед показом желтой плашки (чтобы избежать ложных скачков)
+    networkDelayTimer = setTimeout(() => {
+        // Проверяем перед показом: если за время таймера интернет пропал вовсе, показываем offline
+        if (!navigator.onLine) {
+            renderPopup('offline');
+        } else {
+            renderPopup('slow');
+        }
+    }, 1000);
 };
 
-// Функция оценки состояния сети
+// Грамотная оценка состояния сети
 const evaluateNetwork = () => {
-    // 1. Приоритет: проверяем абсолютный офлайн
+    // Шаг 1: Полный оффлайн по флагу браузера
     if (!navigator.onLine) {
         toggleSpeedPopup(true, 'offline');
         return;
     }
 
-    // 2. Проверяем просадку скорости
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection) {
-        if (connection.effectiveType === '2g' || (connection.downlink && connection.downlink < 0.4)) {
+    // Шаг 2: Проверка качества соединения
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    
+    if (conn) {
+        // Соединение считается медленным, если:
+        // 1. effectiveType равен 'slow-2g' или '2g'
+        // 2. Задержка ответа (RTT) превышает 600 мс
+        // 3. Скорость скачивания (downlink) ниже 0.7 Мбит/с (но больше 0)
+        const isSlowType = conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g';
+        const isHighLatency = conn.rtt && conn.rtt > 600;
+        const isLowSpeed = conn.downlink && conn.downlink > 0 && conn.downlink < 0.7;
+
+        if (isSlowType || isHighLatency || isLowSpeed) {
             toggleSpeedPopup(true, 'slow');
             return;
         }
     }
 
-    // 3. Если всё в порядке — скрываем
+    // Шаг 3: Если сеть в норме — скрываем плашку
     toggleSpeedPopup(false);
 };
 
-// Живой мониторинг в реальном времени
+// Живой мониторинг событий
 const startNetworkMonitoring = () => {
+    // Первичный чекап
     evaluateNetwork();
 
-    // Мгновенная реакция на отключение
+    // Мгновенный оффлайн
     window.addEventListener('offline', () => {
         toggleSpeedPopup(true, 'offline');
     });
 
-    // Реакция на подключение
+    // Восстановление сети
     window.addEventListener('online', () => {
         evaluateNetwork();
     });
 
-    // Отслеживание изменений скорости «на лету»
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection) {
-        connection.addEventListener('change', () => {
-            // Если при изменении сети выявлен оффлайн — не запускаем оценки скорости
-            if (!navigator.onLine) {
-                toggleSpeedPopup(true, 'offline');
-            } else {
-                evaluateNetwork();
-            }
-        });
+    // Отслеживание изменений API Network Information
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn) {
+        conn.addEventListener('change', evaluateNetwork);
     }
 };
 
