@@ -255,6 +255,7 @@ const injectHTML = {
             <div class="footer-section">
                 <h4>Проект</h4>
                 <ul class="footer-links">
+                    <li><a href="https://t.me/KAmirWorkshop">Сникпики</a></li>
                     <li><a href="/news">Новости</a></li>
                     <li><a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a></li>
                     <li><a href="/donate">Пожертвовать</a></li>
