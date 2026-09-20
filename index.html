@@ -422,13 +422,26 @@
 
         .news-date {
             float: right;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            display: block;
+            font-family: 'Minecraft', sans-serif;
         }
 
-        .news-card h3 a { font-family: 'Minecraft', 'Uniform', sans-serif; margin: 0 0 10px 0; font-size: 1.2rem; color: var(--accent); margin-bottom: 15px; line-height: 1.5; text-decoration: none; transition: 0.3s; }
+        .news-card h3 a {
+            font-family: 'Minecraft';
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            text-decoration: none;
+            transition: color 0.2s ease, filter 0.2s ease;
+        }
 
-        .news-card h3 a:hover { color: var(--text-main); filter: drop-shadow(0 0 10px var(--accent)); }
+        .news-card h3 a:hover {
+            color: var(--text-main);
+            filter: drop-shadow(0 0 10px var(--accent));
+        }
 
         .news-card p {
             color: var(--text-dim);
@@ -456,12 +469,13 @@
             color: #fff;
             text-align: center;
             text-decoration: none;
-            padding: 12px;
+            padding: 10px;
             font-family: 'Minecraft', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             border: 3px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
+            transition: 0.2s ease;
             display: block;
+            border-radius: 20px;
         }
 
         .news-more-btn:hover {
@@ -480,7 +494,8 @@
         .tag {
             font-family: 'Minecraft', sans-serif;
             font-size: 0.65rem;
-            padding: 4px;
+            padding: 2px 4px;
+            border-radius: 5px;
         }
 
         .tag-gold  { background: #FA0; color: #000; }
