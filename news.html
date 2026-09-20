@@ -8,16 +8,34 @@
     <script src="/assets/news-data.js"></script>
     <script src="/assets/global.js" defer></script>
 
+    <meta name="description" content="Официальная лента новостей Kaeront. Читайте объявления, изменения и целую историю Kaeront и его проектов." />
+    <meta itemprop="name" content="Kaeront | Архив" />
+    <meta itemprop="description" content="Официальная лента новостей Kaeront. Читайте объявления, изменения и целую историю Kaeront и его проектов." />
+
+    <meta property="og:url" content="https://kaeront.ru/archive" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" Архив" />
+    <meta property="og:description" content="Официальная лента новостей Kaeront. Читайте объявления, изменения и целую историю Kaeront и его проектов." />
+
+    <meta name="twitter:card" content="summary_small_image" />
+    <meta name="twitter:title" content="Kaeront | Архив" />
+    <meta name="twitter:description" content="Официальная лента новостей Kaeront. Читайте объявления, изменения и целую историю Kaeront и его проектов." />
+
+    <link type="application/json+oembed" href="https://kaeront.ru?author=Kaeront • kaeront.ru" />
 
     <style>
         :root {
             --nav-hide: 81px;
-            --card-bg: rgba(20, 20, 20, 0.5);
+            --filter-btn-bg: #151515;
         }
 
         .content-wrapper {
             padding-top: calc(var(--nav-height) + 40px);
-            max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
         }
 
         /* Поиск и Фильтры */
@@ -38,28 +56,43 @@
         
         .filter-tags { display: flex; flex-wrap: wrap; gap: 4px; }
         .filter-btn {
-            background: #151515;
+            background: none;
             border: 1px solid #333;
             color: var(--text-dim);
             padding: 6px;
-            cursor: url('pointer.png'), pointer;
+            cursor: url(/assets/pointer.png), pointer;
             font-family: 'Minecraft';
             font-size: 0.75rem;
             transition: 0.2s;
             border-radius: 10px;
             flex-grow: 1;
         }
-        .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255, 170, 0, 0.1); }
+        .filter-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+        }
 
-        .header-section { margin: 20px; }
-        h1 { font-family: 'Minecraft'; font-size: 1.5rem; color: var(--accent); margin-bottom: 30px; }
+        .header-section { margin: 0 60px 40px; }
+
+        .content-wrapper h1 {
+            font-family: 'Minecraft', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent);
+            text-shadow: 0.11em 0.11em #3E2A00;
+        }
+
+        .content-wrapper p { 
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
 
         .news-list { display: flex; flex-direction: column; gap: 30px; margin: 20px; min-height: 200px; }
         
         /* Карточка новости */
         .news-card {
-            background: var(--card-bg);
-            border: 1px solid #1a1a1a;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
             position: relative;
             animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -113,7 +146,7 @@
             width: 100%;
             font-family: 'Minecraft';
             font-size: 0.7rem;
-            cursor: url('pointer.png'), pointer;
+            cursor: url('/assets/pointer.png'), pointer;
             transition: color 0.2s ease, border-color 0.2s ease;
         }
         .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -251,6 +284,7 @@
     <div class="content-wrapper">
         <div class="header-section">
             <h1>Лента новостей</h1>
+            <p>Официальная лента новостей Kaeront. Читайте объявления, изменения и целую историю Kaeront и его проектов.</p>
         </div>
 
 <div class="controls">
