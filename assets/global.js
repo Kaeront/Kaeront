@@ -229,7 +229,7 @@ const injectHTML = {
         <nav id="smart-nav">
             <a href="/" class="nav-logo">Kaeront</a>
             <div class="nav-links">
-                <a href="https://t.me/KAmirWorkshop">Сникпики</a>
+                <a href="https://t.me/KAmirWorkshop" target="_blank">Сникпики</a>
                 <a href="/news">Новости</a>
                 <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a>
                 <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
