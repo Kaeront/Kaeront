@@ -390,34 +390,33 @@
 
         /* --- NEWS SECTION --- */
         .news-container {
-            max-width: 860px;
+            max-width: 1200px;
             width: 100%;
-            margin: 20px auto 40px;
+            margin: 40px auto;
             display: flex;
             flex-direction: column;
             gap: 0;
-            border: 0px solid rgba(255, 255, 255, 0.1);
         }
 
         .news-card {
-            background-color: color-mix(in srgb, var(--news-card-bg) 50%, transparent);
-            border-bottom: none;
-            padding: 30px;
+            padding: 20px 20px 0;
             position: relative;
             color: var(--text-dim);
             font-size: 0.95rem;
             line-height: 1.6;
-            margin-top: 15px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            border-radius: 20px 20px 0 0;
         }
 
         .news-badge {
             display: inline-block;
             background: var(--accent);
             color: #000;
-            padding: 4px 12px;
+            padding: 4px 8px;
             font-family: 'Minecraft', sans-serif;
-            font-size: 0.7rem;
-            margin-bottom: 15px;
+            font-size: 0.75rem;
+            border-radius: 10px;
         }
 
         .news-date {
@@ -475,7 +474,8 @@
             border: 3px solid rgba(255, 255, 255, 0.1);
             transition: 0.2s ease;
             display: block;
-            border-radius: 20px;
+            border-radius: 0 0 20px 20px;
+            overflow: hidden;
         }
 
         .news-more-btn:hover {
