@@ -10,9 +10,10 @@ const globalStyles = `
         --bg: #0a0a0a;
         --accent: #FA0;
         --text-main: #fff;
-        --text-dim: #888;
+        --text-dim: #B3B3B3;
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --nav-height: 50px;
+        --nav-bg: rgb(10, 10, 10);
     }
 
     html {
@@ -111,17 +112,25 @@ const globalStyles = `
     }
 
     nav {
-        position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
-        background: transparent; backdrop-filter: blur(0px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: var(--nav-height);
+        background-color: transparent;
+        backdrop-filter: blur(0px);
         border-bottom: 1.5px solid transparent; 
         display: flex; justify-content: space-between;
-        align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 2000;
+        align-items: center;
+        padding: 0 5%;
+        box-sizing: border-box;
+        z-index: 2000;
         user-select: none;
         will-change: background, backdrop-filter, border-bottom, margin-top;
-        transition: background 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+        transition: background-color 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
     }
     nav.scrolled {
-        background: rgba(10, 10, 10, 0.7); 
+        background-color: color-mix(in srgb, var(--nav-bg) 70%, transparent); 
         backdrop-filter: blur(5px);
         border-bottom: 1.5px solid #1a1a1a;
     }
@@ -303,12 +312,13 @@ const setupHead = () => {
 let networkDelayTimer = null;
 
 const toggleSpeedPopup = (show, type = 'slow') => {
-    // Сбрасываем предыдущий таймер ожидания медленного соединения
     clearTimeout(networkDelayTimer);
 
     const applyVisibility = () => {
+        // Если интернет выключен — игнорируем любые попытки показать желтую плашку
+        if (!navigator.onLine && type !== 'offline') return;
+
         let popup = document.getElementById('speed-popup');
-        const nav = document.getElementById('smart-nav');
 
         if (show) {
             if (!popup) {
@@ -317,7 +327,6 @@ const toggleSpeedPopup = (show, type = 'slow') => {
                 document.body.appendChild(popup);
             }
 
-            // Настраиваем контент и классы в зависимости от типа ошибки
             if (type === 'offline') {
                 popup.innerHTML = `<span>Оборвана связь с Kaeront.</span>`;
                 popup.className = 'offline'; // Вешаем красный стиль
@@ -326,30 +335,41 @@ const toggleSpeedPopup = (show, type = 'slow') => {
                 popup.className = 'slow'; // Вешаем желтый стиль
             }
 
-            // Форсируем микро-таймаут для плавного CSS-перехода
-            setTimeout(() => {
+            // Микро-таймаут для запуска CSS-анимации
+            requestAnimationFrame(() => {
                 popup.classList.add('active');
-            }, 50);
+            });
         } else {
             if (popup) {
                 popup.classList.remove('active');
-                setTimeout(() => popup.remove(), 300); // Чистим DOM после скрытия
+                setTimeout(() => {
+                    const currentPopup = document.getElementById('speed-popup');
+                    if (currentPopup && !currentPopup.classList.contains('active')) {
+                        currentPopup.remove();
+                    }
+                }, 300);
             }
         }
     };
 
     if (type === 'offline') {
-        // Если интернета вообще нет — показываем плашку моментально без задержек!
+        // Если интернета нет — показываем моментально
         applyVisibility();
     } else {
-        // Если интернет просто просел по скорости — аккуратно ждем 1.5 сек перед показом
+        // Если уже горит красная плашка оффлайна — не заменяем её желтой
+        const existingPopup = document.getElementById('speed-popup');
+        if (existingPopup && existingPopup.classList.contains('offline')) {
+            return;
+        }
+
+        // Задержка 1.5 сек перед показом предупреждения о медленной связи
         networkDelayTimer = setTimeout(applyVisibility, 1500);
     }
 };
 
 // Функция оценки состояния сети
 const evaluateNetwork = () => {
-    // 1. Проверяем абсолютный офлайн
+    // 1. Приоритет: проверяем абсолютный офлайн
     if (!navigator.onLine) {
         toggleSpeedPopup(true, 'offline');
         return;
@@ -364,21 +384,20 @@ const evaluateNetwork = () => {
         }
     }
 
-    // Если всё восстановилось — плавно скрываем предупреждение
+    // 3. Если всё в порядке — скрываем
     toggleSpeedPopup(false);
 };
 
 // Живой мониторинг в реальном времени
 const startNetworkMonitoring = () => {
-    // Первичная проверка при загрузке страницы
     evaluateNetwork();
 
-    // Мгновенная реакция на физическое отключение (без таймеров и задержек)
+    // Мгновенная реакция на отключение
     window.addEventListener('offline', () => {
         toggleSpeedPopup(true, 'offline');
     });
 
-    // Реакция на возвращение сети
+    // Реакция на подключение
     window.addEventListener('online', () => {
         evaluateNetwork();
     });
@@ -386,7 +405,14 @@ const startNetworkMonitoring = () => {
     // Отслеживание изменений скорости «на лету»
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection) {
-        connection.addEventListener('change', evaluateNetwork);
+        connection.addEventListener('change', () => {
+            // Если при изменении сети выявлен оффлайн — не запускаем оценки скорости
+            if (!navigator.onLine) {
+                toggleSpeedPopup(true, 'offline');
+            } else {
+                evaluateNetwork();
+            }
+        });
     }
 };
 
