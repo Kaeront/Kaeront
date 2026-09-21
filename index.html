@@ -34,7 +34,6 @@
             --nav-hide: 38px;
             --donated: 12500;
             --donate-goal: 25000;
-            --why-card-bg: rgb(20, 20, 20);
             --server-card-bg: rgb(20, 20, 20);
             --news-more-btn-bg: rgb(20, 20, 20);
         }
@@ -247,28 +246,27 @@
         
         .why-us-track { 
             display: flex; 
-            gap: 20px; 
+            gap: 10px; 
             width: max-content; 
             will-change: transform;
         }
         
-        .why-card { 
-            background: var(--why-card-bg);
-            border-left: 3px solid var(--accent); 
-            padding: 15px;
-            width: 270px; 
-            flex-shrink: 0; 
+        .why-card {
+            border-bottom: 1px solid var(--accent);
+            padding: 10px 15px;
+            width: 300px;
+            flex-shrink: 0;
             box-sizing: border-box;
-            transition: background 0.3s ease; 
+            transition: background 0.3s ease;
+            border-radius: 10px;
         }
         
-        
-        .why-card h4 { 
+        .why-card h4 {
             font-family: 'Minecraft', sans-serif;
             font-size: 0.9rem;
             color: var(--accent);
             margin: 0;
-            font-weight: 400;
+            font-weight: 700;
         }
         
         .why-card p { 
@@ -280,7 +278,7 @@
 
         /* --- SERVER CARDS --- */
         .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 30px 0; width: 100%; box-sizing: border-box; height: 600px; overflow-y: auto; scrollbar-width: none; mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; }
-        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.4rem; font-weight: bold; text-transform: uppercase; text-align: center; margin: 50px 0px 20px; }
+        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-align: center; margin: 50px 0px 20px; }
         .section-header { font-family: 'Minecraft'; font-size: 1.2rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
         .server-card { background-color: color-mix(in srgb, var(--server-card-bg) 50%, transparent); border-left: 4px solid var(--accent); padding: 30px; cursor: url('/assets/pointer.png'), pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
         .server-card:hover { background-color: var(--server-card-bg); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
@@ -420,11 +418,10 @@
         }
 
         .news-date {
-            float: right;
-            color: var(--text-dim);
             font-size: 0.75rem;
-            display: block;
+            display: inline-block;
             font-family: 'Minecraft', sans-serif;
+            padding: 4px 8px;
         }
 
         .news-card h3 a {
@@ -480,7 +477,7 @@
         .news-more-btn:hover {
             background: var(--accent);
             color: #000;
-            border: 3px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
         }
         
         /* --- NEWS TAGS --- */
@@ -492,8 +489,8 @@
 
         .tag {
             font-family: 'Minecraft', sans-serif;
-            font-size: 0.65rem;
-            padding: 2px 4px;
+            font-size: 0.7rem;
+            padding: 1px 4px;
             border-radius: 5px;
         }
 
@@ -1130,8 +1127,8 @@ async function loadLatestNews() {
         // 4. Формируем структуру карточки с динамической ссылкой на /news/id
         const newsCardHtml = `
             <div class="news-card">
-                <span class="news-date">${latestNews.date}</span>
                 <div class="news-badge">ПОСЛЕДНЯЯ НОВОСТЬ</div>
+                <span class="news-date">${latestNews.date}</span>
                 <h3>
                     <a href="/news/${latestNews.id}" style="text-decoration: none;">
                         ${latestNews.title}
