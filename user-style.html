@@ -33,6 +33,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none;
         }
 
         .fullbody-avatar {
@@ -82,19 +83,20 @@
         .user-avatar {
             width: 100%;
             height: 100%;
-            border-radius: 16px;
+            border-bottom-right-radius: 48px;
             display: block;
         }
 
         .avatar-status-dot {
             position: absolute;
-            bottom: -16px;
-            right: -16px;
-            width: 22px;
-            height: 22px;
+            bottom: -4px;
+            right: -4px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: #FF5555;
             z-index: 0;
+            mask-image: radial-gradient(circle at top left, transparent 69%, black 70%);
         }
 
         /* Выпадающее меню с UUID */
@@ -102,7 +104,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 4px;
             position: relative;
             margin-bottom: 5px;
         }
@@ -131,7 +133,7 @@
             position: absolute;
             top: 100%;
             left: 50%;
-            transform: translateX(-50%) translate3d(0, -20px, 0) scale(0.9);
+            transform: translateX(-50%) translate3d(0, -20px, 0) scale(0.8);
             background: #0a0a0a;
             border: 1px solid #222;
             border-radius: 10px;
@@ -162,6 +164,7 @@
             border: 1px solid #111;
             white-space: nowrap;
             text-align: center;
+            transition: 0.1s border-color, 0.1s color;
         }
 
         .uuid-item:hover {
@@ -206,6 +209,7 @@
             width: 16px;
             height: 16px;
             object-fit: contain;
+            user-select: none;
         }
         
         /* Tooltip при наведении */
@@ -227,6 +231,7 @@
             visibility: hidden;
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
             z-index: 1000;
+            user-select: none;
         }
         
         .badge-tooltip::after {
@@ -284,9 +289,9 @@
             border: 1px solid #282828;
             color: var(--text-main, #ececec);
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: var(--transition, all 0.2s ease);
             cursor: pointer;
@@ -329,7 +334,8 @@
         }
         
         .stat-box:hover {
-            border-color: #ffaa00;
+            border-color: var(--accent, #ffaa00);
+            color: var(--accent, #ffaa00);
             transform: translateY(-2px);
         }
         
@@ -670,7 +676,7 @@ async function loadUserProfile() {
                     const imgSrc = b.image_base64 ? b.image_base64 : '/assets/unavailable.png';
                     return `
                     <div class="badge-item">
-                        <img src="${imgSrc}" class="badge-icon" alt="${b.name}">
+                        <img src="${imgSrc}" class="badge-icon">
                         <div class="badge-tooltip">
                             <div class="badge-tooltip-title">${b.name}</div>
                             <div class="badge-tooltip-desc">${b.description}</div>
@@ -725,12 +731,12 @@ async function loadUserProfile() {
             ${registeredText}
             <div class="profile-layout-wrapper">
                 <div class="fullbody-avatar-container">
-                    <img src="${fullBodyUrl}" alt="${username}" class="fullbody-avatar">
+                    <img src="${fullBodyUrl}" class="fullbody-avatar">
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
 
                     <div class="user-avatar-wrapper">
-                        <img src="${avatarUrl}" alt="${username}" class="user-avatar">
+                        <img src="${avatarUrl}" class="user-avatar">
                         <div class="avatar-status-dot" style="background: ${statusColor};"></div>
                     </div>
 
