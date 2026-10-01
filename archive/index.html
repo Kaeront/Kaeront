@@ -494,6 +494,116 @@
         .status-banner.unofficial-verified { border-inline-color: #0a0 !important; background: rgba(0, 170, 0, 0.05) !important; }
         .status-banner.final { border-inline-color: #5f5 !important; background: rgba(85, 255, 85, 0.05) !important; }
 
+        /* --- КНОПКА ДЕЙСТВИЙ И ВЫПАДАЮЩЕЕ МЕНЮ --- */
+        .archive-actions-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Плавающая круглая кнопка */
+        .archive-fab-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #181818;
+            border: 1.5px solid #333;
+            color: var(--accent, #ffaa00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .archive-fab-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--accent, #ffaa00);
+            background: #222;
+        }
+        
+        .archive-fab-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transition: transform 0.3s ease;
+        }
+        
+        .archive-actions-widget.open .archive-fab-btn svg { transform: rotate(45deg); }
+        
+        /* Выпадающий список */
+        .archive-actions-menu {
+            position: absolute;
+            bottom: 58px;
+            right: 0;
+            width: 200px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px) scale(0.95);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        }
+        
+        .archive-actions-widget.open .archive-actions-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+        
+        .archive-actions-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            color: #ccc;
+            font-size: 0.75rem;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        
+        .archive-actions-item:hover {
+            background: rgba(255, 170, 0, 0.1);
+            color: var(--accent, #ffaa00);
+        }
+        
+        /* --- РЕЖИМ ПРОСМОТРА СЫРОГО КОДА (Показать код) --- */
+        .markdown-body.raw-code-mode {
+            background-color: #0d1117 !important;
+            color: #c9d1d9 !important;
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            padding: 20px !important;
+            border-radius: 10px !important;
+            border: 1px solid #30363d !important;
+        }
+        
+        .markdown-body.raw-code-mode * {
+            display: inline !important;
+            font-family: inherit !important;
+            background: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
 
         /* Адаптивность для мобильных */
         @media (max-width: 768px) {
