@@ -3,28 +3,8 @@
 const appContainer = document.getElementById('wiki-app');
 const contentContainer = document.getElementById('wiki-content');
 
-// Кастомный рендерер Marked с поддержкой подсвечиваемых блоков кода через Prism.js
-const renderer = new marked.Renderer();
-renderer.code = function(code, language) {
-    const validLang = language && Prism.languages[language] ? language : 'markup';
-    const highlighted = language && Prism.languages[language] 
-        ? Prism.highlight(code, Prism.languages[language], language)
-        : escapeHtml(code);
-
-    return `
-        <div class="code-block-wrapper">
-            <div class="code-block-header">
-                <span>${language ? language.toUpperCase() : 'TEXT'}</span>
-                <button class="code-copy-btn" onclick="copyCodeSnippet(this)">Копировать</button>
-            </div>
-            <pre class="language-${validLang}"><code class="language-${validLang}">${highlighted}</code></pre>
-        </div>
-    `;
-};
-
-// Настраиваем парсер Marked с подключением кастомного рендерера
+// Настраиваем парсер Marked
 marked.setOptions({
-    renderer: renderer,
     breaks: true,
     gfm: true
 });
@@ -97,17 +77,21 @@ const STATUS_BANNERS = {
         </div>`
 };
 
-// Загрузка Markdown-файла
+// --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ РЕЖИМА СЫРОГО КОДА ---
+let isRawCodeMode = false;
+let currentRawMarkdown = '';
+
+// Вставка вызова обновления FAB внутри loadArticle():
 async function loadArticle() {
     const routeName = getCleanRoute();
     
-    // Сбрасываем сырой режим при переходе
-    isRawCodeActive = false;
+    // Сбрасываем режим кода при смене статьи
+    isRawCodeMode = false;
     contentContainer.classList.remove('raw-code-mode');
-
-    // ФАНТОМНАЯ СТРАНИЦА ПОИСКА
+    
     if (routeName === 'search') {
         renderSearchPage();
+        updateFabButton(null); // Скрываем FAB на странице поиска
         return;
     }
 
@@ -117,9 +101,9 @@ async function loadArticle() {
         const response = await fetch(filePath);
         if (!response.ok) throw new Error('Статья отсутствует');
         let markdownText = await response.text();
-        currentRawMarkdown = markdownText;
 
-        // Ищем строку статуса
+        currentRawMarkdown = markdownText; // Сохраняем сырой MD
+
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
 
@@ -133,7 +117,6 @@ async function loadArticle() {
                 }
             });
 
-            // Оборачиваем в контейнер всегда, если есть хотя бы один баннер
             if (bannersHtml !== '') {
                 bannersHtml = `<div class="status-banners-container">${bannersHtml}</div>`;
             }
@@ -142,38 +125,16 @@ async function loadArticle() {
         }
 
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
-
-        // Динамическая переподсветка синтаксиса
-        if (window.Prism) {
-            Prism.highlightAllUnder(contentContainer);
-        }
+        
+        // Обновляем FAB для текущего маршрута
+        updateFabButton(routeName);
 
     } catch (error) {
-        currentRawMarkdown = '';
         contentContainer.innerHTML = `
             <h1>Статья не найдена</h1>
             <p>Документ <code>${routeName}.md</code> ещё не создан или находится в разработке.<br><h3>Советуем:</h3><ul><li>Поискать в <a href="/archive/search">расширенном поиске</a></li><li>Обновить страницу</li><li>Проверить подключение к интернету</li><li>Обратиться в <a href="/archive/contacts">контакты поддержки</a>, если проблема сохраняется</li></ul></p>
-        `;
-    }
-}
-
-// Функция копирования кода из блока
-function copyCodeSnippet(btn) {
-    const wrapper = btn.closest('.code-block-wrapper');
-    const code = wrapper ? wrapper.querySelector('code').innerText : '';
-    
-    if (code) {
-        navigator.clipboard.writeText(code).then(() => {
-            const orig = btn.textContent;
-            btn.textContent = 'Скопировано!';
-            btn.style.background = 'var(--accent)';
-            btn.style.color = '#000';
-            setTimeout(() => {
-                btn.textContent = orig;
-                btn.style.background = '';
-                btn.style.color = '';
-            }, 2000);
-        });
+            `;
+        updateFabButton(null);
     }
 }
 
@@ -247,15 +208,20 @@ style.textContent = `
     }
 
     .search-hidden { display: none !important; }
+
 `;
 document.head.appendChild(style);
 
-// Безопасное экранирование спецсимволов RegExp
+// ==========================================
+// Helper: Безопасное экранирование спецсимволов RegExp
+// ==========================================
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Безопасная подсветка текста (Защита от инъекций в HTML)
+// ==========================================
+// Helper: Безопасная подсветка текста (Защита от инъекций в HTML)
+// ==========================================
 function highlightText(text, query, className) {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
@@ -413,6 +379,7 @@ function initSearch() {
             const text = link.textContent.toLowerCase();
             if (query === '' || text.includes(query)) {
                 link.classList.remove('search-hidden');
+                // Подсветка (если нужно)
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
                 link.innerHTML = query !== '' ? link.textContent.replace(regex, '<span class="sidebar-match">$1</span>') : link.textContent;
             } else {
@@ -478,7 +445,7 @@ function updateActiveSidebarLink() {
     });
 }
 
-// Универсальный перехват кликов
+// УНИВЕРСАЛЬНЫЙ ПЕРЕХВАТ КЛИКОВ
 document.body.addEventListener('click', e => {
     const link = e.target.closest('a');
     if (link) {
@@ -501,7 +468,7 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     appContainer.classList.add('scale-down');
 
-    // Обработка редиректа ?page= БЕЗ удаления других параметров
+    // 1. Обработка редиректа ?page= БЕЗ удаления других параметров
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
     
@@ -513,14 +480,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.history.replaceState(null, null, newUrl);
     }
 
-    // Инициализация поиска ДО загрузки статьи
+    // 2. Инициализация поиска ДО загрузки статьи
     initSearch();
 
-    // Загрузка контента
+    // 3. Загрузка контента
     await loadArticle();
     updateActiveSidebarLink();
 
-    // 4Восстановление строки поиска, если мы на странице поиска
+    // 4. Восстановление строки поиска, если мы на странице поиска
     const query = new URLSearchParams(window.location.search).get('q');
     const mainInput = document.querySelector('.search-input-field');
     if (mainInput && query) {
@@ -530,92 +497,93 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => appContainer.classList.remove('scale-down'), 100);
 });
 
-/* ==========================================
-   4. Плавающая кнопка действия с архивом
-   ========================================== */
+// ==========================================
+// 4. Логика FAB кнопки и меню действий
+// ==========================================
+function updateFabButton(routeName) {
+    let container = document.getElementById('fab-actions-container');
+    
+    if (!routeName) {
+        if (container) container.remove();
+        return;
+    }
 
-// Хранение исходного Markdown текущей страницы для переключения режима "Показать код"
-let currentRawMarkdown = "";
-let isRawCodeActive = false;
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'fab-actions-container';
+        container.className = 'fab-container';
+        document.body.appendChild(container);
+    }
 
-// Внедрение виджета в DOM при загрузке
-function initArchiveActionsWidget() {
-    if (document.getElementById('archive-actions-widget')) return;
+    const rawMdUrl = `https://kaeront.ru/archive/${routeName}.md`;
+    const githubUrl = `https://github.com/Kaeront/Kaeront/blob/main/archive/${routeName}.md`;
 
-    const widget = document.createElement('div');
-    widget.id = 'archive-actions-widget';
-    widget.className = 'archive-actions-widget';
-    widget.innerHTML = `
-        <button class="archive-fab-btn" id="archive-fab-toggle" title="Действия со страницей">
-            <svg viewBox="0 0 24 24">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
+    container.innerHTML = `
+        <button class="fab-main-btn" id="fab-main-trigger" title="Опции документа">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
         </button>
-        <div class="archive-actions-menu">
-            <button class="archive-actions-item" id="action-show-raw">
-                📄 Показать сырым
-            </button>
-            <button class="archive-actions-item" id="action-toggle-code">
-                💻 Показать код
-            </button>
-            <button class="archive-actions-item" id="action-open-github">
-                🐙 Показать в GitHub
-            </button>
+        <div class="fab-menu" id="fab-menu">
+            <a href="${rawMdUrl}" target="_blank" class="fab-item">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                Показать сырым
+            </a>
+            <div class="fab-item" id="toggle-code-view">
+                <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+                <span id="code-toggle-text">${isRawCodeMode ? 'Показать Markdown' : 'Показать код'}</span>
+            </div>
+            <a href="${githubUrl}" target="_blank" class="fab-item">
+                <svg viewBox="0 0 24 24"><path d="M12 1.27a11 11 0 00-3.48 21.43c.55.1.75-.23.75-.52v-1.83c-3.06.65-3.71-1.48-3.71-1.48-.5-1.27-1.22-1.61-1.22-1.61-1-.68.08-.66.08-.66 1.1.08 1.68 1.13 1.68 1.13.98 1.68 2.58 1.2 3.21.92.1-.71.38-1.2.69-1.48-2.44-.28-5-1.22-5-5.43 0-1.2.43-2.18 1.14-2.95-.11-.28-.49-1.4.11-2.91 0 0 .92-.3 3.02 1.13a10.5 10.5 0 015.5 0c2.1-1.43 3.02-1.13 3.02-1.13.6 1.51.22 2.63.11 2.91.71.77 1.14 1.75 1.14 2.95 0 4.22-2.57 5.15-5.02 5.42.39.34.74 1.01.74 2.03v3.01c0 .3.2.63.76.52A11 11 0 0012 1.27z"/></svg>
+                Показать в GitHub
+            </a>
         </div>
     `;
 
-    document.body.appendChild(widget);
-
-    const toggleBtn = document.getElementById('archive-fab-toggle');
-    const rawBtn = document.getElementById('action-show-raw');
-    const codeBtn = document.getElementById('action-toggle-code');
-    const githubBtn = document.getElementById('action-open-github');
-
-    // Открытие / закрытие выпадающего меню
-    toggleBtn.addEventListener('click', (e) => {
+    const mainBtn = document.getElementById('fab-main-trigger');
+    
+    mainBtn.onclick = (e) => {
         e.stopPropagation();
-        widget.classList.toggle('open');
-    });
+        container.classList.toggle('active');
+    };
 
-    document.addEventListener('click', () => {
-        widget.classList.remove('open');
-    });
-
-    // 1. Показать сырым (.md в конце адреса в новой вкладке)
-    rawBtn.addEventListener('click', () => {
-        const route = getCleanRoute();
-        if (route === 'search') return;
-        const rawUrl = `${window.location.origin}/archive/${route}.md`;
-        window.open(rawUrl, '_blank');
-    });
-
-    // 2. Показать код (Переключение стилей и отображения Markdown)
-    codeBtn.addEventListener('click', () => {
-        isRawCodeActive = !isRawCodeActive;
-        applyCodeViewMode(isRawCodeActive);
-    });
-
-    // 3. Показать в GitHub
-    githubBtn.addEventListener('click', () => {
-        const route = getCleanRoute();
-        if (route === 'search') return;
-        const githubUrl = `https://github.com/Kaeront/Kaeront/blob/main/archive/${route}.md`;
-        window.open(githubUrl, '_blank');
-    });
+    document.getElementById('toggle-code-view').onclick = () => {
+        toggleRawCodeView();
+        container.classList.remove('active');
+    };
 }
 
-// Применение или отмена режима "Показать код"
-function applyCodeViewMode(active) {
-    if (active) {
+// Закрытие выпадающего меню при клике вне его
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('fab-actions-container');
+    if (container && !container.contains(e.target)) {
+        container.classList.remove('active');
+    }
+});
+
+// Переключение моноширинного вида с подсветкой синтаксиса
+function toggleRawCodeView() {
+    isRawCodeMode = !isRawCodeMode;
+    const btnText = document.getElementById('code-toggle-text');
+
+    if (isRawCodeMode) {
+        if (btnText) btnText.textContent = 'Показать Markdown';
         contentContainer.classList.add('raw-code-mode');
-        contentContainer.textContent = currentRawMarkdown;
+        contentContainer.innerHTML = highlightMarkdownSyntax(currentRawMarkdown);
     } else {
+        if (btnText) btnText.textContent = 'Показать код';
         contentContainer.classList.remove('raw-code-mode');
-        // Повторная загрузка и рендеринг статьи
         loadArticle();
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initArchiveActionsWidget();
-});
+// Простая подсветка элементов Markdown (стиль GitHub MD)
+function highlightMarkdownSyntax(mdText) {
+    let escaped = escapeHtml(mdText);
+
+    return escaped
+        .replace(/^(#+ .*)($|\n)/gm, '<span class="md-token-header">$1</span>$2')
+        .replace(/(\*\*|__)(.*?)\1/g, '<span class="md-token-bold">$1$2$1</span>')
+        .replace(/(`{1,3})(.*?)\1/g, '<span class="md-token-code">$1$2$1</span>')
+        .replace(/^(&gt;\s.*)($|\n)/gm, '<span class="md-token-quote">$1</span>$2')
+        .replace(/^(\s*[-*+]\s|\s*\d+\.\s)/gm, '<span class="md-token-list">$1</span>')
+        .replace(/(\[[^\]]+\]\([^)]+\))/g, '<span class="md-token-link">$1</span>');
+}
