@@ -484,3 +484,115 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setTimeout(() => appContainer.classList.remove('scale-down'), 100);
 });
+
+/* ==========================================
+   4. Плавающая кнопка действия с архивом
+   ========================================== */
+
+// Хранение исходного Markdown текущей страницы для переключения режима "Показать код"
+let currentRawMarkdown = "";
+let isRawCodeActive = false;
+
+// Внедрение виджета в DOM при загрузке
+function initArchiveActionsWidget() {
+    if (document.getElementById('archive-actions-widget')) return;
+
+    const widget = document.createElement('div');
+    widget.id = 'archive-actions-widget';
+    widget.className = 'archive-actions-widget';
+    widget.innerHTML = `
+        <button class="archive-fab-btn" id="archive-fab-toggle" title="Действия со страницей">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+        </button>
+        <div class="archive-actions-menu">
+            <button class="archive-actions-item" id="action-show-raw">
+                📄 Показать сырым
+            </button>
+            <button class="archive-actions-item" id="action-toggle-code">
+                💻 Показать код
+            </button>
+            <button class="archive-actions-item" id="action-open-github">
+                🐙 Показать в GitHub
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(widget);
+
+    const toggleBtn = document.getElementById('archive-fab-toggle');
+    const rawBtn = document.getElementById('action-show-raw');
+    const codeBtn = document.getElementById('action-toggle-code');
+    const githubBtn = document.getElementById('action-open-github');
+
+    // Открытие / закрытие выпадающего меню
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        widget.classList.toggle('open');
+    });
+
+    document.addEventListener('click', () => {
+        widget.classList.remove('open');
+    });
+
+    // 1. Показать сырым (.md в конце адреса в новой вкладке)
+    rawBtn.addEventListener('click', () => {
+        const route = getCleanRoute();
+        if (route === 'search') return;
+        const rawUrl = `${window.location.origin}/archive/${route}.md`;
+        window.open(rawUrl, '_blank');
+    });
+
+    // 2. Показать код (Переключение стилей и отображения Markdown)
+    codeBtn.addEventListener('click', () => {
+        isRawCodeActive = !isRawCodeActive;
+        applyCodeViewMode(isRawCodeActive);
+    });
+
+    // 3. Показать в GitHub
+    githubBtn.addEventListener('click', () => {
+        const route = getCleanRoute();
+        if (route === 'search') return;
+        const githubUrl = `https://github.com/Kaeront/Kaeront/blob/main/archive/${route}.md`;
+        window.open(githubUrl, '_blank');
+    });
+}
+
+// Применение или отмена режима "Показать код"
+function applyCodeViewMode(active) {
+    if (active) {
+        contentContainer.classList.add('raw-code-mode');
+        contentContainer.textContent = currentRawMarkdown;
+    } else {
+        contentContainer.classList.remove('raw-code-mode');
+        // Повторная загрузка и рендеринг статьи
+        loadArticle();
+    }
+}
+
+// Модификация загрузки статей для сохранения сырого исходника
+const originalLoadArticle = loadArticle;
+loadArticle = async function() {
+    isRawCodeActive = false;
+    contentContainer.classList.remove('raw-code-mode');
+    
+    const routeName = getCleanRoute();
+    if (routeName !== 'search') {
+        try {
+            const res = await fetch(`/archive/${routeName}.md`);
+            if (res.ok) {
+                currentRawMarkdown = await res.text();
+            }
+        } catch (e) {
+            currentRawMarkdown = "";
+        }
+    }
+    
+    await originalLoadArticle();
+};
+
+// Инициализация при загрузке DOM
+document.addEventListener('DOMContentLoaded', () => {
+    initArchiveActionsWidget();
+});
