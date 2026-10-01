@@ -3,8 +3,28 @@
 const appContainer = document.getElementById('wiki-app');
 const contentContainer = document.getElementById('wiki-content');
 
-// Настраиваем парсер Marked
+// Кастомный рендерер Marked с поддержкой подсвечиваемых блоков кода через Prism.js
+const renderer = new marked.Renderer();
+renderer.code = function(code, language) {
+    const validLang = language && Prism.languages[language] ? language : 'markup';
+    const highlighted = language && Prism.languages[language] 
+        ? Prism.highlight(code, Prism.languages[language], language)
+        : escapeHtml(code);
+
+    return `
+        <div class="code-block-wrapper">
+            <div class="code-block-header">
+                <span>${language ? language.toUpperCase() : 'TEXT'}</span>
+                <button class="code-copy-btn" onclick="copyCodeSnippet(this)">Копировать</button>
+            </div>
+            <pre class="language-${validLang}"><code class="language-${validLang}">${highlighted}</code></pre>
+        </div>
+    `;
+};
+
+// Настраиваем парсер Marked с подключением кастомного рендерера
 marked.setOptions({
+    renderer: renderer,
     breaks: true,
     gfm: true
 });
@@ -81,6 +101,10 @@ const STATUS_BANNERS = {
 async function loadArticle() {
     const routeName = getCleanRoute();
     
+    // Сбрасываем сырой режим при переходе
+    isRawCodeActive = false;
+    contentContainer.classList.remove('raw-code-mode');
+
     // ФАНТОМНАЯ СТРАНИЦА ПОИСКА
     if (routeName === 'search') {
         renderSearchPage();
@@ -93,8 +117,9 @@ async function loadArticle() {
         const response = await fetch(filePath);
         if (!response.ok) throw new Error('Статья отсутствует');
         let markdownText = await response.text();
+        currentRawMarkdown = markdownText;
 
-        // 1. Ищем строку статуса
+        // Ищем строку статуса
         const statusMatch = markdownText.match(/<!--\s*status:\s*(.*?)\s*-->/);
         let bannersHtml = '';
 
@@ -118,11 +143,37 @@ async function loadArticle() {
 
         contentContainer.innerHTML = bannersHtml + marked.parse(markdownText);
 
+        // Динамическая переподсветка синтаксиса
+        if (window.Prism) {
+            Prism.highlightAllUnder(contentContainer);
+        }
+
     } catch (error) {
+        currentRawMarkdown = '';
         contentContainer.innerHTML = `
             <h1>Статья не найдена</h1>
-            <p>Документ <code>${routeName}.md</code> ещё не создан или находится в разработке.<br><h3>Советуем:</h2><ul><li>Поискать в <a href="/archive/search">расширенном поиске</a></li><li>Обновить страницу</li><li>Проверить подключение к интернету</li><li>Обратиться в <a href="/archive/contacts">контакты поддержки</a>, если проблема сохраняется</li></ul></p>
+            <p>Документ <code>${routeName}.md</code> ещё не создан или находится в разработке.<br><h3>Советуем:</h3><ul><li>Поискать в <a href="/archive/search">расширенном поиске</a></li><li>Обновить страницу</li><li>Проверить подключение к интернету</li><li>Обратиться в <a href="/archive/contacts">контакты поддержки</a>, если проблема сохраняется</li></ul></p>
         `;
+    }
+}
+
+// Функция копирования кода из блока
+function copyCodeSnippet(btn) {
+    const wrapper = btn.closest('.code-block-wrapper');
+    const code = wrapper ? wrapper.querySelector('code').innerText : '';
+    
+    if (code) {
+        navigator.clipboard.writeText(code).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = 'Скопировано!';
+            btn.style.background = 'var(--accent)';
+            btn.style.color = '#000';
+            setTimeout(() => {
+                btn.textContent = orig;
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 2000);
+        });
     }
 }
 
@@ -196,20 +247,15 @@ style.textContent = `
     }
 
     .search-hidden { display: none !important; }
-
 `;
 document.head.appendChild(style);
 
-// ==========================================
-// Helper: Безопасное экранирование спецсимволов RegExp
-// ==========================================
+// Безопасное экранирование спецсимволов RegExp
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// ==========================================
-// Helper: Безопасная подсветка текста (Защита от инъекций в HTML)
-// ==========================================
+// Безопасная подсветка текста (Защита от инъекций в HTML)
 function highlightText(text, query, className) {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
@@ -367,7 +413,6 @@ function initSearch() {
             const text = link.textContent.toLowerCase();
             if (query === '' || text.includes(query)) {
                 link.classList.remove('search-hidden');
-                // Подсветка (если нужно)
                 const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
                 link.innerHTML = query !== '' ? link.textContent.replace(regex, '<span class="sidebar-match">$1</span>') : link.textContent;
             } else {
@@ -433,7 +478,7 @@ function updateActiveSidebarLink() {
     });
 }
 
-// УНИВЕРСАЛЬНЫЙ ПЕРЕХВАТ КЛИКОВ
+// Универсальный перехват кликов
 document.body.addEventListener('click', e => {
     const link = e.target.closest('a');
     if (link) {
@@ -456,7 +501,7 @@ window.addEventListener(isLocal ? 'hashchange' : 'popstate', async () => {
 document.addEventListener('DOMContentLoaded', async () => {
     appContainer.classList.add('scale-down');
 
-    // 1. Обработка редиректа ?page= БЕЗ удаления других параметров
+    // Обработка редиректа ?page= БЕЗ удаления других параметров
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page');
     
@@ -468,14 +513,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.history.replaceState(null, null, newUrl);
     }
 
-    // 2. Инициализация поиска ДО загрузки статьи
+    // Инициализация поиска ДО загрузки статьи
     initSearch();
 
-    // 3. Загрузка контента
+    // Загрузка контента
     await loadArticle();
     updateActiveSidebarLink();
 
-    // 4. Восстановление строки поиска, если мы на странице поиска
+    // 4Восстановление строки поиска, если мы на странице поиска
     const query = new URLSearchParams(window.location.search).get('q');
     const mainInput = document.querySelector('.search-input-field');
     if (mainInput && query) {
@@ -571,28 +616,6 @@ function applyCodeViewMode(active) {
     }
 }
 
-// Модификация загрузки статей для сохранения сырого исходника
-const originalLoadArticle = loadArticle;
-loadArticle = async function() {
-    isRawCodeActive = false;
-    contentContainer.classList.remove('raw-code-mode');
-    
-    const routeName = getCleanRoute();
-    if (routeName !== 'search') {
-        try {
-            const res = await fetch(`/archive/${routeName}.md`);
-            if (res.ok) {
-                currentRawMarkdown = await res.text();
-            }
-        } catch (e) {
-            currentRawMarkdown = "";
-        }
-    }
-    
-    await originalLoadArticle();
-};
-
-// Инициализация при загрузке DOM
 document.addEventListener('DOMContentLoaded', () => {
     initArchiveActionsWidget();
 });
