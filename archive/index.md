@@ -3,7 +3,7 @@
 
 Добро пожаловать в официальную единую базу документаций вселенной <span style="font-family: 'Minecraft', sans-serif; font-weight: 700; color: #fa0;">Kaeront</span>! Здесь собраны актуальные правила игровых серверов, руководства, юридические документы, а также глубокий лор игровых миров.
 
-<div style="background: linear-gradient(to right, #ff000020, #ff000000);"><span style="font-family: 'Uniform' !important; font-size: 28px;">⚠️</span> Архив Kaeront находится в стадии активной разработки, поэтому многие страницы могут отсутствовать или быть недоступны.</div>
+<div style="outline: 2px #ff000040 solid !important;background: linear-gradient(to right, #ff000020, #ff000000);border-radius: 10px;padding: 5px;"><div style="font-family: 'Uniform' !important; font-size: 28px;">⚠️</div> Архив Kaeront находится в стадии активной разработки, поэтому многие страницы могут отсутствовать или быть недоступны.</div>
 
 ### Как пользоваться архивом:
 * **Навигация**: Используйте панель слева (или сверху на мобильных устройствах), чтобы перемещаться по структуре архива.
