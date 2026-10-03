@@ -107,7 +107,7 @@
             box-sizing: border-box !important;
             color: #fff !important;
             font-family: 'Montserrat', sans-serif !important;
-            font-size: 0.7rem !important;
+            font-size: 0.75rem !important;
             outline: none !important;
             transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
         }
@@ -138,10 +138,10 @@
             overflow-y: auto !important;
             overflow-x: hidden !important;
             box-sizing: border-box !important;
-            padding: 5px 20px !important;
+            padding: 10px !important;
             z-index: 100 !important;
-            mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 15px), transparent) !important;
-            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15px, black calc(100% - 15px), transparent) !important;
+            mask-image: linear-gradient(to bottom, transparent, black 10px, black calc(100% - 10px), transparent) !important;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10px, black calc(100% - 10px), transparent) !important;
         }
 
         .sidebar-tree-container::-webkit-scrollbar {
@@ -162,7 +162,7 @@
             width: 100% !important;
             height: auto !important;
             margin: 0 !important;
-            padding: 10px 0 20px 0 !important;
+            padding: 0 !important;
             background: transparent !important;
             transform: none !important;
         }
@@ -178,7 +178,7 @@
         /* Заголовок папки */
         .folder-title {
             font-family: 'Minecraft', sans-serif !important;
-            font-size: 0.65rem !important;
+            font-size: 0.75rem !important;
             color: var(--text-dim) !important;
             cursor: pointer !important;
             display: flex !important;
@@ -203,9 +203,9 @@
         /* Иконка раскрытия */
         .folder-title::after {
             content: '▶' !important;
-            font-size: 0.45rem !important;
-            transition: transform 0.2s ease !important;
-            color: #444 !important;
+            font-size: 0.6rem !important;
+            transition: transform 0.2s ease, color 0.2s ease !important;
+            color: var(--text-dim) !important;
             flex-shrink: 0 !important;
             margin-left: 5px !important;
         }
@@ -256,7 +256,7 @@
         .wiki-tree a {
             color: var(--text-dim) !important;
             text-decoration: none !important;
-            font-size: 0.65rem !important;
+            font-size: 0.75rem !important;
             padding: 5px 6px !important;
             border-radius: 10px !important;
             transition: color 0.2s ease, background 0.2s ease, padding-left 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
