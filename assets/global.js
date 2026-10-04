@@ -154,11 +154,12 @@ const globalStyles = `
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 20px;
         color: #fff;
-        z-index: 3001;
+        z-index: 100000;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
         will-change: margin-top;
         transition: margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        margin-top: -20px;
         user-select: none;
     }
     
@@ -175,7 +176,7 @@ const globalStyles = `
     }
 
     #speed-popup.active { 
-        margin-top: 20px;
+        margin-top: 0px;
     }
 
     body:has(#speed-popup.active) {
