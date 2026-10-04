@@ -127,7 +127,7 @@ const globalStyles = `
         z-index: 2000;
         user-select: none;
         will-change: background, backdrop-filter, border-bottom, margin-top;
-        transition: background-color 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+        transition: background-color 0.2s ease, backdrop-filter 0.2s ease, border-bottom 0.2s ease, margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
     }
     nav.scrolled {
         background-color: color-mix(in srgb, var(--nav-bg) 70%, transparent); 
@@ -157,6 +157,7 @@ const globalStyles = `
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
+        will-change: transform;
         transform: translateY(-100%);
         transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         user-select: none;
