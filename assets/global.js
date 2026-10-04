@@ -154,7 +154,7 @@ const globalStyles = `
     #speed-popup {
         position: fixed; top: 0; left: 0; width: 100%; height: 20px;
         color: #fff;
-        z-index: 100000;
+        z-index: 99998;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
         will-change: margin-top;
