@@ -157,9 +157,8 @@ const globalStyles = `
         z-index: 3001;
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
-        will-change: transform;
-        transform: translateY(-100%);
-        transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+        will-change: margin-top;
+        transition: margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         user-select: none;
     }
     
@@ -176,8 +175,7 @@ const globalStyles = `
     }
 
     #speed-popup.active { 
-        transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-        transform: translateY(0); 
+        margin-top: 20px;
     }
 
     body:has(#speed-popup.active) {
