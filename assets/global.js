@@ -67,7 +67,7 @@ const globalStyles = `
         flex-direction: column;
         min-height: 100vh;
         will-change: padding-top;
-        transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         position: relative;
         z-index: 0;
     }
@@ -158,7 +158,7 @@ const globalStyles = `
         display: flex; align-items: center; justify-content: center;
         font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.03em;
         transform: translateY(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         user-select: none;
     }
     
@@ -175,6 +175,7 @@ const globalStyles = `
     }
 
     #speed-popup.active { 
+        transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         transform: translateY(0); 
     }
 
