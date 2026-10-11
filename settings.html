@@ -9,37 +9,6 @@
     <style>
         :root {
             --nav-hide: 80px;
-            --st-bg: #080808;
-            --st-text: #ececec;
-            --st-text-dim: #777;
-            --st-card-bg: rgba(18, 18, 18, 0.85);
-            --st-border: #222;
-            --st-user-bg: #111;
-            --st-user-border: #252525;
-            --st-table-bg: #0f0f0f;
-            --st-table-border: #1a1a1a;
-            --st-btn-sec-bg: #1a1a1a;
-            --st-btn-sec-color: #ccc;
-            --st-btn-sec-hover: #252525;
-            --st-modal-bg: #111;
-            --st-modal-border: #2a2a2a;
-        }
-
-        html.light-theme, body.light-theme {
-            --st-bg: #f4f4f5;
-            --st-text: #18181b;
-            --st-text-dim: #71717a;
-            --st-card-bg: rgba(255, 255, 255, 0.85);
-            --st-border: #e4e4e7;
-            --st-user-bg: #ffffff;
-            --st-user-border: #e4e4e7;
-            --st-table-bg: #fafafa;
-            --st-table-border: #f1f1f5;
-            --st-btn-sec-bg: #e4e4e7;
-            --st-btn-sec-color: #27272a;
-            --st-btn-sec-hover: #d4d4d8;
-            --st-modal-bg: #ffffff;
-            --st-modal-border: #e4e4e7;
         }
 
         html {
@@ -48,8 +17,8 @@
 
         body {
             display: none; /* Скрыто до валидации токена */
-            background-color: var(--st-bg) !important;
-            color: var(--st-text);
+            background-color: #080808 !important;
+            color: #ececec;
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -78,11 +47,11 @@
         /* Сайдбар */
         .ks-sidebar {
             position: relative;
-            background: var(--st-card-bg);
-            border: 1px solid var(--st-border);
+            background: rgba(18, 18, 18, 0.85);
+            border: 1px solid #222;
             border-radius: 40px 10px 0 40px;
             padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             box-sizing: border-box;
         }
 
@@ -93,20 +62,21 @@
             right: -1px;
             width: 40px;
             height: 40px;
-            background: radial-gradient(circle at 0 100%, transparent 0, transparent 39px, var(--st-border) 39px, var(--st-border) 40px, transparent 40px), radial-gradient(circle at 0 100%, transparent 0, transparent 40px, var(--st-card-bg) 40px);
-            border-right: 1px solid var(--st-border);
+            background: radial-gradient(circle at 0 100%, transparent 0, transparent 39px, #222 39px, #222 40px, transparent 40px), radial-gradient(circle at 0 100%, transparent 0, transparent 40px, rgba(18, 18, 18, 0.85) 40px);
+            border-right: 1px solid #222;
             pointer-events: none;
-            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.15));
+            filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
         }
 
         .ks-sidebar-title {
             font-size: 0.75rem;
             letter-spacing: 0.07em;
-            color: var(--st-text-dim);
+            color: #666;
             font-weight: 700;
             margin-bottom: 12px;
             padding-left: 8px;
             font-family: 'Minecraft', sans-serif;
+            font-weight: bold;
         }
 
         .ks-nav-list {
@@ -132,7 +102,7 @@
             width: 100%;
             padding: 10px 20px;
             border-radius: 20px;
-            color: var(--st-text-dim);
+            color: #aaa;
             font-size: 0.9rem;
             font-weight: 400;
             text-align: left;
@@ -141,28 +111,34 @@
             border: 1px solid transparent;
             user-select: none;
             font-family: 'Minecraft', sans-serif;
-            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.5s linear(0 0%, 0.22 2.1%, 0.86 6.5%, 1.11 8.6%, 1.3 10.7%, 1.35 11.8%, 1.37 12.9%, 1.37 13.7%, 1.36 14.5%, 1.32 16.2%, 1.03 21.8%, 0.94 24%, 0.89 25.9%, 0.88 26.85%, 0.87 27.8%, 0.87 29.25%, 0.88 30.7%, 0.91 32.4%, 0.98 36.4%, 1.01 38.3%, 1.04 40.5%, 1.05 42.7%, 1.05 44.1%, 1.04 45.7%, 1 53.3%, 0.99 55.4%, 0.98 57.5%, 0.99 60.7%, 1 68.1%, 1.01 72.2%, 1 86.7%, 1 100%), text-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), letter-spacing 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .ks-nav-item:hover .ks-nav-inner {
-            background: rgba(128, 128, 128, 0.1);
-            color: var(--st-text);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .ks-nav-item:hover:active .ks-nav-inner {
+            transform: scale(0.9);
+            transition: transform 1.5s cubic-bezier(0.22, 0.61, 0.36, 1);
         }
 
         .ks-nav-item.active .ks-nav-inner {
-            background: var(--st-btn-sec-hover);
-            color: var(--st-text);
-            border-color: var(--st-border);
+            background: #2a2a2a;
+            color: #fff;
+            border-color: #383838;
+            text-shadow: 0.11em 0 #fff;
             letter-spacing: 2px;
         }
 
         /* КОНТЕЙНЕР */
         .ks-content {
-            background: var(--st-card-bg);
-            border: 1px solid var(--st-border);
+            background: rgba(18, 18, 18, 0.85);
+            border: 1px solid #222;
             border-radius: 10px 40px 40px 40px;
             padding: 40px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             width: 670px;
             box-sizing: border-box;
             position: relative;
@@ -179,7 +155,7 @@
         .ks-tab-panel h3 {
             margin: 0 0 8px 0;
             font-size: 1rem;
-            color: var(--st-text);
+            color: #fff;
             font-family: 'Minecraft', sans-serif;
             font-weight: normal;
         }
@@ -187,7 +163,7 @@
         .ks-tab-panel p {
             margin: 0 0 14px 0;
             font-size: 0.85rem;
-            color: var(--st-text-dim);
+            color: #777;
         }
 
         .ks-tab-panel.active {
@@ -197,26 +173,26 @@
 
         .ks-header {
             margin-bottom: 24px;
-            border-bottom: 1px solid var(--st-border);
+            border-bottom: 1px solid #222;
             padding-bottom: 16px;
         }
 
         .ks-title {
             font-family: 'Minecraft', sans-serif, monospace;
             font-size: 1.4rem;
-            color: var(--st-text);
+            color: #fff;
             margin: 0 0 6px 0;
         }
 
         .ks-subtitle {
-            color: var(--st-text-dim);
+            color: #777;
             font-size: 0.85rem;
             margin: 0;
         }
 
         .ks-user-box {
-            background: var(--st-user-bg);
-            border: 1px solid var(--st-user-border);
+            background: #111;
+            border: 1px solid #252525;
             border-radius: 20px;
             padding: 20px;
             display: flex;
@@ -234,20 +210,20 @@
         .ks-username {
             font-family: 'Minecraft', sans-serif, monospace;
             font-size: 1.2rem;
-            color: var(--st-text);
+            color: #fff;
         }
 
         .ks-uuid {
             font-family: monospace;
             font-size: 0.8rem;
-            color: var(--st-text-dim);
+            color: #666;
             user-select: all;
         }
 
         .ks-table-container {
-            border: 1px solid var(--st-border);
+            border: 1px solid #222;
             border-radius: 20px;
-            background: var(--st-table-bg);
+            background: #0f0f0f;
             margin-top: 16px;
         }
 
@@ -259,10 +235,10 @@
         }
 
         .ks-table th {
-            color: var(--st-text-dim);
+            color: #777;
             font-weight: 600;
             padding: 10px;
-            border-bottom: 3px solid var(--st-border);
+            border-bottom: 3px solid #222;
             text-transform: uppercase;
             font-size: 0.7rem;
             letter-spacing: 0.1em;
@@ -270,8 +246,8 @@
 
         .ks-table td {
             padding: 12px 10px;
-            border-top: 1px solid var(--st-table-border);
-            color: var(--st-text);
+            border-top: 1px solid #1a1a1a;
+            color: #ccc;
         }
 
         .ks-btn {
@@ -287,15 +263,15 @@
         }
 
         .ks-btn-sec {
-            background: var(--st-btn-sec-bg);
-            color: var(--st-btn-sec-color);
-            border-color: var(--st-border);
+            background: #1a1a1a;
+            color: #ccc;
+            border-color: #333;
             font-family: 'Minecraft', sans-serif;
             font-weight: bold;
         }
         .ks-btn-sec:hover {
-            background: var(--st-btn-sec-hover);
-            color: var(--st-text);
+            background: #252525;
+            color: #fff;
         }
 
         .ks-btn-danger {
@@ -317,7 +293,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -332,14 +308,18 @@
             visibility: visible;
         }
 
+        html:has(.ks-modal-overlay.active), body:has(.ks-modal-overlay.active) {
+            overflow: hidden !important;
+        }
+
         .ks-modal {
-            background: var(--st-modal-bg);
-            border: 1px solid var(--st-modal-border);
+            background: #111;
+            border: 1px solid #2a2a2a;
             border-radius: 20px;
             padding: 24px;
             max-width: 400px;
             width: 90%;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
             transform: translate3d(0, 30px, 0) scale(0.9);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -351,14 +331,14 @@
         .ks-modal-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--st-text);
+            color: #fff;
             margin: 0 0 10px 0;
             font-family: 'Minecraft', sans-serif;
         }
 
         .ks-modal-desc {
             font-size: 0.85rem;
-            color: var(--st-text-dim);
+            color: #888;
             margin: 0 0 20px 0;
             line-height: 1.4;
         }
@@ -369,41 +349,93 @@
             justify-content: flex-end;
         }
 
-        /* Остальные стили (спойлеры, кнопки подсказок и т.д.) */
+        /* Стили для круглой кнопки подсказки */
         .info-btn {
             position: relative !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
             font-size: 1.2em !important;
+            font-weight: normal !important;
+            transition: color 0.3s ease !important;
             vertical-align: middle !important;
             font-family: 'Minecraft', sans-serif !important;
+            text-transform: none !important;
+            letter-spacing: 0 !important;
         }
-        .info-btn:hover { color: var(--accent); }
+
+        .info-btn:hover {
+            color: var(--accent);
+        }
+
+        /* Невидимый мостик, закрывающий зазор между кнопкой и тултипом */
+        .info-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 15px; /* Высота зоны перекрытия зазора */
+            background: transparent;
+            display: none;
+        }
+
+        .info-btn:hover::after,
+        .info-btn:has(.tooltip:hover)::after {
+            display: block;
+        }
+
         .info-btn .tooltip {
             position: absolute;
-            bottom: 135%;
+            bottom: 135%; /* Чуть выше подняли, чтобы был небольшой зазор */
             left: 50%;
             transform: translateX(-50%) translateY(10px) scale(0.9);
             width: 220px;
             padding: 10px;
-            background-color: var(--st-modal-bg);
-            color: var(--st-text);
+            background-color: #222;
+            color: #fff;
             text-align: center;
             font-size: 11px;
             font-family: 'Montserrat';
             border-radius: 10px;
             visibility: hidden;
             opacity: 0;
+            /* Добавлена задержка на исчезновение (0.1s), чтобы плашка не дергалась */
+            transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
+                        transform 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s, 
+                        visibility 0.2s cubic-bezier(0.2, 0, 0, 1) 0.1s;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            cursor: default;
         }
-        .info-btn:hover .tooltip {
+
+        .info-btn .tooltip a {
+            color: #3b9bff;
+            text-decoration: underline;
+        }
+
+        .info-btn .tooltip a:hover {
+            color: #70b5ff;
+        }
+
+        /* Срабатывание при наведении на кнопку ИЛИ на сам тултип */
+        .info-btn:hover .tooltip,
+        .info-btn .tooltip:hover {
             visibility: visible;
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+            /* При появлении задержку убираем, чтобы открывалось мгновенно */
+            transition-delay: 0s; 
         }
 
+        @property --radius {
+          syntax: '<percentage>';
+          inherits: false;
+          initial-value: 0%;
+        }
+
+        /* Контейнер для текста с защитой от выделения */
         .ks-spoiler {
             position: relative;
             display: inline-block;
@@ -414,43 +446,80 @@
             --mask-x: 50%;
             --mask-y: 50%;
         }
+
+        /* Сам скрытый текст */
         .ks-spoiler-content {
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.2s linear, visibility 0.2s linear;
         }
+        
+        /* Когда спойлер открыт — показываем текст */
         .ks-spoiler.revealed .ks-spoiler-content {
             visibility: visible;
             opacity: 1;
             user-select: auto;
         }
+
+        /* Холст для частиц */
         .ks-spoiler-canvas {
+            mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
+            -webkit-mask-image: radial-gradient(circle at var(--mask-x) var(--mask-y), transparent var(--radius), black var(--radius));
+            background: #0f0f0f;
+            transition: --radius 0.2s linear;
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 2;
         }
+
+        .ks-spoiler.revealed .ks-spoiler-canvas {
+            --radius: 100%;
+        }
+
         .ks-ip-toggle-btn {
-            background: rgba(128, 128, 128, 0.1);
-            border: 1px solid var(--st-border);
-            color: var(--st-text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            color: #aaa;
             font-size: 0.65rem;
             padding: 2px 4px;
             border-radius: 5px;
             cursor: pointer;
             font-family: 'Minecraft', sans-serif;
+            transition: all 0.2s ease;
+            vertical-align: middle;
+            width: 64px;
         }
+        
         .ks-ip-toggle-btn:hover {
-            background: rgba(128, 128, 128, 0.2);
-            color: var(--st-text);
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-color: #555;
         }
 
         @media (max-width: 960px) {
-            .settings-grid { gap: 10px; grid-template-columns: 1fr; }
-            .ks-sidebar { width: 100%; border-radius: 40px 40px 20px 20px; }
-            .ks-sidebar::after { display: none; }
-            .ks-content { padding: 20px; width: 100%; border-radius: 20px 20px 40px 40px; }
-            .page-container { padding: 0 10px; }
+            .settings-grid {
+                gap: 10px;
+                grid-template-columns: 1fr;
+            }
+            .ks-sidebar {
+                width: 100%;
+                border-radius: 40px 40px 20px 20px;
+            }
+            .ks-sidebar::after {
+                display: none;
+            }
+            .ks-content {
+                padding: 20px;
+                width: 100%;
+                border-radius: 20px 20px 40px 40px;
+            }
+            .page-container {
+                padding: 0 10px;
+            }
         }
     </style>
 </head>
