@@ -1004,7 +1004,7 @@ class Spoiler {
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         
-            // Очищаем предыдущие таймеры и слушатели во избежание багов при быстром клике
+            // Очищаем предыдущие таймеры и обработчики во избежание конфликтов
             if (tabTransitionTimeout) {
                 clearTimeout(tabTransitionTimeout);
                 tabTransitionTimeout = null;
@@ -1014,57 +1014,67 @@ class Spoiler {
                 tabTransitionHandler = null;
             }
         
-            // 1. Фиксируем текущую высоту контейнера в пикселях перед началом перехода
-            const startHeight = container.getBoundingClientRect().height;
+            // 1. Жестко фиксируем текущую высоту контейнера в пикселях
+            const startHeight = container.offsetHeight;
             container.style.height = `${startHeight}px`;
         
+            // 2. Замеряем точную высоту целевой вкладки ДО ее активации
+            // (временно делаем её видимой в потоке, но скрытой визуально, чтобы узнать её будущий размер)
+            targetTab.style.position = 'absolute';
+            targetTab.style.visibility = 'hidden';
+            targetTab.style.display = 'block';
+            const targetHeight = targetTab.offsetHeight;
+            
+            // Возвращаем целевой вкладке исходные скрытые свойства
+            targetTab.style.position = '';
+            targetTab.style.visibility = '';
+            targetTab.style.display = '';
+        
+            // Запускаем плавное затухание текущей вкладки
             if (currentTab) {
                 currentTab.style.opacity = '0';
             }
         
-            // Двойной requestAnimationFrame гарантирует корректный расчет геометрии браузером
+            // 3. Форсируем reflow (принудительный пересчет макета браузером), 
+            // чтобы браузер «увидел» зафиксированную начальную высоту container.style.height
+            void container.offsetHeight;
+        
             requestAnimationFrame(() => {
+                // Меняем активные вкладки
+                if (currentTab) {
+                    currentTab.classList.remove('active');
+                    currentTab.style.opacity = '';
+                }
+        
+                targetTab.classList.add('active');
+                targetTab.style.opacity = '0';
+        
+                // 4. Плавно анимируем контейнер к заранее вычисленной высоте targetHeight
+                container.style.height = `${targetHeight}px`;
+        
                 requestAnimationFrame(() => {
-                    if (currentTab) {
-                        currentTab.classList.remove('active');
-                        currentTab.style.opacity = '';
-                    }
-        
-                    targetTab.classList.add('active');
-                    targetTab.style.opacity = '0';
-        
-                    // 2. Вычисляем целевую высоту с учетом нового контента (благодаря overflow: hidden)
-                    const targetHeight = container.scrollHeight;
-        
-                    // 3. Запускаем плавный переход к новой высоте
-                    container.style.height = `${targetHeight}px`;
-        
-                    requestAnimationFrame(() => {
-                        targetTab.style.opacity = '1';
-                    });
-        
-                    // 4. Безопасный сброс в auto по окончании анимации высоты контейнера
-                    tabTransitionHandler = (e) => {
-                        if (e.target === container && e.propertyName === 'height') {
-                            container.style.height = 'auto';
-                            container.removeEventListener('transitionend', tabTransitionHandler);
-                            tabTransitionHandler = null;
-                        }
-                    };
-        
-                    container.addEventListener('transitionend', tabTransitionHandler);
-        
-                    // Страховочный таймер (на случай сбоя событий transitionend)
-                    tabTransitionTimeout = setTimeout(() => {
-                        if (container.style.height !== 'auto') {
-                            container.style.height = 'auto';
-                        }
-                        if (tabTransitionHandler) {
-                            container.removeEventListener('transitionend', tabTransitionHandler);
-                            tabTransitionHandler = null;
-                        }
-                    }, 250);
+                    targetTab.style.opacity = '1';
                 });
+        
+                // Безопасный сброс в auto после окончания CSS-перехода высоты
+                tabTransitionHandler = (e) => {
+                    if (e.target === container && e.propertyName === 'height') {
+                        container.style.height = 'auto';
+                        container.removeEventListener('transitionend', tabTransitionHandler);
+                        tabTransitionHandler = null;
+                    }
+                };
+        
+                container.addEventListener('transitionend', tabTransitionHandler);
+        
+                // Страховочный таймер на случай сбоя событий transitionend
+                tabTransitionTimeout = setTimeout(() => {
+                    container.style.height = 'auto';
+                    if (tabTransitionHandler) {
+                        container.removeEventListener('transitionend', tabTransitionHandler);
+                        tabTransitionHandler = null;
+                    }
+                }, 250);
             });
         }
 
