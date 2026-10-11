@@ -5,34 +5,6 @@ if (initialLoader) {
     initialLoader.style.animation = 'none';
 }
 
-// Работа с куки для сохранения темы
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        let date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
-}
-
-function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for(let i=0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-// Инициализация темы из куки до отрисовки
-const savedTheme = getCookie('kaeront_theme');
-if (savedTheme === 'light') {
-    document.documentElement.classList.add('light-theme');
-}
-
 const globalStyles = `
     :root {
         --bg: #0a0a0a;
@@ -42,31 +14,6 @@ const globalStyles = `
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --nav-height: 50px;
         --nav-bg: rgb(10, 10, 10);
-    }
-
-    /* Светлая тема */
-    html.light-theme, body.light-theme {
-        --bg: #f4f4f5;
-        --accent: #d97706;
-        --text-main: #18181b;
-        --text-dim: #71717a;
-        --nav-bg: rgb(244, 244, 245);
-    }
-
-    body.light-theme::before {
-        background-image: linear-gradient(rgba(255, 255, 255, 0.65)), url('/assets/blackstone_top.png');
-    }
-
-    body.light-theme nav.scrolled {
-        border-bottom: 1.5px solid #e4e4e7;
-    }
-
-    body.light-theme body::-webkit-scrollbar-thumb {
-        background-color: #d4d4d8;
-    }
-
-    body.light-theme body::-webkit-scrollbar-track {
-        background-color: #f4f4f5;
     }
 
     html {
@@ -189,8 +136,8 @@ const globalStyles = `
     }
     .nav-logo { font-family: 'Minecraft'; font-size: 0.75rem; color: var(--accent); text-decoration: none; font-weight: 700; }
     .nav-links { display: flex; gap: 10px; align-items: center; }
-    .nav-links a, .theme-toggle-btn { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; background: none; border: none; cursor: pointer; padding: 0; }
-    .nav-links a:hover, .theme-toggle-btn:hover { color: var(--accent); }
+    .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.6rem; text-transform: uppercase; transition: 0.3s; font-weight: 600; }
+    .nav-links a:hover { color: var(--accent); }
     .nav-links a span { display: inline-block; vertical-align: middle; line-height: 1; }
         
     footer { padding: 60px 20px; background: #050505c0; border-top: 1px solid #111; margin-top: auto; z-index: 500;}
@@ -216,16 +163,43 @@ const globalStyles = `
         user-select: none;
     }
     
-    #speed-popup.slow { background: #fa0; color: #000; }
-    #speed-popup.offline { background: #a00; color: #fff; }
-    #speed-popup.active { margin-top: 0px; }
+    /* Состояние: Медленный интернет (Оранжево-желтый) */
+    #speed-popup.slow {
+        background: #fa0;
+        color: #000;
+    }
 
-    body:has(#speed-popup.active) { margin-top: 20px; }
-    body:has(#speed-popup.active) nav { margin-top: 20px; }
+    /* Состояние: Нет подключения (Красный) */
+    #speed-popup.offline {
+        background: #a00;
+        color: #fff;
+    }
 
-    .nav-auth-icon { font-size: 24px !important; font-family: 'Uniform Upper' !important; font-weight: 400 !important; }
-    .nav-user-head { width: 28px; height: 28px; transition: 0.1s transform; }
-    .nav-user-head:hover { transform: scale(1.1); }
+    #speed-popup.active { 
+        margin-top: 0px;
+    }
+
+    body:has(#speed-popup.active) {
+        margin-top: 20px;
+    }
+    body:has(#speed-popup.active) nav {
+        margin-top: 20px;
+    }
+
+    /* Стили для кнопки профиля в шапке */
+    .nav-auth-icon {
+        font-size: 24px !important;
+        font-family: 'Uniform Upper' !important;
+        font-weight: 400 !important;
+    }
+    .nav-user-head {
+        width: 28px;
+        height: 28px;
+        transition: 0.1s transform;
+    }
+    .nav-user-head:hover {
+        transform: scale(1.1);
+    }
 `;
 
 const injectHTML = {
@@ -252,7 +226,6 @@ const injectHTML = {
                 localStorage.removeItem('kaeront_access_token');
             }
         }
-        const currentThemeIcon = (getCookie('kaeront_theme') === 'light') ? '🌙' : '☀️';
         return `  
         <nav id="smart-nav">
             <a href="/" class="nav-logo">Kaeront</a>
@@ -261,7 +234,6 @@ const injectHTML = {
                 <a href="/news">Новости</a>
                 <a href="/archive">Архив <span style="color: var(--accent); font-family: 'Minecraft', sans-serif; font-weight: 400;">⚡︎</span></a>
                 <a href="/donate" style="color: var(--accent);">Пожертвовать</a>
-                <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Переключить тему">${currentThemeIcon}</button>
                 ${authElement}
             </div>
         </nav>`;
@@ -303,23 +275,7 @@ const injectHTML = {
     </footer>`
 };
 
-// Функция переключения темы с записью в куки
-window.toggleTheme = function() {
-    const isLight = document.documentElement.classList.toggle('light-theme');
-    document.body.classList.toggle('light-theme', isLight);
-    setCookie('kaeront_theme', isLight ? 'light' : 'dark', 365);
-    const btn = document.getElementById('theme-toggle-btn');
-    if (btn) btn.textContent = isLight ? '🌙' : '☀️';
-};
-
-// Применение темы при загрузке тела
-document.addEventListener('DOMContentLoaded', () => {
-    if (getCookie('kaeront_theme') === 'light') {
-        document.documentElement.classList.add('light-theme');
-        document.body.classList.add('light-theme');
-    }
-});
-
+// Инициализация Head (Мета и Шрифты)
 const setupHead = () => {
     const metaTags = [
       { name: 'viewport', content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' },
@@ -354,16 +310,21 @@ const setupHead = () => {
     document.head.appendChild(statusScript);
 };
 
+// Динамическое управление поп-апом интернета
 let networkDelayTimer = null;
 
 const toggleSpeedPopup = (show, type = 'slow') => {
+    // Сбрасываем текущие отложенные таймеры
     clearTimeout(networkDelayTimer);
+
     const popup = document.getElementById('speed-popup');
 
+    // 1. ЕСЛИ НУЖНО СКРЫТЬ ПЛАШКУ
     if (!show) {
         if (popup) {
             popup.classList.remove('active');
             setTimeout(() => {
+                // Удаляем из DOM только если за время анимации не появился новый поп-ап
                 const currentPopup = document.getElementById('speed-popup');
                 if (currentPopup && !currentPopup.classList.contains('active')) {
                     currentPopup.remove();
@@ -373,8 +334,10 @@ const toggleSpeedPopup = (show, type = 'slow') => {
         return;
     }
 
+    // 2. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ РЕНДЕРА/ОБНОВЛЕНИЯ ПЛАШКИ
     const renderPopup = (statusType) => {
         let el = document.getElementById('speed-popup');
+        
         if (!el) {
             el = document.createElement('div');
             el.id = 'speed-popup';
@@ -389,21 +352,27 @@ const toggleSpeedPopup = (show, type = 'slow') => {
             el.className = 'slow';
         }
 
+        // Включаем активный класс на следующем кадре
         requestAnimationFrame(() => {
             el.classList.add('active');
         });
     };
 
+    // 3. ЕСЛИ НЕТ ИНТЕРНЕТА (OFFLINE) — Показываем мгновенно
     if (type === 'offline') {
         renderPopup('offline');
         return;
     }
 
+    // 4. ЕСЛИ МЕДЛЕННЫЙ ИНТЕРНЕТ (SLOW)
+    // Если УЖЕ висит красная плашка оффлайна — игнорируем желтую
     if (popup && popup.classList.contains('offline') && popup.classList.contains('active')) {
         return;
     }
 
+    // Задержка 1 секунда перед показом желтой плашки (чтобы избежать ложных скачков)
     networkDelayTimer = setTimeout(() => {
+        // Проверяем перед показом: если за время таймера интернет пропал вовсе, показываем offline
         if (!navigator.onLine) {
             renderPopup('offline');
         } else {
@@ -412,14 +381,22 @@ const toggleSpeedPopup = (show, type = 'slow') => {
     }, 1000);
 };
 
+// Грамотная оценка состояния сети
 const evaluateNetwork = () => {
+    // Шаг 1: Полный оффлайн по флагу браузера
     if (!navigator.onLine) {
         toggleSpeedPopup(true, 'offline');
         return;
     }
 
+    // Шаг 2: Проверка качества соединения
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    
     if (conn) {
+        // Соединение считается медленным, если:
+        // 1. effectiveType равен 'slow-2g' или '2g'
+        // 2. Задержка ответа (RTT) превышает 600 мс
+        // 3. Скорость скачивания (downlink) ниже 0.7 Мбит/с (но больше 0)
         const isSlowType = conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g';
         const isHighLatency = conn.rtt && conn.rtt > 600;
         const isLowSpeed = conn.downlink && conn.downlink > 0 && conn.downlink < 0.7;
@@ -429,20 +406,34 @@ const evaluateNetwork = () => {
             return;
         }
     }
+
+    // Шаг 3: Если сеть в норме — скрываем плашку
     toggleSpeedPopup(false);
 };
 
+// Живой мониторинг событий
 const startNetworkMonitoring = () => {
+    // Первичный чекап
     evaluateNetwork();
-    window.addEventListener('offline', () => toggleSpeedPopup(true, 'offline'));
-    window.addEventListener('online', () => evaluateNetwork());
 
+    // Мгновенный оффлайн
+    window.addEventListener('offline', () => {
+        toggleSpeedPopup(true, 'offline');
+    });
+
+    // Восстановление сети
+    window.addEventListener('online', () => {
+        evaluateNetwork();
+    });
+
+    // Отслеживание изменений API Network Information
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (conn) {
         conn.addEventListener('change', evaluateNetwork);
     }
 };
 
+// Скролл навигации
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('smart-nav');
     if (nav) {
@@ -455,6 +446,7 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Сборка страницы
 setupHead();
 document.addEventListener('DOMContentLoaded', () => {
     const containers = {
@@ -472,25 +464,37 @@ document.addEventListener('DOMContentLoaded', () => {
     startNetworkMonitoring();
 });
 
+// Логика скрытия загрузочного экрана
 window.addEventListener('load', () => {
     const loader = document.getElementById('loader-wrapper');
     if (loader) {
         loader.style.opacity = '0';
         loader.style.visibility = 'hidden';
+
         document.body.style.setProperty('overflow', 'auto', 'important');
         document.documentElement.style.overflow = 'auto'; 
-        setTimeout(() => { loader.remove(); }, 500);
+
+        setTimeout(() => {
+            loader.remove();
+        }, 500);
     }
 });
 
+// Регистрация Service Worker
 const registerServiceWorker = () => {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
-                .then((registration) => console.log('[SW] Зарегистрирован:', registration.scope))
-                .catch((error) => console.error('[SW] Ошибка регистрации:', error));
+                .then((registration) => {
+                    // Успешная регистрация
+                    console.log('[SW] Зарегистрирован:', registration.scope);
+                })
+                .catch((error) => {
+                    console.error('[SW] Ошибка регистрации:', error);
+                });
         });
     }
 };
 
+// Запускаем регистрацию
 registerServiceWorker();
