@@ -993,7 +993,7 @@ class Spoiler {
             const currentTab = document.querySelector('.ks-tab-panel.active');
             const targetTab = document.getElementById(tabId);
             
-            if (currentTab === targetTab) return;
+            if (currentTab === targetTab || !targetTab) return;
         
             // Уведомляем SpoilerManager о смене вкладки
             SpoilerManager.setCurrentTab(tabId);
@@ -1001,6 +1001,7 @@ class Spoiler {
             document.querySelectorAll('.ks-nav-item').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         
+            // Фиксируем текущую высоту контейнера в пикселях перед началом перехода
             container.style.height = `${container.offsetHeight}px`;
         
             if (currentTab) {
@@ -1010,23 +1011,33 @@ class Spoiler {
             setTimeout(() => {
                 if (currentTab) {
                     currentTab.classList.remove('active');
+                    currentTab.style.opacity = '';
                 }
         
-                targetTab.style.opacity = '0';
+                // Активируем целевую вкладку, чтобы браузер рассчитал её реальную высоту с учетом паддингов
                 targetTab.classList.add('active');
+                targetTab.style.opacity = '0';
         
-                const newHeight = targetTab.offsetHeight + 80;
-                container.style.height = `${newHeight}px`;
+                // Используем scrollHeight контейнера для точного расчета высоты с учетом адаптивных отступов
+                const targetHeight = container.scrollHeight;
+                container.style.height = `${targetHeight}px`;
         
                 requestAnimationFrame(() => {
                     targetTab.style.opacity = '1';
                 });
         
-                setTimeout(() => {
-                    container.style.height = 'auto';
-                }, 200);
+                // Безопасный сброс высоты в auto после окончания CSS-анимации
+                const handleTransitionEnd = (e) => {
+                    if (e.propertyName === 'height') {
+                        container.style.height = 'auto';
+                        container.removeEventListener('transitionend', handleTransitionEnd);
+                    }
+                };
+                
+                container.removeEventListener('transitionend', handleTransitionEnd);
+                container.addEventListener('transitionend', handleTransitionEnd);
         
-            }, 120);
+            }, 150);
         }
 
         // Парсинг User-Agent
