@@ -225,7 +225,7 @@
         /* Tooltip при наведении */
         .badge-tooltip {
             position: absolute;
-            bottom: 150%;
+            bottom: 125%;
             left: 50%;
             transform: translateX(-50%) translateY(5px);
             background: #111111;
@@ -288,7 +288,7 @@
             gap: 8px;
             background: #161616;
             border: 2px solid #000;
-            color: var(--text-main, #ececec);
+            color: var(--text-main, #fff);
             text-decoration: none;
             padding: 10px 16px;
             border-radius: 6px;
@@ -306,7 +306,7 @@
         .link-btn:active {
             box-shadow: none;
             transform: translateY(4px);
-            color: inherit;
+            color: var(--text-main, #fff);
         }
 
         .error-card {
@@ -347,7 +347,7 @@
         .stat-box:active {
             box-shadow: none;
             transform: translateY(3px);
-            color: inherit;
+            color: var(--text-dim);
         }
 
         .stat-value {
@@ -410,6 +410,9 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
             transform: translate3d(0, 30px, 0) scale(0.9);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 2px solid #fff2;
+            outline: 2px solid #000;
+            outline-offset: -4px;
         }
 
         .spa-modal-overlay.active .spa-modal-card {
@@ -447,9 +450,9 @@
         .follow-user-item {
             display: flex;
             align-items: center;
-            padding: 10px;
+            padding: 5px 10px;
             gap: 5px;
-            border-radius: 10px;
+            border-radius: 15px;
             text-decoration: none;
             color: #fff;
             transition: background 0.2s;
