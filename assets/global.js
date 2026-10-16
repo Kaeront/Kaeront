@@ -80,12 +80,12 @@ const globalStyles = `
         width: 100%;
         height: 100%;
         z-index: -1;
-        background-image: linear-gradient(rgba(0, 5, 0, 0.65)), url('/assets/blackstone_top.png');
-        background-size: 36px 36px;
+        background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
+        background-size: 42px;
         background-repeat: repeat;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
-        pointer-events: none; 
+        pointer-events: none;
     }
 
     body::-webkit-scrollbar {
