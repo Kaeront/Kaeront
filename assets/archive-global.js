@@ -506,7 +506,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Скрываем плашку при скролле окна или контейнера статьи, чтобы она не «прилипала»
     window.addEventListener('scroll', () => {
         isMouseOverTooltip = false;
         hideTooltip();
@@ -520,7 +519,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: true });
     }
 
-    // Клик по самой карточке — осуществляем переход по ссылке
     tooltip.addEventListener('click', () => {
         if (currentActiveLink) {
             const href = currentActiveLink.getAttribute('href');
@@ -546,10 +544,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Сниппет-ридер (безопасное извлечение текста)
-    function parseArticleSnippet(markdownText) {
+    function parseArticleHtmlSnippet(markdownText) {
         const cleanMd = markdownText.replace(/<!--[\s\S]*?-->/g, '');
         
-        // Безопасный парсинг через marked, если он доступен
         let html = cleanMd;
         try {
             if (typeof marked !== 'undefined' && marked.parse) {
@@ -560,12 +557,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const doc = new DOMParser().parseFromString(html, 'text/html');
-        doc.querySelectorAll('script, style').forEach(el => el.remove());
+        // Удаляем тяжелые элементы, скрипты и стили
+        doc.querySelectorAll('script, style, img, video, table').forEach(el => el.remove());
 
-        const text = doc.body.textContent || "";
-        const cleanText = text.replace(/\s+/g, ' ').trim();
-
-        return cleanText.length > 150 ? cleanText.substring(0, 150) + '...' : cleanText;
+        // Возвращаем очищенный HTML-контейнер статьи для рендеринга в карточке
+        return doc.body.innerHTML.trim();
     }
 
     if (!wikiApp) return;
@@ -598,7 +594,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (articleCache.has(route)) {
             renderTooltipContent(articleCache.get(route));
         } else {
-            // Состояние загрузки
             tooltip.innerHTML = `<p class="tooltip-reminder">Загрузка данных статьи...</p>`;
             tooltip.classList.add('visible');
 
@@ -607,21 +602,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!res.ok) throw new Error('Not found');
                 const text = await res.text();
                 
-                // Защита от SPA-серверов, которые отдают index.html вместо 404
                 const trimmed = text.trim().toLowerCase();
                 if (trimmed.startsWith('<!doctype') || trimmed.startsWith('<html')) {
                     throw new Error('Server returned HTML instead of Markdown');
                 }
 
-                const snippet = parseArticleSnippet(text);
-                const data = { exists: true, snippet: snippet };
+                const snippetHtml = parseArticleHtmlSnippet(text);
+                const data = { exists: true, html: snippetHtml };
                 
                 articleCache.set(route, data);
                 if (currentActiveLink === link) {
                     renderTooltipContent(data);
                 }
             } catch (err) {
-                const data = { exists: false, snippet: '' };
+                const data = { exists: false, html: '' };
                 articleCache.set(route, data);
                 if (currentActiveLink === link) {
                     renderTooltipContent(data);
@@ -643,9 +637,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderTooltipContent(data) {
         if (!data.exists) {
+            // Для несуществующих статей: строго без заголовка, нужный текст и мгновенное скрытие
             tooltip.innerHTML = `<p class="tooltip-reminder">Ссылка ведёт на несуществующую статью архива...</p>`;
         } else {
-            tooltip.innerHTML = `<p class="tooltip-snippet">${escapeHtml(data.snippet)}</p>`;
+            // Рендерим полноценный HTML-сниппет с поддержкой заголовков, выделений и списков
+            tooltip.innerHTML = `<div class="tooltip-content">${data.html}</div>`;
         }
         tooltip.classList.add('visible');
     }
