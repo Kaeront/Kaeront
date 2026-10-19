@@ -376,6 +376,38 @@
             line-height: 1.4;
         }
 
+        .wiki-preview-tooltip .tooltip-content {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+            max-height: 120px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+        }
+        .wiki-preview-tooltip .tooltip-content h1,
+        .wiki-preview-tooltip .tooltip-content h2,
+        .wiki-preview-tooltip .tooltip-content h3,
+        .wiki-preview-tooltip .tooltip-content h4 {
+            font-family: 'Minecraft', sans-serif !important;
+            color: var(--accent) !important;
+            font-size: 0.8rem !important;
+            margin: 4px 0 2px 0 !important;
+        }
+        .wiki-preview-tooltip .tooltip-content strong,
+        .wiki-preview-tooltip .tooltip-content b {
+            color: #fff !important;
+        }
+        .wiki-preview-tooltip .tooltip-content p {
+            margin: 0 0 4px 0 !important;
+        }
+        .wiki-preview-tooltip .tooltip-content ul,
+        .wiki-preview-tooltip .tooltip-content ol {
+            margin: 0 0 4px 15px !important;
+            padding: 0 !important;
+        }
+
         /* Рендеринг разметки статьи */
         .markdown-body {
             position: relative !important;
