@@ -492,42 +492,60 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Хранилище кэша загруженных статей, чтобы не спамить fetch-запросами
     const articleCache = new Map();
 
-    // Создаем элемент плашки
     const tooltip = document.createElement('div');
     tooltip.className = 'wiki-preview-tooltip';
     document.body.appendChild(tooltip);
 
-    let hideTimeout = null;
+    let currentActiveLink = null;
+    let isMouseOverTooltip = false;
 
-    // Функция извлечения заголовка и отрывка из Markdown текста
-    function parseArticlePreview(markdownText) {
-        // Убираем HTML-комментарии (например, статус-баннеры)
-        const cleanMd = markdownText.replace(/<!--[\s\S]*?-->/g, '');
-        const lines = cleanMd.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
-        let title = '';
-        let bodyLines = [];
-
-        for (const line of lines) {
-            if (!title && line.startsWith('#')) {
-                // Извлекаем текст первого заголовка (удаляем символы #)
-                title = line.replace(/^#+\s*/, '');
-            } else if (!line.startsWith('#')) {
-                bodyLines.push(line);
+    // Клик по самой карточке — осуществляем переход по ссылке
+    tooltip.addEventListener('click', () => {
+        if (currentActiveLink) {
+            const href = currentActiveLink.getAttribute('href');
+            if (href) {
+                hideTooltip();
+                if (typeof performTransition === 'function' && (href.startsWith('/archive') || href.startsWith('#'))) {
+                    performTransition(href);
+                } else {
+                    window.location.href = href;
+                }
             }
         }
+    });
 
-        // Собираем обычный текст для отрывка
-        const fullBodyText = bodyLines.join(' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // убираем markdown-ссылки
-        const snippet = fullBodyText.length > 120 ? fullBodyText.substring(0, 120) + '...' : fullBodyText;
+    tooltip.addEventListener('mouseenter', () => {
+        isMouseOverTooltip = true;
+    });
 
-        return {
-            title: title || '',
-            snippet: snippet || ''
-        };
+    tooltip.addEventListener('mouseleave', () => {
+        isMouseOverTooltip = false;
+        hideTooltip();
+    });
+
+    function hideTooltip() {
+        if (!isMouseOverTooltip) {
+            tooltip.classList.remove('visible');
+            currentActiveLink = null;
+        }
     }
 
-    // Обработчик наведения внутри #wiki-app
+    // Извлечение чистого текста без строгой разбивки на заголовки (сниппет-ридер)
+    function parseArticleSnippet(markdownText) {
+        // Убираем комментарии статусов
+        const cleanMd = markdownText.replace(/<!--[\s\S]*?-->/g, '');
+        
+        // Превращаем markdown в HTML через встроенный marked, чтобы вытащить структурированный текст
+        const html = marked.parse(cleanMd);
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.querySelectorAll('script, style').forEach(el => el.remove());
+
+        const text = doc.body.textContent || "";
+        const cleanText = text.replace(/\s+/g, ' ').trim();
+
+        return cleanText.length > 150 ? cleanText.substring(0, 150) + '...' : cleanText;
+    }
+
     const wikiApp = document.getElementById('wiki-app');
     if (!wikiApp) return;
 
@@ -538,19 +556,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const href = link.getAttribute('href');
         if (!href || (!href.startsWith('/archive') && !href.startsWith('#'))) return;
 
-        // Вычисляем путь файла статьи
+        currentActiveLink = link;
+
         let route = href.replace('/archive', '').replace('#/archive/', '').replace('#/', '').replace('#', '');
         if (route === '' || route === '/') route = 'index';
         route = route.replace(/^\//, '');
 
-        const linkFallbackTitle = link.textContent.trim();
-
-        // Позиционируем плашку рядом с курсором / ссылкой
         const rect = link.getBoundingClientRect();
         let left = rect.left;
         let top = rect.bottom + 8;
 
-        // Защита от выхода за правый край экрана
         if (left + 280 > window.innerWidth) {
             left = window.innerWidth - 300;
         }
@@ -558,52 +573,49 @@ document.addEventListener('DOMContentLoaded', async () => {
         tooltip.style.left = left + 'px';
         tooltip.style.top = top + 'px';
 
-        // Предварительное состояние загрузки / отображение по кэшу
         if (articleCache.has(route)) {
-            renderTooltipContent(articleCache.get(route), linkFallbackTitle);
+            renderTooltipContent(articleCache.get(route));
         } else {
-            // Если в кэше нет, показываем базовую плашку с именем ссылки
-            tooltip.innerHTML = `
-                <h4 class="tooltip-title">${escapeHtml(linkFallbackTitle)}</h4>
-                <p class="tooltip-reminder">Загрузка данных статьи...</p>
-            `;
+            // Временное состояние загрузки
+            tooltip.innerHTML = `<p class="tooltip-reminder">Загрузка данных статьи...</p>`;
             tooltip.classList.add('visible');
 
             try {
                 const res = await fetch(`/archive/${route}.md`);
                 if (!res.ok) throw new Error('Not found');
                 const text = await res.text();
-                const parsed = parseArticlePreview(text);
+                const snippet = parseArticleSnippet(text);
                 
-                articleCache.set(route, parsed);
-                renderTooltipContent(parsed, linkFallbackTitle);
+                const data = { exists: true, snippet: snippet };
+                articleCache.set(route, data);
+                renderTooltipContent(data);
             } catch (err) {
-                const emptyData = { title: '', snippet: '' };
-                articleCache.set(route, emptyData);
-                renderTooltipContent(emptyData, linkFallbackTitle);
+                const data = { exists: false, snippet: '' };
+                articleCache.set(route, data);
+                renderTooltipContent(data);
             }
         }
     });
 
     wikiApp.addEventListener('mouseout', (e) => {
-        if (e.target.closest('a')) {
-            tooltip.classList.remove('visible');
+        const link = e.target.closest('a');
+        if (link) {
+            // Даем небольшой таймаут, чтобы пользователь успел перевести мышь на саму карточку
+            setTimeout(() => {
+                if (!isMouseOverTooltip) {
+                    hideTooltip();
+                }
+            }, 50);
         }
     });
 
-    function renderTooltipContent(data, fallbackTitle) {
-        const displayTitle = data.title ? data.title : fallbackTitle;
-        
-        if (!data.title && !data.snippet) {
-            tooltip.innerHTML = `
-                <h4 class="tooltip-title">${escapeHtml(displayTitle)}</h4>
-                <p class="tooltip-reminder">Эту статью еще не придумали...</p>
-            `;
+    function renderTooltipContent(data) {
+        if (!data.exists) {
+            // Для несуществующих статей убираем заголовок, ставим нужный текст и делаем мгновенное скрытие без задержки
+            tooltip.innerHTML = `<p class="tooltip-reminder">Ссылка ведёт на несуществующую статью архива...</p>`;
         } else {
-            tooltip.innerHTML = `
-                <h4 class="tooltip-title">${escapeHtml(displayTitle)}</h4>
-                <p class="tooltip-snippet">${escapeHtml(data.snippet)}</p>
-            `;
+            // Универсальный сниппет-ридер без отдельного заголовка (стабильно отображает текст)
+            tooltip.innerHTML = `<p class="tooltip-snippet">${escapeHtml(data.snippet)}</p>`;
         }
         tooltip.classList.add('visible');
     }
