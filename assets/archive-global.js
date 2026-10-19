@@ -489,7 +489,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 4. Интерактивные превью-плашки для ссылок внутри wiki-app
 // ==========================================
 (function() {
-    // Хранилище кэша загруженных статей, чтобы не спамить fetch-запросами
     const articleCache = new Map();
 
     const tooltip = document.createElement('div');
@@ -499,11 +498,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentActiveLink = null;
     let isMouseOverTooltip = false;
 
+    // Функция скрытия плашки
+    function hideTooltip() {
+        if (!isMouseOverTooltip) {
+            tooltip.classList.remove('visible');
+            currentActiveLink = null;
+        }
+    }
+
+    // Скрываем плашку при скролле окна или контейнера статьи, чтобы она не «прилипала»
+    window.addEventListener('scroll', () => {
+        isMouseOverTooltip = false;
+        hideTooltip();
+    }, { passive: true });
+
+    const wikiApp = document.getElementById('wiki-app');
+    if (wikiApp) {
+        wikiApp.addEventListener('scroll', () => {
+            isMouseOverTooltip = false;
+            hideTooltip();
+        }, { passive: true });
+    }
+
     // Клик по самой карточке — осуществляем переход по ссылке
     tooltip.addEventListener('click', () => {
         if (currentActiveLink) {
             const href = currentActiveLink.getAttribute('href');
             if (href) {
+                isMouseOverTooltip = false;
                 hideTooltip();
                 if (typeof performTransition === 'function' && (href.startsWith('/archive') || href.startsWith('#'))) {
                     performTransition(href);
@@ -523,20 +545,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         hideTooltip();
     });
 
-    function hideTooltip() {
-        if (!isMouseOverTooltip) {
-            tooltip.classList.remove('visible');
-            currentActiveLink = null;
-        }
-    }
-
-    // Извлечение чистого текста без строгой разбивки на заголовки (сниппет-ридер)
+    // Сниппет-ридер (безопасное извлечение текста)
     function parseArticleSnippet(markdownText) {
-        // Убираем комментарии статусов
         const cleanMd = markdownText.replace(/<!--[\s\S]*?-->/g, '');
         
-        // Превращаем markdown в HTML через встроенный marked, чтобы вытащить структурированный текст
-        const html = marked.parse(cleanMd);
+        // Безопасный парсинг через marked, если он доступен
+        let html = cleanMd;
+        try {
+            if (typeof marked !== 'undefined' && marked.parse) {
+                html = marked.parse(cleanMd);
+            }
+        } catch (e) {
+            console.warn('Ошибка парсинга marked в превью:', e);
+        }
+
         const doc = new DOMParser().parseFromString(html, 'text/html');
         doc.querySelectorAll('script, style').forEach(el => el.remove());
 
@@ -546,7 +568,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return cleanText.length > 150 ? cleanText.substring(0, 150) + '...' : cleanText;
     }
 
-    const wikiApp = document.getElementById('wiki-app');
     if (!wikiApp) return;
 
     wikiApp.addEventListener('mouseover', async (e) => {
@@ -557,6 +578,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!href || (!href.startsWith('/archive') && !href.startsWith('#'))) return;
 
         currentActiveLink = link;
+        isMouseOverTooltip = false;
 
         let route = href.replace('/archive', '').replace('#/archive/', '').replace('#/', '').replace('#', '');
         if (route === '' || route === '/') route = 'index';
@@ -576,7 +598,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (articleCache.has(route)) {
             renderTooltipContent(articleCache.get(route));
         } else {
-            // Временное состояние загрузки
+            // Состояние загрузки
             tooltip.innerHTML = `<p class="tooltip-reminder">Загрузка данных статьи...</p>`;
             tooltip.classList.add('visible');
 
@@ -584,15 +606,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await fetch(`/archive/${route}.md`);
                 if (!res.ok) throw new Error('Not found');
                 const text = await res.text();
-                const snippet = parseArticleSnippet(text);
                 
+                // Защита от SPA-серверов, которые отдают index.html вместо 404
+                const trimmed = text.trim().toLowerCase();
+                if (trimmed.startsWith('<!doctype') || trimmed.startsWith('<html')) {
+                    throw new Error('Server returned HTML instead of Markdown');
+                }
+
+                const snippet = parseArticleSnippet(text);
                 const data = { exists: true, snippet: snippet };
+                
                 articleCache.set(route, data);
-                renderTooltipContent(data);
+                if (currentActiveLink === link) {
+                    renderTooltipContent(data);
+                }
             } catch (err) {
                 const data = { exists: false, snippet: '' };
                 articleCache.set(route, data);
-                renderTooltipContent(data);
+                if (currentActiveLink === link) {
+                    renderTooltipContent(data);
+                }
             }
         }
     });
@@ -600,21 +633,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     wikiApp.addEventListener('mouseout', (e) => {
         const link = e.target.closest('a');
         if (link) {
-            // Даем небольшой таймаут, чтобы пользователь успел перевести мышь на саму карточку
             setTimeout(() => {
                 if (!isMouseOverTooltip) {
                     hideTooltip();
                 }
-            }, 50);
+            }, 60);
         }
     });
 
     function renderTooltipContent(data) {
         if (!data.exists) {
-            // Для несуществующих статей убираем заголовок, ставим нужный текст и делаем мгновенное скрытие без задержки
             tooltip.innerHTML = `<p class="tooltip-reminder">Ссылка ведёт на несуществующую статью архива...</p>`;
         } else {
-            // Универсальный сниппет-ридер без отдельного заголовка (стабильно отображает текст)
             tooltip.innerHTML = `<p class="tooltip-snippet">${escapeHtml(data.snippet)}</p>`;
         }
         tooltip.classList.add('visible');
