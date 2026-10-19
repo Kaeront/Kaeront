@@ -484,3 +484,127 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setTimeout(() => appContainer.classList.remove('scale-down'), 100);
 });
+
+// ==========================================
+// 4. Интерактивные превью-плашки для ссылок внутри wiki-app
+// ==========================================
+(function() {
+    // Хранилище кэша загруженных статей, чтобы не спамить fetch-запросами
+    const articleCache = new Map();
+
+    // Создаем элемент плашки
+    const tooltip = document.createElement('div');
+    tooltip.className = 'wiki-preview-tooltip';
+    document.body.appendChild(tooltip);
+
+    let hideTimeout = null;
+
+    // Функция извлечения заголовка и отрывка из Markdown текста
+    function parseArticlePreview(markdownText) {
+        // Убираем HTML-комментарии (например, статус-баннеры)
+        const cleanMd = markdownText.replace(/<!--[\s\S]*?-->/g, '');
+        const lines = cleanMd.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+        let title = '';
+        let bodyLines = [];
+
+        for (const line of lines) {
+            if (!title && line.startsWith('#')) {
+                // Извлекаем текст первого заголовка (удаляем символы #)
+                title = line.replace(/^#+\s*/, '');
+            } else if (!line.startsWith('#')) {
+                bodyLines.push(line);
+            }
+        }
+
+        // Собираем обычный текст для отрывка
+        const fullBodyText = bodyLines.join(' ').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // убираем markdown-ссылки
+        const snippet = fullBodyText.length > 120 ? fullBodyText.substring(0, 120) + '...' : fullBodyText;
+
+        return {
+            title: title || '',
+            snippet: snippet || ''
+        };
+    }
+
+    // Обработчик наведения внутри #wiki-app
+    const wikiApp = document.getElementById('wiki-app');
+    if (!wikiApp) return;
+
+    wikiApp.addEventListener('mouseover', async (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        if (!href || (!href.startsWith('/archive') && !href.startsWith('#'))) return;
+
+        // Вычисляем путь файла статьи
+        let route = href.replace('/archive', '').replace('#/archive/', '').replace('#/', '').replace('#', '');
+        if (route === '' || route === '/') route = 'index';
+        route = route.replace(/^\//, '');
+
+        const linkFallbackTitle = link.textContent.trim();
+
+        // Позиционируем плашку рядом с курсором / ссылкой
+        const rect = link.getBoundingClientRect();
+        let left = rect.left;
+        let top = rect.bottom + 8;
+
+        // Защита от выхода за правый край экрана
+        if (left + 280 > window.innerWidth) {
+            left = window.innerWidth - 300;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+
+        // Предварительное состояние загрузки / отображение по кэшу
+        if (articleCache.has(route)) {
+            renderTooltipContent(articleCache.get(route), linkFallbackTitle);
+        } else {
+            // Если в кэше нет, показываем базовую плашку с именем ссылки
+            tooltip.innerHTML = `
+                <h4 class="tooltip-title">${escapeHtml(linkFallbackTitle)}</h4>
+                <p class="tooltip-reminder">Загрузка данных статьи...</p>
+            `;
+            tooltip.classList.add('visible');
+
+            try {
+                const res = await fetch(`/archive/${route}.md`);
+                if (!res.ok) throw new Error('Not found');
+                const text = await res.text();
+                const parsed = parseArticlePreview(text);
+                
+                articleCache.set(route, parsed);
+                renderTooltipContent(parsed, linkFallbackTitle);
+            } catch (err) {
+                const emptyData = { title: '', snippet: '' };
+                articleCache.set(route, emptyData);
+                renderTooltipContent(emptyData, linkFallbackTitle);
+            }
+        }
+    });
+
+    wikiApp.addEventListener('mouseout', (e) => {
+        if (e.target.closest('a')) {
+            tooltip.classList.remove('visible');
+        }
+    });
+
+    function renderTooltipContent(data, fallbackTitle) {
+        const displayTitle = data.title ? data.title : fallbackTitle;
+        
+        if (!data.title && !data.snippet) {
+            tooltip.innerHTML = `
+                <h4 class="tooltip-title">${escapeHtml(displayTitle)}</h4>
+                <p class="tooltip-reminder">Эту статью еще не придумали...</p>
+            `;
+        } else {
+            tooltip.innerHTML = `
+                <h4 class="tooltip-title">${escapeHtml(displayTitle)}</h4>
+                <p class="tooltip-snippet">${escapeHtml(data.snippet)}</p>
+            `;
+        }
+        tooltip.classList.add('visible');
+    }
+})();
