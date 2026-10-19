@@ -577,7 +577,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!link) return;
 
         const href = link.getAttribute('href');
-        if (!href || (!href.startsWith('/archive') && !href.startsWith('#'))) return;
+        if (!href || (!href.startsWith('/archive') && !href.startsWith('#')) || href.includes('search')) return;
 
         currentActiveLink = link;
         isMouseOverTooltip = false;
