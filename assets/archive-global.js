@@ -405,7 +405,13 @@ async function performTransition(targetUrl) {
     await loadArticle(); 
     updateActiveSidebarLink();
     
-    window.scrollTo(0, 0);
+    if (typeof appContainer.scrollTo === 'function') {
+        appContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        appContainer.scrollTop = 0;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     appContainer.classList.remove('scale-down');
 }
 
