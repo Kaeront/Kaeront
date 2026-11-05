@@ -122,7 +122,6 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            gap: 2px;
         }
 
         .msg-row { 
@@ -131,6 +130,7 @@
             width: 100%; 
             max-width: 100%; 
             position: relative;
+            gap: 12px;
         }
 
         .msg-avatar-link { 
@@ -138,6 +138,7 @@
             text-decoration: none; 
             top: 0; 
             position: sticky; 
+            margin-top: 4px;
             z-index: 1;
         }
         
@@ -149,20 +150,29 @@
             border-radius: 50%;
         }
 
-        /* Тело сообщения */
         .msg-body { 
             background: #18181b; 
-            padding: 6px 14px;
-            border-radius: 12px;
+            padding: 8px 14px; 
+            border-radius: 12px; 
             border: 1px solid #27272a; 
             flex: 1; 
             min-width: 0; 
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
-        .msg-group > .msg-row:first-child .msg-body { border-top-left-radius: 20px; }
-        .msg-group > .msg-row:last-child .msg-body { margin-bottom: 10px; }
-        .msg-header-hidden { display: none; }
+        /* Скругление и отступ только у первого сообщения в группе */
+        .msg-group > .msg-row:first-child .msg-body { border-top-left-radius: 20px; margin-top: 4px; }
+        
+        /* Больший отступ после последнего сообщения в группе */
+        .msg-group > .msg-row:last-child .msg-body { margin-bottom: 12px; }
+
+        /* Скрываем заголовок у всех, кроме первого сообщения в группе */
+        .msg-header-hidden { display: none !important; }
+
+        /* Совместимость с компактным стриминг-режимом */
+        body.streaming-mode.compact .msg-group { gap: 2px; }
+        body.streaming-mode.compact .msg-row { gap: 0; }
+        body.streaming-mode.compact .msg-group > .msg-row:last-child .msg-body { margin-bottom: 2px; }
         
         .msg-header { 
             display: flex;
@@ -754,47 +764,49 @@
             let htmlBuffer = "";
             let lastDateStr = "";
 
-            // --- ЛОГИКА ГРУППИРОВКИ ---
-            // Мы проходим по сообщениям и собираем их во временные группы
+            // === НАДЕЖНАЯ ГРУППИРОВКА ===
             let groups = [];
             let currentGroup = null;
 
             data.messages.forEach(m => {
-                // Проверяем дату для разделителя
                 const isoUtcString = m.created_at.includes('T') 
                     ? (m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z')
                     : m.created_at.replace(' ', 'T') + 'Z';
                 const dateObj = new Date(isoUtcString);
                 const dateStr = dateObj.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-                // Если дата сменилась, принудительно закрываем предыдущую группу (если была)
-                // и добавляем маркер разделителя
+                // 1. Разделитель дат
                 if (dateStr !== lastDateStr) {
                     if (currentGroup) {
                         groups.push(currentGroup);
                         currentGroup = null;
                     }
-                    // Сохраняем информацию о разделителе прямо в поток групп
                     groups.push({ type: 'divider', date: dateStr });
                     lastDateStr = dateStr;
                 }
 
-                // Проверяем, можно ли добавить сообщение в текущую группу
-                // Условия: тот же автор И прошло мало времени (например, < 5 минут)
-                const isSameAuthor = currentGroup && currentGroup.type === 'group' && currentGroup[0].author_uuid === m.author_uuid;
-                
-                // Вычисляем разницу во времени с последним сообщением в группе
-                let isRecent = true;
+                // 2. Проверка возможности группировки
+                let canGroup = false;
                 if (currentGroup && currentGroup.type === 'group') {
-                    const lastMsgTime = new Date(currentGroup[currentGroup.length - 1].created_at.endsWith('Z') ? currentGroup[currentGroup.length - 1].created_at : currentGroup[currentGroup.length - 1].created_at + 'Z');
-                    const currMsgTime = dateObj;
-                    // Если разница больше 5 минут (300000 мс), начинаем новую группу
-                    if ((currMsgTime - lastMsgTime) > 300000) {
-                        isRecent = false;
+                    const lastMsg = currentGroup[currentGroup.length - 1];
+                    
+                    // Сравниваем по имени (это надежнее, чем UUID, который может приходить в разном формате)
+                    const isSameAuthor = lastMsg.author_name === m.author_name;
+                    
+                    if (isSameAuthor) {
+                        const lastTime = new Date(lastMsg.created_at.includes('T') ? (lastMsg.created_at.endsWith('Z') ? lastMsg.created_at : lastMsg.created_at + 'Z') : lastMsg.created_at.replace(' ', 'T') + 'Z').getTime();
+                        const currTime = dateObj.getTime();
+                        
+                        // Группируем, если разница во времени не более 5 минут (300 000 мс)
+                        // Math.abs гарантирует работу независимо от порядка сортировки сообщений в массиве
+                        if (Math.abs(currTime - lastTime) <= 300000) {
+                            canGroup = true;
+                        }
                     }
                 }
 
-                if (isSameAuthor && isRecent) {
+                // 3. Добавляем в текущую группу или создаем новую
+                if (canGroup) {
                     currentGroup.push(m);
                 } else {
                     if (currentGroup) groups.push(currentGroup);
@@ -802,7 +814,7 @@
                 }
             });
             if (currentGroup) groups.push(currentGroup);
-            // --------------------------
+            // ==============================
 
             // Генерация HTML из групп
             groups.forEach(group => {
@@ -811,12 +823,10 @@
                     return;
                 }
 
-                // Это группа сообщений
                 const author = group[0];
                 const userProfileUrl = `/user/${encodeURIComponent(author.author_name)}`;
                 const avatarUrl = getAvatarUrl(author.author_uuid, author.author_name);
                 
-                // Начало контейнера группы
                 htmlBuffer += `<div class="msg-group">`;
 
                 group.forEach((m, index) => {
@@ -828,7 +838,7 @@
                     const timeStr = dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                     const timeAgoStr = getTimeAgo(dateObj);
 
-                    // Показываем аватар и шапку ТОЛЬКО у первого сообщения в группе
+                    // Показываем аватар и шапку ТОЛЬКО у первого сообщения в группе (index === 0)
                     const showHeader = index === 0;
                     
                     htmlBuffer += `
@@ -836,7 +846,7 @@
                             ${showHeader ? `
                             <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
                                 <img src="${avatarUrl}" class="msg-avatar" alt="${escapeHtml(author.author_name)}" loading="lazy" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
-                            </a>` : '<div style="width: 50px;"></div>'} <!-- Пустое место вместо аватара для выравнивания -->
+                            </a>` : '<div style="width: 38px; flex-shrink: 0;"></div>'}
                             
                             <div class="msg-body">
                                 ${showHeader ? `
@@ -862,7 +872,7 @@
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
 
-            // Обработка звука и уведомлений (оставляем вашу логику без изменений)
+            // Обработка звука и уведомлений (оставлена без изменений)
             if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
                 let lastMsg = null;
@@ -893,10 +903,7 @@
 
                             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                                 navigator.serviceWorker.ready.then((reg) => {
-                                    reg.showNotification(notifTitle, {
-                                        ...notifOptions,
-                                        data: { channel: msgChannel }
-                                    });
+                                    reg.showNotification(notifTitle, { ...notifOptions, data: { channel: msgChannel } });
                                 });
                             } else {
                                 const localNotif = new Notification(notifTitle, notifOptions);
