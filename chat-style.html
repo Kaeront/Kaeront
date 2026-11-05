@@ -58,6 +58,7 @@
         :root { --bg: #0e0e10 !important; --sidebar-bg: #18181b !important; --accent: #FA0; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { background-image: none !important; color: #fff !important; height: 100vh !important; width: 100vw !important; overflow: hidden !important; display: flex !important; flex-direction: row !important; font-family: 'Montserrat', 'Inter', sans-serif; }
+        body::before { background-image: none !important; }
 
         #sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
 
@@ -118,7 +119,7 @@
 
         /* Сообщения */
         .msg-row { display: flex; gap: 12px; align-items: flex-start; width: 100%; max-width: 100%; }
-        .msg-avatar-link { flex-shrink: 0; text-decoration: none; }
+        .msg-avatar-link { flex-shrink: 0; text-decoration: none; top: 0; position: sticky; }
         .msg-avatar { width: 38px; height: 38px; object-fit: cover; user-select: none; }
 
         .msg-body { background: #18181b; padding: 10px 14px; border-radius: 20px; border-top-left-radius: 5px; border: 1px solid #27272a; flex: 1; min-width: 0; }
