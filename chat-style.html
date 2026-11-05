@@ -118,112 +118,21 @@
         .date-divider span { padding: 0 12px; }
 
         /* Сообщения */
-        .msg-group {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
+        .msg-row { display: flex; gap: 12px; align-items: flex-start; width: 100%; max-width: 100%; }
+        .msg-avatar-link { flex-shrink: 0; text-decoration: none; top: 0; position: sticky; }
+        .msg-avatar { width: 38px; height: 38px; object-fit: cover; user-select: none; }
 
-        .msg-row { 
-            display: flex; 
-            align-items: flex-start; 
-            width: 100%; 
-            max-width: 100%; 
-            position: relative;
-            gap: 12px;
-        }
-
-        .msg-avatar-link { 
-            flex-shrink: 0; 
-            text-decoration: none; 
-            top: 0; 
-            position: sticky; 
-            margin-top: 4px;
-            z-index: 1;
-        }
-        
-        .msg-avatar { 
-            width: 38px; 
-            height: 38px; 
-            object-fit: cover; 
-            user-select: none; 
-            border-radius: 50%;
-        }
-
-        .msg-body { 
-            background: #18181b; 
-            padding: 8px 14px; 
-            border-radius: 12px; 
-            border: 1px solid #27272a; 
-            flex: 1; 
-            min-width: 0; 
-            margin-bottom: 2px;
-        }
-        
-        /* Скругление и отступ только у первого сообщения в группе */
-        .msg-group > .msg-row:first-child .msg-body { border-top-left-radius: 20px; margin-top: 4px; }
-        
-        /* Больший отступ после последнего сообщения в группе */
-        .msg-group > .msg-row:last-child .msg-body { margin-bottom: 12px; }
-
-        /* Скрываем заголовок у всех, кроме первого сообщения в группе */
-        .msg-header-hidden { display: none !important; }
-
-        /* Совместимость с компактным стриминг-режимом */
-        body.streaming-mode.compact .msg-group { gap: 2px; }
-        body.streaming-mode.compact .msg-row { gap: 0; }
-        body.streaming-mode.compact .msg-group > .msg-row:last-child .msg-body { margin-bottom: 2px; }
-        
-        .msg-header { 
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .msg-author-link {
-            font-family: 'Minecraft', sans-serif;
-            font-size: 0.85rem;
-            color: var(--accent);
-            text-decoration: none;
-        }
-        .msg-author-link:hover {
-            text-decoration: underline;
-        }
-        .msg-source {
-            font-size: 0.65rem;
-            color: #71717a;
-            font-weight: normal;
-        }
-        .msg-time {
-            font-size: 0.7rem;
-            color: #52525b;
-            margin-left: auto;
-        }
-        .msg-content {
-            font-size: 0.9rem;
-            color: #e4e4e7;
-            line-height: 1.2;
-            word-break: break-word;
-        }
+        .msg-body { background: #18181b; padding: 10px 14px; border-radius: 20px; border-top-left-radius: 5px; border: 1px solid #27272a; flex: 1; min-width: 0; }
+        .msg-header { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .msg-author-link { font-family: 'Minecraft', sans-serif; font-size: 0.85rem; color: var(--accent); text-decoration: none; }
+        .msg-author-link:hover { text-decoration: underline; }
+        .msg-source { font-size: 0.65rem; color: #71717a; font-weight: normal; }
+        .msg-time { font-size: 0.7rem; color: #52525b; margin-left: auto; }
+        .msg-content { font-size: 0.9rem; color: #e4e4e7; line-height: 1.2; word-break: break-word; }
 
         /* Поле ввода */
-        .chat-input-area {
-            padding: 15px;
-            background: #18181b;
-            border-top: 1px solid #27272a;
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-        input[type="text"] {
-            flex: 1;
-            background: #09090b;
-            border: 1px solid #27272a;
-            padding: 12px;
-            border-radius: 20px;
-            color: #fff;
-            outline: none;
-        }
+        .chat-input-area { padding: 15px; background: #18181b; border-top: 1px solid #27272a; display: flex; gap: 10px; flex-shrink: 0; }
+        input[type="text"] { flex: 1; background: #09090b; border: 1px solid #27272a; padding: 12px; border-radius: 20px; color: #fff; outline: none; }
         input[type="text"]:focus { border-color: var(--accent); }
         .btn { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-family: 'Minecraft', sans-serif; font-weight: bold; cursor: pointer; border: 1px solid transparent; transition: background 0.2s }
         
@@ -764,104 +673,39 @@
             let htmlBuffer = "";
             let lastDateStr = "";
 
-            // === НАДЕЖНАЯ ГРУППИРОВКА ===
-            let groups = [];
-            let currentGroup = null;
-
             data.messages.forEach(m => {
                 const isoUtcString = m.created_at.includes('T') 
                     ? (m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z')
                     : m.created_at.replace(' ', 'T') + 'Z';
+
                 const dateObj = new Date(isoUtcString);
                 const dateStr = dateObj.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-                // 1. Разделитель дат
                 if (dateStr !== lastDateStr) {
-                    if (currentGroup) {
-                        groups.push(currentGroup);
-                        currentGroup = null;
-                    }
-                    groups.push({ type: 'divider', date: dateStr });
+                    htmlBuffer += `<div class="date-divider"><span>${escapeHtml(dateStr)}</span></div>`;
                     lastDateStr = dateStr;
                 }
 
-                // 2. Проверка возможности группировки
-                let canGroup = false;
-                if (currentGroup && currentGroup.type === 'group') {
-                    const lastMsg = currentGroup[currentGroup.length - 1];
-                    
-                    // Сравниваем по имени (это надежнее, чем UUID, который может приходить в разном формате)
-                    const isSameAuthor = lastMsg.author_name === m.author_name;
-                    
-                    if (isSameAuthor) {
-                        const lastTime = new Date(lastMsg.created_at.includes('T') ? (lastMsg.created_at.endsWith('Z') ? lastMsg.created_at : lastMsg.created_at + 'Z') : lastMsg.created_at.replace(' ', 'T') + 'Z').getTime();
-                        const currTime = dateObj.getTime();
-                        
-                        // Группируем, если разница во времени не более 5 минут (300 000 мс)
-                        // Math.abs гарантирует работу независимо от порядка сортировки сообщений в массиве
-                        if (Math.abs(currTime - lastTime) <= 300000) {
-                            canGroup = true;
-                        }
-                    }
-                }
+                const timeStr = dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const timeAgoStr = getTimeAgo(dateObj);
+                const userProfileUrl = `/user/${encodeURIComponent(m.author_name)}`;
+                const avatarUrl = getAvatarUrl(m.author_uuid, m.author_name);
 
-                // 3. Добавляем в текущую группу или создаем новую
-                if (canGroup) {
-                    currentGroup.push(m);
-                } else {
-                    if (currentGroup) groups.push(currentGroup);
-                    currentGroup = [m];
-                }
-            });
-            if (currentGroup) groups.push(currentGroup);
-            // ==============================
-
-            // Генерация HTML из групп
-            groups.forEach(group => {
-                if (group.type === 'divider') {
-                    htmlBuffer += `<div class="date-divider"><span>${escapeHtml(group.date)}</span></div>`;
-                    return;
-                }
-
-                const author = group[0];
-                const userProfileUrl = `/user/${encodeURIComponent(author.author_name)}`;
-                const avatarUrl = getAvatarUrl(author.author_uuid, author.author_name);
-                
-                htmlBuffer += `<div class="msg-group">`;
-
-                group.forEach((m, index) => {
-                    const isoUtcString = m.created_at.includes('T') 
-                        ? (m.created_at.endsWith('Z') ? m.created_at : m.created_at + 'Z')
-                        : m.created_at.replace(' ', 'T') + 'Z';
-                    const dateObj = new Date(isoUtcString);
-                    
-                    const timeStr = dateObj.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                    const timeAgoStr = getTimeAgo(dateObj);
-
-                    // Показываем аватар и шапку ТОЛЬКО у первого сообщения в группе (index === 0)
-                    const showHeader = index === 0;
-                    
-                    htmlBuffer += `
-                        <div class="msg-row">
-                            ${showHeader ? `
-                            <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
-                                <img src="${avatarUrl}" class="msg-avatar" alt="${escapeHtml(author.author_name)}" loading="lazy" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
-                            </a>` : '<div style="width: 38px; flex-shrink: 0;"></div>'}
-                            
-                            <div class="msg-body">
-                                ${showHeader ? `
-                                <div class="msg-header">
-                                    <a href="${userProfileUrl}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
-                                    <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
-                                    <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
-                                </div>` : ''}
-                                <div class="msg-content">${escapeHtml(m.content)}</div>
+                htmlBuffer += `
+                    <div class="msg-row">
+                        <a href="${userProfileUrl}" target="_blank" class="msg-avatar-link">
+                            <img src="${avatarUrl}" class="msg-avatar" alt="${escapeHtml(m.author_name)}" loading="lazy" onerror="this.onerror=null; this.src=(this.alt === 'Система' ? '/assets/island.png' : '/assets/silhouette.png');">
+                        </a>
+                        <div class="msg-body">
+                            <div class="msg-header">
+                                <a href="${userProfileUrl}" target="_blank" class="msg-author-link">${escapeHtml(m.author_name)}</a>
+                                <span class="msg-source">• ${m.source === 'game' ? 'из игры' : 'с сайта'}</span>
+                                <span class="msg-time" title="${escapeHtml(dateObj.toLocaleString('ru-RU'))}">${timeStr} (${timeAgoStr})</span>
                             </div>
+                            <div class="msg-content">${escapeHtml(m.content)}</div>
                         </div>
-                    `;
-                });
-
-                htmlBuffer += `</div>`; // Конец msg-group
+                    </div>
+                `;
             });
 
             list.innerHTML = htmlBuffer;
@@ -872,7 +716,7 @@
                 if (isChannelSwitch) userHasScrolledUp = false;
             }
 
-            // Обработка звука и уведомлений (оставлена без изменений)
+            // Обработка звука и уведов ТОЛЬКО если НЕ streaming-режим
             if (!isStreaming && !isFirstLoad && !isChannelSwitch) {
                 let hasNew = false;
                 let lastMsg = null;
@@ -884,12 +728,14 @@
                 });
             
                 if (hasNew && lastMsg) {
+                    // Проверка отсечения собственных сообщений (от самого себя)
                     const isSelfMessage = (currentUserId && lastMsg.author_uuid === currentUserId) || 
                                           (currentUserName && lastMsg.author_name === currentUserName);
 
                     const msgChannel = lastMsg.channel_id || currentChannel;
                     const isTargetChannel = (msgChannel === currentChannel) || listenedChannels.includes(msgChannel);
 
+                    // Уведомляем и воспроизводим звук ТОЛЬКО если сообщение чужое
                     if (isTargetChannel && !isSelfMessage) {
                         playNotificationSound();
 
@@ -903,7 +749,10 @@
 
                             if (navigator.serviceWorker && navigator.serviceWorker.controller) {
                                 navigator.serviceWorker.ready.then((reg) => {
-                                    reg.showNotification(notifTitle, { ...notifOptions, data: { channel: msgChannel } });
+                                    reg.showNotification(notifTitle, {
+                                        ...notifOptions,
+                                        data: { channel: msgChannel }
+                                    });
                                 });
                             } else {
                                 const localNotif = new Notification(notifTitle, notifOptions);
