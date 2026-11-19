@@ -86,7 +86,7 @@ const globalStyles = `
         height: calc(100vh + var(--parallax-distance, 0px));
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
-        background-size: 48px;
+        background-size: 52px;
         background-repeat: repeat;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
