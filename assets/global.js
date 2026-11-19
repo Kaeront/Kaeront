@@ -74,7 +74,7 @@ const globalStyles = `
     
     @keyframes blackstone-parallax {
         from { transform: translate3d(0, 0, 0); }
-        to { transform: translate3d(0, -420px, 0); }
+        to { transform: translate3d(0, calc(var(--parallax-distance, 0px) * -1), 0); }
     }
 
     body::before {
@@ -83,7 +83,7 @@ const globalStyles = `
         top: 0;
         left: 0;
         width: 100vw;
-        height: calc(100vh + 420px);
+        height: calc(100vh + var(--parallax-distance, 0px));
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
         background-size: 42px;
@@ -94,7 +94,6 @@ const globalStyles = `
         will-change: transform;
         animation: blackstone-parallax linear both;
         animation-timeline: scroll(root block);
-        animation-range: 0px 840px;
     }
 
     body::-webkit-scrollbar {
