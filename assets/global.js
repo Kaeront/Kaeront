@@ -75,10 +75,10 @@ const globalStyles = `
     body::before {
         content: "";
         position: fixed;
-        top: 0;
+        top: -42px;
         left: 0;
         width: 100vw;
-        height: 100vh;
+        height: calc(100vh + 42px);
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
         background-size: 42px;
@@ -87,8 +87,9 @@ const globalStyles = `
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         pointer-events: none;
-    }
-
+        will-change: transform;
+        transform: translate3d(0, calc(var(--scroll-offset, 0px) * -1), 0);
+}
 
     body::-webkit-scrollbar {
         width: 8px;
@@ -483,16 +484,14 @@ window.addEventListener('load', () => {
 });
 
 // Параллакс-эффект для Body Background
-let ticking = false;
-window.addEventListener('scroll', () => {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            document.body.style.setProperty('--scroll-y', `${window.scrollY}px`);
-            ticking = false;
-        });
-        ticking = true;
-    }
-}, { passive: true });
+const updateParallax = () => {
+    const offset = (window.scrollY * 0.5) % 42;
+    document.body.style.setProperty('--scroll-offset', `${offset}px`);
+};
+
+window.addEventListener('scroll', updateParallax, { passive: true });
+updateParallax(); // Синхронизация при загрузке, если страница уже прокручена
+
 
 // Регистрация Service Worker
 const registerServiceWorker = () => {
