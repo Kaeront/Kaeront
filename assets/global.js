@@ -70,31 +70,25 @@ const globalStyles = `
         transition: margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         position: relative;
         z-index: 0;
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-        perspective: 1px;
-        perspective-origin: 0 0;
-        transform-style: preserve-3d;
     }
     
     body::before {
         content: "";
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 100vw;
+        height: 100vh;
         z-index: -1;
-        background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
+        background-image: linear-gradient(rgba(2, 5, 0, 0.55), url(/assets/blackstone_top.png);
         background-size: 42px;
         background-repeat: repeat;
+        background-position: 0 calc(var(--scroll-y, 0px) * -0.5);
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         pointer-events: none;
-        transform-origin: 0 0;
-        transform: translateZ(-1px) scale(2);
     }
+
 
     body::-webkit-scrollbar {
         width: 8px;
