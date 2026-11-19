@@ -281,13 +281,74 @@
         }
 
         /* --- SERVER CARDS --- */
-        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 30px 0; width: 100%; box-sizing: border-box; height: 600px; overflow-y: auto; scrollbar-width: none; mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important; }
-        .servers-header { font-family: 'Minecraft', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-align: center; margin: 50px 0px 20px; }
-        .section-header { font-family: 'Minecraft'; font-size: 1.2rem; color: var(--text-main); text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--line-color); padding-bottom: 15px; }
-        .server-card { background-color: color-mix(in srgb, var(--server-card-bg) 50%, transparent); border-left: 4px solid var(--accent); padding: 30px; cursor: url('/assets/pointer.png'), pointer; transition: var(--transition); margin-bottom: 20px; position: relative; }
-        .server-card:hover { background-color: var(--server-card-bg); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 1); }
-        .server-card h3 { font-family: 'Minecraft'; font-size: 1.1rem; font-weight: 700; margin: 0 0 15px; color: var(--accent); }
-        .server-card p { color: var(--text-dim); line-height: 1.7; font-size: 0.9rem; margin: 0; }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 0;
+            width: 100%;
+            box-sizing: border-box;
+            height: 600px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important;
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 30px, black calc(100% - 30px), transparent) !important;
+        }
+        
+        .servers-header {
+            font-family: 'Minecraft', sans-serif;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 50px 0px 20px;
+        }
+        
+        .section-header {
+            font-family: 'Minecraft';
+            font-size: 1.2rem;
+            color: var(--text-main);
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--line-color);
+            padding-bottom: 15px;
+        }
+        
+        .server-card {
+            background-color: color-mix(in srgb, var(--server-card-bg) 30%, transparent);
+            padding: 30px;
+            cursor: url(/assets/pointer.png), pointer;
+            transition: var(--transition);
+            margin-bottom: 10px;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+        }
+        
+        .server-card:hover {
+            background-color: var(--server-card-bg);
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px #0008;
+        }
+        
+        .server-card h3 {
+            font-family: 'Minecraft';
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 15px;
+            color: var(--accent);
+        }
+        
+        .server-card p {
+            color: var(--text-dim);
+            line-height: 1.7;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
         .server-status {
             display: flex;
             align-items: center;
@@ -364,19 +425,32 @@
         .modal-window {
             margin: auto;
             background: #0d0d0d;
-            border-top: 6px solid var(--accent);
-            width: 95%; max-width: 700px;
-            padding: 40px 30px;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
             position: relative;
             transform: translate3d(0, 50px, 0) scale(0.95);
-            	transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             will-change: transform;
             backface-visibility: hidden;
+            border: 3px solid #4444;
+            border-radius: 40px;
+            outline: 3px solid #000;
+            outline-offset: -6px;
         }
         .modal-overlay.active .modal-window { transform: translate3d(0, 0, 0) scale(1); }
         .modal-window::-webkit-scrollbar { width: 5px; }
         .modal-window::-webkit-scrollbar-thumb { background-color: #333; border-radius: 5px; }
-        .close-btn { position: absolute; top: 20px; right: 25px; color: var(--text-dim); font-family: 'Minecraft'; font-size: 0.7rem; cursor: url('/assets/pointer.png'), pointer; z-index: 100; transition: 0.3s; }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: var(--text-dim);
+            font-family: 'Minecraft';
+            font-size: 0.75rem;
+            z-index: 100;
+            transition: 0.2s color ease;
+        }
         .close-btn:hover { color: var(--accent); }
         .modal-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; }
         @media (min-width: 900px) { .modal-grid { grid-template-columns: 1fr 1fr; } }
@@ -398,6 +472,7 @@
             display: flex;
             flex-direction: column;
             gap: 0;
+            box-shadow: 0 0 40px #0008;
         }
 
         .news-card {
@@ -879,7 +954,7 @@
     <section id="about-section" style="max-width: 850px; width: 90%; margin: 60px auto 100px; box-sizing: border-box;">
         <div class="section-title">Что такое Kaeront?</div>
         
-        <div style="border-left: 3px solid var(--accent); padding: 30px; position: relative;">
+        <div style="padding: 30px; position: relative; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 40px; box-shadow: 0 0 40px #0008;">
             <p style="color: var(--text-dim); font-size: 1rem; line-height: 1.7; margin: 0 0 20px 0; text-align: justify;">
                 <b>Kaeront</b> — это не очередной конвейерный проект «для галочки» и не площадка с агрессивным донатом. Мы создавали это пространство как уютное убежище для тех, кто соскучился по настоящему, ламповому Майнкрафту в компании <b>душевных и близких по духу ребят</b>. Здесь нет места токсичности, глупым ограничениям и детскому хаосу. Мы просто собираемся вместе, чтобы строить, выживать, общаться и получать удовольствие от игры.<br><br>
                 При этом к технической и организационной стороне мы подходим с максимальной, взрослой ответственностью. Kaeront устроен уникально: мы одни из немногих, кто функционирует в <b>строгом соответствии с юридическими нормами и правилами</b>. У нас нет серых схем, а все процессы прозрачны. Мы уважаем закон, права наших игроков и создателей игры. Мы поддерживаем культуру уважения к разработчикам. Доступ на наши серверы возможен <b>исключительно с официальной лицензией Minecraft</b>. Это гарантирует надежность, чистоту комьюнити и отсутствие читеров.<br><br>
