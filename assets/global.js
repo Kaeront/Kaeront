@@ -72,24 +72,30 @@ const globalStyles = `
         z-index: 0;
     }
     
+    @keyframes blackstone-parallax {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(0, -420px, 0); }
+    }
+
     body::before {
         content: "";
         position: fixed;
-        top: -42px;
+        top: 0;
         left: 0;
         width: 100vw;
-        height: calc(100vh + 42px);
+        height: calc(100vh + 420px);
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
         background-size: 42px;
         background-repeat: repeat;
-        background-position: 0 calc(var(--scroll-y, 0px) * -0.5);
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         pointer-events: none;
         will-change: transform;
-        transform: translate3d(0, calc(var(--scroll-offset, 0px) * -1), 0);
-}
+        animation: blackstone-parallax linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0px 840px;
+    }
 
     body::-webkit-scrollbar {
         width: 8px;
