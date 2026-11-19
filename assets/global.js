@@ -489,15 +489,17 @@ window.addEventListener('load', () => {
     }
 });
 
-// Параллакс-эффект для Body Background
-const updateParallax = () => {
-    const offset = (window.scrollY * 0.5) % 42;
-    document.body.style.setProperty('--scroll-offset', `${offset}px`);
+const syncParallaxRange = () => {
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const rawDistance = maxScroll * 0.5;
+    const snappedDistance = Math.round(rawDistance / 42) * 42; document.documentElement.style.setProperty('--parallax-distance', `${snappedDistance}px`);
 };
 
-window.addEventListener('scroll', updateParallax, { passive: true });
-updateParallax(); // Синхронизация при загрузке, если страница уже прокручена
-
+// Автоматически пересчитывает дистанцию, если контент на странице добавился или изменился размер окна
+const resizeObserver = new ResizeObserver(syncParallaxRange);
+resizeObserver.observe(document.body);
+window.addEventListener('resize', syncParallaxRange, { passive: true });
+syncParallaxRange();
 
 // Регистрация Service Worker
 const registerServiceWorker = () => {
