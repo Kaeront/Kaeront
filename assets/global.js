@@ -19,8 +19,6 @@ const globalStyles = `
     html {
         padding-top: 0px;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        height: 100%;
-        overflow: hidden;
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -89,7 +87,7 @@ const globalStyles = `
         height: 100%;
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
-        background-size: 21px;
+        background-size: 42px;
         background-repeat: repeat;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
