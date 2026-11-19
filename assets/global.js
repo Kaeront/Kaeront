@@ -80,7 +80,7 @@ const globalStyles = `
         width: 100vw;
         height: 100vh;
         z-index: -1;
-        background-image: linear-gradient(rgba(2, 5, 0, 0.55), url(/assets/blackstone_top.png);
+        background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
         background-size: 42px;
         background-repeat: repeat;
         background-position: 0 calc(var(--scroll-y, 0px) * -0.5);
@@ -481,6 +481,18 @@ window.addEventListener('load', () => {
         }, 500);
     }
 });
+
+// Параллакс-эффект для Body Background
+let ticking = false;
+window.addEventListener('scroll', () => {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            document.body.style.setProperty('--scroll-y', `${window.scrollY}px`);
+            ticking = false;
+        });
+        ticking = true;
+    }
+}, { passive: true });
 
 // Регистрация Service Worker
 const registerServiceWorker = () => {
