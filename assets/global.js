@@ -19,6 +19,8 @@ const globalStyles = `
     html {
         padding-top: 0px;
         transition: padding-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        overflow: hidden;
     }
 
     ::selection { color: #000; background: var(--accent); }
@@ -70,6 +72,12 @@ const globalStyles = `
         transition: margin-top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
         position: relative;
         z-index: 0;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        perspective: 1px;
+        perspective-origin: 0 0;
+        transform-style: preserve-3d;
     }
     
     body::before {
@@ -81,11 +89,13 @@ const globalStyles = `
         height: 100%;
         z-index: -1;
         background-image: linear-gradient(rgba(2, 5, 0, 0.55)), url(/assets/blackstone_top.png);
-        background-size: 42px;
+        background-size: 21px;
         background-repeat: repeat;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         pointer-events: none;
+        transform-origin: 0 0;
+        transform: translateZ(-1px) scale(2);
     }
 
     body::-webkit-scrollbar {
