@@ -414,7 +414,13 @@
             transition: background 0.3s ease, visibility 0.3s ease;
             will-change: opacity;
             scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+
+        .modal-overlay::-webkit-scrollbar {
+            display: none;
+        }
+
         .modal-overlay.show-flex { display: flex; pointer-events: auto; }
         .modal-overlay.active { background: rgba(0,0,0,0.9); visibility: visible; opacity: 1; }
         html:has(.modal-overlay.active), body:has(.modal-overlay.active) {
